@@ -24,5 +24,17 @@ The best place to start is to go directly to the [Flood Modeller Python API Docu
 
 The Flood Modeller Python API is designed for users already familiar with both Flood Modeller and Python. The API is built up using distinct python classes for each of the key Flood Modeller file formats as well as key themes. The purpose of the API is not to provide ready-to-use tools for specific tasks, as there is an extensive set of tools already provided within Flood Modeller, many of which can be called from both within and outside of the Flood Modeller software. **Instead, this API provides the building blocks for users to build their own custom workflows and tools which can integrate seamlessly with Flood Modeller.**
 
+## [:raised_hands: Show and Tell :raised_hands:](https://github.com/People-Places-Solutions/floodmodeller-api/discussions) 
+In the spirit of open source, we encourage you to share any interesting scripts or tools you have developed using the Flood Modeller Python API. 
+To do this, please get involved [in the discussions section here](https://github.com/People-Places-Solutions/floodmodeller-api/discussions). This
+is also a great place to explore different ways that people have used the API.
+
+--------------------
+
+### A simple example of running a model and fetching the results...
 
 ![gif demo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/ief_zzn_demo.gif?token=GHSAT0AAAAAABS4AL6A3Q4YEVE3XWIGXG6CYSG44SQ)
+
+
+
+
