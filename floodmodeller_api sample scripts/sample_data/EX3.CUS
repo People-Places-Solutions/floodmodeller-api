@@ -1,0 +1,12 @@
+#COMMENT example cus file
+#CURVE_NAME Observed level
+#TYPE Level
+m60          11.115
+m40          11.115 
+m20          11.115  
+8            11.114   
+20           11.114
+40           11.113 
+60           11.113   
+80           11.113   
+100          11.113

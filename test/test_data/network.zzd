@@ -1,0 +1,122 @@
+  
+Flood Modeller 1D Solver run using event file network.ief
+  
+ 
+ writing messaging file output to network.lf1
+  
+
+ Flood Modeller - 1D Solver
+ Product licensed: Flood Modeller Base
+ Codes:          1         1       201   5000219         1
+ Product licensed: Flood Modeller Professional (1D)
+ Codes:          1         1       204   5000219         1
+network                                                                   FILE=NETWORK.dat Flood Modeller VER=5.0.0.7752
+ Single precision, 64-bit version
+Simulation started at 15:36:59 on 08/07/2021                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ dflood set to          1.0000m 
+ Rules evaluated at time zero = T
+ Rules evaluated on first iteration = F
+ Rules times reset after positional instruction = T
+ Floodplain section area constrained by modular limit = T
+ Use flow from culvert outlet remote node = T
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Solve dh = 0 at t0 in reservoirs.
+
+ * * * *
+ Specified initial conditions file: C:\Projects\Flood Modeller API\Working Copy\test\test_data\
+ Does not exist or cannot be read. Using default initial conditions (from *.dat file)
+ * * * *
+ 
+ Reading main data file NETWORK.dat...
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   0.0000000E+00  hours
+     end time          =    15.00000      hours
+     timestep          =    20.00000      seconds
+     save multiple     =           15
+  
+ 
+ 
+ Model time    15.0000 hrs:
+ *** warning W2019 *** at label:
+ 
+ Water level rose beyond the max level of section data
+ Solution computed assuming extra   1.0m wall for non-CES sections, or max depth x 1.5 for CES sections, at max breadth
+  Full details in 1D diagnostics file...
+
+  *************************************************
+
+  Sections at which water level rose above  
+  the maximum level of data (W2019)
+  Note: A solution was computed assuming an 
+ extra   1.0m wall for non-CES sections, or
+  max depth x 1.5 for CES sections, 
+  at the maximum breadth.
+  You should extend your data for the       
+  following sections:
+  
+               Label/s involved
+  
+                CSRD23   - SPILL ATTACHED                     
+                CSRD22   - SPILL ATTACHED                     
+                CSRD04   - NO SPILL ATTACHED                  
+                CSRD03   - NO SPILL ATTACHED                  
+                CSRD02   - NO SPILL ATTACHED                  
+                CSRD02d   - NO SPILL ATTACHED                  
+                CSRD01a   - NO SPILL ATTACHED                  
+                CSRD01u   - NO SPILL ATTACHED                  
+                CSRD01d   - NO SPILL ATTACHED                  
+                CSRD01   - NO SPILL ATTACHED                  
+                DS.001   - NO SPILL ATTACHED                  
+                DS.002   - NO SPILL ATTACHED                  
+                DS.003   - NO SPILL ATTACHED                  
+                DS.004   - NO SPILL ATTACHED                  
+                DS.005   - NO SPILL ATTACHED                  
+                DS.006   - NO SPILL ATTACHED                  
+                DS2   - NO SPILL ATTACHED                  
+
+  *************************************************
+
+Simulation time elapsed (s):             6
+ 
+run completed
+ 
+ Number of unconverged timesteps:         0
+ Proportion of simulation unconverged:   0.00%
+ 
+ ********* Mass balance summary *********
+ Mass balance calculated every    300.0s
+ 
+ Initial volume:            19913.8    m3
+ Final volume:              22989.6    m3
+-----------------------
+ Total boundary inflow  :   266536.    m3
+ Total boundary outflow :   263368.    m3
+ Total lat. link inflow :   0.00000    m3
+ Total lat. link outflow:   0.00000    m3
+-----------------------
+ Max. system volume:        34825.2    m3
+ Max. |volume| increase:    14911.4    m3
+ Max. boundary inflow:      8.29569    m3/s
+ Max. boundary outflow:     8.06746    m3/s
+-----------------------
+ Net increase in volume:    3075.80    m3
+ Net inflow volume:         3168.00    m3
+ Volume discrepancy:        92.1992    m3
+ Mass balance error:          -0.26% (of peak system volume)
+ Mass balance error [2]:      -0.03% (of boundary inflow volume)
+ 
+ ******* End mass balance summary *******
+ 
+ Writing binary results to C:\Projects\Flood Modeller API\Working Copy\test\test_data\NETWORK.zzn
+ outputting max/min/means to C:\Projects\Flood Modeller API\Working Copy\test\test_data\NETWORK.mmm
+ Convergence plot saved to C:\Projects\Flood Modeller API\Working Copy\test\test_data\NETWORK_001.bmp

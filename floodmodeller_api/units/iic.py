@@ -1,0 +1,67 @@
+'''
+Flood Modeller Python API
+Copyright (C) 2022 Jacobs U.K. Limited
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
+'''
+
+import pandas as pd
+
+from .helpers import join_10_char, split_10_char
+
+### Initial Conditions Class ###
+
+
+class IIC:
+    ''' Class to hold initial conditions data '''
+
+    def __init__(self, ic_block, n=12):
+        self._label_len = n
+        self._read(ic_block)
+
+    def __repr__(self):
+        return f'<floodmodeller_api Initial Conditions Class: IIC()>'
+
+    def _read(self, ic_block):
+        header = ['label', '?', 'flow', 'stage',
+                  'froude no', 'velocity', 'umode', 'ustate', 'z']
+        data_list = []
+        for line in ic_block[2:]:
+            lbl = line[:self._label_len+1].strip()
+            incl = line[self._label_len+1:self._label_len+3].strip()
+            q, h, fr, v, um, us, z = split_10_char(line[self._label_len+3:])
+            data_list.append([lbl, incl, float(q), float(h), float(
+                fr), float(v), float(um), float(us), float(z)])
+        # AL is this storing the values as strings?
+        self.data = pd.DataFrame(data_list, columns=header)
+        # JP Yes
+        # AL If it does, would it worth making it store the values instead?
+        # JP Yes I'll do that, only downside is that the updated values may not match notation
+        #   of original even if no changes. (i.e 2.0 -> 2.00 or 2. -> 2.00)
+
+    # AL Is this only to transform the table of data into a string-like array?
+        # JP Yes it just transforms the dataframe back into valid DAT format
+    def _write(self):
+        ic_block = ['INITIAL CONDITIONS',
+                    ' label   ?      flow     stage froude no  velocity     umode    ustate         z']
+        rows = []
+        for _, lbl, incl, q, h, fr, v, um, us, z in self.data.itertuples():
+            string = f'{lbl:<{self._label_len}}{incl:>2}'
+            string += join_10_char(q, h, fr, v, um, us, z)
+            rows.append(string)
+
+        ic_block.extend(rows)
+
+        return ic_block
+
+    def update_label(self, old, new):
+        self.data.loc[self.data['label'] == old, 'label'] = new

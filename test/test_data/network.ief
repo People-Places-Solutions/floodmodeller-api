@@ -1,0 +1,20 @@
+[ISIS Event Header]
+Title=network
+Datafile=network.dat
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=
+Start=0
+Finish=15
+Timestep=20
+SaveInterval=300
+Dflood=1
+Slot=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=1
+RulesAtTimeZero=1
+RulesOnFirstIteration=0
+ResetTimesAfterPos=1
+UseFPSModularLimit=1
+UseRemoteQ=1
+2DFLOW=1

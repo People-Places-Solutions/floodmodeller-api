@@ -1,0 +1,166 @@
+  
+Flood Modeller 1D Solver run using event file C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\ex3.ief
+  
+ 
+ writing messaging file output to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\ex3.lf1
+  
+
+ Flood Modeller - 1D Solver
+ Product licensed: Flood Modeller Base
+ Codes:          1         1       201   5000219         1
+ Product licensed: Flood Modeller Professional (1D)
+ Codes:          1         1       204   5000219         1
+ex3                                                                           FILE=EX3.dat Flood Modeller VER=5.0.0.7752
+ Single precision, 64-bit version
+Simulation started at 12:18:21 on 08/09/2021                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ Rules evaluated at time zero = F
+ Rules evaluated on first iteration = T
+ Rules times reset after positional instruction = F
+ Floodplain section area constrained by modular limit = F
+ Use flow from culvert outlet remote node = F
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Do not solve dh = 0 at t0 in reservoirs.
+
+ * * * *
+ Specified initial conditions file: C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.ZZS
+ Does not exist or cannot be read. Using default initial conditions (from *.dat file)
+ * * * *
+ 
+ Reading main data file EX3.dat...
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   0.0000000E+00  hours
+     end time          =    24.00000      hours
+     save interval     =    300.0000          seconds
+     initial timestep  =    20.00000      seconds
+     reset to               18.75000      seconds
+     minimum timestep  =    5.000000      seconds
+     reset to               9.375000      seconds
+     maximum timestep  =    300.0000      seconds
+     save multiple     =            1
+  
+ 
+ Model time    10.5000 hrs:
+ *** warning W2207 *** at label: BRIDU
+ 
+Extrapolating pier sigma curves, sigma coefficient may not be reliable
+Using sigma (min)= 0.6
+ 
+ 
+ Model time    24.0000 hrs:
+ *** warning W2019 *** at label:
+ 
+ Water level rose beyond the max level of section data
+ Solution computed assuming extra   3.0m wall for non-CES sections, or max depth x 1.5 for CES sections, at max breadth
+  Full details in 1D diagnostics file...
+
+  *************************************************
+
+  Sections at which water level rose above  
+  the maximum level of data (W2019)
+  Note: A solution was computed assuming an 
+ extra   3.0m wall for non-CES sections, or
+  max depth x 1.5 for CES sections, 
+  at the maximum breadth.
+  You should extend your data for the       
+  following sections:
+  
+               Label/s involved
+  
+                m60   - NO SPILL ATTACHED                  
+                m20   - NO SPILL ATTACHED                  
+                0   - NO SPILL ATTACHED                  
+                20   - NO SPILL ATTACHED                  
+                40   - NO SPILL ATTACHED                  
+                60   - NO SPILL ATTACHED                  
+                80   - NO SPILL ATTACHED                  
+                BRIDU   - NO SPILL ATTACHED                  
+                BRIDD   - NO SPILL ATTACHED                  
+                120   - NO SPILL ATTACHED                  
+                140   - NO SPILL ATTACHED                  
+                160   - NO SPILL ATTACHED                  
+                180   - NO SPILL ATTACHED                  
+                200   - NO SPILL ATTACHED                  
+                220   - NO SPILL ATTACHED                  
+                240   - NO SPILL ATTACHED                  
+                260   - NO SPILL ATTACHED                  
+                280   - NO SPILL ATTACHED                  
+                300   - NO SPILL ATTACHED                  
+                320   - NO SPILL ATTACHED                  
+                340   - NO SPILL ATTACHED                  
+                360   - NO SPILL ATTACHED                  
+                380   - NO SPILL ATTACHED                  
+                400   - NO SPILL ATTACHED                  
+                420   - NO SPILL ATTACHED                  
+                440   - NO SPILL ATTACHED                  
+                460   - NO SPILL ATTACHED                  
+                480   - NO SPILL ATTACHED                  
+                500   - NO SPILL ATTACHED                  
+                520   - NO SPILL ATTACHED                  
+                540   - NO SPILL ATTACHED                  
+                560   - NO SPILL ATTACHED                  
+                580   - NO SPILL ATTACHED                  
+                600   - NO SPILL ATTACHED                  
+                620   - NO SPILL ATTACHED                  
+                640   - NO SPILL ATTACHED                  
+                660   - NO SPILL ATTACHED                  
+                680   - NO SPILL ATTACHED                  
+                700   - NO SPILL ATTACHED                  
+
+  *************************************************
+
+ Adaptive timestepping convergence statistics
+ 
+ Successfully Converged timesteps of    300.0000     seconds
+ 
+ sub-timestep     No. of save intervals timestep is used 
+ ----------------------------------    
+    300.00            284
+    150.00              1
+     75.00              1
+     37.50              2
+     18.75              1
+      9.38              0
+Simulation time elapsed (s):             3
+ 
+run completed
+ 
+ Number of unconverged timesteps:         0
+ Proportion of simulation unconverged:   0.00%
+ 
+ ********* Mass balance summary *********
+ Mass balance calculated every    300.0s
+ 
+ Initial volume:            39596.8    m3
+ Final volume:              53229.4    m3
+-----------------------
+ Total boundary inflow  :  0.550629E+07m3
+ Total boundary outflow :  0.549258E+07m3
+ Total lat. link inflow :   0.00000    m3
+ Total lat. link outflow:   0.00000    m3
+-----------------------
+ Max. system volume:        270549.    m3
+ Max. |volume| increase:    230952.    m3
+ Max. boundary inflow:      129.956    m3/s
+ Max. boundary outflow:     127.874    m3/s
+-----------------------
+ Net increase in volume:    13632.6    m3
+ Net inflow volume:         13709.5    m3
+ Volume discrepancy:        76.8984    m3
+ Mass balance error:          -0.03% (of peak system volume)
+ Mass balance error [2]:      -0.00% (of boundary inflow volume)
+ 
+ ******* End mass balance summary *******
+ 
+ Writing binary results to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.zzn
+ outputting max/min/means to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.mmm
+ Convergence plot saved to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.bmp

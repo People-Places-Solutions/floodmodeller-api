@@ -1,0 +1,18 @@
+************************************
+What's new in 0.3.13 (March 2022)
+************************************
+
+This page details the changes for version 0.3.13 of Flood Modeller Python API
+
+New features
+--------------
+
+Updates
+--------------
+
+
+Bug fixes
+--------------
+- Fixed issue that required setting ``ied_filepath = None`` to create a blank IED file. Now it can be done by simply calling ``IED()``
+- Fixed issue in IEF class where it would fail when attempting to save an IEF after changing the case of an attribute. Now if you have an IEF with
+an attribute 'Title=...' and you set ``ief.title = ...`` the updated ief file will match the lower case used in ``title``.

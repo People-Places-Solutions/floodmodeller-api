@@ -1,0 +1,19 @@
+************************************
+What's new in 0.3.12 (February 2022)
+************************************
+
+This page details the changes for version 0.3.12 of Flood Modeller Python API
+
+New features
+--------------
+
+Updates
+--------------
+- New method added to ZZN Class :func:`~floodmodeller_api.ZZN.to_dict_of_dataframes`
+- New argument ``enginespath`` added to :class:`~floodmodeller_api.ZZN` to allow specifying a non-default path
+- Improved support for relative filepaths 
+
+Bug fixes
+--------------
+- Catch error in ZZN class if ZZL file not present
+- Catch issue with DAT suffix before saving .gxy file

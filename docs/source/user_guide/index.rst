@@ -1,0 +1,23 @@
+User Guide
+=====================================================
+This sections contains chapters on each of the main class types in Flood Modeller Python API, detailing how they
+can be used, code reference and examples.
+
+
+
+.. toctree::
+   :maxdepth: 2
+   
+   ief
+   zzn
+   ied
+   dat
+   units
+   
+   
+
+*******************
+Indices and tables
+*******************
+
+* :ref:`genindex`

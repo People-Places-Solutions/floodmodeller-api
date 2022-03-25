@@ -1,0 +1,8 @@
+include license.txt
+exclude test/*
+recursive-include floodmodeller_api *.dll
+recursive-include floodmodeller_api?sample?scripts/sample_data *
+recursive-exclude floodmodeller_api?sample?scripts *.bmp
+recursive-exclude floodmodeller_api?sample?scripts demo.py
+recursive-exclude floodmodeller_api?sample?scripts code_testing.py
+

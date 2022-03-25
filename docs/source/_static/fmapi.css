@@ -1,0 +1,86 @@
+:root {
+    --pst-color-link: 0,123,255;
+    --pst-color-sidebar-link-active: 51,51,51;
+    --pst-color-navbar-link-active: 51,51,51;
+    --pst-color-h1: 51,51,51;
+    --pst-color-h2: 0,123,255;
+    --pst-color-h3: 0,123,255;
+}
+
+@font-face {
+    font-family:'JCR' ;
+    src: url("JacobsChronos_Rg.ttf");
+}
+.JCR{
+    font-family:'JCR' ;
+}
+
+
+body {
+    font-family: 'JCR';
+}
+
+.btn-secondary {
+    background-color: #0ad287;
+    border-color: #0ad287;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+.prev-next-area a p.prev-next-title {
+    color: #0A7DFF;
+}
+
+i.fas, i.fab {
+    color: #0A7DFF
+}
+
+footer .footer-item p {
+    color: #ffffff;
+}
+
+footer {
+    background-color: #333333;
+}
+
+.col-md-3 { 
+    position: sticky;
+}
+
+.bd-sidebar {
+    height: var(--pst-header-height)+1;
+}
+
+.navbar-nav {
+    flex-direction: row;
+}
+
+.navbar-nav .nav-link {
+    padding-right: 1rem;
+    padding-left: 0;
+}
+
+footer .footer-item h5,
+footer .footer-item a, footer .footer-item p, 
+footer .footer-item i.fas, footer .footer-item i.fab {
+    color: #b7b7b7;
+}
+
+div#navbar-end {
+    text-align: right;
+}
+
+div#navbar-center {
+    width: 100%;
+}
+
+@media (min-width: 1200px){
+    .container, .container-lg, .container-md, .container-sm, .container-xl {
+        max-width: 1300px;
+    }
+}

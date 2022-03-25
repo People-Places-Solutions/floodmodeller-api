@@ -1,0 +1,32 @@
+************************************
+What's new in 0.3.11 (January 2022)
+************************************
+
+This page details the changes for version 0.3.11 of Flood Modeller Python API
+
+New features
+--------------
+This first release of Flood Modeller Python API supports the following classes:
+
+- ``IEF()`` - Read, write and update IEF files 
+- ``ZZN()`` - Read binary results files 
+- ``IED()`` - Read, write and update IED files
+- ``DAT()`` - Read and edit DAT files
+- Support for the following unit classes:
+   - ``QTBDY``
+   - ``HTBDY``
+   - ``QHBDY``
+   - ``REFHBDY``
+   - ``RIVER``
+   - ``BRIDGE``
+   - ``CONDUIT``
+   - ``SLUICE``
+   - ``ORIFICE``
+   - ``SPILL``
+   - ``INITIAL CONDITIONS``
+
+Updates
+--------------
+
+Bug fixes
+--------------
