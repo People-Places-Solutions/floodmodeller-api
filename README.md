@@ -1,3 +1,5 @@
+![FM Logo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image.png?token=GHSAT0AAAAAABS6QWFS4R23OJ3C6JRLOAV4YSLBJAA)
+
 # Flood Modeller Python API
 This python package is designed to be used in conjunction with your installation of Flood Modeller to provide users with a set of tools to extend the capabilities of Flood Modeller and build into automated workflows.
 
