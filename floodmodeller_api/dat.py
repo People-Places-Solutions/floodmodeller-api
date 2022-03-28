@@ -109,25 +109,6 @@ class DAT(FMFile):
                 # adjust block shift for change in number of lines in bdy block
                 block_shift += (new_block_len - prev_block_len)
 
-        # # ** Need to rethink how new units are added since the following code will only append to the end of the dat file rather than insert
-        # #     at the correct location. May just be worth only allowing reading/updating existing units for now
-        # # ----------------------------------------------------------------------------------------------------------------------------------
-        # # Add any new bdy units
-        # for name, unit in self.boundaries.items():
-        #     if name not in existing_boundaries:
-        #         # Newly added bdy unit
-        #         self._raw_data.extend(unit._write())
-        # # Add any new section units
-        # for name, unit in self.sections.items():
-        #     if name not in existing_section_units:
-        #         # Newly added bdy unit
-        #         self._raw_data.extend(unit._write())
-        # # Add any new structure units
-        # for name, unit in self.structures.items():
-        #     if name not in existing_structure_units:
-        #         # Newly added bdy unit
-        #         self._raw_data.extend(unit._write())
-
         # Update GENERAL parameters
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters['RAD File']
