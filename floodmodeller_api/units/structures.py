@@ -21,6 +21,13 @@ from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
                       split_10_char, split_12_char, split_n_char, _to_float, _to_str)
 from .validation import _validate_unit, parameter_options
 
+class BLOCKAGE(Unit):
+    """Description...
+
+    Args:
+        name (str)
+    """
+    pass
 
 class BRIDGE(Unit):
     """Class to hold and process BRIDGE unit type. The Bridge class supports the three main bridge sub-types in 
