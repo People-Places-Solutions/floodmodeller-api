@@ -110,6 +110,18 @@ parameter_options = {
         'type': 'string-length',
         'max_length': 12
     },
+    'us_reference_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
+    'ds_reference_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
+    'constriction_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
     'spill': {
         'type': 'string-length',
         'max_length': 12
@@ -545,6 +557,14 @@ parameter_options = {
         'options': ['RECTANGLE', 'CIRCULAR']
     },
     'weir_coefficient': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'inlet_loss': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'outlet_loss': {
         'type': 'type-match',
         'options': (float, int)
     },
