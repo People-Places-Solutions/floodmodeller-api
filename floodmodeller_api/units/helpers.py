@@ -59,7 +59,6 @@ def join_12_char_ljust(*itms):
         string += f'{itm:<12}'
     return string
 
-
 def join_n_char_ljust(n, *itms):
     ''' Joins a set of values with a n character buffer and left-justified'''
     string = ''

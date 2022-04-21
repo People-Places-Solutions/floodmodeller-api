@@ -14,20 +14,109 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
+from numpy import append
 import pandas as pd
 
 from ._base import Unit
 from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_float, _to_str)
+                      split_10_char, split_12_char, split_n_char, _to_float, _to_str, _to_int)
 from .validation import _validate_unit, parameter_options
 
 class BLOCKAGE(Unit):
-    """Description...
-
+    """Class to hold and process BLOCKAGE unit type.  
+    
     Args:
-        name (str)
+        comment (str): Comment included in unit.
+        name (str): Upstream label #Name
+        ds_label (str): Downstream label
+        us_reference_label (str): Upstream reference label #REVIEW - also considered remote node, and refered to in this manor for other units
+        ds_reference_label (str): Downstream reference label #REVIEW - also considered remote node, and refered to in this manor for other units
+        constriction_label (str): Constriction reference label 
+        inlet_loss (float): Inlet loss coefficient
+        outlet_loss (float): Outlet loss coefficient
+        timeoffset (float): Time Datum Adjustment
+        timeunit: timeunit (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. 
+        extendmethod (str): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
+        data (pandas.Series): Series object with variable ``'blockage'`` and index ``'Time'``. Defaults to None.
+    
+    Returns:
+        BLOCAKGE: Flood Modeller BLOCAKGE Unit class object
     """
-    pass
+
+    # Review need to consider defaults..how are these defined. 
+    # Review - why some args have 'optional'
+
+    _unit = 'BLOCKAGE'
+
+    def _read(self, block):
+        ''' Function to read a given BLOCKAGE block and store data as class attributes '''
+        # Extract comment and revision number
+        b = block[0].replace('BLOCKAGE #revision#', ' ').strip()
+        self._revision = _to_int(b[0],1)
+        self.comment = b[1:].strip()
+
+        # Extract labels
+        labels = split_n_char(
+            f'{block[1]:<{5*self._label_len}}', self._label_len) 
+        self.name = labels[0] 
+        self.ds_label = labels[1]
+        self.us_reference_label = labels[2]
+        self.ds_reference_label = labels[3]
+        self.constriction_label = labels[4]
+        
+        #Extract inlet and outlet loss coefficients
+        params = split_10_char(f'{block[2]:<20}')
+        self.inlet_loss = _to_float(params[0], 1.5) 
+        self.outlet_loss = _to_float(params[1], 1.0)
+
+        #Extract blockage timeseries parameters 
+        params1 = split_10_char(f'{block[3]:<40}') 
+        self.nrows = int(params1[0])
+        self.timeoffset = _to_float(params1[1])
+        self.timeunit = _to_str(params1[2],'HOURS')
+        self.extendmethod = _to_str(params1[3],'NOEXTEND')
+
+        #Extract blockage timeseries
+        data_list = [] 
+        for row in block[4:]:
+            split_row = split_10_char(row)
+            t = _to_float(split_row[0])
+            b = _to_float(split_row[1]) 
+            data_list.append([t,b])
+        self.data = pd.DataFrame(data_list, columns=['Time','Blockage'])
+        
+        self.data = self.data.set_index('Time')
+        self.data = self.data['Blockage'] 
+
+    def _write(self):
+        ''' Function to write a valid BLOCKAGE block '''
+
+        _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
+        
+        header = f'BLOCKAGE #revision#{self._revision} {self.comment}'
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_reference_label, self.ds_reference_label, self.constriction_label)
+        params = join_10_char(self.inlet_loss, self.outlet_loss) 
+        self.nrows = len(self.data)
+        params1 = join_10_char(self.nrows, self.timeoffset, self.timeunit, self.extendmethod)  
+        
+        blockage_block = [header,labels, params,params1] 
+        
+        blockage_data = [join_10_char(t, b) for t, b in self.data.iteritems()] 
+        blockage_block.extend(blockage_data)
+            
+        return blockage_block
+
+    def _create_from_blank(self, name='new_blockage', _revision = 1, comment='', ds_label = '' , us_reference_label = '', ds_reference_label = '', 
+                constriction_label = '', inlet_loss = 1.5, outlet_loss = 1.0, timeoffset=0.0, timeunit='HOURS', extendmethod ='EXTEND', data=None):
+   
+        # Initiate new BLOCKAGE
+        for param, val in {'name': name, '_revision': _revision, 'comment': comment,'ds_label' : ds_label , 'us_reference_label' : us_reference_label,
+            'ds_reference_label' : ds_reference_label, 'constriction_label' : constriction_label,'inlet_loss' : inlet_loss, 'outlet_loss' : outlet_loss,
+            'timeoffset' :timeoffset, 'timeunit' : timeunit, 'timeunit' : timeunit, 'extendmethod' : extendmethod, 'data' : data}.items():
+            setattr(self, param, val)
+        
+        self.data = data if isinstance(data, pd.Series) else pd.Series(
+            [0.0], index=[0.0], name='Blockage')
 
 class BRIDGE(Unit):
     """Class to hold and process BRIDGE unit type. The Bridge class supports the three main bridge sub-types in 
@@ -925,13 +1014,13 @@ class ORIFICE(Unit):
         self.comment = block[0].replace('ORIFICE', '').strip()
 
         # First parameter line
-        params1 = split_10_char(block[3])
+        params1 = split_10_char(f'{block[3]:<60}')
         self.invert = _to_float(params1[0])
         self.soffit = _to_float(params1[1])
         self.bore_area = _to_float(params1[2])
         self.upstream_sill = _to_float(params1[3])
         self.downstream_sill = _to_float(params1[4])
-        self.shape = params1[5]
+        self.shape = _to_str(params1[5], 'RECTANGLE')
 
         # Second parameter line
         params2 = split_10_char(block[4])
