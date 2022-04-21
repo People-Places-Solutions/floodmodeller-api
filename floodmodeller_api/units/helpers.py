@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
+from typing import Optional
+
 ### Helper Functions ###
 
 def split_10_char(line):
@@ -87,3 +89,20 @@ def _to_str(itm, default):
         return default
     else:
         return itm
+
+def _to_data_list(block: list[str], date_col: Optional[int] = None):
+    data_list = []
+    for row in block:
+        row_split = split_10_char(row)
+        if date_col:
+            date_time = ' '.join([row_split[date_col:date_col+2]])
+            row_split = [_to_float(itm) for idx, itm in enumerate(row_split) if idx != date_col or idx != date_col + 1]
+            row_split.insert(date_col, date_time)
+        else:
+            row_split = [_to_float(itm) for itm in row_split]
+
+        row = []
+        for var in row_split:
+            row.append(var)
+        data_list.append(row)
+    return data_list

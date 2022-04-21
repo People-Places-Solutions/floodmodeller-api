@@ -18,7 +18,8 @@ import pandas as pd
 
 from ._base import Unit
 from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int)
+                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int,
+                      _to_data_list)
 from .validation import _validate_unit, parameter_options
 
 
@@ -78,14 +79,10 @@ class QTBDY(Unit):
         self.interpmethod = _to_str(qtbdy_params[5], 'LINEAR')
         self.flowmultiplier = _to_float(qtbdy_params[6])
         self.minflow = _to_float(qtbdy_params[7])
-        data_list = []
-        for row in qtbdy_block[3:]:
-            row_split = split_10_char(row)
-            t = _to_float(row_split[1])
-            q = _to_float(row_split[0])
-            data_list.append([t, q])
 
-        self.data = pd.DataFrame(data_list, columns=['Time', 'Flow'])
+        data_list = _to_data_list(qtbdy_block[3:], date_col=1) if self.timeunit == 'DATES' else _to_data_list(qtbdy_block[3:])
+
+        self.data = pd.DataFrame(data_list, columns=['Flow', 'Time'])
         self.data = self.data.set_index('Time')
         self.data = self.data['Flow']  # Convert to series
 
