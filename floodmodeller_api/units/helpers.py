@@ -94,8 +94,8 @@ def _to_data_list(block: list[str], date_col: Optional[int] = None):
     for row in block:
         row_split = split_10_char(row)
         if date_col:
-            date_time = ' '.join([row_split[date_col:date_col+2]])
-            row_split = [_to_float(itm) for idx, itm in enumerate(row_split) if idx != date_col or idx != date_col + 1]
+            date_time = ' '.join(row_split[date_col:date_col+2])
+            row_split = [_to_float(itm) for idx, itm in enumerate(row_split) if idx != date_col and idx != date_col + 1]
             row_split.insert(date_col, date_time)
         else:
             row_split = [_to_float(itm) for itm in row_split]
