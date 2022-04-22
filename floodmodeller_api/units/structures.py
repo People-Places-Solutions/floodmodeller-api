@@ -14,13 +14,136 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
-from numpy import append
+from numpy import append, kaiser
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
+from .helpers import (join_10_char, join_10_char_4dp, join_12_char_ljust, join_n_char_ljust,
                       split_10_char, split_12_char, split_n_char, _to_float, _to_str, _to_int)
 from .validation import _validate_unit, parameter_options
+
+class CULVERT(Unit):
+    """Class to hold and process CULVERT unit type
+    
+    **Common attributes**
+
+    Args:
+        name (str): Unit name and upstream node label
+        ds_label (str): Downstream node label
+        us_remote_label (str): Upstream remote node label
+        ds_remote_label (str): Downstream remote node label
+        comment (str): Comment
+        loss_coefficient (float): Loss coefficient.  Outlet (default = 1.0), INLET (Trash screen head loss coefficient, default = 1.5)
+        headloss_type (str): Keyword TOTAL to denote headloss based on total head, otherwise (keyword STATIC or blank) headloss is based on static head
+        reverse_flow_mode (str): Reverse Flow Mode; keyword ZERO (for zero headloss in reverse flow) or CALCULATED (for calculated head loss in reverse flow)
+
+    **Inlet Loss Type (``CULVERT.subtype == 'INLET'``)**
+
+    Args:
+        culvert_type_code (str): options are 'Type A', 'Type B','Type C'
+        culvert_k (float): Unsubmerged inlet control loss coefficient
+        culvert_m (float): Exponent of Flow Intensity for inlet control
+        culvert_c (float): Submerged inlet control loss coefficient
+        culvert_y (float): Submerged inlet control adjustment factor
+        culvert_ki (float): Outlet control loss coefficient
+        screen_width (float): Trash screen width (m)
+        bar_proportion (float): Proportion of trash screen area occupied by bars (0 to 1.0)   
+        debris_proportion (float): Blockage ratio (proportion of trash screen area occupied by debris) (0 to 1.0)
+        max_screen_height (float): Max. Trash Screen Height *see Flood Modeller help for further information
+
+    **Outlet Loss Type (``CULVERT.subtype == 'OUTLET'``)**
+    
+    Args:
+        
+
+    Returns:
+        CULVERT: Flood Modeller CULVERT unit class object
+    """
+
+    _unit = 'CULVERT'
+
+    def _read(self, block):
+        ''' Function to read a given CULVERT block and store data as class attributes '''
+
+        #Extract common attributes
+        self._subtype = block[1].split(' ')[0]
+        self.comment = block[0].replace('CULVERT', '').strip()
+        labels = split_n_char(f'{block[2]:<{4*self._label_len}}', self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.us_remote_label = labels[2]
+        self.ds_remote_label = labels[3]
+
+        #Extract subtype specific attributes
+
+        if self.subtype == 'INLET':
+            #Defaults applied are equivellent to those provide if Culvert Wizard cancelled. 
+
+            #Read first set of general parameters 
+            params = split_10_char(block[3])
+            self.culvert_k = _to_float(params[0], 0.0)
+            self.culvert_m = _to_float(params[1], 0.0)
+            self.culvert_c = _to_float(params[2], 0.0)
+            self.culvert_y = _to_float(params[3], 0.0)
+            self.culvert_ki = _to_float(params[4], 0.0)
+            self.culvert_type_code =  _to_str(params[5],'A')       
+            
+            #Read trash screen and remaining general parameters 
+            params1 = split_10_char(block[4])
+            self.screen_width = _to_float(params1[0], 0.0)
+            self.bar_proportion = _to_float(params1[1], 0.0)
+            self.debris_proportion = _to_float(params1[2], 0.0)
+            self.loss_coefficient = _to_float(params1[3], 0.0)
+            self.reverse_flow_mode = _to_str(params1[4], 'CALCULATED')
+            self.headloss_type = _to_str(params1[5], 'TOTAL')
+            self.max_screen_height =  _to_float(params1[6], 0.0)
+            
+        
+        elif self.subtype == 'OUTLET':
+            params = split_10_char(block[3])
+            self.loss_coefficient = _to_float(params[0], 1.0)
+            self.reverse_flow_mode = _to_str(params[1], 'CALCULATED')
+            self.headloss_type = _to_str(params[2], 'TOTAL')
+                        
+        else:
+            # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
+            print(
+                f'This Culvert sub-type: "{self.subtype}" is currently unsupported for reading/editing')
+            self._raw_block = block
+ 
+    
+    def _write(self):
+        ''' Function to write a valid CULVERT block '''
+
+        _validate_unit(self)
+
+        header = 'CULVERT ' + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_remote_label, self.ds_remote_label)
+        c_block = [header, self.subtype, labels]
+
+        if self.subtype == "INLET":
+            params = join_10_char_4dp(self.culvert_k, self.culvert_m, self.culvert_c, self.culvert_y, self.culvert_ki, self.culvert_type_code)
+            params1 = join_10_char_4dp(self.screen_width, self.bar_proportion, self.debris_proportion,
+                    self.loss_coefficient, self.reverse_flow_mode, self.headloss_type, self.max_screen_height)
+        
+            c_block.extend([params, params1])
+
+            #REVIEW - 3dp/4dp.  Required k = 4dp, m = 3dp, c = 4dp, y = 3dp, ki = 2dp. 
+            return c_block
+
+        elif self.subtype == "OUTLET":
+            params = join_10_char(self.loss_coefficient, self.reverse_flow_mode, self.headloss_type)
+            
+            c_block.append(params)
+            return c_block
+            
+        else:
+            return self._raw_block
+
+    
+    def _create_from_blank():
+        #REView - how to deal with subtypes for create from blank
+        pass
 
 class BLOCKAGE(Unit):
     """Class to hold and process BLOCKAGE unit type.  
@@ -29,8 +152,8 @@ class BLOCKAGE(Unit):
         comment (str): Comment included in unit.
         name (str): Upstream label #Name
         ds_label (str): Downstream label
-        us_reference_label (str): Upstream reference label #REVIEW - also considered remote node, and refered to in this manor for other units
-        ds_reference_label (str): Downstream reference label #REVIEW - also considered remote node, and refered to in this manor for other units
+        us_reference_label (str): Upstream reference label 
+        ds_reference_label (str): Downstream reference label
         constriction_label (str): Constriction reference label 
         inlet_loss (float): Inlet loss coefficient
         outlet_loss (float): Outlet loss coefficient
@@ -38,18 +161,17 @@ class BLOCKAGE(Unit):
         timeunit: timeunit (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. 
         extendmethod (str): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
         data (pandas.Series): Series object with variable ``'blockage'`` and index ``'Time'``. Defaults to None.
-    
-    Returns:
-        BLOCAKGE: Flood Modeller BLOCAKGE Unit class object
-    """
 
-    # Review need to consider defaults..how are these defined. 
-    # Review - why some args have 'optional'
+
+    Returns:
+        BLOCKAGE: Flood Modeller BLOCAKGE Unit class object
+    """
 
     _unit = 'BLOCKAGE'
 
     def _read(self, block):
         ''' Function to read a given BLOCKAGE block and store data as class attributes '''
+        
         # Extract comment and revision number
         b = block[0].replace('BLOCKAGE #revision#', ' ').strip()
         self._revision = _to_int(b[0],1)
@@ -73,7 +195,7 @@ class BLOCKAGE(Unit):
         params1 = split_10_char(f'{block[3]:<40}') 
         self.nrows = int(params1[0])
         self.timeoffset = _to_float(params1[1])
-        self.timeunit = _to_str(params1[2],'HOURS')
+        self.timeunit = _to_str(params1[2],'HOURS',check_float=True) # Configured to accept float where 'USERSET'option utilised.
         self.extendmethod = _to_str(params1[3],'NOEXTEND')
 
         #Extract blockage timeseries
@@ -91,7 +213,7 @@ class BLOCKAGE(Unit):
     def _write(self):
         ''' Function to write a valid BLOCKAGE block '''
 
-        _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
+        _validate_unit(self)
         
         header = f'BLOCKAGE #revision#{self._revision} {self.comment}'
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_reference_label, self.ds_reference_label, self.constriction_label)
@@ -109,7 +231,7 @@ class BLOCKAGE(Unit):
     def _create_from_blank(self, name='new_blockage', _revision = 1, comment='', ds_label = '' , us_reference_label = '', ds_reference_label = '', 
                 constriction_label = '', inlet_loss = 1.5, outlet_loss = 1.0, timeoffset=0.0, timeunit='HOURS', extendmethod ='EXTEND', data=None):
    
-        # Initiate new BLOCKAGE
+        # Initiate new BLOCKAGE unit
         for param, val in {'name': name, '_revision': _revision, 'comment': comment,'ds_label' : ds_label , 'us_reference_label' : us_reference_label,
             'ds_reference_label' : ds_reference_label, 'constriction_label' : constriction_label,'inlet_loss' : inlet_loss, 'outlet_loss' : outlet_loss,
             'timeoffset' :timeoffset, 'timeunit' : timeunit, 'timeunit' : timeunit, 'extendmethod' : extendmethod, 'data' : data}.items():

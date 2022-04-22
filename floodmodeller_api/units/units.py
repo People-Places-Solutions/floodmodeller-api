@@ -18,7 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
 from .sections import RIVER
-from .structures import BRIDGE, CONDUIT, SLUICE, ORIFICE, SPILL, BLOCKAGE
+from .structures import BRIDGE, CONDUIT, SLUICE, ORIFICE, SPILL, BLOCKAGE, CULVERT
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {
@@ -33,7 +33,8 @@ SUPPORTED_UNIT_TYPES = {
     'ORIFICE': {'group': 'structures', 'has_subtype': True},
     'SPILL': {'group': 'structures', 'has_subtype': False},
     'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
-    'BLOCKAGE': {'group': 'structures', 'has_subtype': False}
+    'BLOCKAGE': {'group': 'structures', 'has_subtype': False},
+    'CULVERT': {'group': 'structures', 'has_subtype': True}
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -47,7 +48,6 @@ UNSUPPORTED_UNIT_TYPES = {
     'CONPUMP',
     'CONVALVE',
     'CRUMP',
-    'CULVERT',
     'FEHBDY',
     'FLAT-V WEIR',
     'FLOOD RELIEF',

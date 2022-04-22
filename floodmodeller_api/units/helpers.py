@@ -44,6 +44,23 @@ def join_10_char(*itms):
         string += f'{itm:>10}'
     return string
 
+#REVIEW with JP - work around
+def join_10_char_4dp(*itms):
+    ''' Joins a set of values with a 10 character buffer and right-justified'''
+    string = ''
+    for itm in itms:
+        if type(itm) == float:
+            # save to 4 dp
+            if len(f'{itm:.4f}') > 10:
+                # Use scientific notation if number greater than 10 characters
+                itm = f'{itm:.3e}'
+            else:
+                itm = f'{itm:.4f}'
+        itm = str(itm)
+        itm = itm[:10]
+        string += f'{itm:>10}'
+    return string
+
 
 def join_12_char_ljust(*itms):
     ''' Joins a set of values with a 12 character buffer and left-justified'''
@@ -81,7 +98,12 @@ def _to_int(itm, default=0):
     except ValueError:
         return default
 
-def _to_str(itm, default):
+def _to_str(itm, default, check_float=False):
+    if check_float:
+        try:
+            return float(itm)
+        except ValueError:
+            pass
     if itm == '':
         return default
     else:

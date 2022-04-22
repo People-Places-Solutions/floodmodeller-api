@@ -75,3 +75,8 @@ Structure units
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.BLOCKAGE
+
+``CULVERT()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.CULVET

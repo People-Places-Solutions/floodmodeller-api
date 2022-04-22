@@ -38,9 +38,19 @@ def _validate_parameter(param, value):
         return isinstance(value, param['options']), f'-> Expected: {param["options"]}'
     elif param['type'] == 'value-match':
         if isinstance(value, str):
-            return value.upper() in param['options'], f'-> Expected: {param["options"]}'
+            return value.upper() in param['options'], f'-> Expected: {param["options"]}' # remove '.upper()' to check case?
         else:
             return value in param['options'], f'-> Expected: {param["options"]}'
+    elif param['type'] == 'type-value-match':
+        
+        new_rule = {'type': 'type-match', 'options': param['options'][0]}
+        type_match_result =  _validate_parameter(new_rule, value)[0]
+
+        new_rule = {'type': 'value-match', 'options': param['options'][1]}
+        value_match_result =  _validate_parameter(new_rule, value)[0]
+
+        return type_match_result or value_match_result, f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}'
+
     elif param['type'] == 'value-range':
         lower = param['options'][0]
         upper = param['options'][1]
@@ -78,9 +88,10 @@ parameter_options = {
         'max_length': 12
     },
     'timeunit': {
-        'type': 'value-match',
-        'options': ['SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'FORTNIGHTS', 'MONTHS', 'MONTH',
-                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'USER SET', 'DATES', 'MULTIPLIER']
+        'type': 'type-value-match',
+        'options': ((float, int), 
+                    ['SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'FORTNIGHTS', 'MONTHS', 'MONTH',
+                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'DATES', 'MULTIPLIER'])
     },
     'timeoffset': {
         'type': 'type-match',
@@ -568,4 +579,54 @@ parameter_options = {
         'type': 'type-match',
         'options': (float, int)
     },
+
+    
+    'loss_coefficient': {
+        'type': 'type-match',
+        'options': (float, int)
+    },    
+    'headloss_type': {
+         'type': 'value-match',
+        'options': ['TOTAL', 'STATIC']
+    },
+    'reverse_flow_mode': {
+         'type': 'value-match',
+        'options': ['CALCULATED', 'ZERO']
+    },
+    'culvert_type_code': {
+         'type': 'value-match',
+        'options': ['A', 'B', 'C']
+    },
+    'culvert_k': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'culvert_m': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'culvert_c': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'culvert_y': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'culvert_ki': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'screen_width': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'bar_proportion': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'debris_proportion': {
+        'type': 'type-match',
+        'options': (float, int)
+    }
 }
