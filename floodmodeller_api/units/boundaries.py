@@ -37,7 +37,8 @@ class QTBDY(Unit):
         flowmultiplier (float, optional): Multiplier applied to all flow values at runtime. Defaults to None.
         minflow (Float, optional): Minimum flow value applied to the boundary at runtime. Defaults to None.
         data (pandas.Series, optional): Series object with variable ``'Flow'`` and index ``'Time'``. Defaults to None.
-
+        allow_override (str): Allow event parameters to be overridden from simulation file: ''/'OVERRIDE' or 'NOOVERRIDE' 
+    
     Returns:
         QTBDY: Flood Modeller QTBDY Unit class object
     """
@@ -46,13 +47,14 @@ class QTBDY(Unit):
 
     def _create_from_blank(self, name='new_qtbdy', comment='', timeoffset=0.0,
                  timeunit='HOURS', extendmethod='EXTEND', interpmethod='LINEAR', flowmultiplier=0.0, 
-                 minflow=0.0, data=None):
+                 minflow=0.0, allow_override = 'OVERRIDE', _something = 0.0, data=None):
+        
         # Initiate new QTBDY
 
         for param, val in {'name': name, 'comment': comment, 
             'timeunit': timeunit, 'extendmethod': extendmethod, 'interpmethod': interpmethod,
             'timeoffset': timeoffset, 'timeunit': timeunit, 'flowmultiplier': flowmultiplier, 
-            'minflow': minflow}.items():
+            'minflow': minflow, 'allow_override': allow_override, '_something': _something}.items():
             setattr(self, param, val)
 
         # AL Since this is most likely used when building a model,
@@ -64,12 +66,13 @@ class QTBDY(Unit):
         
         self.data = data if isinstance(data, pd.Series) else pd.Series(
             [0.0, 0.0], index=[0.0, 0.1], name='Flow')
+            
 
     def _read(self, qtbdy_block):
         ''' Function to read a given QTBDY block and store data as class attributes '''
         self.name = qtbdy_block[1][:self._label_len].strip()
         self.comment = qtbdy_block[0].replace('QTBDY', '').strip()
-        qtbdy_params = split_10_char(f'{qtbdy_block[2]:<80}')
+        qtbdy_params = split_10_char(f'{qtbdy_block[2]:<90}')
         self.nrows = int(qtbdy_params[0])
         self.timeoffset = _to_float(qtbdy_params[1])
         self._something = _to_float(qtbdy_params[2])
@@ -78,7 +81,7 @@ class QTBDY(Unit):
         self.interpmethod = _to_str(qtbdy_params[5], 'LINEAR')
         self.flowmultiplier = _to_float(qtbdy_params[6])
         self.minflow = _to_float(qtbdy_params[7])
-
+        self.allow_override = _to_str(qtbdy_params[8],'OVERRIDE')  # ''/OVERRIDE or NOOVERRIDE
         data_list = _to_data_list(qtbdy_block[3:], date_col=1) if self.timeunit == 'DATES' else _to_data_list(qtbdy_block[3:])
 
         self.data = pd.DataFrame(data_list, columns=['Flow', 'Time'])
@@ -92,9 +95,9 @@ class QTBDY(Unit):
         header = 'QTBDY '+self.comment
         name = self.name[:self._label_len]
         self.nrows = len(self.data)
-
+        
         qtbdy_params = join_10_char(self.nrows, float(self.timeoffset), float(self._something), self.timeunit,
-                                    self.extendmethod, self.interpmethod, float(self.flowmultiplier), float(self.minflow))
+                                    self.extendmethod, self.interpmethod, float(self.flowmultiplier), float(self.minflow), self.allow_override)
 
         if self.timeunit == 'DATES':
             qtbdy_data = [join_10_char(q)+t for t, q in self.data.iteritems()]
@@ -178,7 +181,6 @@ class QHBDY(Unit):
         comment (str, optional): Comment included in unit. Defaults to None.
         interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
         data (pandas.Series, optional): Series object with columns ``'Flow'`` and ``'Stage'``. Defaults to None.
-
     Returns:
         QHBDY: Flood Modeller QHBDY Unit class object
     """
