@@ -38,7 +38,7 @@ def _validate_parameter(param, value):
         return isinstance(value, param['options']), f'-> Expected: {param["options"]}'
     elif param['type'] == 'value-match':
         if isinstance(value, str):
-            return value.upper() in param['options'], f'-> Expected: {param["options"]}' # remove '.upper()' to check case?
+            return value.upper() in param['options'], f'-> Expected: {param["options"]}'
         else:
             return value in param['options'], f'-> Expected: {param["options"]}'
     elif param['type'] == 'type-value-match':
@@ -91,7 +91,7 @@ parameter_options = {
         'type': 'type-value-match',
         'options': ((float, int), 
                     ['SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'FORTNIGHTS', 'MONTHS', 'MONTH',
-                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'DATES', 'MULTIPLIER'])
+                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'DATES', 'MULTIPLIER']) 
     },
     'timeoffset': {
         'type': 'type-match',
@@ -593,27 +593,27 @@ parameter_options = {
          'type': 'value-match',
         'options': ['CALCULATED', 'ZERO']
     },
-    'culvert_type_code': {
+    'type_code': {
          'type': 'value-match',
         'options': ['A', 'B', 'C']
     },
-    'culvert_k': {
+    'k': {
         'type': 'type-match',
         'options': (float, int)
     },
-    'culvert_m': {
+    'm': {
         'type': 'type-match',
         'options': (float, int)
     },
-    'culvert_c': {
+    'c': {
         'type': 'type-match',
         'options': (float, int)
     },
-    'culvert_y': {
+    'y': {
         'type': 'type-match',
         'options': (float, int)
     },
-    'culvert_ki': {
+    'ki': {
         'type': 'type-match',
         'options': (float, int)
     },
@@ -622,11 +622,11 @@ parameter_options = {
         'options': (float, int)
     },
     'bar_proportion': {
-        'type': 'type-match',
-        'options': (float, int)
+        'type': 'value-range',
+        'options': (0.0, 1.0)
     },
     'debris_proportion': {
-        'type': 'type-match',
-        'options': (float, int)
+        'type': 'value-range',
+        'options': (0.0, 1.0)
     }
 }

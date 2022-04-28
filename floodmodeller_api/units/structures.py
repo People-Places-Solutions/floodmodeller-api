@@ -14,16 +14,18 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
-from numpy import append, kaiser
+
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (join_10_char, join_10_char_4dp, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_float, _to_str, _to_int)
+from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
+                      split_10_char, split_12_char, split_n_char, _to_float, _to_str, _to_int, _to_data_list)
 from .validation import _validate_unit, parameter_options
 
 class CULVERT(Unit):
-    """Class to hold and process CULVERT unit type
+    """ The CULVERT class supports two culvert sub-types in Flood Modeller: INLET and OUTLET. Each of these sub-types forms 
+    a unique instance of the class which is differentiated by the `CULVERT.subtype` attribute. Physical culvert types (e.g. rectangualr, circular etc) 
+    are provided under the CONDUIT class for consistency with Flood Modeller. 
     
     **Common attributes**
 
@@ -40,12 +42,12 @@ class CULVERT(Unit):
     **Inlet Loss Type (``CULVERT.subtype == 'INLET'``)**
 
     Args:
-        culvert_type_code (str): options are 'Type A', 'Type B','Type C'
-        culvert_k (float): Unsubmerged inlet control loss coefficient
-        culvert_m (float): Exponent of Flow Intensity for inlet control
-        culvert_c (float): Submerged inlet control loss coefficient
-        culvert_y (float): Submerged inlet control adjustment factor
-        culvert_ki (float): Outlet control loss coefficient
+        type_code (str): options are 'Type A', 'Type B','Type C'
+        k (float): Unsubmerged inlet control loss coefficient
+        m (float): Exponent of Flow Intensity for inlet control
+        c (float): Submerged inlet control loss coefficient
+        y (float): Submerged inlet control adjustment factor
+        ki (float): Outlet control loss coefficient
         screen_width (float): Trash screen width (m)
         bar_proportion (float): Proportion of trash screen area occupied by bars (0 to 1.0)   
         debris_proportion (float): Blockage ratio (proportion of trash screen area occupied by debris) (0 to 1.0)
@@ -59,7 +61,6 @@ class CULVERT(Unit):
     Returns:
         CULVERT: Flood Modeller CULVERT unit class object
     """
-
     _unit = 'CULVERT'
 
     def _read(self, block):
@@ -81,12 +82,12 @@ class CULVERT(Unit):
 
             #Read first set of general parameters 
             params = split_10_char(block[3])
-            self.culvert_k = _to_float(params[0], 0.0)
-            self.culvert_m = _to_float(params[1], 0.0)
-            self.culvert_c = _to_float(params[2], 0.0)
-            self.culvert_y = _to_float(params[3], 0.0)
-            self.culvert_ki = _to_float(params[4], 0.0)
-            self.culvert_type_code =  _to_str(params[5],'A')       
+            self.k = _to_float(params[0], 0.0)
+            self.m = _to_float(params[1], 0.0)
+            self.c = _to_float(params[2], 0.0)
+            self.y = _to_float(params[3], 0.0)
+            self.ki = _to_float(params[4], 0.0)
+            self.type_code =  _to_str(params[5],'A')       
             
             #Read trash screen and remaining general parameters 
             params1 = split_10_char(block[4])
@@ -111,24 +112,25 @@ class CULVERT(Unit):
                 f'This Culvert sub-type: "{self.subtype}" is currently unsupported for reading/editing')
             self._raw_block = block
  
-    
+        #TODO: Create from blank.  Not supported currently as CULVERT has multiple subtypes
+        
     def _write(self):
         ''' Function to write a valid CULVERT block '''
 
         _validate_unit(self)
+
 
         header = 'CULVERT ' + self.comment
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_remote_label, self.ds_remote_label)
         c_block = [header, self.subtype, labels]
 
         if self.subtype == "INLET":
-            params = join_10_char_4dp(self.culvert_k, self.culvert_m, self.culvert_c, self.culvert_y, self.culvert_ki, self.culvert_type_code)
-            params1 = join_10_char_4dp(self.screen_width, self.bar_proportion, self.debris_proportion,
-                    self.loss_coefficient, self.reverse_flow_mode, self.headloss_type, self.max_screen_height)
+            params = join_10_char(self.k, self.m, self.c, self.y, self.ki, self.type_code, dp = 4)
+            params1 = join_10_char(self.screen_width, self.bar_proportion, self.debris_proportion,
+                    self.loss_coefficient, self.reverse_flow_mode, self.headloss_type, self.max_screen_height, dp = 4)
         
             c_block.extend([params, params1])
 
-            #REVIEW - 3dp/4dp.  Required k = 4dp, m = 3dp, c = 4dp, y = 3dp, ki = 2dp. 
             return c_block
 
         elif self.subtype == "OUTLET":
@@ -140,12 +142,8 @@ class CULVERT(Unit):
         else:
             return self._raw_block
 
-    
-    def _create_from_blank():
-        #REView - how to deal with subtypes for create from blank
-        pass
-
 class BLOCKAGE(Unit):
+
     """Class to hold and process BLOCKAGE unit type.  
     
     Args:
@@ -158,7 +156,7 @@ class BLOCKAGE(Unit):
         inlet_loss (float): Inlet loss coefficient
         outlet_loss (float): Outlet loss coefficient
         timeoffset (float): Time Datum Adjustment
-        timeunit: timeunit (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. 
+        timeunit_blockage (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. 
         extendmethod (str): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
         data (pandas.Series): Series object with variable ``'blockage'`` and index ``'Time'``. Defaults to None.
 
@@ -195,18 +193,18 @@ class BLOCKAGE(Unit):
         params1 = split_10_char(f'{block[3]:<40}') 
         self.nrows = int(params1[0])
         self.timeoffset = _to_float(params1[1])
-        self.timeunit = _to_str(params1[2],'HOURS',check_float=True) # Configured to accept float where 'USERSET'option utilised.
+        
+        self.timeunit = _to_str(params1[2],'HOURS',check_float=True)
+        if self.timeunit == 'DATE':
+                self.timeunit ='DATES'   # Parameter value updated to 'DATES' for consistency with other unit types.  'DATE' and 'DATES' both accepted for blockage unit ONLY
+        
         self.extendmethod = _to_str(params1[3],'NOEXTEND')
 
-        #Extract blockage timeseries
-        data_list = [] 
-        for row in block[4:]:
-            split_row = split_10_char(row)
-            t = _to_float(split_row[0])
-            b = _to_float(split_row[1]) 
-            data_list.append([t,b])
-        self.data = pd.DataFrame(data_list, columns=['Time','Blockage'])
+        #Extract blockage to timeseries
+
+        data_list = _to_data_list(block[4:], num_cols = 2, date_col = 0) if self.timeunit == 'DATES' else _to_data_list(block[4:]) # Enforced two columns as Flood Modeller saves old parameters when using DATES 
         
+        self.data = pd.DataFrame(data_list, columns=['Time','Blockage'])
         self.data = self.data.set_index('Time')
         self.data = self.data['Blockage'] 
 
@@ -214,6 +212,10 @@ class BLOCKAGE(Unit):
         ''' Function to write a valid BLOCKAGE block '''
 
         _validate_unit(self)
+        
+        #Custom validation for blockage percentage
+        if self.data.max() > 1 or self.data.min() < 0:
+            raise ValueError(f'Parameter error with {self.__repr__()} - blockage percentage must be between 0 and 1')
         
         header = f'BLOCKAGE #revision#{self._revision} {self.comment}'
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_reference_label, self.ds_reference_label, self.constriction_label)
@@ -223,14 +225,18 @@ class BLOCKAGE(Unit):
         
         blockage_block = [header,labels, params,params1] 
         
-        blockage_data = [join_10_char(t, b) for t, b in self.data.iteritems()] 
+        if self.timeunit == 'DATES':
+            blockage_data = [f'{t:<20}{join_10_char(b)}' for t, b in self.data.iteritems()]
+        else:
+            blockage_data = [join_10_char(t, b) for t, b in self.data.iteritems()]
+
         blockage_block.extend(blockage_data)
             
         return blockage_block
 
     def _create_from_blank(self, name='new_blockage', _revision = 1, comment='', ds_label = '' , us_reference_label = '', ds_reference_label = '', 
-                constriction_label = '', inlet_loss = 1.5, outlet_loss = 1.0, timeoffset=0.0, timeunit='HOURS', extendmethod ='EXTEND', data=None):
-   
+                constriction_label = '', inlet_loss = 1.5, outlet_loss = 1.0, timeoffset=0.0, timeunit='HOURS', extendmethod ='EXTEND', data = None):
+
         # Initiate new BLOCKAGE unit
         for param, val in {'name': name, '_revision': _revision, 'comment': comment,'ds_label' : ds_label , 'us_reference_label' : us_reference_label,
             'ds_reference_label' : ds_reference_label, 'constriction_label' : constriction_label,'inlet_loss' : inlet_loss, 'outlet_loss' : outlet_loss,
