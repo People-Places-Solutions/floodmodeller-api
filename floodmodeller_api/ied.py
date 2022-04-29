@@ -106,7 +106,7 @@ class IED(FMFile):
 
         # Update unit names
         for unit_group in [self.boundaries, self.sections, self.structures]:
-            for name, unit in unit_group.items():
+            for name, unit in unit_group.copy().items():
                 if name != unit.name:
                     unit_group[unit.name] = unit
                     del unit_group[name]

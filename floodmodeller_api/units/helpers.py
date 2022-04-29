@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
+from typing import Optional
+
 ### Helper Functions ###
 
 def split_10_char(line):
@@ -28,22 +30,21 @@ def split_n_char(line, n):
     return [line[i:i+n].strip() for i in range(0, len(line), n)]
 
 
-def join_10_char(*itms):
+def join_10_char(*itms, dp=3):
     ''' Joins a set of values with a 10 character buffer and right-justified'''
     string = ''
     for itm in itms:
         if type(itm) == float:
             # save to 3 dp
-            if len(f'{itm:.3f}') > 10:
+            if len(f'{itm:.{dp}f}') > 10:
                 # Use scientific notation if number greater than 10 characters
-                itm = f'{itm:.3e}'
+                itm = f'{itm:.{dp}e}'
             else:
-                itm = f'{itm:.3f}'
+                itm = f'{itm:.{dp}f}'
         itm = str(itm)
         itm = itm[:10]
         string += f'{itm:>10}'
     return string
-
 
 def join_12_char_ljust(*itms):
     ''' Joins a set of values with a 12 character buffer and left-justified'''
@@ -56,7 +57,6 @@ def join_12_char_ljust(*itms):
         itm = itm[:12]
         string += f'{itm:<12}'
     return string
-
 
 def join_n_char_ljust(n, *itms):
     ''' Joins a set of values with a n character buffer and left-justified'''
@@ -82,8 +82,32 @@ def _to_int(itm, default=0):
     except ValueError:
         return default
 
-def _to_str(itm, default):
+def _to_str(itm, default, check_float=False):
+    if check_float:
+        try:
+            return float(itm)
+        except ValueError:
+            pass
     if itm == '':
         return default
     else:
         return itm
+
+def _to_data_list(block: list[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
+    if num_cols is not None:
+        num_cols += 1 if date_col is not None else 0
+    data_list = []
+    for row in block:
+        row_split = split_10_char(row) if num_cols is None else split_10_char(row)[:num_cols]
+        if date_col is not None:
+            date_time = ' '.join(row_split[date_col:date_col+2])
+            row_split = [_to_float(itm) for idx, itm in enumerate(row_split) if idx != date_col and idx != date_col + 1]
+            row_split.insert(date_col, date_time)
+        else:
+            row_split = [_to_float(itm) for itm in row_split]
+
+        row = []
+        for var in row_split:
+            row.append(var)
+        data_list.append(row)
+    return data_list
