@@ -55,8 +55,7 @@ class CULVERT(Unit):
 
     **Outlet Loss Type (``CULVERT.subtype == 'OUTLET'``)**
     
-    Args:
-        
+    No additional attributes required for OUTLET subtype        
 
     Returns:
         CULVERT: Flood Modeller CULVERT unit class object
@@ -99,7 +98,6 @@ class CULVERT(Unit):
             self.headloss_type = _to_str(params1[5], 'TOTAL')
             self.max_screen_height =  _to_float(params1[6], 0.0)
             
-        
         elif self.subtype == 'OUTLET':
             params = split_10_char(block[3])
             self.loss_coefficient = _to_float(params[0], 1.0)
@@ -118,7 +116,6 @@ class CULVERT(Unit):
         ''' Function to write a valid CULVERT block '''
 
         _validate_unit(self)
-
 
         header = 'CULVERT ' + self.comment
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.us_remote_label, self.ds_remote_label)
@@ -143,12 +140,11 @@ class CULVERT(Unit):
             return self._raw_block
 
 class BLOCKAGE(Unit):
-
     """Class to hold and process BLOCKAGE unit type.  
     
     Args:
         comment (str): Comment included in unit.
-        name (str): Upstream label #Name
+        name (str): Upstream label name
         ds_label (str): Downstream label
         us_reference_label (str): Upstream reference label 
         ds_reference_label (str): Downstream reference label
@@ -201,8 +197,8 @@ class BLOCKAGE(Unit):
         self.extendmethod = _to_str(params1[3],'NOEXTEND')
 
         #Extract blockage to timeseries
-
-        data_list = _to_data_list(block[4:], num_cols = 2, date_col = 0) if self.timeunit == 'DATES' else _to_data_list(block[4:]) # Enforced two columns as Flood Modeller saves old parameters when using DATES 
+        data_list = _to_data_list(block[4:], num_cols = 2, date_col = 0) if self.timeunit == 'DATES' \
+            else _to_data_list(block[4:], num_cols = 2) # Enforced two columns as Flood Modeller saves old parameters when using DATES (also to avoid extra 'HOURS' bug) 
         
         self.data = pd.DataFrame(data_list, columns=['Time','Blockage'])
         self.data = self.data.set_index('Time')
