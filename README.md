@@ -1,9 +1,9 @@
-![FM Logo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image.png?token=GHSAT0AAAAAABS6QWFS4R23OJ3C6JRLOAV4YSLBJAA)
+![FM Logo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image.png?token=GHSAT0AAAAAABS6QWFSMYOS6L2D34ER7SOCYTL7HIA)
 
 # Flood Modeller Python API
 This python package is designed to be used in conjunction with your installation of Flood Modeller to provide users with a set of tools to extend the capabilities of Flood Modeller and build into automated workflows.
 
-![API Overview](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview_small.png?token=GHSAT0AAAAAABS6QWFSDOYXLFBMOBJ4K2IQYSLBHEQ)
+![API Overview](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview_small.png?token=GHSAT0AAAAAABS6QWFSK3BS5WOLZ7PR5PQYYTL7ISA)
 
 ## Installation
 You can install the floodmodeller_api package from PyPI with the following command:
@@ -35,7 +35,7 @@ is also a great place to explore different ways that people have used the API.
 
 ### A simple example of running a model and fetching the results...
 
-![gif demo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/ief_zzn_demo.gif?token=GHSAT0AAAAAABS6QWFTJHWHHYJOHF7HI7ZYYSLBIAQ)
+![gif demo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/ief_zzn_demo.gif?token=GHSAT0AAAAAABS6QWFT4VUCHIVNSBHM5J26YTL7I5A)
 
 
 
