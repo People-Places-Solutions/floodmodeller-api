@@ -18,7 +18,8 @@ import pandas as pd
 
 from ._base import Unit
 from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int)
+                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int,
+                      _to_data_list)
 from .validation import _validate_unit, parameter_options
 
 
@@ -30,29 +31,30 @@ class QTBDY(Unit):
         name (str, optional): Unit name. Defaults to None.
         comment (str, optional): Comment included in unit. Defaults to None.
         timeoffset (float, optional): Defaults to None.
-        timedatamultiplier (float, optional): Defaults to None.
         timeunit (str, optional): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. Defaults to None.
         extendmethod (str, optional): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
         interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
         flowmultiplier (float, optional): Multiplier applied to all flow values at runtime. Defaults to None.
         minflow (Float, optional): Minimum flow value applied to the boundary at runtime. Defaults to None.
         data (pandas.Series, optional): Series object with variable ``'Flow'`` and index ``'Time'``. Defaults to None.
-
+        allow_override (str): Allow event parameters to be overridden from simulation file: ''/'OVERRIDE' or 'NOOVERRIDE' 
+    
     Returns:
         QTBDY: Flood Modeller QTBDY Unit class object
     """
 
     _unit = 'QTBDY'
 
-    def _create_from_blank(self, name='new_qtbdy', comment='', timeoffset=0.0, timedatamultiplier=0.0,
+    def _create_from_blank(self, name='new_qtbdy', comment='', timeoffset=0.0,
                  timeunit='HOURS', extendmethod='EXTEND', interpmethod='LINEAR', flowmultiplier=0.0, 
-                 minflow=0.0, data=None):
+                 minflow=0.0, allow_override = 'OVERRIDE', _something = 0.0, data=None):
+        
         # Initiate new QTBDY
 
-        for param, val in {'name': name, 'comment': comment, 'timedatamultiplier': timedatamultiplier, 
+        for param, val in {'name': name, 'comment': comment, 
             'timeunit': timeunit, 'extendmethod': extendmethod, 'interpmethod': interpmethod,
             'timeoffset': timeoffset, 'timeunit': timeunit, 'flowmultiplier': flowmultiplier, 
-            'minflow': minflow}.items():
+            'minflow': minflow, 'allow_override': allow_override, '_something': _something}.items():
             setattr(self, param, val)
 
         # AL Since this is most likely used when building a model,
@@ -64,28 +66,25 @@ class QTBDY(Unit):
         
         self.data = data if isinstance(data, pd.Series) else pd.Series(
             [0.0, 0.0], index=[0.0, 0.1], name='Flow')
+            
 
     def _read(self, qtbdy_block):
         ''' Function to read a given QTBDY block and store data as class attributes '''
         self.name = qtbdy_block[1][:self._label_len].strip()
         self.comment = qtbdy_block[0].replace('QTBDY', '').strip()
-        qtbdy_params = split_10_char(f'{qtbdy_block[2]:<80}')
+        qtbdy_params = split_10_char(f'{qtbdy_block[2]:<90}')
         self.nrows = int(qtbdy_params[0])
         self.timeoffset = _to_float(qtbdy_params[1])
-        self.timedatamultiplier = _to_float(qtbdy_params[2])
+        self._something = _to_float(qtbdy_params[2])
         self.timeunit = _to_str(qtbdy_params[3], 'HOURS')
         self.extendmethod = _to_str(qtbdy_params[4], 'EXTEND')
         self.interpmethod = _to_str(qtbdy_params[5], 'LINEAR')
         self.flowmultiplier = _to_float(qtbdy_params[6])
         self.minflow = _to_float(qtbdy_params[7])
-        data_list = []
-        for row in qtbdy_block[3:]:
-            row_split = split_10_char(row)
-            t = _to_float(row_split[1])
-            q = _to_float(row_split[0])
-            data_list.append([t, q])
+        self.allow_override = _to_str(qtbdy_params[8],'OVERRIDE')  # ''/OVERRIDE or NOOVERRIDE
+        data_list = _to_data_list(qtbdy_block[3:], date_col=1) if self.timeunit == 'DATES' else _to_data_list(qtbdy_block[3:])
 
-        self.data = pd.DataFrame(data_list, columns=['Time', 'Flow'])
+        self.data = pd.DataFrame(data_list, columns=['Flow', 'Time'])
         self.data = self.data.set_index('Time')
         self.data = self.data['Flow']  # Convert to series
 
@@ -96,10 +95,14 @@ class QTBDY(Unit):
         header = 'QTBDY '+self.comment
         name = self.name[:self._label_len]
         self.nrows = len(self.data)
+        
+        qtbdy_params = join_10_char(self.nrows, float(self.timeoffset), float(self._something), self.timeunit,
+                                    self.extendmethod, self.interpmethod, float(self.flowmultiplier), float(self.minflow), self.allow_override)
 
-        qtbdy_params = join_10_char(self.nrows, float(self.timeoffset), float(self.timedatamultiplier), self.timeunit,
-                                    self.extendmethod, self.interpmethod, float(self.flowmultiplier), float(self.minflow))
-        qtbdy_data = [join_10_char(q, t) for t, q in self.data.iteritems()]
+        if self.timeunit == 'DATES':
+            qtbdy_data = [join_10_char(q)+t for t, q in self.data.iteritems()]
+        else:
+            qtbdy_data = [join_10_char(q, t) for t, q in self.data.iteritems()]
         qtbdy_block = [header, name, qtbdy_params]
         qtbdy_block.extend(qtbdy_data)
 
@@ -112,7 +115,6 @@ class HTBDY(Unit):
     Args:
         name (str, optional): Unit name. Defaults to None.
         comment (str, optional): Comment included in unit. Defaults to None.
-        timedatamultiplier (float, optional): Defaults to None.
         timeunit (str, optional): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. Defaults to None.
         extendmethod (str, optional): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
         interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
@@ -124,11 +126,11 @@ class HTBDY(Unit):
 
     _unit = 'HTBDY'
             
-    def _create_from_blank(self, name='new_htbdy', comment='', timedatamultiplier=0.0,
+    def _create_from_blank(self, name='new_htbdy', comment='',
                  timeunit='HOURS', extendmethod='EXTEND', interpmethod='LINEAR', data=None):
         # Initiate new HTBDY
 
-        for param, val in {'name': name, 'comment': comment, 'timedatamultiplier': timedatamultiplier, 
+        for param, val in {'name': name, 'comment': comment, 
             'timeunit': timeunit, 'extendmethod': extendmethod, 'interpmethod': interpmethod}.items():
             setattr(self, param, val)
 
@@ -141,19 +143,14 @@ class HTBDY(Unit):
         self.comment = htbdy_block[0].replace('HTBDY', '').strip()
         htbdy_params = split_10_char(f'{htbdy_block[2]:<50}')
         self.nrows = int(htbdy_params[0])
-        self.timedatamultiplier = _to_float(htbdy_params[1])
+        self._something = _to_float(htbdy_params[1])
         self.timeunit = _to_str(htbdy_params[2], 'HOURS')
         self.extendmethod = _to_str(htbdy_params[3], 'EXTEND')
         self.interpmethod = _to_str(htbdy_params[4], 'LINEAR')
+        
+        data_list = _to_data_list(htbdy_block[3:], date_col=1) if self.timeunit == 'DATES' else _to_data_list(htbdy_block[3:])
 
-        data_list = []
-        for row in htbdy_block[3:]:
-            row_split = split_10_char(row)
-            t = _to_float(row_split[1])
-            h = _to_float(row_split[0])
-            data_list.append([t, h])
-
-        self.data = pd.DataFrame(data_list, columns=['Time', 'Stage'])
+        self.data = pd.DataFrame(data_list, columns=['Stage', 'Time'])
         self.data = self.data.set_index('Time')
         self.data = self.data['Stage']  # Convert to series
 
@@ -164,9 +161,12 @@ class HTBDY(Unit):
         name = self.name
         self.nrows = len(self.data)
 
-        htbdy_params = join_10_char(self.nrows, float(
-            self.timedatamultiplier), self.timeunit, self.extendmethod, self.interpmethod)
-        htbdy_data = [join_10_char(h, t) for t, h in self.data.iteritems()]
+        htbdy_params = join_10_char(self.nrows, self._something, 
+            self.timeunit, self.extendmethod, self.interpmethod)
+        if self.timeunit == 'DATES':
+            htbdy_data = [join_10_char(h)+t for t, h in self.data.iteritems()]
+        else:
+            htbdy_data = [join_10_char(h, t) for t, h in self.data.iteritems()]
         htbdy_block = [header, name, htbdy_params]
         htbdy_block.extend(htbdy_data)
 
@@ -181,7 +181,6 @@ class QHBDY(Unit):
         comment (str, optional): Comment included in unit. Defaults to None.
         interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
         data (pandas.Series, optional): Series object with columns ``'Flow'`` and ``'Stage'``. Defaults to None.
-
     Returns:
         QHBDY: Flood Modeller QHBDY Unit class object
     """
@@ -203,12 +202,7 @@ class QHBDY(Unit):
         self.nrows = int(qhbdy_params[0])
         self.interpmethod = _to_str(qhbdy_params[2], 'LINEAR')
 
-        data_list = []
-        for row in qhbdy_block[3:]:
-            row_split = split_10_char(row)
-            q = _to_float(row_split[0])
-            h = _to_float(row_split[1])
-            data_list.append([q, h])
+        data_list = _to_data_list(qhbdy_block[3:])
 
         self.data = pd.DataFrame(data_list, columns=['Flow', 'Stage'])
         self.data = self.data.set_index('Stage')
@@ -281,8 +275,11 @@ class REFHBDY(Unit):
     def _read(self, refhbdy_block):
         ''' Function to read a given REFHBDY block and store data as class attributes '''
         # line 1 & 2
+        # Extract comment and revision number
+        b = refhbdy_block[0].replace('BLOCKAGE #revision#', '').strip()
+        self._revision = _to_int(b[0],1)
+        self.comment = b[1:].strip()
         self.name = refhbdy_block[1][:self._label_len].strip()
-        self.comment = refhbdy_block[0].replace('REFHBDY', '').strip()
 
         # line 3
         refhbdy_params1 = split_10_char(refhbdy_block[2])
@@ -298,10 +295,10 @@ class REFHBDY(Unit):
         self.timestep = _to_float(refhbdy_opts[1])
         # '' : Full hydrograph, 'pfonly' : peak flow, 'bfonly' : baseflow only
         self.sim_type = refhbdy_opts[2]
-        self.scale_method = refhbdy_opts[3]  # PEAKVALUE or SCALEFACT
+        self.scale_method = _to_str(refhbdy_opts[3], 'SCALEFACT')  # PEAKVALUE or SCALEFACT
         self.scale_value = _to_float(refhbdy_opts[4], 1.0)
-        self.boundary_type = refhbdy_opts[5]  # HYDROGRAPH or HYETOGRAPH
-        self.scale_type = refhbdy_opts[6]  # FULL or RUNOFF
+        self.boundary_type = _to_str(refhbdy_opts[5], 'HYDROGRAPH') # HYDROGRAPH or HYETOGRAPH
+        self.scale_type = _to_str(refhbdy_opts[6], 'FULL') # FULL or RUNOFF
         self.minflow = _to_float(refhbdy_opts[7])
         self.allow_override = refhbdy_opts[8]  # ''/OVERRIDE or NOOVERRIDE
 
@@ -314,8 +311,8 @@ class REFHBDY(Unit):
         except ValueError:
             self.saar = float(refhbdy_params2[1])
         self.urbext = _to_float(refhbdy_params2[2])
-        self.season = refhbdy_params2[3]  # DEFAULT, SUMMER or WINTER
-        self.calc_source = refhbdy_params2[4]  # DLL or REPORT
+        self.season = _to_str(refhbdy_params2[3], 'DEFAULT')  # DEFAULT, SUMMER or WINTER
+        self.calc_source = _to_str(refhbdy_params2[4], 'DLL')  # DLL or REPORT
         self.use_urban_subdivisions = False if refhbdy_params2[5] == '' else True
         if self.use_urban_subdivisions:
             # Just keeping this raw for now as unlikely to be used.
@@ -357,7 +354,7 @@ class REFHBDY(Unit):
         ''' Function to write a valid REFHBDY block '''
         _validate_unit(
             self)  # Function to check the params are valid for QTBDY
-        header = 'REFHBDY '+self.comment
+        header = 'REFHBDY #revision#{self._revision} {self.comment}'
         name = self.name[:self._label_len]
 
         refhbdy_block = [header, name]

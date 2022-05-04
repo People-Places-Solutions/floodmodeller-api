@@ -1,0 +1,36 @@
+
+#REVISION#1
+         8     0.750     0.900     0.100     0.001        12SI
+    10.000     0.010     0.010     0.700     0.100     0.700     0.000
+RAD FILE
+
+END GENERAL
+CULVERT comment text
+INLET
+abc_in      def         ghi         jkl
+    0.0098    2.0000    0.0398    0.6700    0.5000         A
+    0.0000    0.0000    0.0000    0.0000CALCULATED     TOTAL    0.0000
+CULVERT comment text
+OUTLET
+abc_out     def_out     ghi_out     jkl_out
+     1.000CALCULATED     TOTAL
+INITIAL CONDITIONS
+ label   ?      flow     stage froude no  velocity     umode    ustate         z
+def          y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+abc_out      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+def_out      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+ghi_out      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+jkl_out      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+ghi          y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+jkl          y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+abc_in       y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+GISINFO
+CULVERT INLET abc_in 0 0 0 0 0
+CULVERT OUTLET abc_out 0 0 0 0 0
+def 0 0 0 0 0
+abc_out 0 0 0 0 0
+def_out 0 0 0 0 0
+ghi_out 0 0 0 0 0
+jkl_out 0 0 0 0 0
+ghi 0 0 0 0 0
+jkl 0 0 0 0 0

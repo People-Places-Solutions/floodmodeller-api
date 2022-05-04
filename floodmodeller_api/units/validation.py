@@ -41,6 +41,16 @@ def _validate_parameter(param, value):
             return value.upper() in param['options'], f'-> Expected: {param["options"]}'
         else:
             return value in param['options'], f'-> Expected: {param["options"]}'
+    elif param['type'] == 'type-value-match':
+        
+        new_rule = {'type': 'type-match', 'options': param['options'][0]}
+        type_match_result =  _validate_parameter(new_rule, value)[0]
+
+        new_rule = {'type': 'value-match', 'options': param['options'][1]}
+        value_match_result =  _validate_parameter(new_rule, value)[0]
+
+        return type_match_result or value_match_result, f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}'
+
     elif param['type'] == 'value-range':
         lower = param['options'][0]
         upper = param['options'][1]
@@ -78,9 +88,10 @@ parameter_options = {
         'max_length': 12
     },
     'timeunit': {
-        'type': 'value-match',
-        'options': ['SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'FORTNIGHTS', 'MONTHS', 'MONTH',
-                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'USER SET', 'DATES', 'MULTIPLIER']
+        'type': 'type-value-match',
+        'options': ((float, int), 
+                    ['SECONDS', 'MINUTES', 'HOURS', 'DAYS', 'WEEKS', 'FORTNIGHTS', 'MONTHS', 'MONTH',
+                    'LUNAR MONTHS', 'QUARTERS', 'YEARS', 'DECADES', 'DATES', 'MULTIPLIER']) 
     },
     'timeoffset': {
         'type': 'type-match',
@@ -107,6 +118,18 @@ parameter_options = {
         'options': ['LINEAR', 'SPLINE']
     },
     'ds_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
+    'us_reference_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
+    'ds_reference_label': {
+        'type': 'string-length',
+        'max_length': 12
+    },
+    'constriction_label': {
         'type': 'string-length',
         'max_length': 12
     },
@@ -548,4 +571,62 @@ parameter_options = {
         'type': 'type-match',
         'options': (float, int)
     },
+    'inlet_loss': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'outlet_loss': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+
+    
+    'loss_coefficient': {
+        'type': 'type-match',
+        'options': (float, int)
+    },    
+    'headloss_type': {
+         'type': 'value-match',
+        'options': ['TOTAL', 'STATIC']
+    },
+    'reverse_flow_mode': {
+         'type': 'value-match',
+        'options': ['CALCULATED', 'ZERO']
+    },
+    'type_code': {
+         'type': 'value-match',
+        'options': ['A', 'B', 'C']
+    },
+    'k': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'm': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'c': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'y': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'ki': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'screen_width': {
+        'type': 'type-match',
+        'options': (float, int)
+    },
+    'bar_proportion': {
+        'type': 'value-range',
+        'options': (0.0, 1.0)
+    },
+    'debris_proportion': {
+        'type': 'value-range',
+        'options': (0.0, 1.0)
+    }
 }

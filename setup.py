@@ -8,7 +8,7 @@ setup(
    version='0.3.12.post1',
    author='Jacobs',
    author_email='joe.pierce@jacobs.com',
-   packages=['floodmodeller_api', 'floodmodeller_api.units', 'floodmodeller_api sample scripts'],
+   packages=['floodmodeller_api', 'floodmodeller_api.units'],
    scripts=[],
    project_urls={
        'API Documentation': 'https://help.floodmodeller.com/api/',
