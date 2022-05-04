@@ -289,8 +289,7 @@ class DAT(FMFile):
                             dat_struct.append(unit_block)
                             unit_block = {}  # reset bdy block
                         in_block = True
-                        unit_block['Type'] = line.split(
-                            ' ')[0]  # start new bdy block
+                        unit_block['Type'] = line.split(' ')[0]  # start new bdy block
                         unit_block['start'] = idx  # add starting index
 
                     elif ' '.join(line.split(' ')[:2]) in units.ALL_UNIT_TYPES:
