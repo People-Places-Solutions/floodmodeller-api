@@ -13,12 +13,13 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
-
 from pathlib import Path
 from typing import Optional, Union
-
+from floodmodeller_api.urban1d import subsections  # Import for using as package
+from floodmodeller_api.urban1d.general_parameters import DEFAULT_OPTIONS
 from ._base import FMFile
-
+from . import units  # REVIEW - bit weird becasue this is FM units not urban units
+from floodmodeller_api.urban1d import units1d 
 class INP(FMFile):
     """Reads and writes Flood Modeller 1DUrban file format '.inp'
 
@@ -37,7 +38,7 @@ class INP(FMFile):
     _suffix:str = '.inp'
 
     
-    def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, inp_filepath: Optional[Union[str, Path]] = None): #NOTE: This is a method of INP class that is a subclass of FMFile
         self._filepath = inp_filepath  
         if self._filepath != None:
             FMFile.__init__(self)
@@ -45,17 +46,17 @@ class INP(FMFile):
         else:
             self._create_from_blank()
             
-        self._get_general_parameters()
-        self._get_unit_definitions()
+        self._get_section_definitions()
 
-    def _read(self):
-        # Read INP data
+    def _read(self): #NOTE: method _read is already defined in the FMFile parent class and so this method redefines _read() for subclass only
+        # Read INP file
         with open(self._filepath, 'r') as inp_file:
             self._raw_data = [line.rstrip('\n')
                               for line in inp_file.readlines()]
 
-        # Generate DAT structure
-        self._update_dat_struct()
+        
+        self._update_inp_struct() # Generate INP file structure DELETE: calls _update_inp_struct() method of INP class
+        
         
 
     def _write(self) -> str:
@@ -74,91 +75,110 @@ class INP(FMFile):
     def _create_from_blank(self):
         pass
     
-    def _get_general_parameters(self):
-        # Get general paramers from INP file. 
-        
-        #Sample code below:
-        '''self.title = self._raw_data[0]
-        self.general_parameters = {}
-        params = units.helpers.split_10_char(self._raw_data[2])
-        if len(params) == 6:
-            # Adds the measurements unit if not specified
-            params.append('DEFAULT')
-        params.extend(units.helpers.split_10_char(self._raw_data[3]))
-        self.general_parameters['Node Count'] = int(params[0])
-        self.general_parameters['Lower Froude'] = float(params[1])
-        self.general_parameters['Upper Froude'] = float(params[2])
-        self.general_parameters['Min Depth'] = float(params[3])
-        self.general_parameters['Convergence Direct'] = float(params[4])
-        self._label_len = int(params[5])  # label length
-        self.general_parameters['Units'] = params[6]
-        self.general_parameters['Water Temperature'] = float(params[7])
-        self.general_parameters['Convergence Flow'] = float(params[8])
-        self.general_parameters['Convergence Head'] = float(params[9])
-        self.general_parameters['Mathematical Damping'] = float(params[10])
-        self.general_parameters['Pivotal Choice'] = float(params[11])
-        self.general_parameters['Under-relaxation'] = float(params[12])
-        self.general_parameters['Matrix Dummy'] = float(params[13])
-        self.general_parameters['RAD File'] = self._raw_data[5]
-        '''
-        pass
+   
     
-    def _get_unit_definitions(self):
-        pass
+    def _get_section_definitions(self):    #NOTE:: Method of INP Class
+        # Method to generate unit defintions, from supported subsection with the in INP  REVIEW: Section
 
-    def _update_dat_struct(self):
+        #Initialise INP attributes
+        self.general_parameters = {} # may not be needed
+        self.units = {}
+        self.junctions = {} 
+        self.outfalls={}
+
+        # Loop through all blocks (subsections) within INP  and process if of a supported type.
+        for block in self._inp_struct:             
+
+            if block['Subsection_Type'] in subsections.SUPPORTED_SUBSECTIONS: 
+                raw_subsection_data = self._raw_data[block['start']: block['end'] + 1] # RAW data for subsection block of INP file
+
+                # Check if subsection type is 'general parameter' and therefore is stored as attribute of INP class
+                if subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'general parameters': #TODO: lower case notation ofr 'Subsection_Type' 
+                    
+                    if block['Subsection_Type'] == '[OPTIONS]':
+                        self.options = DEFAULT_OPTIONS.copy()  
+                        self._option_order = [] #TODO: check if order matters and update as required
+                        for line in raw_subsection_data:                          
+                            if line != "" and not line.startswith(';'): # check if line is not blank or comment line.
+                                data = units.helpers.split_n_char(line, 21)
+                                #assign variables - REVIEW: Look for improved alternative method.  This doesnt automatically initialise all variables if they dont 
+                                # exist in the file, also it's fairly long winded. Could do it with list, but thn different types of data. 
+
+                                # ACTION: put it in to an options dictiorary, 
+
+                                self.options[data[0].lower()] = data[1]
+                                self._option_order.append(data[0])
+                        ''' 
+                        # Use as functionality expands
+                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[Title]':
+                            #TODO: Functionality to be added
+                            pass
+                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[OPTIONS]':
+                            #TODO: Functionality to be added
+                            pass
+                    
+                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[FILES]':
+                            #TODO: Functionality to be added
+                            pass
+                        '''
+
+
+
+                    #self.
+                    #initialise appropriate subclass
+                    pass
+                
+                #Create appropriate sub-class instences
+                elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units': #unit subsection type therefore will need multiple instences of class creating                 
+                    for line in raw_subsection_data:
+                        if len(line) != 0:
+                            if line not in subsections.SUPPORTED_SUBSECTIONS and line[0] != (";"): #REVIEW - how to neaten this up
+                                #process
+                                unit_name = line[0:17].strip(' ')
+                                #unit_params = units.helpers.split_n_char(line[17:],11)
+                                unit_data = units.helpers.split_n_char(line[17:],11) # REVIEW: why was i not able to pass a text string as unit_data? caused error on eval line
+                                self._label_len = 12
+                                subsection_group = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) #REVIEW: we adjusted this to 'attribute' from type.  Do we really want seperate lists for each unit type? Not the way it's done in DAT
+                                #subsection_group[unit_name] = eval(f"units1d.{block['Subsection'].strip('[').strip(']')}({unit_data}, {self._label_len})") # how do we assign class?
+
+                                subsection_group[unit_name] = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class'](unit_data, self._label_len)
+                            else: # This line is a title, header or divider row
+                                continue 
+
+
+                else: #TODO: REVIEW: is else always required? Remove this is probably not required
+                    continue
+
+            else:
+                # Subsection not currently supported. Leave block as RAW
+                pass
+
+    def _update_inp_struct(self): #Review: is there logic to this being 'update' - do we lean on the method again?
         """Internal method used to update self._inp_struct which details the overall structure of the inp file as a list of blocks, each of which
             are a dictionary containing the 'start', 'end' and 'type' of the block.
 
         """
-
-       # Generate DAT structure
+       # Generate INP file structure
         inp_struct = []
         in_block = False
-        in_general = False
-        in_title = False
-        title_n = None  # Used as counter for number of lines in a comment block #TODO: Review what is no longer needed
-        general_block = {'start': 0, 'Type': 'GENERAL'}
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
             
-            if line == '[TITLE]':
-                in_title = True
+            # Check subsection is supported and 
+            #TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
+            if line in subsections.ALL_SUBSECTIONS: 
 
-                #TODO is this needed?
-                if in_block == True: 
+                if in_block == True:
                     unit_block['end'] = idx - 1  # add ending index
-                    # append existing block to the inp_struct
-                    inp_struct.append(unit_block)
-                    unit_block = {}  # reset bdy block '''
-
-                # start new block for COMMENT
-                unit_block['Type'] = line.split(' ')[0]
-                unit_block['start'] = idx  # add starting index
-                continue
-
-
-            '''# Deal with comment blocks explicitly as they could contain unit keywords
-            if in_title and title_n is None: #TODO: what does this sction do?
-                title_n = int(line.strip())
-                continue
-            elif in_title:
-                title_n -= 1
-                if title_n == 0:
-                    unit_block['end'] = idx  # add ending index
-                    # append existing bdy block to the dat_struct
-                    dat_struct.append(unit_block)
+                    inp_struct.append(unit_block) # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
-                    in_comment = False
-                    in_block = False
-                    comment_n = None
-                    continue
-                else:
-                    continue  # move onto next line as still in comment block'''
-            
+
+                unit_block['Subsection_Type'] = line #TODO: strip line?
+                unit_block['start'] = idx
+                in_block = True
 
         if len(unit_block) != 0:
-            # Only adds end block if there is a block present (i.e. an empty DAT stays empty)
+            # Only adds end block if there is a block present (i.e. an empty inp stays empty)
             # add ending index for final block
             unit_block['end'] = len(self._raw_data) - 1
             inp_struct.append(unit_block)  # add final block

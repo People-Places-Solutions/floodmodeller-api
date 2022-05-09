@@ -19,16 +19,27 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 #from .iic import IIC
 #from .sections import RIVER
 #from .structures import BRIDGE, CONDUIT, SLUICE, ORIFICE, SPILL
+#from .subsections import Title
+from .units1d import JUNCTIONS, OUTFALLS
 
-### UNIT TYPES AND SUPPORT ###
-SUPPORTED_UNIT_TYPES = {
-
+### UNIT TYPES AND SUPPORT ### 
+# TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed 
+SUPPORTED_SUBSECTIONS = {
+    #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
+    '[OPTIONS]': {'group': 'general parameters', 'attribute': 'Options', 'class': 'Options'},
+    '[JUNCTIONS]': {'group': 'units', 'attribute': 'junctions', 'class': JUNCTIONS},
+    '[OUTFALLS]': {'group': 'units', 'attribute': 'outfalls', 'class': OUTFALLS}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
-    #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False}
+    #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
+    #'[TITLE]' : {
+     #   'attribute' : 'title',
+    #    'class' : Title}
 }
 
-UNSUPPORTED_UNIT_TYPES = {
-'[OPTIONS]',
+UNSUPPORTED_SUBSECTIONS = {
+
+'[TITLE]'.
+#'[OPTIONS]',
 '[REPORT]',
 '[FILES]',
 '[RAINGAGES]',
@@ -38,14 +49,14 @@ UNSUPPORTED_UNIT_TYPES = {
 '[SUBCATCHMENTS]',
 '[SUBAREAS]',
 '[INFILTRATION]',
-'[LID_CONTROLS]',
+'[LID_CONTROLS]', #first four characters not unique
 '[LID_USAGE]',
 '[AQUIFERS]',
 '[GROUNDWATER]',
 '[GWF]',
 '[SNOWPACKS]',
-'[JUNCTIONS]',
-'[OUTFALLS]',
+#'[JUNCTIONS]',
+#'[OUTFALLS]',
 '[DIVIDERS]',
 '[STORAGE]',
 '[CONDUITS]',
@@ -70,7 +81,17 @@ UNSUPPORTED_UNIT_TYPES = {
 '[HYDROGRAPHS]',
 '[CURVES]',
 '[TIMESERIES]',
-'[PATTERNS]'
+'[PATTERNS]',
+'[MAP]', # THis and the below are Map Data
+'[POLYGONS]',
+'[COORDINATES]', 
+'[VERTICES]',
+'[LABELS]',
+'[SYMBOLS]',
+'[BACKDROP]',
+'[TAGS]' #UNKNOWN - not in manual
+
 }
 
-ALL_UNIT_TYPES = set(SUPPORTED_UNIT_TYPES.keys()).union(UNSUPPORTED_UNIT_TYPES)
+ALL_SUBSECTIONS = set(SUPPORTED_SUBSECTIONS.keys()).union(UNSUPPORTED_SUBSECTIONS)
+All_SUBSECTIONS_SHORTNAMES = set()
