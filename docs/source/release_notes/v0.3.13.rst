@@ -12,6 +12,7 @@ New features
 Updates
 --------------
 - Added support for 'DATES' in timeseries tables
+- Improved support for handling unit name changes
 
 
 Bug fixes
