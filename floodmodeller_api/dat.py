@@ -130,16 +130,21 @@ class DAT(FMFile):
         for unit_group in [self.boundaries, self.sections, self.structures]:
             for name, unit in unit_group.copy().items():
                 if name != unit.name:
+                    # Check if new name already exists as a label
+                    if unit.name in self.boundaries or unit.name in self.sections or unit.name in self.structures:
+                        raise Exception(f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the Network')
                     unit_group[unit.name] = unit
                     del unit_group[name]
                     # Update label in ICs
                     self.initial_conditions.update_label(name, unit.name)
 
                     # Update label in GISINFO and GXY data
+                    self._update_gisinfo_label(unit._unit, unit._subtype, name, unit.name)
+                    self._update_gxy_label(unit._unit, unit._subtype, name, unit.name)
 
         # Update IC table names in raw_data if any name changes
-        ic_start, ic_end = [[unit['start'], unit['end']]
-                            for unit in self._dat_struct if unit['Type'] == 'INITIAL CONDITIONS'][0]
+        ic_start, ic_end = next((unit['start'], unit['end'])
+                            for unit in self._dat_struct if unit['Type'] == 'INITIAL CONDITIONS')
         self._raw_data[ic_start: ic_end + 1] = self.initial_conditions._write()
 
         dat_string = ''
@@ -360,3 +365,43 @@ class DAT(FMFile):
         # Update _dat_struct
 
         pass
+
+    def _update_gisinfo_label(self, unit_type, unit_subtype, prev_lbl, new_lbl):
+        ''' Update labels in GISINFO block if unit is renamed '''
+
+        start, end = next((block['start'], block['end']) for block in self._dat_struct if block['Type'] == 'GISINFO')
+        gisinfo_block = self._raw_data[start:end+1]
+
+        
+        if unit_subtype is None:
+            prefix = unit_type
+        else:
+            prefix = f'{unit_type} {unit_subtype}'
+
+        new_gisinfo_block = []
+        for line in gisinfo_block:
+            # Replace first label
+            if line.startswith(f'{prefix} {prev_lbl} '): # space at the end is important to ignore node lables with similar starting chars
+                # Matching line 
+                line = line.replace(f'{prefix} {prev_lbl} ', f'{prefix} {new_lbl} ')
+
+            # Replace second label
+            if line.startswith(f'{prev_lbl} '): # space at the end is important again
+                line = line.replace(f'{prev_lbl} ', f'{new_lbl} ', 1)
+
+            new_gisinfo_block.append(line)
+        
+        self._raw_data[start: end+1] = new_gisinfo_block
+
+    def _update_gxy_label(self, unit_type, unit_subtype, prev_lbl, new_lbl):
+        ''' Update labels in GXY file if unit is renamed '''
+
+        if self._gxy_data is not None:
+            if unit_subtype is None:
+                unit_subtype = ''
+            
+            old = f'{unit_type}_{unit_subtype}_{prev_lbl}'
+            new = f'{unit_type}_{unit_subtype}_{new_lbl}'
+
+            self._gxy_data = self._gxy_data.replace(old, new)
+        
