@@ -79,4 +79,4 @@ Structure units
 ``CULVERT()``
 ~~~~~~~~~~~~~
 
-.. autoclass:: floodmodeller_api.units.CULVET
+.. autoclass:: floodmodeller_api.units.CULVERT
