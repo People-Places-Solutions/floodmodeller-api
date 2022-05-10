@@ -34,7 +34,13 @@ class Unit:
 
     @name.setter
     def name(self, new_name):
-        self._name = new_name
+        try:
+            new_name = str(new_name)
+            if ' ' in new_name:
+                raise Exception(f'Cannot set unit name to "{new_name}" as it contains one or more spaces')
+            self._name = new_name
+        except Exception as e:
+            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}')
 
     @property
     def subtype(self):
