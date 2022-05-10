@@ -72,7 +72,7 @@ Structure units
 .. autoclass:: floodmodeller_api.units.SPILL
 
 ``BLOCKAGE()``
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.BLOCKAGE
 
