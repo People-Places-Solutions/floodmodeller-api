@@ -26,7 +26,7 @@ from .units1d import JUNCTIONS, OUTFALLS
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed 
 SUPPORTED_SUBSECTIONS = {
     #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
-    '[OPTIONS]': {'group': 'general parameters', 'attribute': 'Options', 'class': 'Options'},
+    '[OPTIONS]': {'group': 'general', 'attribute': 'Options', 'class': 'Options'},
     '[JUNCTIONS]': {'group': 'units', 'attribute': 'junctions', 'class': JUNCTIONS},
     '[OUTFALLS]': {'group': 'units', 'attribute': 'outfalls', 'class': OUTFALLS}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
@@ -38,7 +38,7 @@ SUPPORTED_SUBSECTIONS = {
 
 UNSUPPORTED_SUBSECTIONS = {
 
-'[TITLE]'.
+'[TITLE]',
 #'[OPTIONS]',
 '[REPORT]',
 '[FILES]',

@@ -2,7 +2,7 @@
 Flood Modeller Python API
 Copyright (C) 2022 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU ublic License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
@@ -37,7 +37,6 @@ class INP(FMFile):
     _filetype: str = 'INP'
     _suffix:str = '.inp'
 
-    
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None): #NOTE: This is a method of INP class that is a subclass of FMFile
         self._filepath = inp_filepath  
         if self._filepath != None:
@@ -92,58 +91,38 @@ class INP(FMFile):
             if block['Subsection_Type'] in subsections.SUPPORTED_SUBSECTIONS: 
                 raw_subsection_data = self._raw_data[block['start']: block['end'] + 1] # RAW data for subsection block of INP file
 
-                # Check if subsection type is 'general parameter' and therefore is stored as attribute of INP class
-                if subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'general parameters': #TODO: lower case notation ofr 'Subsection_Type' 
+                # Check if subsection type is 'general' and therefore is stored as attribute of INP class
+                if subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'general': #TODO: lower case notation ofr 'Subsection_Type' 
                     
                     if block['Subsection_Type'] == '[OPTIONS]':
                         self.options = DEFAULT_OPTIONS.copy()  
                         self._option_order = [] #TODO: check if order matters and update as required
-                        for line in raw_subsection_data:                          
-                            if line != "" and not line.startswith(';'): # check if line is not blank or comment line.
+                        for  line in raw_subsection_data:                          
+                            if line.upper() not in subsections.SUPPORTED_SUBSECTIONS and line.strip() != "" and not line.startswith(';'):
                                 data = units.helpers.split_n_char(line, 21)
-                                #assign variables - REVIEW: Look for improved alternative method.  This doesnt automatically initialise all variables if they dont 
-                                # exist in the file, also it's fairly long winded. Could do it with list, but thn different types of data. 
-
-                                # ACTION: put it in to an options dictiorary, 
-
+                                
+                                #TODO: Review - Consider variable type when appending, and use appropriate function ..? Could i use dictionary with type? Would be useful for writing it back out
                                 self.options[data[0].lower()] = data[1]
                                 self._option_order.append(data[0])
-                        ''' 
-                        # Use as functionality expands
-                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[Title]':
-                            #TODO: Functionality to be added
-                            pass
-                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[OPTIONS]':
-                            #TODO: Functionality to be added
-                            pass
-                    
-                        elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']] == '[FILES]':
-                            #TODO: Functionality to be added
-                            pass
-                        '''
 
-
-
-                    #self.
-                    #initialise appropriate subclass
-                    pass
+                #TODO: add additional general sections 
                 
                 #Create appropriate sub-class instences
-                elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units': #unit subsection type therefore will need multiple instences of class creating                 
+                elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units':                
                     for line in raw_subsection_data:
-                        if len(line) != 0:
-                            if line not in subsections.SUPPORTED_SUBSECTIONS and line[0] != (";"): #REVIEW - how to neaten this up
-                                #process
-                                unit_name = line[0:17].strip(' ')
-                                #unit_params = units.helpers.split_n_char(line[17:],11)
-                                unit_data = units.helpers.split_n_char(line[17:],11) # REVIEW: why was i not able to pass a text string as unit_data? caused error on eval line
-                                self._label_len = 12
-                                subsection_group = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) #REVIEW: we adjusted this to 'attribute' from type.  Do we really want seperate lists for each unit type? Not the way it's done in DAT
-                                #subsection_group[unit_name] = eval(f"units1d.{block['Subsection'].strip('[').strip(']')}({unit_data}, {self._label_len})") # how do we assign class?
+                        if line.strip() != "" and line.upper() not in subsections.SUPPORTED_SUBSECTIONS and not line.startswith(';'):
+                            unit_name = line[0:17].strip(' ')
+                            #unit_params = units.helpers.split_n_char(line[17:],11)
+                            unit_data = units.helpers.split_n_char(line[17:],11) # REVIEW: why was i not able to pass a text string as unit_data? caused error on eval line
+                            self._label_len = 12
+                            subsection_group = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) #REVIEW: we adjusted this to 'attribute' from type.  Do we really want seperate lists for each unit type? Not the way it's done in DAT
+                            #subsection_group[unit_name] = eval(f"units1d.{block['Subsection'].strip('[').strip(']')}({unit_data}, {self._label_len})") # how do we assign class?
 
-                                subsection_group[unit_name] = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class'](unit_data, self._label_len)
-                            else: # This line is a title, header or divider row
-                                continue 
+                            subsection_group[unit_name] = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class'](unit_data, self._label_len
+                            
+                            #TODO: consider functionality that allows for 
+                        else: # This line is a title, header or divider row
+                            continue 
 
 
                 else: #TODO: REVIEW: is else always required? Remove this is probably not required
@@ -166,14 +145,14 @@ class INP(FMFile):
             
             # Check subsection is supported and 
             #TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
-            if line in subsections.ALL_SUBSECTIONS: 
+            if line.upper() in subsections.ALL_SUBSECTIONS: 
 
                 if in_block == True:
                     unit_block['end'] = idx - 1  # add ending index
                     inp_struct.append(unit_block) # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
 
-                unit_block['Subsection_Type'] = line #TODO: strip line?
+                unit_block['Subsection_Type'] = line.upper() #TODO: strip line?, populate with full name rather than abriviation
                 unit_block['start'] = idx
                 in_block = True
 
