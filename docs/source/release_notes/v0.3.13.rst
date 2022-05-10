@@ -22,4 +22,5 @@ Bug fixes
   an attribute 'Title=...' and you set ``ief.title = ...`` the updated ief file will match the lower case used in ``title``.
 - Fixed issue on orifice unit where shape not defined in .dat.
 - Allow 'timeunit' attribute to be set as number (which is used for user defined time multiplier)
+- Fixed issue with the reading of cross-section relative path length (RPL)   
 

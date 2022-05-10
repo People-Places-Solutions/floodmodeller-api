@@ -80,13 +80,13 @@ class RIVER(Unit):
                 n = _to_float(row_split[2])  # Mannings
                 try:
                     # panel marker
-                    panel = True if row_split[3][0] == '*' else False
+                    panel = True if row_split[3][0] == '*' else False 
                 except IndexError:
                     panel = False
 
                 try:
                     # relative path length
-                    rpl = _to_float(row_split[3][1:].strip())
+                    rpl = _to_float(row_split[3][1 if panel else 0:].strip())
                 except IndexError:
                     rpl = 0.000
                 marker = row_split[4]  # Marker
