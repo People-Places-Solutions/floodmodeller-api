@@ -14,27 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
-
-#import pandas as pd
-
-from ._base import Urban1D
-#from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-#                      split_10_char, split_12_char, split_n_char, _to_float, _to_str, _to_int, _to_data_list)
-#from .validation import _validate_unit, parameter_options
-
-class TITLE(Urban1D):
- #   """ TO BE COMPLETED
-#    """
- #   _unit = 'OPTIONS'
-    pass
-
-class OPTIONS(Urban1D):
- #   """ TO BE COMPLETED
-#    """
- #   _unit = 'OPTIONS'
-    pass
-
-# All possible OPTIONS variables
 DEFAULT_OPTIONS = { #NOTE: This is a 'set', rather than a dictionary.  That said, this set contains variables, who's values are being set of None in same action
     'flow_units': None,
     'infiltration': None,

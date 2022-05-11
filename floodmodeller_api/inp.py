@@ -15,11 +15,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 '''
 from pathlib import Path
 from typing import Optional, Union
-from floodmodeller_api.urban1d import subsections  # Import for using as package
+from floodmodeller_api.urban1d import subsections
 from floodmodeller_api.urban1d.general_parameters import DEFAULT_OPTIONS
 from ._base import FMFile
-from . import units  # REVIEW - bit weird becasue this is FM units not urban units
-from floodmodeller_api.urban1d import units1d 
+from . import units
 class INP(FMFile):
     """Reads and writes Flood Modeller 1DUrban file format '.inp'
 
@@ -79,12 +78,6 @@ class INP(FMFile):
     def _get_section_definitions(self):    #NOTE:: Method of INP Class
         # Method to generate unit defintions, from supported subsection with the in INP  REVIEW: Section
 
-        #Initialise INP attributes
-        self.general_parameters = {} # may not be needed
-        self.units = {}
-        self.junctions = {} 
-        self.outfalls={}
-
         # Loop through all blocks (subsections) within INP  and process if of a supported type.
         for block in self._inp_struct:             
 
@@ -108,21 +101,15 @@ class INP(FMFile):
                 #TODO: add additional general sections 
                 
                 #Create appropriate sub-class instences
-                elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units':                
-                    for line in raw_subsection_data:
-                        if line.strip() != "" and line.upper() not in subsections.SUPPORTED_SUBSECTIONS and not line.startswith(';'):
-                            unit_name = line[0:17].strip(' ')
-                            #unit_params = units.helpers.split_n_char(line[17:],11)
-                            unit_data = units.helpers.split_n_char(line[17:],11) # REVIEW: why was i not able to pass a text string as unit_data? caused error on eval line
-                            self._label_len = 12
-                            subsection_group = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) #REVIEW: we adjusted this to 'attribute' from type.  Do we really want seperate lists for each unit type? Not the way it's done in DAT
-                            #subsection_group[unit_name] = eval(f"units1d.{block['Subsection'].strip('[').strip(']')}({unit_data}, {self._label_len})") # how do we assign class?
+                elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units':   
+                    subsection_class = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class']
+                    subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']
 
-                            subsection_group[unit_name] = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class'](unit_data, self._label_len
-                            
-                            #TODO: consider functionality that allows for 
-                        else: # This line is a title, header or divider row
-                            continue 
+                    setattr(self, subsection_attribute, subsection_class(raw_subsection_data)) # Composition - something has a something, rather than something is a something
+                    #composition is implicit by setting an attribute as a class  
+                    subsection = getattr(self,subsection_attribute)                  
+                    subsection_units = getattr(subsection, subsection._attribute)
+                    setattr(self, subsection._attribute,subsection_units)
 
 
                 else: #TODO: REVIEW: is else always required? Remove this is probably not required

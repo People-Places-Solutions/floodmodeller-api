@@ -18,13 +18,12 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 # REVIEW: Is this need, or can i make use of the units._base? Really not sure what's going on here
 
-class Urban1D:
+class UrbanUnit:
     _unit = None
     _subtype = None
     _name = None
 
-    def __init__(self, unit_block=None, n=12, **kwargs):
-        self._label_len = n
+    def __init__(self, unit_block=None, **kwargs):
         if unit_block != None:
             self._read(unit_block)
         else:
@@ -38,30 +37,86 @@ class Urban1D:
     def name(self, new_name):
         self._name = new_name
 
-    @property
-    def subtype(self):
-        return self._subtype
+    # @property
+    # def subtype(self):
+    #     return self._subtype
 
-    @subtype.setter
-    def subtype(self, new_value):
-        raise ValueError ("You cannot changed the subtype of a unit once it has been instantiated")
+    # @subtype.setter
+    # def subtype(self, new_value):
+    #     raise ValueError ("You cannot changed the subtype of a unit once it has been instantiated")
 
-
+    # Update this bit
     def __repr__(self):
         if self._subtype is None:
-            return f'<floodmodeller_api Unit Class: {self._unit}(name={self._name})>'
-        else:
-            return f'<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>'
+            return f'<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>'
 
     def _create_from_blank(self):
         raise NotImplementedError(
                 f'Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read')
            
     def __str__(self):
-        return '\n'.join(self._write())
+        return self._write()
 
     def _read(self):
         raise NotImplementedError
 
     def _write(self):
         raise NotImplementedError
+
+
+class UrbanSubsection:
+    _name = None
+    _urban_unit_class = None
+
+    def __init__(self, subsection_block=None, **kwargs):
+        if subsection_block != None:
+            self._read(subsection_block)
+        else:
+            self._create_from_blank(**kwargs)
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, new_name):
+        self._name = new_name
+
+    def __repr__(self):
+        return f'<floodmodeller_api UrbanSubsection Class: {self._attribute}>'
+
+    def _create_from_blank(self):
+        raise NotImplementedError(
+                f'Creating new {self._name} subsections is not yet supported by floodmodeller_api, only existing subsections can be read')
+           
+    def __str__(self):
+        return '\n'.join(self._write())
+
+    def _read(self, block):
+        
+        setattr(self,self._attribute, {})
+        units = getattr(self, self._attribute )
+
+        self._struct = []
+
+        for line in block[1:]: #first line is subsection name
+            if line.strip() != "" and not line.startswith(';'):
+                unit = self._urban_unit_class(line)
+                units[unit.name] = unit
+                self._struct.append(unit)
+            
+            else:
+                self._struct.append(line)
+
+    def _write(self):
+        
+        block = []
+
+        for line in self._struct:
+            if isinstance(line, self._urban_unit_class):
+                block.append(line._write())
+            else:
+                block.append(line)
+
+        return block
+
