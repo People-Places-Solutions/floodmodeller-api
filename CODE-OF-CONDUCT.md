@@ -1,4 +1,9 @@
-# Flood Modeller Python API Code of Conduct
+# Jacobs Flood Modeller Python API Code of Conduct
+
+This code of conduct outlines expectations for participation in the Jacobs Flood 
+Modeller Python API open source community, as well as steps for reporting unacceptable 
+behavior. We are committed to providing a welcoming and inspiring community for all. 
+People violating this code of conduct may be banned from the community.
 
 The Flood Modeller Python API has been released as a free and open-source
 project in the hopes that it will foster a community of innovation and 
