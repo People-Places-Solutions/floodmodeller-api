@@ -80,7 +80,7 @@ class CULVERT(Unit):
             #Defaults applied are equivellent to those provide if Culvert Wizard cancelled. 
 
             #Read first set of general parameters 
-            params = split_10_char(block[3])
+            params = split_10_char(f'{block[3]:<60}')
             self.k = _to_float(params[0], 0.0)
             self.m = _to_float(params[1], 0.0)
             self.c = _to_float(params[2], 0.0)
@@ -89,7 +89,7 @@ class CULVERT(Unit):
             self.type_code =  _to_str(params[5],'A')       
             
             #Read trash screen and remaining general parameters 
-            params1 = split_10_char(block[4])
+            params1 = split_10_char(f'{block[4]:<70}')
             self.screen_width = _to_float(params1[0], 0.0)
             self.bar_proportion = _to_float(params1[1], 0.0)
             self.debris_proportion = _to_float(params1[2], 0.0)
@@ -99,7 +99,7 @@ class CULVERT(Unit):
             self.max_screen_height =  _to_float(params1[6], 0.0)
             
         elif self.subtype == 'OUTLET':
-            params = split_10_char(block[3])
+            params = split_10_char(f'{block[3]:<30}')
             self.loss_coefficient = _to_float(params[0], 1.0)
             self.reverse_flow_mode = _to_str(params[1], 'CALCULATED')
             self.headloss_type = _to_str(params[2], 'TOTAL')
