@@ -76,7 +76,7 @@ class QTBDY(Unit):
         self.nrows = int(qtbdy_params[0])
         self.timeoffset = _to_float(qtbdy_params[1])
         self._something = _to_float(qtbdy_params[2])
-        self.timeunit = _to_str(qtbdy_params[3], 'HOURS')
+        self.timeunit = _to_str(qtbdy_params[3], 'HOURS', check_float=True)
         self.extendmethod = _to_str(qtbdy_params[4], 'EXTEND')
         self.interpmethod = _to_str(qtbdy_params[5], 'LINEAR')
         self.flowmultiplier = _to_float(qtbdy_params[6])
@@ -144,7 +144,7 @@ class HTBDY(Unit):
         htbdy_params = split_10_char(f'{htbdy_block[2]:<50}')
         self.nrows = int(htbdy_params[0])
         self._something = _to_float(htbdy_params[1])
-        self.timeunit = _to_str(htbdy_params[2], 'HOURS')
+        self.timeunit = _to_str(htbdy_params[2], 'HOURS',  check_float=True)
         self.extendmethod = _to_str(htbdy_params[3], 'EXTEND')
         self.interpmethod = _to_str(htbdy_params[4], 'LINEAR')
         

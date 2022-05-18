@@ -60,7 +60,10 @@ def _validate_parameter(param, value):
             return False, f'-> Out of valid range: {lower} - {upper}'
 
     elif param['type'] == 'string-length':
-        return len(value) <= param['max_length'], f'-> Exceeds {param["max_length"]} characters'
+        try:
+            return len(value) <= param['max_length'], f'-> Exceeds {param["max_length"]} characters'
+        except TypeError:
+            return False, 'Expected string type'
 
     elif param['type'] == 'dict-match':
         for key, rule in param['options'].items():

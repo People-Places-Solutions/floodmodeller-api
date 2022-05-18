@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
    name='floodmodeller_api',
-   version='0.3.12.post1',
+   version='0.3.13',
    author='Jacobs',
    author_email='joe.pierce@jacobs.com',
    packages=['floodmodeller_api', 'floodmodeller_api.units'],

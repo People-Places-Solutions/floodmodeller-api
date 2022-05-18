@@ -906,10 +906,10 @@ class SLUICE(Unit):
         self.ngates = int(params3[0]) # number of gates
         if self.subtype == 'RADIAL':
             self.modular_limits = {'weir_flow': _to_float(params3[1]), 'under_gate_flow': _to_float(params3[2], 1.0), 'over_gate_flow': _to_float(params3[3], 1.0)}
-            self.timeunit = _to_str(params3[4], 'SECONDS')
+            self.timeunit = _to_str(params3[4], 'SECONDS', check_float=True)
             self.extendmethod = _to_str(params3[5], 'EXTEND')
         else:
-            self.timeunit = _to_str(params3[1], 'SECONDS')
+            self.timeunit = _to_str(params3[1], 'SECONDS', check_float=True)
             self.extendmethod = _to_str(params3[2], 'EXTEND')
 
         # Control lines
@@ -980,7 +980,7 @@ class SLUICE(Unit):
         if self.subtype == 'RADIAL':
             params3 += join_10_char(self.modular_limits['weir_flow'], self.modular_limits['under_gate_flow'], self.modular_limits['over_gate_flow'])
 
-        params3 += f'{self.timeunit:<10}{self.extendmethod:<10}'
+        params3 += join_n_char_ljust(10, self.timeunit, self.extendmethod)
 
         block.extend([params1, params2, params3])
 
@@ -1011,7 +1011,7 @@ class SLUICE(Unit):
             # ADD RULES
             block.append('RULES')
             self.nrules = len(self.rules)
-            block.append(f'{self.nrules:<10}{self.rule_sample_time:>10.3f}{self.timeunit:<10}{self.extendmethod:<10}')
+            block.append(f'{self.nrules:<10}{self.rule_sample_time:>10.3f}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}')
             for rule in self.rules:
                 block.append(rule['name'])
                 block.extend(rule['logic'].split('\n'))
