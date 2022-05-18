@@ -36,25 +36,25 @@ class INP(FMFile):
     _filetype: str = 'INP'
     _suffix:str = '.inp'
 
-    def __init__(self, inp_filepath: Optional[Union[str, Path]] = None): #NOTE: This is a method of INP class that is a subclass of FMFile
+    def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
         self._filepath = inp_filepath  
         if self._filepath != None:
             FMFile.__init__(self)
             self._read()
+        
         else:
             self._create_from_blank()
             
         self._get_section_definitions()
 
-    def _read(self): #NOTE: method _read is already defined in the FMFile parent class and so this method redefines _read() for subclass only
+    def _read(self):
         # Read INP file
         with open(self._filepath, 'r') as inp_file:
             self._raw_data = [line.rstrip('\n')
                               for line in inp_file.readlines()]
 
-        
-        self._update_inp_struct() # Generate INP file structure DELETE: calls _update_inp_struct() method of INP class
-        
+        # Generate INP file structure
+        self._update_inp_struct() 
         
 
     def _write(self) -> str:
@@ -64,74 +64,87 @@ class INP(FMFile):
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
         
+        block_shift = 0 # Used to allow changes in the length of subsections.
+
+        for block in self._inp_struct:
+            if block['Subsection_Type'] in subsections.SUPPORTED_SUBSECTIONS:
+                subsection_data = self._raw_data[block['start'] + block_shift: block['end'] + 1 + block_shift]
+                prev_block_len = len(subsection_data)
+                
+                subsection = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) # Get unit object
+                new_subsection_data = subsection._write() # String representation of unit object
+
+                new_block_len = len(new_subsection_data)
+
+                self._raw_data[block['start'] + block_shift: block['end'] + 1 + block_shift] = new_subsection_data # Replace existing subsection with new subsection string 
+                block_shift += (new_block_len - prev_block_len) # adjust block shift for change in number of lines in block
+
+        # TODO: Add functionality to update general parameters - update raw data directly.
+
+        # Regenerate INP file structure
+        self._update_inp_struct()    
+
+        # Write _raw_data out to INP file. 
         inp_string = ''
         for line in self._raw_data:
             inp_string += line + '\n'
+
+        '\n'.join(self._raw_data)
 
         return inp_string
 
     def _create_from_blank(self):
         pass
     
-   
-    
-    def _get_section_definitions(self):    #NOTE:: Method of INP Class
-        # Method to generate unit defintions, from supported subsection with the in INP  REVIEW: Section
+    def _get_section_definitions(self):
+        """Internal method used to get section definitions for each supported unit type and general parameters."""
 
         # Loop through all blocks (subsections) within INP  and process if of a supported type.
         for block in self._inp_struct:             
-
             if block['Subsection_Type'] in subsections.SUPPORTED_SUBSECTIONS: 
-                raw_subsection_data = self._raw_data[block['start']: block['end'] + 1] # RAW data for subsection block of INP file
+                
+                raw_subsection_data = self._raw_data[block['start']: block['end'] + 1] # Raw data for subsection block of INP file
 
                 # Check if subsection type is 'general' and therefore is stored as attribute of INP class
-                if subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'general': #TODO: lower case notation ofr 'Subsection_Type' 
+                if subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'general': 
                     
                     if block['Subsection_Type'] == '[OPTIONS]':
                         self.options = DEFAULT_OPTIONS.copy()  
-                        self._option_order = [] #TODO: check if order matters and update as required
+                        self._option_order = [] 
                         for  line in raw_subsection_data:                          
                             if line.upper() not in subsections.SUPPORTED_SUBSECTIONS and line.strip() != "" and not line.startswith(';'):
                                 data = units.helpers.split_n_char(line, 21)
                                 
-                                #TODO: Review - Consider variable type when appending, and use appropriate function ..? Could i use dictionary with type? Would be useful for writing it back out
                                 self.options[data[0].lower()] = data[1]
                                 self._option_order.append(data[0])
-
-                #TODO: add additional general sections 
-                
-                #Create appropriate sub-class instences
+               
+                # Create appropriate sub-class instences for supported units
                 elif subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['group'] == 'units':   
                     subsection_class = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['class']
                     subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']
 
-                    setattr(self, subsection_attribute, subsection_class(raw_subsection_data)) # Composition - something has a something, rather than something is a something
-                    #composition is implicit by setting an attribute as a class  
+                    setattr(self, subsection_attribute, subsection_class(raw_subsection_data)) 
                     subsection = getattr(self,subsection_attribute)                  
                     subsection_units = getattr(subsection, subsection._attribute)
                     setattr(self, subsection._attribute,subsection_units)
 
 
-                else: #TODO: REVIEW: is else always required? Remove this is probably not required
-                    continue
+                # No action if subsection not supported. Leave block as raw data
 
-            else:
-                # Subsection not currently supported. Leave block as RAW
-                pass
-
-    def _update_inp_struct(self): #Review: is there logic to this being 'update' - do we lean on the method again?
+    def _update_inp_struct(self): 
         """Internal method used to update self._inp_struct which details the overall structure of the inp file as a list of blocks, each of which
             are a dictionary containing the 'start', 'end' and 'type' of the block.
 
         """
-       # Generate INP file structure
+        # Generate INP file structure
         inp_struct = []
         in_block = False
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
             
-            # Check subsection is supported and 
             #TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
+            
+            # Check if subsection is known 
             if line.upper() in subsections.ALL_SUBSECTIONS: 
 
                 if in_block == True:
@@ -139,7 +152,7 @@ class INP(FMFile):
                     inp_struct.append(unit_block) # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
 
-                unit_block['Subsection_Type'] = line.upper() #TODO: strip line?, populate with full name rather than abriviation
+                unit_block['Subsection_Type'] = line.upper()
                 unit_block['start'] = idx
                 in_block = True
 
@@ -153,6 +166,7 @@ class INP(FMFile):
 
     def update(self) -> None:
         """ Updates the existing INP based on any altered attributes """
+        
         self._update()
 
     def save(self, filepath: Union[str, Path]) -> None:
@@ -165,7 +179,9 @@ class INP(FMFile):
 
         Raises:
             TypeError: Raised if given filepath doesn't point to a file suffixed '.inp'
+
         """
+
         filepath = Path(filepath).absolute()
         self._save(filepath)
 

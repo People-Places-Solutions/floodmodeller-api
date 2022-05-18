@@ -16,8 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 ''' Holds the base unit class for all FM 1D units Units '''
 
-# REVIEW: Is this need, or can i make use of the units._base? Really not sure what's going on here
-
 class UrbanUnit:
     _unit = None
     _subtype = None
@@ -36,14 +34,6 @@ class UrbanUnit:
     @name.setter
     def name(self, new_name):
         self._name = new_name
-
-    # @property
-    # def subtype(self):
-    #     return self._subtype
-
-    # @subtype.setter
-    # def subtype(self, new_value):
-    #     raise ValueError ("You cannot changed the subtype of a unit once it has been instantiated")
 
     # Update this bit
     def __repr__(self):
@@ -112,6 +102,8 @@ class UrbanSubsection:
         
         block = []
 
+        block.append('[' + self._attribute.upper() + ']')  
+              
         for line in self._struct:
             if isinstance(line, self._urban_unit_class):
                 block.append(line._write())

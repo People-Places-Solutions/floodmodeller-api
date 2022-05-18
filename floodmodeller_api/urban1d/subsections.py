@@ -16,7 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 ### UNIT CLASSES ###
 from .junctions import JUNCTIONS
-from .outfalls import OUTFALLS
+#from .outfalls import OUTFALLS
+from .raingauges import RAINGAUGES
 
 '''class JUNCTIONS_SECTION(Urban1D):
 
@@ -50,9 +51,10 @@ from .outfalls import OUTFALLS
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed 
 SUPPORTED_SUBSECTIONS = {
     #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
-    '[OPTIONS]': {'group': 'general', 'attribute': 'Options', 'class': 'Options'},
-    '[JUNCTIONS]': {'group': 'units', 'attribute': '_junctions', 'class': JUNCTIONS}
+    #'[OPTIONS]': {'group': 'general', 'attribute': 'Options', 'class': 'Options'},
+    '[JUNCTIONS]': {'group': 'units', 'attribute': '_junctions', 'class': JUNCTIONS},
     #'[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS}
+    '[RAINGAGES]': {'group': 'units', 'attribute': '_raingauges', 'class': RAINGAUGES}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
     #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
     #'[TITLE]' : {
@@ -66,7 +68,7 @@ UNSUPPORTED_SUBSECTIONS = {
 #'[OPTIONS]',
 '[REPORT]',
 '[FILES]',
-'[RAINGAGES]',
+#'[RAINGAGES]',
 '[EVAPORATION]',
 '[TEMPERATURE]',
 '[ADJUSTMENTS]',
