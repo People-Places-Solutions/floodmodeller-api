@@ -39,18 +39,22 @@ class IED(FMFile):
     _suffix: str = '.ied'
 
     def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
-        self._filepath = ied_filepath
-        if self._filepath != None:
-            FMFile.__init__(self)
+        try:
+            self._filepath = ied_filepath
+            if self._filepath != None:
+                FMFile.__init__(self)
 
-            self._read()
+                self._read()
 
-        else:
-            # No filepath specified, create new 'blank' IED in memory
-            self._ied_struct = []
-            self._raw_data = []
+            else:
+                # No filepath specified, create new 'blank' IED in memory
+                self._ied_struct = []
+                self._raw_data = []
 
-        self._get_unit_definitions()
+            self._get_unit_definitions()
+        
+        except Exception as e:
+            self._handle_exception(e, when='read')
 
     def _read(self):
         # Read IED data
@@ -63,59 +67,63 @@ class IED(FMFile):
 
     def _write(self) -> str:
         ''' Returns string representation of the current IED data '''
-        block_shift = 0
-        existing_units = {'boundaries': [], 'structures': [], 'sections': []}
+        try:
+            block_shift = 0
+            existing_units = {'boundaries': [], 'structures': [], 'sections': []}
 
-        for block in self._ied_struct:
-            # Check for all supported boundary types
-            if block['Type'] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[block['start'] +
-                                           block_shift: block['end'] + 1 + block_shift]
-                prev_block_len = len(unit_data)
-                if units.SUPPORTED_UNIT_TYPES[block['Type']]['has_subtype']:
-                    unit_name = unit_data[2][:12].strip()
-                else:
-                    unit_name = unit_data[1][:12].strip()
+            for block in self._ied_struct:
+                # Check for all supported boundary types
+                if block['Type'] in units.SUPPORTED_UNIT_TYPES:
+                    unit_data = self._raw_data[block['start'] +
+                                            block_shift: block['end'] + 1 + block_shift]
+                    prev_block_len = len(unit_data)
+                    if units.SUPPORTED_UNIT_TYPES[block['Type']]['has_subtype']:
+                        unit_name = unit_data[2][:12].strip()
+                    else:
+                        unit_name = unit_data[1][:12].strip()
 
-                # Get unit object
-                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block['Type']]['group'])
-                if unit_name in unit_group:
-                    # block still exists
-                    new_unit_data = unit_group[unit_name]._write()
-                    existing_units[units.SUPPORTED_UNIT_TYPES[block['Type']]['group']].append(unit_name)
-                else:
-                    # Bdy block has been deleted
-                    new_unit_data = []
+                    # Get unit object
+                    unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block['Type']]['group'])
+                    if unit_name in unit_group:
+                        # block still exists
+                        new_unit_data = unit_group[unit_name]._write()
+                        existing_units[units.SUPPORTED_UNIT_TYPES[block['Type']]['group']].append(unit_name)
+                    else:
+                        # Bdy block has been deleted
+                        new_unit_data = []
 
-                new_block_len = len(new_unit_data)
-                self._raw_data[block['start'] + block_shift: block['end'] +
-                               1 + block_shift] = new_unit_data
-                # adjust block shift for change in number of lines in bdy block
-                block_shift += (new_block_len - prev_block_len)
+                    new_block_len = len(new_unit_data)
+                    self._raw_data[block['start'] + block_shift: block['end'] +
+                                1 + block_shift] = new_unit_data
+                    # adjust block shift for change in number of lines in bdy block
+                    block_shift += (new_block_len - prev_block_len)
 
-        # Add any new units
-        for group_name, _units in existing_units.items():
-            for name, unit in getattr(self, group_name).items():
-                if name not in _units:
-                    # Newly added unit
-                    # Ensure that the 'name' attribute matches name key in boundaries
-                    self._raw_data.extend(unit._write())
+            # Add any new units
+            for group_name, _units in existing_units.items():
+                for name, unit in getattr(self, group_name).items():
+                    if name not in _units:
+                        # Newly added unit
+                        # Ensure that the 'name' attribute matches name key in boundaries
+                        self._raw_data.extend(unit._write())
 
-        # Update ied_struct
-        self._update_ied_struct()
+            # Update ied_struct
+            self._update_ied_struct()
 
-        # Update unit names
-        for unit_group in [self.boundaries, self.sections, self.structures]:
-            for name, unit in unit_group.copy().items():
-                if name != unit.name:
-                    unit_group[unit.name] = unit
-                    del unit_group[name]
+            # Update unit names
+            for unit_group in [self.boundaries, self.sections, self.structures]:
+                for name, unit in unit_group.copy().items():
+                    if name != unit.name:
+                        unit_group[unit.name] = unit
+                        del unit_group[name]
 
-        ied_string = ''
-        for line in self._raw_data:
-            ied_string += line + '\n'
+            ied_string = ''
+            for line in self._raw_data:
+                ied_string += line + '\n'
 
-        return ied_string
+            return ied_string
+        
+        except Exception as e:
+            self._handle_exception(e, when='write')
 
     def _get_unit_definitions(self):
         # Get unit definitions

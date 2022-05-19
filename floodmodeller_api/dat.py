@@ -14,7 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 '''
 
-import os
 from pathlib import Path
 from typing import Optional, Union
 
@@ -38,16 +37,19 @@ class DAT(FMFile):
     _suffix: str = '.dat'
 
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None):
-        self._filepath = dat_filepath
-        if self._filepath != None:
-            FMFile.__init__(self)
-            self._read()
+        try:
+            self._filepath = dat_filepath
+            if self._filepath != None:
+                FMFile.__init__(self)
+                self._read()
 
-        else:
-            self._create_from_blank()
+            else:
+                self._create_from_blank()
 
-        self._get_general_parameters()
-        self._get_unit_definitions()
+            self._get_general_parameters()
+            self._get_unit_definitions()
+        except Exception as e:
+            self._handle_exception(e, when='read')
 
     def _read(self):
         # Read DAT data
@@ -74,84 +76,88 @@ class DAT(FMFile):
         Returns:
             str: Full string representation of DAT in its most recent state (including changes not yet saved to disk)
         """
-        block_shift = 0
-        existing_units = {'boundaries': [], 'structures': [], 'sections': []}
+        try:
+            block_shift = 0
+            existing_units = {'boundaries': [], 'structures': [], 'sections': []}
 
-        for block in self._dat_struct:
-            # Check for all supported boundary types
-            if block['Type'] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[block['start'] +
-                                           block_shift: block['end'] + 1 + block_shift]
-                prev_block_len = len(unit_data)
+            for block in self._dat_struct:
+                # Check for all supported boundary types
+                if block['Type'] in units.SUPPORTED_UNIT_TYPES:
+                    unit_data = self._raw_data[block['start'] +
+                                            block_shift: block['end'] + 1 + block_shift]
+                    prev_block_len = len(unit_data)
 
-                if block['Type'] == 'INITIAL CONDITIONS':
-                    new_unit_data = self.initial_conditions._write()
+                    if block['Type'] == 'INITIAL CONDITIONS':
+                        new_unit_data = self.initial_conditions._write()
 
-                else:
-                    if units.SUPPORTED_UNIT_TYPES[block['Type']]['has_subtype']:
-                        unit_name = unit_data[2][:self._label_len].strip()
                     else:
-                        unit_name = unit_data[1][:self._label_len].strip()
+                        if units.SUPPORTED_UNIT_TYPES[block['Type']]['has_subtype']:
+                            unit_name = unit_data[2][:self._label_len].strip()
+                        else:
+                            unit_name = unit_data[1][:self._label_len].strip()
 
-                    # Get unit object
-                    unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block['Type']]['group'])
-                    if unit_name in unit_group:
-                        # block still exists
-                        new_unit_data = unit_group[unit_name]._write()
-                        existing_units[units.SUPPORTED_UNIT_TYPES[block['Type']]['group']].append(unit_name)
-                    else:
-                        # Bdy block has been deleted
-                        new_unit_data = []
+                        # Get unit object
+                        unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block['Type']]['group'])
+                        if unit_name in unit_group:
+                            # block still exists
+                            new_unit_data = unit_group[unit_name]._write()
+                            existing_units[units.SUPPORTED_UNIT_TYPES[block['Type']]['group']].append(unit_name)
+                        else:
+                            # Bdy block has been deleted
+                            new_unit_data = []
 
-                new_block_len = len(new_unit_data)
-                self._raw_data[block['start'] + block_shift: block['end'] +
-                               1 + block_shift] = new_unit_data
-                # adjust block shift for change in number of lines in bdy block
-                block_shift += (new_block_len - prev_block_len)
+                    new_block_len = len(new_unit_data)
+                    self._raw_data[block['start'] + block_shift: block['end'] +
+                                1 + block_shift] = new_unit_data
+                    # adjust block shift for change in number of lines in bdy block
+                    block_shift += (new_block_len - prev_block_len)
 
-        # Update GENERAL parameters
-        self._raw_data[0] = self.title
-        self._raw_data[5] = self.general_parameters['RAD File']
-        general_params_1 = units.helpers.join_10_char(self.general_parameters['Node Count'], self.general_parameters['Lower Froude'], self.general_parameters['Upper Froude'],
-                                                      self.general_parameters['Min Depth'], self.general_parameters['Convergence Direct'], self._label_len)
-        general_params_1 += self.general_parameters['Units']
-        self._raw_data[2] = general_params_1
+            # Update GENERAL parameters
+            self._raw_data[0] = self.title
+            self._raw_data[5] = self.general_parameters['RAD File']
+            general_params_1 = units.helpers.join_10_char(self.general_parameters['Node Count'], self.general_parameters['Lower Froude'], self.general_parameters['Upper Froude'],
+                                                        self.general_parameters['Min Depth'], self.general_parameters['Convergence Direct'], self._label_len)
+            general_params_1 += self.general_parameters['Units']
+            self._raw_data[2] = general_params_1
 
-        general_params_2 = units.helpers.join_10_char(self.general_parameters['Water Temperature'], self.general_parameters['Convergence Flow'], self.general_parameters['Convergence Head'],
-                                                      self.general_parameters['Mathematical Damping'], self.general_parameters[
-                                                          'Pivotal Choice'], self.general_parameters['Under-relaxation'],
-                                                      self.general_parameters['Matrix Dummy'])
-        self._raw_data[3] = general_params_2
+            general_params_2 = units.helpers.join_10_char(self.general_parameters['Water Temperature'], self.general_parameters['Convergence Flow'], self.general_parameters['Convergence Head'],
+                                                        self.general_parameters['Mathematical Damping'], self.general_parameters[
+                                                            'Pivotal Choice'], self.general_parameters['Under-relaxation'],
+                                                        self.general_parameters['Matrix Dummy'])
+            self._raw_data[3] = general_params_2
 
-        # Update dat_struct
-        self._update_dat_struct()
+            # Update dat_struct
+            self._update_dat_struct()
 
-        # Update unit names
-        for unit_group in [self.boundaries, self.sections, self.structures]:
-            for name, unit in unit_group.copy().items():
-                if name != unit.name:
-                    # Check if new name already exists as a label
-                    if unit.name in self.boundaries or unit.name in self.sections or unit.name in self.structures:
-                        raise Exception(f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the Network')
-                    unit_group[unit.name] = unit
-                    del unit_group[name]
-                    # Update label in ICs
-                    self.initial_conditions.update_label(name, unit.name)
+            # Update unit names
+            for unit_group in [self.boundaries, self.sections, self.structures]:
+                for name, unit in unit_group.copy().items():
+                    if name != unit.name:
+                        # Check if new name already exists as a label
+                        if unit.name in self.boundaries or unit.name in self.sections or unit.name in self.structures:
+                            raise Exception(f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the Network')
+                        unit_group[unit.name] = unit
+                        del unit_group[name]
+                        # Update label in ICs
+                        self.initial_conditions.update_label(name, unit.name)
 
-                    # Update label in GISINFO and GXY data
-                    self._update_gisinfo_label(unit._unit, unit._subtype, name, unit.name)
-                    self._update_gxy_label(unit._unit, unit._subtype, name, unit.name)
+                        # Update label in GISINFO and GXY data
+                        self._update_gisinfo_label(unit._unit, unit._subtype, name, unit.name)
+                        self._update_gxy_label(unit._unit, unit._subtype, name, unit.name)
 
-        # Update IC table names in raw_data if any name changes
-        ic_start, ic_end = next((unit['start'], unit['end'])
-                            for unit in self._dat_struct if unit['Type'] == 'INITIAL CONDITIONS')
-        self._raw_data[ic_start: ic_end + 1] = self.initial_conditions._write()
+            # Update IC table names in raw_data if any name changes
+            ic_start, ic_end = next((unit['start'], unit['end'])
+                                for unit in self._dat_struct if unit['Type'] == 'INITIAL CONDITIONS')
+            self._raw_data[ic_start: ic_end + 1] = self.initial_conditions._write()
 
-        dat_string = ''
-        for line in self._raw_data:
-            dat_string += line + '\n'
+            dat_string = ''
+            for line in self._raw_data:
+                dat_string += line + '\n'
 
-        return dat_string
+            return dat_string
+
+        except Exception as e:
+            self._handle_exception(e, when='write')
 
     def _create_from_blank(self):
         # No filepath specified, create new 'blank' DAT in memory

@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 ''' Holds the base file class for API file classes '''
 
 from pathlib import Path
+from .version import __version__
 
 
 class FMFile:
@@ -32,7 +33,7 @@ class FMFile:
 
             if not self._filepath.suffix.lower() == self._suffix:
                 raise TypeError(
-                    f'Given self._filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file')
+                    f'Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file')
             if not self._filepath.exists():
                 raise FileNotFoundError(f'{self._filetype} file does not exist! If you are wanting to create a new {self._filetype}, initiate the class without a given '
                                         f'filepath to create a new blank {self._filetype} or point the filepath of an existing {self._filetype} to use as a template, '
@@ -73,3 +74,19 @@ class FMFile:
         self._filepath = filepath  # Updates the filepath attribute to the given path
 
         print(f'{self._filetype} File Saved to: {filepath}')
+    
+    def _handle_exception(self, err, when):
+        tb = err.__traceback__
+        while tb.tb_next is not None:
+            tb = tb.tb_next
+        line_no = tb.tb_lineno
+        tb_path = Path(tb.tb_frame.f_code.co_filename)
+        fname = '/'.join(tb_path.parts[-2:])
+
+        raise Exception(
+            '\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~' \
+            f'\nAPI Error: Problem encountered when trying to {when} {self._filetype} file {self._filepath}.' \
+            f'\n\nDetails: {__version__}-{fname}-{line_no}' \
+            f'\nMsg: {err}' \
+            '\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api' \
+            )

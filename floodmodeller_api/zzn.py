@@ -37,121 +37,125 @@ class ZZN(FMFile):
     _suffix: str = '.zzn'
 
     def __init__(self, zzn_filepath: Optional[Union[str, Path]]):
-        self._filepath = zzn_filepath
-        FMFile.__init__(self)
+        try:
+            self._filepath = zzn_filepath
+            FMFile.__init__(self)
 
-        # Get zzn_dll path
-        zzn_dll = Path(Path(__file__).resolve().parent, 'zzn_read.dll')
-        # Using str() method as CDLL doesn't seem to like accepting Path object
-        zzn_read = ct.CDLL(str(zzn_dll))
+            # Get zzn_dll path
+            zzn_dll = Path(Path(__file__).resolve().parent, 'zzn_read.dll')
+            # Using str() method as CDLL doesn't seem to like accepting Path object
+            zzn_read = ct.CDLL(str(zzn_dll))
 
-        # Get zzl path
-        zzn = self._filepath
-        zzl = zzn.with_suffix('.zzl')
-        if not zzl.exists():
-            raise FileNotFoundError('Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.')
+            # Get zzl path
+            zzn = self._filepath
+            zzl = zzn.with_suffix('.zzl')
+            if not zzl.exists():
+                raise FileNotFoundError('Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.')
 
-        self.meta = {}  # Dict object to hold all metadata
-        self.data = {}  # Dict object to hold all data
+            self.meta = {}  # Dict object to hold all metadata
+            self.data = {}  # Dict object to hold all data
 
-        # PROCESS_ZZL
-        self.meta['zzl_name'] = ct.create_string_buffer(
-            bytes(str(zzl), 'utf-8'), 255)
-        self.meta['zzn_name'] = ct.create_string_buffer(
-            bytes(str(zzn), 'utf-8'), 255)
-        self.meta['model_title'] = ct.create_string_buffer(b'', 128)
-        self.meta['nnodes'] = ct.c_int(0)
-        self.meta['label_length'] = ct.c_int(0)
-        self.meta['dt'] = ct.c_float(0.0)
-        self.meta['timestep0'] = ct.c_int(0)
-        self.meta['ltimestep'] = ct.c_int(0)
-        self.meta['save_int'] = ct.c_float(0.0)
-        self.meta['is_quality'] = ct.c_bool(False)
-        self.meta['nvars'] = ct.c_int(0)
-        self.meta['tzero'] = (ct.c_int*5)()
-        self.meta['errstat'] = ct.c_int(0)
-        zzn_read.PROCESS_ZZL(
-            ct.byref(self.meta['zzl_name']),
-            ct.byref(self.meta['model_title']),
-            ct.byref(self.meta['nnodes']),
-            ct.byref(self.meta['label_length']),
-            ct.byref(self.meta['dt']),
-            ct.byref(self.meta['timestep0']),
-            ct.byref(self.meta['ltimestep']),
-            ct.byref(self.meta['save_int']),
-            ct.byref(self.meta['is_quality']),
-            ct.byref(self.meta['nvars']),
-            ct.byref(self.meta['tzero']),
-            ct.byref(self.meta['errstat'])
-        )
-        # PROCESS_LABELS
-        self.meta['labels'] = (
-            ct.c_char * self.meta['label_length'].value * self.meta['nnodes'].value)()
-        zzn_read.PROCESS_LABELS(
-            ct.byref(self.meta['zzl_name']),
-            ct.byref(self.meta['nnodes']),
-            ct.byref(self.meta['labels']),
-            ct.byref(self.meta['label_length']),
-            ct.byref(self.meta['errstat'])
-        )
-        # PREPROCESS_ZZN
-        last_hr = (self.meta['ltimestep'].value -
-                   self.meta['timestep0'].value)*self.meta['dt'].value / 3600
-        self.meta['output_hrs'] = (ct.c_float*2)(0.0, last_hr)
-        self.meta['aitimestep'] = (
-            ct.c_int*2)(self.meta['timestep0'].value, self.meta['ltimestep'].value)
-        self.meta['isavint'] = (ct.c_int*2)()
-        zzn_read.PREPROCESS_ZZN(
-            ct.byref(self.meta['output_hrs']),
-            ct.byref(self.meta['aitimestep']),
-            ct.byref(self.meta['dt']),
-            ct.byref(self.meta['timestep0']),
-            ct.byref(self.meta['ltimestep']),
-            ct.byref(self.meta['save_int']),
-            ct.byref(self.meta['isavint'])
-        )
-        # PROCESS_ZZN
-        self.meta['node_ID'] = ct.c_int(-1)
-        self.meta['savint_skip'] = ct.c_int(1)
-        self.meta['savint_range'] = ct.c_int(int(
-            ((self.meta['isavint'][1] - self.meta['isavint'][0])/self.meta['savint_skip'].value)))
-        nx = self.meta['nnodes'].value
-        ny = self.meta['nvars'].value
-        nz = self.meta['savint_range'].value + 1
-        self.data['all_results'] = (ct.c_float*nx*ny*nz)()
-        self.data['max_results'] = (ct.c_float*nx*ny)()
-        self.data['min_results'] = (ct.c_float*nx*ny)()
-        self.data['max_times'] = (ct.c_int*nx*ny)()
-        self.data['min_times'] = (ct.c_int*nx*ny)()
-        zzn_read.PROCESS_ZZN(
-            ct.byref(self.meta['zzn_name']),
-            ct.byref(self.meta['node_ID']),
-            ct.byref(self.meta['nnodes']),
-            ct.byref(self.meta['is_quality']),
-            ct.byref(self.meta['nvars']),
-            ct.byref(self.meta['savint_range']),
-            ct.byref(self.meta['savint_skip']),
-            ct.byref(self.data['all_results']),
-            ct.byref(self.data['max_results']),
-            ct.byref(self.data['min_results']),
-            ct.byref(self.data['max_times']),
-            ct.byref(self.data['min_times']),
-            ct.byref(self.meta['errstat']),
-            ct.byref(self.meta['isavint'])
-        )
+            # PROCESS_ZZL
+            self.meta['zzl_name'] = ct.create_string_buffer(
+                bytes(str(zzl), 'utf-8'), 255)
+            self.meta['zzn_name'] = ct.create_string_buffer(
+                bytes(str(zzn), 'utf-8'), 255)
+            self.meta['model_title'] = ct.create_string_buffer(b'', 128)
+            self.meta['nnodes'] = ct.c_int(0)
+            self.meta['label_length'] = ct.c_int(0)
+            self.meta['dt'] = ct.c_float(0.0)
+            self.meta['timestep0'] = ct.c_int(0)
+            self.meta['ltimestep'] = ct.c_int(0)
+            self.meta['save_int'] = ct.c_float(0.0)
+            self.meta['is_quality'] = ct.c_bool(False)
+            self.meta['nvars'] = ct.c_int(0)
+            self.meta['tzero'] = (ct.c_int*5)()
+            self.meta['errstat'] = ct.c_int(0)
+            zzn_read.PROCESS_ZZL(
+                ct.byref(self.meta['zzl_name']),
+                ct.byref(self.meta['model_title']),
+                ct.byref(self.meta['nnodes']),
+                ct.byref(self.meta['label_length']),
+                ct.byref(self.meta['dt']),
+                ct.byref(self.meta['timestep0']),
+                ct.byref(self.meta['ltimestep']),
+                ct.byref(self.meta['save_int']),
+                ct.byref(self.meta['is_quality']),
+                ct.byref(self.meta['nvars']),
+                ct.byref(self.meta['tzero']),
+                ct.byref(self.meta['errstat'])
+            )
+            # PROCESS_LABELS
+            self.meta['labels'] = (
+                ct.c_char * self.meta['label_length'].value * self.meta['nnodes'].value)()
+            zzn_read.PROCESS_LABELS(
+                ct.byref(self.meta['zzl_name']),
+                ct.byref(self.meta['nnodes']),
+                ct.byref(self.meta['labels']),
+                ct.byref(self.meta['label_length']),
+                ct.byref(self.meta['errstat'])
+            )
+            # PREPROCESS_ZZN
+            last_hr = (self.meta['ltimestep'].value -
+                    self.meta['timestep0'].value)*self.meta['dt'].value / 3600
+            self.meta['output_hrs'] = (ct.c_float*2)(0.0, last_hr)
+            self.meta['aitimestep'] = (
+                ct.c_int*2)(self.meta['timestep0'].value, self.meta['ltimestep'].value)
+            self.meta['isavint'] = (ct.c_int*2)()
+            zzn_read.PREPROCESS_ZZN(
+                ct.byref(self.meta['output_hrs']),
+                ct.byref(self.meta['aitimestep']),
+                ct.byref(self.meta['dt']),
+                ct.byref(self.meta['timestep0']),
+                ct.byref(self.meta['ltimestep']),
+                ct.byref(self.meta['save_int']),
+                ct.byref(self.meta['isavint'])
+            )
+            # PROCESS_ZZN
+            self.meta['node_ID'] = ct.c_int(-1)
+            self.meta['savint_skip'] = ct.c_int(1)
+            self.meta['savint_range'] = ct.c_int(int(
+                ((self.meta['isavint'][1] - self.meta['isavint'][0])/self.meta['savint_skip'].value)))
+            nx = self.meta['nnodes'].value
+            ny = self.meta['nvars'].value
+            nz = self.meta['savint_range'].value + 1
+            self.data['all_results'] = (ct.c_float*nx*ny*nz)()
+            self.data['max_results'] = (ct.c_float*nx*ny)()
+            self.data['min_results'] = (ct.c_float*nx*ny)()
+            self.data['max_times'] = (ct.c_int*nx*ny)()
+            self.data['min_times'] = (ct.c_int*nx*ny)()
+            zzn_read.PROCESS_ZZN(
+                ct.byref(self.meta['zzn_name']),
+                ct.byref(self.meta['node_ID']),
+                ct.byref(self.meta['nnodes']),
+                ct.byref(self.meta['is_quality']),
+                ct.byref(self.meta['nvars']),
+                ct.byref(self.meta['savint_range']),
+                ct.byref(self.meta['savint_skip']),
+                ct.byref(self.data['all_results']),
+                ct.byref(self.data['max_results']),
+                ct.byref(self.data['min_results']),
+                ct.byref(self.data['max_times']),
+                ct.byref(self.data['min_times']),
+                ct.byref(self.meta['errstat']),
+                ct.byref(self.meta['isavint'])
+            )
 
-        # Convert useful metadata from C types into python types
+            # Convert useful metadata from C types into python types
 
-        self.meta['dt'] = self.meta['dt'].value
-        self.meta['nnodes'] = self.meta['nnodes'].value
-        self.meta['save_int'] = self.meta['save_int'].value
-        self.meta['nvars'] = self.meta['nvars'].value
-        self.meta['savint_range'] = self.meta['savint_range'].value
+            self.meta['dt'] = self.meta['dt'].value
+            self.meta['nnodes'] = self.meta['nnodes'].value
+            self.meta['save_int'] = self.meta['save_int'].value
+            self.meta['nvars'] = self.meta['nvars'].value
+            self.meta['savint_range'] = self.meta['savint_range'].value
 
-        self.meta['zzn_name'] = self.meta['zzn_name'].value.decode()
-        self.meta['labels'] = [label.value.decode().strip()
-                               for label in list(self.meta['labels'])]
-        self.meta['model_title'] = self.meta['model_title'].value.decode()
+            self.meta['zzn_name'] = self.meta['zzn_name'].value.decode()
+            self.meta['labels'] = [label.value.decode().strip()
+                                for label in list(self.meta['labels'])]
+            self.meta['model_title'] = self.meta['model_title'].value.decode()
+        
+        except Exception as e:
+            self._handle_exception(e, when='read')
 
     def to_dataframe(self, result_type: Optional[str] ='all', variable: Optional[str] ='all', include_time: Optional[bool] =False, 
             multilevel_header: Optional[bool] = True) -> pd.DataFrame:

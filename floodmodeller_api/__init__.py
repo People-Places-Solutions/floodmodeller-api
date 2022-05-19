@@ -1,3 +1,4 @@
+from .version import __version__
 # Import files
 from .zzn import ZZN
 from .ief import IEF
