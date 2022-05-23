@@ -15,5 +15,5 @@ Updates
 
 Bug fixes
 --------------
--   
+- Fix issue where logical rules would only read correctly if key words providied in all caps
 
