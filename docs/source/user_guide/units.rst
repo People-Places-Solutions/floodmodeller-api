@@ -72,11 +72,11 @@ Structure units
 .. autoclass:: floodmodeller_api.units.SPILL
 
 ``BLOCKAGE()``
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.BLOCKAGE
 
 ``CULVERT()``
 ~~~~~~~~~~~~~
 
-.. autoclass:: floodmodeller_api.units.CULVET
+.. autoclass:: floodmodeller_api.units.CULVERT

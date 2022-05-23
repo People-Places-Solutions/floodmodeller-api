@@ -1,4 +1,4 @@
-'''
+"""
 Flood Modeller Python API
 Copyright (C) 2022 Jacobs U.K. Limited
 
@@ -12,7 +12,7 @@ You should have received a copy of the GNU General Public License along with thi
 
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
-'''
+"""
 
 flags = {
     "DATAFILE": "ISIS Event Header",
@@ -249,5 +249,5 @@ flags = {
     "FLOWTIMEPROFILE17": "Flow Time Profiles",
     "FLOWTIMEPROFILE18": "Flow Time Profiles",
     "FLOWTIMEPROFILE19": "Flow Time Profiles",
-    "FLOWTIMEPROFILE20": "Flow Time Profiles"
+    "FLOWTIMEPROFILE20": "Flow Time Profiles",
 }

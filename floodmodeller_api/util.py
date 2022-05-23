@@ -1,4 +1,4 @@
-'''
+"""
 Flood Modeller Python API
 Copyright (C) 2022 Jacobs U.K. Limited
 
@@ -12,10 +12,11 @@ You should have received a copy of the GNU General Public License along with thi
 
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
-'''
+"""
 
 import webbrowser
 from pathlib import Path
 
+
 def open_docs():
-    webbrowser.open_new_tab('https://help.floodmodeller.com/api/')
+    webbrowser.open_new_tab("https://help.floodmodeller.com/api/")

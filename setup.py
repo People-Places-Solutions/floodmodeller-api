@@ -3,9 +3,11 @@ from setuptools import setup
 with open('README.md') as f:
     readme_txt = f.read()
 
+exec(open('floodmodeller_api/version.py').read())
+
 setup(
    name='floodmodeller_api',
-   version='0.3.12.post1',
+   version=__version__,
    author='Jacobs',
    author_email='joe.pierce@jacobs.com',
    packages=[

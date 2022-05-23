@@ -1,4 +1,4 @@
-'''
+"""
 Flood Modeller Python API
 Copyright (C) 2022 Jacobs U.K. Limited
 
@@ -12,9 +12,10 @@ You should have received a copy of the GNU General Public License along with thi
 
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
-'''
+"""
 
-''' Holds the base unit class for all FM Units '''
+""" Holds the base unit class for all FM Units """
+
 
 class Unit:
     _unit = None
@@ -34,7 +35,17 @@ class Unit:
 
     @name.setter
     def name(self, new_name):
-        self._name = new_name
+        try:
+            new_name = str(new_name)
+            if " " in new_name:
+                raise Exception(
+                    f'Cannot set unit name to "{new_name}" as it contains one or more spaces'
+                )
+            self._name = new_name
+        except Exception as e:
+            raise Exception(
+                f'Failed to set unit name to "{new_name}" due to error: {e}'
+            )
 
     @property
     def subtype(self):
@@ -42,21 +53,23 @@ class Unit:
 
     @subtype.setter
     def subtype(self, new_value):
-        raise ValueError ("You cannot changed the subtype of a unit once it has been instantiated")
-
+        raise ValueError(
+            "You cannot changed the subtype of a unit once it has been instantiated"
+        )
 
     def __repr__(self):
         if self._subtype is None:
-            return f'<floodmodeller_api Unit Class: {self._unit}(name={self._name})>'
+            return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name})>"
         else:
-            return f'<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>'
+            return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
 
     def _create_from_blank(self):
         raise NotImplementedError(
-                f'Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read')
-           
+            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
+        )
+
     def __str__(self):
-        return '\n'.join(self._write())
+        return "\n".join(self._write())
 
     def _read(self):
         raise NotImplementedError
