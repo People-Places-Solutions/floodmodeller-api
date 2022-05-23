@@ -4,7 +4,7 @@ from ._base import UrbanSubsection, UrbanUnit
 
 from ._base import UrbanSubsection, UrbanUnit
 from floodmodeller_api.units.helpers import split_n_char, _to_float, _to_str, join_n_char_ljust
-
+from floodmodeller_api.validation import _validate_unit
 
 
 # class OUTFALL(UrbanUnit): #TODO: need to update to be 'JUNCTION' with no S

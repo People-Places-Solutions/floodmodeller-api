@@ -1,5 +1,6 @@
 from ._base import UrbanSubsection, UrbanUnit
 from floodmodeller_api.units.helpers import split_n_char, _to_float, _to_str, join_n_char_ljust
+from floodmodeller_api.validation import _validate_unit
 
 class RAINGAUGE(UrbanUnit):
     """Class to hold and process RAINGAUGE unit type  
@@ -30,7 +31,12 @@ class RAINGAUGE(UrbanUnit):
             
         self.name = str(unit_data[0]) 
         self.format = str(unit_data[1]) 
-        self.interval = _to_float(unit_data[2], 0.0) 
+    
+        try:
+            self.interval = float(unit_data[2]) # Decimal hours  
+        except ValueError:
+            self.interval = str(unit_data[2]) # HH:MM format
+       
         self.snow_catch_factor = _to_float(unit_data[3], 0.0) 
         self.data_option = str(unit_data[4]) 
         
@@ -45,6 +51,8 @@ class RAINGAUGE(UrbanUnit):
     def _write(self):
         ''' Function to write a valid JUNCTION line '''
         
+        _validate_unit(self)
+
         #TODO:Improve indentation format when writing.  Consider writing header rows for clarity and completness
 
         params1 = join_n_char_ljust(15, self.name, self.format, self.interval, self.snow_catch_factor, self.data_option) # First group of parameters

@@ -35,6 +35,7 @@ class INP(FMFile):
 
     _filetype: str = 'INP'
     _suffix:str = '.inp'
+    
 
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
         self._filepath = inp_filepath  
@@ -65,6 +66,7 @@ class INP(FMFile):
         """
         
         block_shift = 0 # Used to allow changes in the length of subsections.
+        # existing_units = {'junctions': [], 'raingauges': []} MAYBE REQUIRED
 
         for block in self._inp_struct:
             if block['Subsection_Type'] in subsections.SUPPORTED_SUBSECTIONS:
@@ -73,6 +75,8 @@ class INP(FMFile):
                 
                 subsection = getattr(self, subsections.SUPPORTED_SUBSECTIONS[block['Subsection_Type']]['attribute']) # Get unit object
                 new_subsection_data = subsection._write() # String representation of unit object
+
+                #TODO: add functionality to update name.  see DAT as example, and commented out code in here
 
                 new_block_len = len(new_subsection_data)
 
@@ -83,6 +87,17 @@ class INP(FMFile):
 
         # Regenerate INP file structure
         self._update_inp_struct()    
+
+        #EXAMPLE
+        # for unit_group in [self.boundaries, self.sections, self.structures]:
+        #     for name, unit in unit_group.copy().items():
+        #         if name != unit.name:
+        #             unit_group[unit.name] = unit
+        #             del unit_group[name]
+        #             # Update label in ICs
+        #             self.initial_conditions.update_label(name, unit.name)
+
+
 
         # Write _raw_data out to INP file. 
         inp_string = ''

@@ -1,5 +1,6 @@
 from ._base import UrbanSubsection, UrbanUnit
 from floodmodeller_api.units.helpers import split_n_char, _to_float, _to_str, join_n_char_ljust
+from floodmodeller_api.validation import _validate_unit
 
 class JUNCTION(UrbanUnit):
     """Class to hold and process JUNCTION unit type  
@@ -38,6 +39,8 @@ class JUNCTION(UrbanUnit):
 
     def _write(self):
         ''' Function to write a valid JUNCTION line '''
+        
+        _validate_unit(self)
         
         #TODO:Improve indentation format when writing.  Consider writing header rows for clarity and completness
         
