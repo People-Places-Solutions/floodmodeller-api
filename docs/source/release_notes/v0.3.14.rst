@@ -1,0 +1,19 @@
+************************************
+What's new in 0.3.14 (June 2022)
+************************************
+
+This page details the changes for version 0.3.14 of Flood Modeller Python API
+
+New features
+--------------
+- 
+
+Updates
+--------------
+- Improved exception handling
+
+
+Bug fixes
+--------------
+-   
+
