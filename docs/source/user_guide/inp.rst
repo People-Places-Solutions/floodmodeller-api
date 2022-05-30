@@ -2,112 +2,99 @@ INP Class
 =====================================================
 Summary
 --------
-The ``INP`` class is used to read and update Flood Modeller's inp file format that is associated with 1D Urban models. The class is initiated with the full filepath of a INP file to load an existing network. 
+The ``INP`` class is used to read and update Flood Modeller's inp file format that is associated with 1D Urban models. The class is initiated with the full filepath of an INP file to 
+load an existing drainage network. 
 
 .. note::
-   Currently the API only supports editing of limited number of unit types, namely Junctions and Raingauges. Furthermore, the API does not currently support adding/deleting units. Functionality 
-   to create and build networks will be implemented in a future release.
    
-   Currently the API only supports editing existing DAT networks and units. Unlike the IED class which allows for creating new IEDs and adding/deleting units. Functionality 
-   to create and build networks will be implemented in a future release. #TODO: UPDATE to reference current state
-
+   Currently, the API only supports editing of a limited number of unit types (Junctions and Raingauges). Furthermore, the API does not yet support adding/deleting units. Support of 
+   additional unit types, as well as functionality to create and build networks will be implemented in a future release.   
+   
 .. code:: python
 
     from floodmodeller_api import INP
 
     inp = INP('path/to/inpfile.inp') # Loads existing INP file into memory
 
-Once you have initialised a INP class, the junction and raingauge units can be accessed via the attributes: #TODO: update to comment on all clases
+Once you have initialised a INP class, the supported units can be accessed via the attributes: 
 
--  ``.sections`` (see: :ref:`Section units <section_units>`)
--  ``.structures`` (see: :ref:`Structure units <structure_units>`)
--  ``.boundaries`` (see: :ref:`Boundary units <boundary_units>`)
+-  ``.junctions`` (see: :ref:`Junction units <Junction_units>`)
+-  ``.raingauges`` (see: :ref:`Raingauge units <Raingauge_units>`)
 
-In each, the units are stored in a dictionary of unit names and unit classes. Only units which are supported in the API will be accesible via these attributes, all of which can be 
-found in the :doc:`Individual Unit Classes <units>` section.
+In each, the individual units of each type are stored in a dictionary of unit names and unit classes. Only units which are supported in the API will be accesible via these attributes, 
+all of which can be found in the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
 
 .. code:: python 
 
     # Print string representation of all units.
-    print(dat.sections)
-    print(dat.structures)
-    print(dat.boundaries)
+    print(dat.junctions)
+    print(inp.raingauge)
 
-Each individual unit class is somewhat unique in how they can be worked with in python, but generally most unit classes will have a ``.name``, ``.comment`` and ``.data`` attribute. 
-For example, a ``RIVER`` unit class contains the full section data as a dataframe:
-
-.. code:: python
-        
-    dat.sections['S5'].data # Accessing the section data for river section 'S5'
-
-    >>> 
-        X     Y  Mannings n  Panel  RPL Marker  Easting  Northing Deactivation  SP. Marker
-    0  -10.0  10.0        0.03  False  0.0             0.0       0.0                        0
-    1   -9.0   9.0        0.03  False  0.0             0.0       0.0                        0
-    2   -8.0   8.0        0.03  False  0.0             0.0       0.0                        0
-    3   -7.0   7.0        0.03  False  0.0             0.0       0.0                        0
-    4   -6.0   6.0        0.03  False  0.0             0.0       0.0                        0
-    5   -5.0   5.0        0.03  False  0.0             0.0       0.0                        0
-    6   -4.0   4.0        0.03  False  0.0             0.0       0.0                        0
-    7   -3.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    8   -2.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    9   -1.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    10   0.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    11   1.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    12   2.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    13   3.0   3.3        0.03  False  0.0             0.0       0.0                        0
-    14   4.0   4.0        0.03  False  0.0             0.0       0.0                        0
-    15   5.0   5.0        0.03  False  0.0             0.0       0.0                        0
-    16   6.0   6.0        0.03  False  0.0             0.0       0.0                        0
-    17   7.0   7.0        0.03  False  0.0             0.0       0.0                        0
-    18   8.0   8.0        0.03  False  0.0             0.0       0.0                        0
-    19   9.0   9.0        0.03  False  0.0             0.0       0.0                        0
-    20  10.0  10.0        0.03  False  0.0             0.0       0.0                        0
-
-All other associated data can be accessed and edited for a ``RIVER`` unit class via class attributes, for example the 'distance to next section' can be accessed using the 
-``.dist_to_next`` attribute:
+Each individual unit class is somewhat unique in how they can be worked with in python. 
+For each unit, the associated data can be accessed and edited via the unit's class attributes.  For example, for a ``JUNCTION`` the the invet elevation can be accessed via the ``.elevation`` attribute: 
 
 .. code:: python
 
-    print(dat.sections['S5'].dist_to_next) # print the distance to next section for river section 'S5'
-    >>> 105.0
+    print(inp.junctions['MC0918'].elevation) # print the invert elevation for junction 'MC0918'
+    >>> 3.28
 
-    dat.sections['S5'].dist_to_next = 150.0 # Update the distance to next section to 150m
+    inp.junctions['MC0918'].elevation = 5 # Update the invert elevation to 5m
 
 Although it is possible to rename units by passing a new name into the ``.name`` attribute, it is recommended to avoid this as it may cause label issues within the network. 
-Currently the DAT class only allows for editing existing units, however functionality to add/remove sections will be included in a future release. For full documentation on 
-the available unit classes, please refer to the :doc:`Individual Unit Classes <units>` section.
+Currently the INP class only allows for editing existing units, however functionality to add/remove sections will be included in a future release. For full documentation on 
+the available unit classes, please refer to the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
 
-In addition to the units, the general parameters for the DAT file can be accessed through the ``.general_parameters`` attribute. This contains a dictionary of all the general 
-DAT settings and can be edited by assigning them new values. 
-
-.. warning:: 
-   Only change values in the general parameters which you are sure can be edited. For example, 'Node Count' 
-   should be treated as read-only
+In addition to the units, the general options for the INP file can be accessed through the ``.options`` attribute. This contains a dictionary of all the general 
+INP settings and can be edited by assigning them new values. 
 
 .. code:: python
 
-    dat.general_parameters # Access dictionary of general DAT parameters
+    inp.general_parameters # Access dictionary of general INP parameters
     >>> {
-            "Node Count": 14,
-            "Lower Froude": 0.75,
-            "Upper Froude": 0.9,
-            "Min Depth": 0.1,
-            "Convergence Direct": 0.001,
-            "Units": "DEFAULT",
-            "Water Temperature": 10.0,
-            "Convergence Flow": 0.01,
-            "Convergence Head": 0.01,
-            "Mathematical Damping": 0.7,
-            "Pivotal Choice": 0.1,
-            "Under-relaxation": 0.7,
-            "Matrix Dummy": 0.0,
-            "RAD File": ""
+            "flow_units": "CFS",
+            "infiltration": "HORTON",
+            "flow_routing": "KINWAVE",
+            "link_offsets": "DEPTH",
+            "force_main_equation": "H-W",
+            "ignore_rainfall": None,
+            "ignore_snowmelt": None,
+            "ignore_groundwater": None,
+            "ignore_rdii": None,
+            "ignore_routing": None,
+            "ignore_quality": None,
+            "allow_ponding": "NO",
+            "skip_steady_state": "NO",
+            "sys_flow_tol": "5",
+            "lat_flow_tol": "5",
+            "start_date": "09/13/2014",
+            "start_time": "00:00:00",
+            "end_date": "09/15/2014",
+            "end_time": "00:00:00",
+            "report_start_date": "09/13/2014",
+            "report_start_time": "00:00:00",
+            "sweep_start": "01/01",
+            "sweep_end": "12/31",
+            "dry_days": "0",
+            "report_step": "00:15:00",
+            "wet_step": "00:05:00",
+            "dry_step": "00:05:00",
+            "routing_step": "0:00:30",
+            "lengthening_step": "0",
+            "variable_step": "0.75",
+            "minimum_step": "0.5",
+            "inertial_damping": "PARTIAL",
+            "normal_flow_limited": "BOTH",
+            "min_surfarea": "12.557",
+            "min_slope": "0",
+            "max_trials": "8",
+            "head_tolerance": "0.005",
+            "threads": "1",
+            "tempdir": None,
         }
 
 Reference
 --------------
-.. autoclass:: floodmodeller_api.DAT
+.. autoclass:: floodmodeller_api.INP
     
    .. automethod:: update
 
@@ -115,26 +102,31 @@ Reference
 
 Examples
 -----------
-**Example 1 - Adding 300mm siltation to all river sections** 
+**Example 1 - Increase non-zero initial depths for all junctions  ** 
 
-In this example, the cross section data for individual river sections needs to be edited to add 300mm to the lowest bed level and make this the minimum bed level across the 
-entire section. This is a simple method to quickly represent siltation in the channel. The updated DAT file is saved to a new location rather than updating the original file.
+In this example, the the initial depth of all junctions is to be increased by 200m only where the exiting initial depth is non-zero.  The updated INP file is saved to a new
+location rather than updating the original file.
 
 .. code:: python
 
     # Import modules
-    from floodmodeller_api import DAT
+    from floodmodeller_api import INP
 
-    # Initialise DAT class
-    dat = DAT('path/to/datafile.dat')
+    # Initialise INP class
+    inp = INP(
+        r"C:\Projects\FloodModellerAPI\Development\Example Data\Oldsmar_50YR_1DAY.inp"
+    )
 
-    # Iterate through all river sections
-    for name, section in dat.sections.items():
-        df = section.data # get section data
-        min_elevation = df['Y'].min() # Get minimum bed level across section
-        raised_bed = min_elevation + 0.3 # Define new minimum bed level by adding 0.3m
-        df['Y'].loc[df['Y'] < raised_bed] = raised_bed # Update any bed levels which are less than the new min bed level
+    # Iterate through all junction units
+    for name, junction in inp.junctions.items():
 
-    dat.save('path/to/datafile_300mm_siltation.dat') # Save to new location
+        # Add 200mm to initial depth if not equal to 0
+        if junction.initial_depth != 0:
+            junction.initial_depth += 0.2
+
+    # Save update inp to new location
+    inp.save(
+        r"C:\Projects\FloodModellerAPI\Development\Example Data\inpfile_increased_initial_depth.inp"
+    )  # Save to new location
 
 

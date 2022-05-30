@@ -83,56 +83,59 @@ class test_DAT(unittest.TestCase):
         for name, qt in prev_qt.items():
             dat.boundaries[name].data = qt  # replace QT flow data with original
         self.assertEqual(dat._write(), self.data_before)
-    
-    # def test_4 (self):
-    #     ''' DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same. '''
-    #     for datfile in Path(test_workspace).glob('*.dat'):
-    #         dat = DAT(datfile)
-    #         first_output = dat._write()
-    #         dat.save('__temp.dat')
-    #         second_output = DAT('__temp.dat')._write()
-    #         self.assertEqual(first_output, second_output)
-    #         os.remove('__temp.dat')
-    #     try:
-    #         os.remove('__temp.gxy')
-    #     except FileNotFoundError:
-    #         pass
+
+    def test_4(self):
+        """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
+        for datfile in Path(test_workspace).glob("*.dat"):
+            dat = DAT(datfile)
+            first_output = dat._write()
+            dat.save("__temp.dat")
+            second_output = DAT("__temp.dat")._write()
+            self.assertEqual(first_output, second_output)
+            os.remove("__temp.dat")
+        try:
+            os.remove("__temp.gxy")
+        except FileNotFoundError:
+            pass
+
 
 class test_INP(unittest.TestCase):
-    ''' Basic benchmarking to test INP class '''
+    """Basic benchmarking to test INP class"""
+
     def setUp(self):
-        ''' Used if there is repetative setup before each test '''
+        """Used if there is repetative setup before each test"""
         self.inp_fp = os.path.join(test_workspace, "network.inp")
-        self.data_before = INP(self.inp_fp)._write() #REVIEW - should this be  _write (e.g. DAT class) or _read (e.g. all other classes)
+        self.data_before = INP(self.inp_fp)._write()
         pass
-    def test_1 (self):
-        ''' INP: Test str representation equal to inp file with no changes '''
-        inp = INP (self.inp_fp)
+
+    def test_1(self):
+        """INP: Test str representation equal to inp file with no changes"""
+        inp = INP(self.inp_fp)
         self.assertEqual(inp._write(), self.data_before)
-    
-    def test_2 (self):
-        ''' INP: Test changing and reverting section name and dist to next makes no changes'''
-        inp = INP (self.inp_fp)
-        prev_name = inp.raingauges['1'].name
-        prev_scf = inp.raingauges['1'].snow_catch_factor
-        inp.raingauges['1'].name = 'check'
-        inp.raingauges['1'].snow_catch_factor = 1.5
+
+    def test_2(self):
+        """INP: Test changing and reverting section name and dist to next makes no changes"""
+        inp = INP(self.inp_fp)
+        prev_name = inp.raingauges["1"].name
+        prev_scf = inp.raingauges["1"].snow_catch_factor
+        inp.raingauges["1"].name = "check"
+        inp.raingauges["1"].snow_catch_factor = 1.5
         self.assertNotEqual(inp._write(), self.data_before)
 
-        inp.raingauges['check'].name = prev_name
-        inp.raingauges['check'].snow_catch_factor = prev_scf
+        inp.raingauges["check"].name = prev_name
+        inp.raingauges["check"].snow_catch_factor = prev_scf
+
         self.assertEqual(inp._write(), self.data_before)
-        #TODO: need to update name in INP class before the above will work.  Should work following this.
-   
-    def test_4 (self):
-        ''' INP: Check all '.dat' files in folder by reading the _write() output into a new INP instance and checking it stays the same. '''
-        for inpfile in Path(test_workspace).glob('*.inp'):
+
+    def test_4(self):
+        """INP: Check all '.dat' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
+        for inpfile in Path(test_workspace).glob("*.inp"):
             inp = INP(inpfile)
             first_output = inp._write()
-            inp.save('__temp.inp')
-            second_output = INP('__temp.inp')._write()
+            inp.save("__temp.inp")
+            second_output = INP("__temp.inp")._write()
             self.assertEqual(first_output, second_output)
-            os.remove('__temp.inp')
+            os.remove("__temp.inp")
 
 
 class test_ZZN(unittest.TestCase):
