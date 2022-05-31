@@ -1205,7 +1205,9 @@ class SLUICE(Unit):
                 block.append(f"GATE {n}")
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
-                gate_data = [f"{t:>10.3f}{o:>10.3f}" for t, o in gate.iteritems()]
+                gate_data = [
+                    f"{join_10_char(t)}{o:>10.3f}" for t, o in gate.iteritems()
+                ]  # Updated: allows for times >10 characters by switching to scientific notation
                 block.extend(gate_data)
                 n += 1
 
@@ -1225,7 +1227,8 @@ class SLUICE(Unit):
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
                 gate_data = [
-                    f"{t:>10.3f}{m:>10}{o:>10.3f}" for t, m, o in gate.itertuples()
+                    f"{join_10_char(t)}{m:>10}{o:>10.3f}"
+                    for t, m, o in gate.itertuples()  # Updated: allows for times >10 characters by switching to scientific notation
                 ]
                 block.extend(gate_data)
                 n += 1
@@ -1244,7 +1247,8 @@ class SLUICE(Unit):
             block.append("TIME RULE DATA SET")
             block.append(join_10_char(len(self.time_rule_data)))
             time_rule_data = [
-                f"{t:>10.3f}{o_r:<10}" for t, o_r in self.time_rule_data.iteritems()
+                f"{join_10_char(t)}{o_r:<10}"
+                for t, o_r in self.time_rule_data.iteritems()  # Updated: allows for times >10 characters by switching to scientific notation
             ]
             block.extend(time_rule_data)
 

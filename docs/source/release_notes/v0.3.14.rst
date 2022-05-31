@@ -17,4 +17,5 @@ Bug fixes
 --------------
 - Fix issue where logical rules would only read correctly if key words providied in all caps
 - Fixed issue with sluice units where 'TIME' expected and 'time' given
+- Fix to _write of Sluice unit where time exceeds 10 characters when formatted as 3dp.  
 
