@@ -142,6 +142,9 @@ class INP(FMFile):
             self._handle_exception(e, when="write")
 
     def _create_from_blank(self):
+        # TODO: JP Review - 
+        # This should either implement the method to create an INP from blank, or it
+        # should raise an exception to say it's not currently a supported feature
         pass
 
     def _get_section_definitions(self):
