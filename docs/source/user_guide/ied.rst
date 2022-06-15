@@ -25,7 +25,7 @@ Once you have initialised an IED class, the individual boundary units will be ac
         print (name) 
 
 .. tip::
-   If present, section and structure units are accessible in the ``.sections`` and ``.structures`` attributes respectively - see :doc:`DAT <dat>` section for more information 
+   If present, other units are accessible in the ``.sections``, ``.conduits``, ``.structures`` and ``.losses`` attributes respectively - see :doc:`DAT <dat>` section for more information 
    on working with these unit types.
 
 Each boundary unit class will typically contain all parameters as class attributes, plus the main data table saved in ``.data`` as a ``pandas.Series()``. These can all be updated 

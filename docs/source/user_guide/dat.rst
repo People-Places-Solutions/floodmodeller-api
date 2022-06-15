@@ -17,8 +17,10 @@ The ``DAT`` class is used to read and update Flood Modeller's dat file format. T
 Once you have initialised a DAT class, the sections, structures, and boundary units can be accessed via the attributes:
 
 -  ``.sections`` (see: :ref:`Section units <section_units>`)
+-  ``.conduits`` (see: :ref:`Conduit units <conduit_units>`)
 -  ``.structures`` (see: :ref:`Structure units <structure_units>`)
 -  ``.boundaries`` (see: :ref:`Boundary units <boundary_units>`)
+-  ``.losses`` (see: :ref:`Loss units <loss_units>`)
 
 In each, the units are stored in a dictionary of unit names and unit classes. Only units which are supported in the API will be accesible via these attributes, all of which can be 
 found in the :doc:`Individual Unit Classes <units>` section.
@@ -27,8 +29,10 @@ found in the :doc:`Individual Unit Classes <units>` section.
 
     # Print string representation of all units.
     print(dat.sections)
+    print(dat.conduits)
     print(dat.structures)
     print(dat.boundaries)
+    print(dat.losses)
 
 Each individual unit class is somewhat unique in how they can be worked with in python, but generally most unit classes will have a ``.name``, ``.comment`` and ``.data`` attribute. 
 For example, a ``RIVER`` unit class contains the full section data as a dataframe:

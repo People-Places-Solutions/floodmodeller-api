@@ -11,6 +11,7 @@ New features
 Updates
 --------------
 - Improved exception handling
+- Added ``.conduits`` and ``.losses`` unit categories in DAT and IED classes
 
 
 Bug fixes

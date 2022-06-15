@@ -42,6 +42,15 @@ Section units
 
 .. autoclass:: floodmodeller_api.units.RIVER
 
+.. _conduit_units:
+
+Conduit units
+-------------
+``CONDUIT()``
+~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.CONDUIT
+
 .. _structure_units:
 
 Structure units
@@ -50,11 +59,6 @@ Structure units
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.BRIDGE
-
-``CONDUIT()``
-~~~~~~~~~~~~~
-
-.. autoclass:: floodmodeller_api.units.CONDUIT
 
 ``SLUICE()``
 ~~~~~~~~~~~~~
@@ -71,6 +75,10 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.SPILL
 
+.. _loss_units:
+
+Loss units
+-------------
 ``BLOCKAGE()``
 ~~~~~~~~~~~~~~
 
