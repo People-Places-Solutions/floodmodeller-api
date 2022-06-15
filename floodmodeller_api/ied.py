@@ -70,7 +70,7 @@ class IED(FMFile):
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
-            existing_units = {"boundaries": [], "structures": [], "sections": []}
+            existing_units = {"boundaries": [], "structures": [], "sections": [], "conduits": [], "losses": []}
 
             for block in self._ied_struct:
                 # Check for all supported boundary types
@@ -117,9 +117,14 @@ class IED(FMFile):
             self._update_ied_struct()
 
             # Update unit names
-            for unit_group in [self.boundaries, self.sections, self.structures]:
+            for unit_group, unit_group_name in [(self.boundaries, 'boundaries'), (self.sections, 'sections'), (self.structures, 'structures'), (self.conduits, 'conduits'), (self.losses, 'losses')]:
                 for name, unit in unit_group.copy().items():
                     if name != unit.name:
+                        # Check if new name already exists as a label
+                        if unit.name in unit_group:
+                            raise Exception(
+                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group'
+                            )
                         unit_group[unit.name] = unit
                         del unit_group[name]
 
@@ -137,6 +142,8 @@ class IED(FMFile):
         self.sections = {}
         self.boundaries = {}
         self.structures = {}
+        self.conduits = {}
+        self.losses = {}
         for block in self._ied_struct:
             # Check for all supported boundary types, starting just with QTBDY type
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
@@ -152,7 +159,10 @@ class IED(FMFile):
                 unit_group = getattr(
                     self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
                 )
-                unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
+                if unit_name in unit_group:
+                    raise Exception(f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}')
+                else:
+                    unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 
     def _update_ied_struct(self):
         # Generate IED structure
