@@ -17,11 +17,11 @@ os.chdir(script_loc) # Set current working directory to this script location
 dat_file = Path('sample_data\\EX17.DAT') 
 
 dat = DAT(dat_file) # Read DAT file
-culvert = dat.structures['T2'] # get culvert unit 'T2'
+culvert = dat.conduits['T2'] # get culvert unit 'T2'
 
 # Loop through each width 
 for width in [2.5, 2.6, 2.7, 2.8]:
     ied = IED(None) # Create blank IED file
     culvert.width = width # Set the width of culvert unit to the desired width
-    ied.structures[culvert.name] = culvert # Add culvert unit to the blank IED 
+    ied.conduits[culvert.name] = culvert # Add culvert unit to the blank IED 
     ied.save(Path(dat_file.parent, f'{dat_file.stem}_{width*1000}mm_width.IED')) # Save IED with name based on dat file and width
