@@ -28,13 +28,13 @@ SUPPORTED_UNIT_TYPES = {
     "REFHBDY": {"group": "boundaries", "has_subtype": False},
     "RIVER": {"group": "sections", "has_subtype": True},
     "BRIDGE": {"group": "structures", "has_subtype": True},
-    "CONDUIT": {"group": "structures", "has_subtype": True},
+    "CONDUIT": {"group": "conduits", "has_subtype": True},
     "SLUICE": {"group": "structures", "has_subtype": True},
     "ORIFICE": {"group": "structures", "has_subtype": True},
     "SPILL": {"group": "structures", "has_subtype": False},
     "INITIAL CONDITIONS": {"group": "other", "has_subtype": False},
-    "BLOCKAGE": {"group": "structures", "has_subtype": False},
-    "CULVERT": {"group": "structures", "has_subtype": True},
+    "BLOCKAGE": {"group": "losses", "has_subtype": False},
+    "CULVERT": {"group": "losses", "has_subtype": True},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
