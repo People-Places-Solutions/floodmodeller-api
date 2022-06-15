@@ -1,6 +1,14 @@
 Support & Feedback 
 ======================
 
+Flood Modeller API GitHub site
+-------------------------------
+In addition to viewing and contributing to the source code, the `Flood Modeller API GitHub site <https://github.com/People-Places-Solutions/floodmodeller-api>`_
+is a great place to raise issues or ask questions in the 'Discussions' section. In the spirit of open source, we encourage you to share any interesting 
+scripts or tools you have developed using the Flood Modeller Python API. 
+To do this, please get involved in the `Show and Tell section here <https://github.com/People-Places-Solutions/floodmodeller-api/discussions>`_. This
+is also a great place to explore different ways that people have used the API.
+
 Flood Modeller Support
 ----------------------
 For information on using Flood Modeller, please check the `Flood Modeller Manual <http://help.floodmodeller.com/floodmodeller/>`_.

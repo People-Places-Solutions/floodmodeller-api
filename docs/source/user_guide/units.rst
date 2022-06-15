@@ -47,7 +47,7 @@ Section units
 Conduit units
 -------------
 ``CONDUIT()``
-~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.CONDUIT
 
