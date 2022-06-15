@@ -187,7 +187,13 @@ class DAT(FMFile):
         self._raw_data[3] = general_params_2
 
     def _update_unit_names(self):
-        for unit_group, unit_group_name in [(self.boundaries, 'boundaries'), (self.sections, 'sections'), (self.structures, 'structures'), (self.conduits, 'conduits'), (self.losses, 'losses')]:
+        for unit_group, unit_group_name in [
+            (self.boundaries, "boundaries"),
+            (self.sections, "sections"),
+            (self.structures, "structures"),
+            (self.conduits, "conduits"),
+            (self.losses, "losses"),
+        ]:
             for name, unit in unit_group.copy().items():
                 if name != unit.name:
                     # Check if new name already exists as a label
@@ -198,7 +204,7 @@ class DAT(FMFile):
                     unit_group[unit.name] = unit
                     del unit_group[name]
                     # Update label in ICs
-                    if unit_group_name not in ['boundaries', 'losses']:
+                    if unit_group_name not in ["boundaries", "losses"]:
                         # TODO: Need to do a more thorough check for whether a unit is one in the ICs
                         # e.g. Culvert inlet and river section may have same label, but only river
                         # section label should update in ICs
@@ -206,12 +212,14 @@ class DAT(FMFile):
 
                     # Update label in GISINFO and GXY data
                     self._update_gisinfo_label(
-                        unit._unit, unit._subtype, name, unit.name, 
-                        unit_group_name in ['boundaries', 'losses']  # if True it ignores second lbl
+                        unit._unit,
+                        unit._subtype,
+                        name,
+                        unit.name,
+                        unit_group_name
+                        in ["boundaries", "losses"],  # if True it ignores second lbl
                     )
-                    self._update_gxy_label(
-                        unit._unit, unit._subtype, name, unit.name
-                    )
+                    self._update_gxy_label(unit._unit, unit._subtype, name, unit.name)
 
         # Update IC table names in raw_data if any name changes
         ic_start, ic_end = next(
@@ -223,7 +231,13 @@ class DAT(FMFile):
 
     def _update_raw_data(self):
         block_shift = 0
-        existing_units = {"boundaries": [], "structures": [], "sections": [], "conduits": [], "losses": []}
+        existing_units = {
+            "boundaries": [],
+            "structures": [],
+            "sections": [],
+            "conduits": [],
+            "losses": [],
+        }
 
         for block in self._dat_struct:
             # Check for all supported boundary types
@@ -276,7 +290,7 @@ class DAT(FMFile):
                 unit_data = self._raw_data[block["start"] : block["end"] + 1]
 
                 # Deal with initial conditions block
-                if block["Type"] == "INITIAL CONDITIONS":  
+                if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
                     continue
 
@@ -291,7 +305,9 @@ class DAT(FMFile):
                     self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
                 )
                 if unit_name in unit_group:
-                    raise Exception(f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}')
+                    raise Exception(
+                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                    )
                 else:
                     unit_group[unit_name] = eval(
                         f'units.{block["Type"]}({unit_data}, {self._label_len})'
@@ -343,13 +359,15 @@ class DAT(FMFile):
             if line == "COMMENT":
                 in_comment = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, "COMMENT", unit_block, in_block, idx)
+                    dat_struct, "COMMENT", unit_block, in_block, idx
+                )
                 continue
 
             if line == "GISINFO":
                 gisinfo_block = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, "GISINFO", unit_block, in_block, idx)
+                    dat_struct, "GISINFO", unit_block, in_block, idx
+                )
 
             if not gisinfo_block:
                 if line.split(" ")[0] in units.ALL_UNIT_TYPES:
@@ -361,7 +379,8 @@ class DAT(FMFile):
                     continue
 
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, unit_type, unit_block, in_block, idx)
+                    dat_struct, unit_type, unit_block, in_block, idx
+                )
 
         if len(unit_block) != 0:
             # Only adds end block if there is a block present (i.e. an empty DAT stays empty)
@@ -370,16 +389,16 @@ class DAT(FMFile):
             dat_struct.append(unit_block)  # add final block
 
         self._dat_struct = dat_struct
-    
+
     def _close_struct_block(self, dat_struct, unit_type, unit_block, in_block, idx):
-        """ Helper method to close block in dat struct """
+        """Helper method to close block in dat struct"""
         if in_block == True:
             unit_block["end"] = idx - 1  # add ending index
             # append existing bdy block to the dat_struct
             dat_struct.append(unit_block)
             unit_block = {}  # reset bdy block
         in_block = True
-        unit_block["Type"] = unit_type # start new bdy block
+        unit_block["Type"] = unit_type  # start new bdy block
         unit_block["start"] = idx  # add starting index
 
         return unit_block, in_block
@@ -396,7 +415,9 @@ class DAT(FMFile):
 
         pass
 
-    def _update_gisinfo_label(self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second):
+    def _update_gisinfo_label(
+        self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
+    ):
         """Update labels in GISINFO block if unit is renamed"""
 
         start, end = next(
@@ -411,14 +432,14 @@ class DAT(FMFile):
         new_gisinfo_block = []
         for line in gisinfo_block:
             # Replace first label
-            if line.startswith(f"{prefix} {prev_lbl} "):  
-                # found matching line (space at the end is important to ignore node 
+            if line.startswith(f"{prefix} {prev_lbl} "):
+                # found matching line (space at the end is important to ignore node
                 # lables with similar starting chars)
                 line = line.replace(f"{prefix} {prev_lbl} ", f"{prefix} {new_lbl} ")
 
             # Replace second label
             if not ignore_second:
-                if line.startswith(f"{prev_lbl} "): # space at the end important again
+                if line.startswith(f"{prev_lbl} "):  # space at the end important again
                     line = line.replace(f"{prev_lbl} ", f"{new_lbl} ", 1)
 
             new_gisinfo_block.append(line)
