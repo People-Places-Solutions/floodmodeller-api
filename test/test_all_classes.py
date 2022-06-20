@@ -114,7 +114,7 @@ class test_INP(unittest.TestCase):
         self.assertEqual(inp._write(), self.data_before)
 
     def test_2(self):
-        """INP: Test changing and reverting section name and dist to next makes no changes"""
+        """INP: Test changing and reverting section name and snow catch factor makes no changes"""
         inp = INP(self.inp_fp)
         prev_name = inp.raingauges["1"].name
         prev_scf = inp.raingauges["1"].snow_catch_factor
@@ -128,7 +128,7 @@ class test_INP(unittest.TestCase):
         self.assertEqual(inp._write(), self.data_before)
 
     def test_4(self):
-        """INP: Check all '.dat' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
+        """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
         for inpfile in Path(test_workspace).glob("*.inp"):
             inp = INP(inpfile)
             first_output = inp._write()

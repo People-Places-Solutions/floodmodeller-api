@@ -4,6 +4,7 @@ demo.py
 code_testing.py
 *.bmp
 *_internal.dat
+__temp.*
 
 # general
 .vscode/

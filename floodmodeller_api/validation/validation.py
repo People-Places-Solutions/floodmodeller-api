@@ -1,4 +1,4 @@
-'''
+"""
 Flood Modeller Python API
 Copyright (C) 2022 Jacobs U.K. Limited
 
@@ -12,79 +12,94 @@ You should have received a copy of the GNU General Public License along with thi
 
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
-'''
+"""
 
 from .urban_parameters import urban_parameter_options
 from .parameters import parameter_options
 
-def _validate_unit(unit, urban = False):
-    ''' Validate parameters are the correct type for the unit '''
+
+def _validate_unit(unit, urban=False):
+    """Validate parameters are the correct type for the unit"""
     param_validation_dict = {}
     all_valid = True
     for param in dir(unit):
 
-        options = parameter_options if not urban else urban_parameter_options # define which dictionary to use
+        options = (
+            parameter_options if not urban else urban_parameter_options
+        )  # define which dictionary to use
 
         if param in options:
             value = getattr(unit, param)
-            param_validation_dict[param] = _validate_parameter(
-                options[param], value)
+            param_validation_dict[param] = _validate_parameter(options[param], value)
             if not param_validation_dict[param][0]:
                 all_valid = False
 
     if not all_valid:
-        errors = ",\n".join([f'{param} {value[1]}' for param,
-                            value in param_validation_dict.items() if not value[0]])
+        errors = ",\n".join(
+            [
+                f"{param} {value[1]}"
+                for param, value in param_validation_dict.items()
+                if not value[0]
+            ]
+        )
         raise ValueError(
-            f'''One or more parameters in {unit.__repr__()} are invalid: \n{errors}''')
+            f"""One or more parameters in {unit.__repr__()} are invalid: \n{errors}"""
+        )
 
 
 def _validate_parameter(param, value):
-    if param['type'] == 'type-match':
-        return isinstance(value, param['options']), f'-> Expected: {param["options"]}'
-    elif param['type'] == 'value-match':
+    if param["type"] == "type-match":
+        return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
+    elif param["type"] == "value-match":
         if isinstance(value, str):
-            return value.upper() in param['options'], f'-> Expected: {param["options"]}'
+            return value.upper() in param["options"], f'-> Expected: {param["options"]}'
         else:
-            return value in param['options'], f'-> Expected: {param["options"]}'
-    elif param['type'] == 'type-value-match':
-        
-        new_rule = {'type': 'type-match', 'options': param['options'][0]}
-        type_match_result =  _validate_parameter(new_rule, value)[0]
+            return value in param["options"], f'-> Expected: {param["options"]}'
+    elif param["type"] == "type-value-match":
 
-        new_rule = {'type': 'value-match', 'options': param['options'][1]}
-        value_match_result =  _validate_parameter(new_rule, value)[0]
+        new_rule = {"type": "type-match", "options": param["options"][0]}
+        type_match_result = _validate_parameter(new_rule, value)[0]
 
-        return type_match_result or value_match_result, f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}'
+        new_rule = {"type": "value-match", "options": param["options"][1]}
+        value_match_result = _validate_parameter(new_rule, value)[0]
 
-    elif param['type'] == 'value-range':
-        lower = param['options'][0]
-        upper = param['options'][1]
+        return (
+            type_match_result or value_match_result,
+            f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}',
+        )
+
+    elif param["type"] == "value-range":
+        lower = param["options"][0]
+        upper = param["options"][1]
         try:
-            return lower <= value <= upper, f'-> Out of valid range: {lower} - {upper}'
+            return lower <= value <= upper, f"-> Out of valid range: {lower} - {upper}"
         except TypeError:
-            return False, f'-> Out of valid range: {lower} - {upper}'
+            return False, f"-> Out of valid range: {lower} - {upper}"
 
-    elif param['type'] == 'string-length':
-        return len(value) <= param['max_length'], f'-> Exceeds {param["max_length"]} characters'
+    elif param["type"] == "string-length":
+        return (
+            len(value) <= param["max_length"],
+            f'-> Exceeds {param["max_length"]} characters',
+        )
 
-    elif param['type'] == 'dict-match':
-        for key, rule in param['options'].items():
+    elif param["type"] == "dict-match":
+        for key, rule in param["options"].items():
             if not key in value:
-                return False, f'-> Missing required dict key: {key}'
+                return False, f"-> Missing required dict key: {key}"
             else:
                 if not _validate_parameter(rule, value[key])[0]:
                     return _validate_parameter(rule, value[key])
         return True, 0
-    
-    elif param['type'] == 'list-dict-match':
+
+    elif param["type"] == "list-dict-match":
         for item in value:
-            for key, rule in param['options'].items():
+            for key, rule in param["options"].items():
                 if not key in item:
-                    return False, f'-> One or more items missing required dict key: {key}'
+                    return (
+                        False,
+                        f"-> One or more items missing required dict key: {key}",
+                    )
                 else:
                     if not _validate_parameter(rule, item[key])[0]:
                         return _validate_parameter(rule, item[key])
         return True, 0
-
-
