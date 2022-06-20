@@ -14,7 +14,11 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-urban_parameter_options = {
+urban_parameter_options = {    
+        "name": {
+        "type": "string-length",
+        "max_length": 15 # Match nominal lenght imposed during _write (units). No column width defined by Flood Modeller     
+    },
         "elevation": {
         "type": "type-match",
         "options": (float, int)
