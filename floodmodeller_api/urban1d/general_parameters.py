@@ -14,9 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-DEFAULT_OPTIONS = {  # NOTE: This is a 'set', rather than a dictionary.  That said, this set contains variables, who's values are being set of None in same action
-    # TODO: JP Review - 
-    # It looks like this is a dictionary, not a set. Is the comment above needed?
+DEFAULT_OPTIONS = {
     "flow_units": None,
     "infiltration": None,
     "flow_routing": None,
