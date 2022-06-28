@@ -19,4 +19,5 @@ Bug fixes
 - Fixed issue with sluice units where 'TIME' expected and 'time' given
 - Fix to _write of Sluice unit where time exceeds 10 characters when formatted as 3dp.  
 - Fix to _read of river and strucutre units allowing for subtype to be followed by TAB (\t) characters
+- Fix to validation of pier_faces to allow no value as parameter is optional
 

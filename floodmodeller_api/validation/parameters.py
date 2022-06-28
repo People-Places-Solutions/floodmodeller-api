@@ -185,9 +185,10 @@ parameter_options = {
         "type": "value-match",
         "options": ["RECTANGLE", "CYLINDER", "SQUARE", "I-BEAM"]
     },
+    #Pier_faces is an optional parameters
     "pier_faces": {
         "type": "value-match",
-        "options": ["STREAMLINE", "SEMICIRCLE", "TRIANGLE", "DIAPHRAGM"]
+        "options": ["", "STREAMLINE", "SEMICIRCLE", "TRIANGLE", "DIAPHRAGM"]
     },
     "soffit_shape": {
         "type": "value-match",
