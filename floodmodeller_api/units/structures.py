@@ -78,7 +78,7 @@ class CULVERT(Unit):
         """Function to read a given CULVERT block and store data as class attributes"""
 
         # Extract common attributes
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
         self.comment = block[0].replace("CULVERT", "").strip()
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -415,7 +415,7 @@ class BRIDGE(Unit):
 
     def _read(self, br_block):
         """Function to read a given BRIDGE block and store data as class attributes"""
-        self._subtype = br_block[1].split(" ")[0]
+        self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -873,7 +873,7 @@ class CONDUIT(Unit):
 
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
-        self._subtype = c_block[1].split(" ")[0]
+        self._subtype = c_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -1049,7 +1049,7 @@ class SLUICE(Unit):
 
     def _read(self, block):
         """Function to read a given SLUICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
@@ -1227,7 +1227,7 @@ class SLUICE(Unit):
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
                 gate_data = [
-                    f"{join_10_char(t)}{m:>10}{o:>10.3f}"
+                    f"{join_10_char(t)}{m:>10}{o:>10.3f}" # TODO: Update to just use join_10_char
                     for t, m, o in gate.itertuples()  # Updated: allows for times >10 characters by switching to scientific notation
                 ]
                 block.extend(gate_data)
@@ -1356,7 +1356,7 @@ class ORIFICE(Unit):
 
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
         self.flapped = True if self.subtype == "FLAPPED" else False
 
         # Extends label line to be correct length before splitting to pick up blank labels

@@ -18,5 +18,5 @@ Bug fixes
 - Fix issue where logical rules would only read correctly if key words provided in all caps
 - Fixed issue with sluice units where 'TIME' expected and 'time' given
 - Fix to _write of Sluice unit where time exceeds 10 characters when formatted as 3dp.  
-- Fix to _read of river units allowing for subtype to be followed by TAB (\t) characters
+- Fix to _read of river and strucutre units allowing for subtype to be followed by TAB (\t) characters
 
