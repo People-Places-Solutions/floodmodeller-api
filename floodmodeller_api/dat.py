@@ -19,6 +19,7 @@ from typing import Optional, Union
 
 from . import units  # Import for using as package
 from ._base import FMFile
+from floodmodeller_api.units.helpers import _to_str, _to_float, _to_int, _to_data_list
 
 
 class DAT(FMFile):
@@ -219,21 +220,23 @@ class DAT(FMFile):
             # Adds the measurements unit if not specified
             params.append("DEFAULT")
         params.extend(units.helpers.split_10_char(self._raw_data[3]))
+
+        #TODO: Update to accept cases where parameters are not provided.
         self.general_parameters["Node Count"] = int(params[0])
-        self.general_parameters["Lower Froude"] = float(params[1])
-        self.general_parameters["Upper Froude"] = float(params[2])
-        self.general_parameters["Min Depth"] = float(params[3])
-        self.general_parameters["Convergence Direct"] = float(params[4])
+        self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
+        self.general_parameters["Upper Froude"] = _to_float(params[2],0.9)
+        self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
+        self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
         self._label_len = int(params[5])  # label length
-        self.general_parameters["Units"] = params[6]
-        self.general_parameters["Water Temperature"] = float(params[7])
-        self.general_parameters["Convergence Flow"] = float(params[8])
-        self.general_parameters["Convergence Head"] = float(params[9])
-        self.general_parameters["Mathematical Damping"] = float(params[10])
-        self.general_parameters["Pivotal Choice"] = float(params[11])
-        self.general_parameters["Under-relaxation"] = float(params[12])
-        self.general_parameters["Matrix Dummy"] = float(params[13])
-        self.general_parameters["RAD File"] = self._raw_data[5]
+        self.general_parameters["Units"] = params[6] # "DEFAULT" set during read above. 
+        self.general_parameters["Water Temperature"] = _to_float(params[7], 10)
+        self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.1)
+        self.general_parameters["Convergence Head"] = _to_float(params[9], 0.1)
+        self.general_parameters["Mathematical Damping"] = _to_float(params[10],0.7)
+        self.general_parameters["Pivotal Choice"] = _to_float(params[11],0.1)
+        self.general_parameters["Under-relaxation"] = _to_float(params[12],0.7)  
+        self.general_parameters["Matrix Dummy"] = _to_float(params[13],0) 
+        self.general_parameters["RAD File"] = self._raw_data[5] # No default, optional
 
     def _get_unit_definitions(self):
         # Get unit definitions
