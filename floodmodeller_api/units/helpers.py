@@ -48,26 +48,34 @@ def join_10_char(*itms, dp=3):
     return string
 
 
-def join_12_char_ljust(*itms):
+def join_12_char_ljust(*itms, dp=3):
     """Joins a set of values with a 12 character buffer and left-justified"""
     string = ""
     for itm in itms:
         if type(itm) == float:
             # save to 3 dp
-            itm = f"{itm:.3f}"
+            if len(f"{itm:.{dp}f}") > 10:
+                # Use scientific notation if number greater than 10 characters
+                itm = f"{itm:.{dp}e}"
+            else:
+                itm = f"{itm:.{dp}f}"
         itm = str(itm)
         itm = itm[:12]
         string += f"{itm:<12}"
     return string
 
 
-def join_n_char_ljust(n, *itms):
+def join_n_char_ljust(n, *itms, dp=3):
     """Joins a set of values with a n character buffer and left-justified"""
     string = ""
     for itm in itms:
         if type(itm) == float:
             # save to 3 dp
-            itm = f"{itm:.3f}"
+            if len(f"{itm:.{dp}f}") > 10:
+                # Use scientific notation if number greater than 10 characters
+                itm = f"{itm:.{dp}e}"
+            else:
+                itm = f"{itm:.{dp}f}"
         itm = str(itm)
         itm = itm[:n]
         string += f"{itm:<{n}}"
