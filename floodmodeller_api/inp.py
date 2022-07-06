@@ -19,7 +19,8 @@ from floodmodeller_api.urban1d import subsections
 from floodmodeller_api.urban1d.general_parameters import DEFAULT_OPTIONS
 from ._base import FMFile
 from . import units
-from floodmodeller_api.units.helpers import join_n_char_ljust
+from floodmodeller_api.units.helpers import join_n_char_ljust, _to_str
+from floodmodeller_api.validation import _validate_unit
 
 
 class INP(FMFile):
@@ -69,6 +70,9 @@ class INP(FMFile):
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
         try:
+            
+            _validate_unit(self, urban=True)
+
             block_shift = 0  # Used to allow changes in the length of subsections.
 
             for block in self._inp_struct:
@@ -166,7 +170,6 @@ class INP(FMFile):
 
                     if block["Subsection_Type"] == "[OPTIONS]":
                         self.options = DEFAULT_OPTIONS.copy()
-                        # self._option_order = [] - Not required as order in dictionaries now preserved
                         for line in raw_subsection_data:
                             if (
                                 line.upper() not in subsections.SUPPORTED_SUBSECTIONS
@@ -175,8 +178,8 @@ class INP(FMFile):
                             ):
                                 data = units.helpers.split_n_char(line, 21)
 
-                                self.options[data[0].lower()] = data[1]
-                                # self._option_order.append(data[0]) - no longer required
+                                #Set type to Float or Stirng, as appropirate. 
+                                self.options[data[0].lower()] = _to_str(data[1], None, check_float = True)
 
                 # Create appropriate sub-class instences for supported units
                 elif (

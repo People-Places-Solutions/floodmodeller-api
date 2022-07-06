@@ -54,4 +54,5 @@ DEFAULT_OPTIONS = {
     "head_tolerance": None,
     "threads": None,
     "tempdir": None,
+    "rule_step":None,
 }
