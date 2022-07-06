@@ -524,7 +524,7 @@ parameter_options = {
     },
     "reverse_flow_mode": {
          "type": "value-match",
-        "options": ["CALCULATED", "ZERO"]
+        "options": [0, "CALCULATED", "ZERO"]
     },
     "type_code": {
          "type": "value-match",

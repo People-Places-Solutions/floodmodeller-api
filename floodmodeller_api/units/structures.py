@@ -106,7 +106,7 @@ class CULVERT(Unit):
             self.bar_proportion = _to_float(params1[1], 0.0)
             self.debris_proportion = _to_float(params1[2], 0.0)
             self.loss_coefficient = _to_float(params1[3], 0.0)
-            self.reverse_flow_mode = _to_str(params1[4], "CALCULATED")
+            self.reverse_flow_mode = _to_str(params1[4], "CALCULATED", check_float=True)
             self.headloss_type = _to_str(params1[5], "TOTAL")
             self.max_screen_height = _to_float(params1[6], 0.0)
 
