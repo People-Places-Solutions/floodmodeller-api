@@ -1206,8 +1206,8 @@ class SLUICE(Unit):
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
                 gate_data = [
-                    f"{join_10_char(t)}{o:>10.3f}" for t, o in gate.iteritems()
-                ]  # Updated: allows for times >10 characters by switching to scientific notation
+                    f"{join_10_char(t, o)}" for t, o in gate.iteritems()
+                ] 
                 block.extend(gate_data)
                 n += 1
 
@@ -1227,8 +1227,8 @@ class SLUICE(Unit):
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
                 gate_data = [
-                    f"{join_10_char(t)}{m:>10}{o:>10.3f}" # TODO: Update to just use join_10_char
-                    for t, m, o in gate.itertuples()  # Updated: allows for times >10 characters by switching to scientific notation
+                    f"{join_10_char(t, m, o)}" 
+                    for t, m, o in gate.itertuples()
                 ]
                 block.extend(gate_data)
                 n += 1
@@ -1237,7 +1237,7 @@ class SLUICE(Unit):
             block.append("RULES")
             self.nrules = len(self.rules)
             block.append(
-                f"{self.nrules:<10}{self.rule_sample_time:>10.3f}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+                f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
             )
             for rule in self.rules:
                 block.append(rule["name"])
@@ -1248,7 +1248,7 @@ class SLUICE(Unit):
             block.append(join_10_char(len(self.time_rule_data)))
             time_rule_data = [
                 f"{join_10_char(t)}{o_r:<10}"
-                for t, o_r in self.time_rule_data.iteritems()  # Updated: allows for times >10 characters by switching to scientific notation
+                for t, o_r in self.time_rule_data.iteritems()
             ]
             block.extend(time_rule_data)
 
