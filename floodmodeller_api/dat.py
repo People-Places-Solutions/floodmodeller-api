@@ -221,7 +221,6 @@ class DAT(FMFile):
             params.append("DEFAULT")
         params.extend(units.helpers.split_10_char(self._raw_data[3]))
 
-        #TODO: Update to accept cases where parameters are not provided.
         self.general_parameters["Node Count"] = int(params[0])
         self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
         self.general_parameters["Upper Froude"] = _to_float(params[2],0.9)
