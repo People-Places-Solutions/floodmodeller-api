@@ -14,9 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from ast import Str
-
-
 urban_parameter_options = {    
         "name": {
         "type": "string-length",
@@ -140,35 +137,35 @@ urban_parameter_options = {
                 },
             "start_date": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },
             "start_time": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },
             "end_date": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },
             "end_time": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },
              "report_start_date": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },       
              "report_start_time": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },      
              "sweep_start": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },      
              "sweep_end": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },                                                              
             "dry_days": {
                 "type": "type-match",
@@ -176,19 +173,19 @@ urban_parameter_options = {
                 },
              "report_step": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },  
              "wet_step": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },  
              "dry_step": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },  
              "routing_step": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },                                                                                 
             "lengthening_step": { # in INT format
                 "type": "type-match",
@@ -232,12 +229,12 @@ urban_parameter_options = {
                 },
             "tempdir": {
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },
             #Rule step in software but not manual
              "rule_step": { 
                 "type": "type-match",
-                "options": (type(None), Str)
+                "options": (type(None), str)
                 },   
         }
     }
