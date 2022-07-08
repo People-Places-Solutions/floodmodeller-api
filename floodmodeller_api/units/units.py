@@ -78,6 +78,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "POND",
     "QH CONTROL",
     "QRATING",
+    "REBDY",
     "REFH2BDY",
     "REPLICATE",
     "RESERVOIR",

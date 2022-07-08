@@ -17,17 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (
-    join_10_char,
-    join_12_char_ljust,
-    join_n_char_ljust,
-    split_10_char,
-    split_12_char,
-    split_n_char,
-    _to_float,
-    _to_int,
-)
-from .validation import _validate_unit, parameter_options
+from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
+                      split_10_char, split_12_char, split_n_char, _to_float, _to_int)
+from floodmodeller_api.validation import _validate_unit
 
 
 class RIVER(Unit):
@@ -60,7 +52,7 @@ class RIVER(Unit):
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
-        self._subtype = riv_block[1].split(" ")[0]
+        self._subtype = riv_block[1].split(" ")[0].strip()
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
