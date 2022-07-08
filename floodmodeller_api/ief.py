@@ -169,15 +169,6 @@ class IEF(FMFile):
                         setattr(self, "EventData", val)
                         delattr(self, prop)
 
-                elif prop.upper() in [itm.upper() for itm in self._ief_properties]:
-                    # Iterate over copy of list
-                    for idx, itm in enumerate(self._ief_properties[:]):
-                        if (
-                            itm.upper() == prop.upper()
-                        ):  # Check if existing property exists with different casing (e.g. Title instead of TITLE)
-                            # supersede the existing property with the new one as this will have been more recently added
-                            delattr(self, itm)
-                            self._ief_properties[idx] = prop
                 else:
                     # Check ief group header
                     group = f"[{flags[prop.upper()]}]"
@@ -200,85 +191,6 @@ class IEF(FMFile):
                         # Add property to end of list
                         self._ief_properties.append(prop)
 
-        # Rearrange order of Flow Time Profiles group if present * Currently assuming all relevent flags included
-        if "[Flow Time Profiles]" in self._ief_properties:
-            end_index = None
-            start_index = self._ief_properties.index("[Flow Time Profiles]")
-            for idx, item in enumerate(self._ief_properties[start_index:]):
-                if idx != 0 and item.startswith("["):
-                    end_index = idx + start_index
-                    break
-            flow_time_list = self._ief_properties[start_index:end_index]
-
-            # sort list to ensure the flow time profiles are in order
-
-            def flow_sort(itm):
-                try:
-                    num = int(itm.upper().replace("FLOWTIMEPROFILE", ""))
-                    return (1, num)
-                except ValueError:
-                    return (0, itm)
-
-            flow_time_list.sort(key=flow_sort)
-
-            # Go through list and update order list
-            idxs = []
-            additional_line_idx = 3
-            for line in flow_time_list:
-                if line == "[Flow Time Profiles]":
-                    idxs.append(0)
-                elif line.upper() == "NOOFFLOWTIMEPROFILES":
-                    idxs.append(1)
-                elif line.upper() == "NOOFFLOWTIMESERIES":
-                    idxs.append(2)
-                else:
-                    idxs.append(additional_line_idx)
-                    additional_line_idx += 1
-            order = [idxs.index(i) for i in range(len(idxs))]
-
-            # Rearrange by order
-            flow_time_list_reorder = [flow_time_list[i] for i in order]
-
-            # Replace existing slice of ief properties with new reordered slice
-            self._ief_properties[start_index:end_index] = flow_time_list_reorder
-
-        # Ensure number of EventData entries is equal to length of EventData attribute
-        if hasattr(self, "EventData"):
-            if not isinstance(self.EventData, list):
-                # If attribute not a list, adds the value as a single entry in list
-                self.EventData = [self.EventData]
-
-            event_properties = self._ief_properties.count(
-                "EventData"
-            )  # Number of 'EventData' flags in ief
-            # Number of event data specified in class
-            events = len(self.EventData)
-            if event_properties < events:
-                # Need to add additional event properties to IEF to match number of events specified
-                to_add = events - event_properties
-                # Used for if no existing eventdata exists
-                insert_index = len(self._ief_properties)
-                for idx, itm in enumerate(reversed(self._ief_properties)):
-                    if itm == "EventData" or itm == "[ISIS Event Details]":
-                        insert_index = len(self._ief_properties) - idx
-                        break
-
-                for i in range(to_add):
-                    # Add in required number of extra EventData after last one.
-                    self._ief_properties.insert(insert_index, "EventData")
-
-            elif event_properties > events:
-                # Need to remove some event properties from IEF to match number of events specified
-                to_remove = event_properties - events
-                removed = 0  # Counter for number removed
-                num_props = len(self._ief_properties)
-                for idx, itm in enumerate(reversed(self._ief_properties)):
-                    if itm == "EventData":
-                        del self._ief_properties[num_props - 1 - idx]
-                        removed += 1
-                        if removed == to_remove:
-                            break
-
         # Remove any deleted properties
         self._ief_properties = [
             line
@@ -289,6 +201,105 @@ class IEF(FMFile):
                 or line.lstrip().startswith(";")
             )
         ]
+
+        # Rearrange order of Flow Time Profiles group if present * Currently assuming all relevent flags included
+        if "[Flow Time Profiles]" in self._ief_properties:
+            self._update_flowtimeprofile_info()
+
+        # Ensure number of EventData entries is equal to length of EventData attribute
+        if hasattr(self, "EventData"):
+            self._update_eventdata_info()
+
+    def _update_eventdata_info(self):
+        if not isinstance(self.EventData, list):
+            # If attribute not a list, adds the value as a single entry in list
+            self.EventData = [self.EventData]
+
+        # Number of 'EventData' flags in ief
+        event_properties = self._ief_properties.count("EventData")
+        # Number of event data specified in class
+        events = len(self.EventData)
+        if event_properties < events:
+            # Need to add additional event properties to IEF to match number of events specified
+            to_add = events - event_properties
+            # Used for if no existing eventdata exists
+            insert_index = len(self._ief_properties)
+            for idx, itm in enumerate(reversed(self._ief_properties)):
+                if itm == "EventData" or itm == "[ISIS Event Details]":
+                    insert_index = len(self._ief_properties) - idx
+                    break
+
+            for i in range(to_add):
+                # Add in required number of extra EventData after last one.
+                self._ief_properties.insert(insert_index, "EventData")
+
+        elif event_properties > events:
+            # Need to remove some event properties from IEF to match number of events specified
+            to_remove = event_properties - events
+            removed = 0  # Counter for number removed
+            num_props = len(self._ief_properties)
+            for idx, itm in enumerate(reversed(self._ief_properties)):
+                if itm == "EventData":
+                    del self._ief_properties[num_props - 1 - idx]
+                    removed += 1
+                    if removed == to_remove:
+                        break
+
+    def _update_flowtimeprofile_info(self):
+        end_index = None
+        start_index = self._ief_properties.index("[Flow Time Profiles]")
+        for idx, item in enumerate(self._ief_properties[start_index:]):
+            if idx != 0 and item.startswith("["):
+                end_index = idx + start_index
+                break
+        flow_time_list = self._ief_properties[start_index:end_index]
+        flow_time_list = [
+            "[Flow Time Profiles]",
+            "NoOfFlowTimeProfiles",
+            "NoOfFlowTimeSeries",
+        ] + [i for i in flow_time_list if i.lower().startswith("flowtimeprofile")]
+
+        # sort list to ensure the flow time profiles are in order
+        def flow_sort(itm):
+            try:
+                num = int(itm.upper().replace("FLOWTIMEPROFILE", ""))
+                return (1, num)
+            except ValueError:
+                return (0, itm)
+
+        flow_time_list[3:] = sorted(flow_time_list[3:], key=flow_sort)
+
+        # Replace existing slice of ief properties with new reordered slice
+        self._ief_properties[start_index:end_index] = flow_time_list
+
+        # Update NoOfFlowTimeSeries
+        self.NoOfFlowTimeProfiles = str(len(flow_time_list[3:]))
+
+    def __getattr__(self, name):
+        for attr in self.__dict__.copy():
+            if name.lower() == attr.lower():
+                return self.__dict__[attr]
+        return self.__getattribute__(name)
+
+    def __setattr__(self, name, value):
+        existing_attr_updated = False
+        for attr in self.__dict__.copy():
+            if name.lower() == attr.lower():
+                self.__dict__[attr] = value
+                existing_attr_updated = True
+
+        if not existing_attr_updated:
+            self.__dict__[name] = value
+
+    def __delattr__(self, name):
+        existing_attr_deleted = False
+        for attr in self.__dict__.copy():
+            if name.lower() == attr.lower():
+                super().__delattr__(attr)
+                existing_attr_deleted = True
+        
+        if not existing_attr_deleted:
+            super().__delattr__(name)
 
     def update(self) -> None:
         """Updates the existing IEF based on any altered attributes"""
