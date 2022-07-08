@@ -6,7 +6,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import pandas as pd
 from pathlib import Path
-from floodmodeller_api import IEF, IED, DAT, ZZN
+from floodmodeller_api import IEF, IED, DAT, ZZN, INP
 from floodmodeller_api.units import QTBDY
 
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
@@ -97,6 +97,45 @@ class test_DAT(unittest.TestCase):
             os.remove("__temp.gxy")
         except FileNotFoundError:
             pass
+
+
+class test_INP(unittest.TestCase):
+    """Basic benchmarking to test INP class"""
+
+    def setUp(self):
+        """Used if there is repetative setup before each test"""
+        self.inp_fp = os.path.join(test_workspace, "network.inp")
+        self.data_before = INP(self.inp_fp)._write()
+        pass
+
+    def test_1(self):
+        """INP: Test str representation equal to inp file with no changes"""
+        inp = INP(self.inp_fp)
+        self.assertEqual(inp._write(), self.data_before)
+
+    def test_2(self):
+        """INP: Test changing and reverting section name and snow catch factor makes no changes"""
+        inp = INP(self.inp_fp)
+        prev_name = inp.raingauges["1"].name
+        prev_scf = inp.raingauges["1"].snow_catch_factor
+        inp.raingauges["1"].name = "check"
+        inp.raingauges["1"].snow_catch_factor = 1.5
+        self.assertNotEqual(inp._write(), self.data_before)
+
+        inp.raingauges["check"].name = prev_name
+        inp.raingauges["check"].snow_catch_factor = prev_scf
+
+        self.assertEqual(inp._write(), self.data_before)
+
+    def test_4(self):
+        """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
+        for inpfile in Path(test_workspace).glob("*.inp"):
+            inp = INP(inpfile)
+            first_output = inp._write()
+            inp.save("__temp.inp")
+            second_output = INP("__temp.inp")._write()
+            self.assertEqual(first_output, second_output)
+            os.remove("__temp.inp")
 
 
 class test_ZZN(unittest.TestCase):

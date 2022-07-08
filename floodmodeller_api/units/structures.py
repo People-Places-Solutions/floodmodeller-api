@@ -30,7 +30,7 @@ from .helpers import (
     _to_int,
     _to_data_list,
 )
-from .validation import _validate_unit, parameter_options
+from floodmodeller_api.validation import _validate_unit
 
 
 class CULVERT(Unit):
@@ -78,7 +78,7 @@ class CULVERT(Unit):
         """Function to read a given CULVERT block and store data as class attributes"""
 
         # Extract common attributes
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
         self.comment = block[0].replace("CULVERT", "").strip()
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -106,7 +106,7 @@ class CULVERT(Unit):
             self.bar_proportion = _to_float(params1[1], 0.0)
             self.debris_proportion = _to_float(params1[2], 0.0)
             self.loss_coefficient = _to_float(params1[3], 0.0)
-            self.reverse_flow_mode = _to_str(params1[4], "CALCULATED")
+            self.reverse_flow_mode = _to_str(params1[4], "CALCULATED", check_float=True)
             self.headloss_type = _to_str(params1[5], "TOTAL")
             self.max_screen_height = _to_float(params1[6], 0.0)
 
@@ -415,7 +415,7 @@ class BRIDGE(Unit):
 
     def _read(self, br_block):
         """Function to read a given BRIDGE block and store data as class attributes"""
-        self._subtype = br_block[1].split(" ")[0]
+        self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -873,7 +873,7 @@ class CONDUIT(Unit):
 
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
-        self._subtype = c_block[1].split(" ")[0]
+        self._subtype = c_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -1049,7 +1049,7 @@ class SLUICE(Unit):
 
     def _read(self, block):
         """Function to read a given SLUICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
@@ -1102,7 +1102,7 @@ class SLUICE(Unit):
             self.extendmethod = _to_str(params3[2], "EXTEND")
 
         # Control lines
-        self.control_method = block[6].split()[0]
+        self.control_method = block[6].split()[0].upper()
         if self.control_method == "TIME":
             self.gates = self._get_gates(self.ngates, block, gate_row=7)
 
@@ -1205,7 +1205,9 @@ class SLUICE(Unit):
                 block.append(f"GATE {n}")
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
-                gate_data = [f"{t:>10.3f}{o:>10.3f}" for t, o in gate.iteritems()]
+                gate_data = [
+                    f"{join_10_char(t, o)}" for t, o in gate.iteritems()
+                ] 
                 block.extend(gate_data)
                 n += 1
 
@@ -1225,7 +1227,8 @@ class SLUICE(Unit):
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
                 gate_data = [
-                    f"{t:>10.3f}{m:>10}{o:>10.3f}" for t, m, o in gate.itertuples()
+                    f"{join_10_char(t, m, o)}" 
+                    for t, m, o in gate.itertuples()
                 ]
                 block.extend(gate_data)
                 n += 1
@@ -1234,7 +1237,7 @@ class SLUICE(Unit):
             block.append("RULES")
             self.nrules = len(self.rules)
             block.append(
-                f"{self.nrules:<10}{self.rule_sample_time:>10.3f}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+                f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
             )
             for rule in self.rules:
                 block.append(rule["name"])
@@ -1244,7 +1247,8 @@ class SLUICE(Unit):
             block.append("TIME RULE DATA SET")
             block.append(join_10_char(len(self.time_rule_data)))
             time_rule_data = [
-                f"{t:>10.3f}{o_r:<10}" for t, o_r in self.time_rule_data.iteritems()
+                f"{join_10_char(t)}{o_r:<10}"
+                for t, o_r in self.time_rule_data.iteritems()
             ]
             block.extend(time_rule_data)
 
@@ -1352,7 +1356,7 @@ class ORIFICE(Unit):
 
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0]
+        self._subtype = block[1].split(" ")[0].strip()
         self.flapped = True if self.subtype == "FLAPPED" else False
 
         # Extends label line to be correct length before splitting to pick up blank labels

@@ -10,7 +10,12 @@ setup(
     version=__version__,
     author="Jacobs",
     author_email="joe.pierce@jacobs.com",
-    packages=["floodmodeller_api", "floodmodeller_api.units"],
+    packages=[
+        "floodmodeller_api",
+        "floodmodeller_api.units",
+        "floodmodeller_api.validation",
+        "floodmodeller_api.urban1d",
+    ],
     scripts=[],
     project_urls={
         "API Documentation": "https://help.floodmodeller.com/api/",
