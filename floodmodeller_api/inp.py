@@ -189,6 +189,7 @@ class INP(FMFile):
                     subsection_class = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
                     ]["class"]
+                    
                     subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
                     ]["attribute"]

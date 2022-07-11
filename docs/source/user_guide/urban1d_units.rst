@@ -14,3 +14,8 @@ updated and written via the API directly.
 
 .. autoclass:: floodmodeller_api.urban1d.RAINGAGE
 
+``OUTFALL()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.urban1d.OUTFALL
+

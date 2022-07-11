@@ -16,8 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 ### UNIT CLASSES ###
 from .junctions import JUNCTIONS
-
-# from .outfalls import OUTFALLS
+from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
 
 """class JUNCTIONS_SECTION(Urban1D):
@@ -54,7 +53,7 @@ SUPPORTED_SUBSECTIONS = {
     #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
     "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
-    #'[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS}
+    '[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
     #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
@@ -65,10 +64,10 @@ SUPPORTED_SUBSECTIONS = {
 
 UNSUPPORTED_SUBSECTIONS = {
     "[TITLE]",
-    #'[OPTIONS]',
+    #'[OPTIONS]', implemented
     "[REPORT]",
     "[FILES]",
-    #'[RAINGAGES]',
+    #'[RAINGAGES]', implemented
     "[EVAPORATION]",
     "[TEMPERATURE]",
     "[ADJUSTMENTS]",
@@ -81,8 +80,8 @@ UNSUPPORTED_SUBSECTIONS = {
     "[GROUNDWATER]",
     "[GWF]",
     "[SNOWPACKS]",
-    #'[JUNCTIONS]',
-    "[OUTFALLS]",
+    #'[JUNCTIONS]', implemented
+    #"[OUTFALLS]", implemented
     "[DIVIDERS]",
     "[STORAGE]",
     "[CONDUITS]",

@@ -12,7 +12,7 @@ Updates
 --------------
 - Improved exception handling
 - Added ``.conduits`` and ``.losses`` unit categories in DAT and IED classes
-
+- Added support for OUTFALLS into Urban 1D 
 
 Bug fixes
 --------------
