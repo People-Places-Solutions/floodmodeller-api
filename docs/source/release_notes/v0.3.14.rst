@@ -23,4 +23,5 @@ Bug fixes
 - Fix to validation of pier_faces to allow no value as parameter is optional
 - Added 'REBDY' to unsupported units
 - Allow for culvert inlet 'reverse_flow_mode' parameter to be 0.00 (as well as 'CALCULATED and 'ZERO' that are already included)
+- Updated logical rules _read() to recognise "ENDIF" as end of rule (as well as "END") 
 

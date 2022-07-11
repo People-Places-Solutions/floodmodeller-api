@@ -1311,7 +1311,7 @@ class SLUICE(Unit):
         rule_dict = {}
         nl = "\n"
         while rules_recorded < nrules:
-            if block[rule_row].strip().upper().endswith("END"):
+            if block[rule_row].strip().upper().endswith(("END", "ENDIF")):
                 rule_logic.append(block[rule_row])
                 rule_dict["logic"] = f"{nl.join(rule_logic)}"
                 rules.append(rule_dict)
