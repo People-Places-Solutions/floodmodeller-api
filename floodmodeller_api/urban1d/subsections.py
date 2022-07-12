@@ -19,6 +19,7 @@ from .junctions import JUNCTIONS
 from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
 from .conduits import CONDUITS
+from .losses import LOSSES
 
 """class JUNCTIONS_SECTION(Urban1D):
 
@@ -56,7 +57,8 @@ SUPPORTED_SUBSECTIONS = {
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     '[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
-    "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS}
+    "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
+    "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
     #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
     #'[TITLE]' : {
@@ -93,7 +95,7 @@ UNSUPPORTED_SUBSECTIONS = {
     "[OUTLETS]",
     "[XSECTIONS]",
     "[TRANSECTS]",
-    "[LOSSES]",
+    #"[LOSSES]",, implemented
     "[CONTROLS]",
     "[POLLUTANTS]",
     "[LANDUSES]",

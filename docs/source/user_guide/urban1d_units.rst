@@ -23,3 +23,9 @@ updated and written via the API directly.
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.urban1d.CONDUIT
+
+``LOSS()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.urban1d.CONDUIT
+
