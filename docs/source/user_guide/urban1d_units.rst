@@ -19,3 +19,7 @@ updated and written via the API directly.
 
 .. autoclass:: floodmodeller_api.urban1d.OUTFALL
 
+``CONDUIT()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.urban1d.CONDUIT

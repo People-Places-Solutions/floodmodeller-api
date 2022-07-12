@@ -18,6 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from .junctions import JUNCTIONS
 from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
+from .conduits import CONDUITS
 
 """class JUNCTIONS_SECTION(Urban1D):
 
@@ -54,7 +55,8 @@ SUPPORTED_SUBSECTIONS = {
     "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     '[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS},
-    "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES}
+    "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
+    "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS}
     #'SPILL': {'group': 'structures', 'has_subtype': False},
     #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
     #'[TITLE]' : {
@@ -84,7 +86,7 @@ UNSUPPORTED_SUBSECTIONS = {
     #"[OUTFALLS]", implemented
     "[DIVIDERS]",
     "[STORAGE]",
-    "[CONDUITS]",
+    #"[CONDUITS]", implemented
     "[PUMPS]",
     "[ORIFICES]",
     "[WEIRS]",
