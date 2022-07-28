@@ -30,8 +30,8 @@ class LOSS(UrbanUnit):
         self.kentry (float): Entrance minor head loss coefficient. (required) # TODO: FM name - Entry Loss Coeff.
         self.kexit (float): Exit minor head loss coefficient. (required) # TODO: FM name - Exit Loss Coeff.
         self.kavg (float): Average minor head loss coefficient across lenght of culvert. (required) # TODO: FM name - Avg. Loss Coeff.
-        self.flap (str): YES/NO.  If conduit has a flat valve that prevents back from. (optional, default NO ) # TODO: FM name - Flap Gate.
-        self.seepage (float): Rate of seepage loss into surrounding soi; (in/hr or mm/hr). (optional, default is 0) # TODO: FM name - Seepage Loss Rate
+        self.flap (str): YES/NO.  If conduit has a flat valve that prevents back flow. (optional, default NO ) # TODO: FM name - Flap Gate.
+        self.seepage (float): Rate of seepage loss into surrounding soil (in/hr or mm/hr). (optional, default is 0) # TODO: FM name - Seepage Loss Rate
         
 
     Returns:
@@ -43,11 +43,11 @@ class LOSS(UrbanUnit):
         """Function to read a given LOSS line and store data as class attributes"""
         
         
-        # TODO: add functionality to read comments - these are provided in a comment line above data line in the node subsection (comment line  starts with a ;)
+        # TODO: add functionality to read comments
 
         unit_data = line.split()  # Get unit parameters
 
-        # Extend length of unit_data if options varaibales not provided.
+        # Extend length of unit_data if options variables not provided.
         while len(unit_data) < 6:
             unit_data.append("")
 
@@ -63,14 +63,15 @@ class LOSS(UrbanUnit):
 
         _validate_unit(self, urban = True)
 
+        # TODO:Improve indentation format when writing and include header for completeness
+
         return join_n_char_ljust(15, self.name, self.kentry, self.kexit, self.kavg, self.flap, self.seepage)
 
 class LOSSES(UrbanSubsection):
-    """Class to read/write the table of junctions"""
+    """Class to read/write the table of losses"""
 
     _urban_unit_class = LOSS
     _attribute = "losses"
 
-    #TODO: refresh how these internal variables are used
 
 

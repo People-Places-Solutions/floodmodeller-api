@@ -29,7 +29,7 @@ class OUTFALL(UrbanUnit):
     Args:
         self.name (str): Unit name
         self.elevation (float): Elevation of outfall invert (ft or m). (required)
-        self.type (string): "FREE", "NORMAL", "FIXED", "TIDAL" or "TIMSERIES". (required)
+        self.type (string): "FREE", "NORMAL", "FIXED", "TIDAL" or "TIMESERIES". (required)
         self.stage (float): elevation of fixed stage for outfall (ft or m) (required when "FIXED" type)
         self.tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
         self.tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
@@ -46,10 +46,11 @@ class OUTFALL(UrbanUnit):
 
         unit_data = line.split()
 
-        # TODO: add functionality to read comments - these are provided in a comment line above data line in the node subsection (comment line  starts with a ;)
-#       
+        # TODO: add functionality to read comments
+        # TODO: considering raising an exception if any of the required parameters are missing
+
         self.name = str(unit_data[0])
-        self.elevation = _to_float(unit_data[1], 0.0) #TODO: considering raising exception if first three are missing
+        self.elevation = _to_float(unit_data[1], 0.0) 
         self.type = str(unit_data[2])
 
         if self.type == "FREE" or self.type == "NORMAL":
@@ -68,13 +69,13 @@ class OUTFALL(UrbanUnit):
                 unit_data.append("")
            
             if self.type =="FIXED":
-                self.stage = _to_float(unit_data[3],0.0) #TODO: considering raising exception if first three are missing
+                self.stage = _to_float(unit_data[3],0.0)
                 
             elif self.type == "NORMAL":
-                self.tcurve = _to_str(unit_data[3],"") #TODO: considering raising exception if first three are missing
+                self.tcurve = _to_str(unit_data[3],"")
 
             elif self.type == "TIMESERIES":
-                self.tseries = _to_str(unit_data[3],"") #TODO: considering raising exception if first three are missing
+                self.tseries = _to_str(unit_data[3],"") 
 
             self.gated = _to_str(unit_data[4], "NO")
             self.routeto = _to_str(unit_data[5], "")
@@ -86,7 +87,7 @@ class OUTFALL(UrbanUnit):
 
         _validate_unit(self, urban=True)
 
-        # TODO:Improve indentation format when writing.  Consider writing header rows for clarity and completness
+        # TODO:Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(15, self.name, self.elevation, self.type)
 
@@ -105,8 +106,8 @@ class OUTFALL(UrbanUnit):
         return params1 + params2
 
 class OUTFALLS(UrbanSubsection):
-    """Class to read/write the table of junctions"""
+    """Class to read/write the table of outfalls"""
 
     _urban_unit_class = OUTFALL
-    _attribute = "outfall"
+    _attribute = "outfalls"
 

@@ -29,3 +29,9 @@ updated and written via the API directly.
 
 .. autoclass:: floodmodeller_api.urban1d.CONDUIT
 
+``XSECTION()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.urban1d.CONDUIT
+
+

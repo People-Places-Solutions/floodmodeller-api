@@ -6,13 +6,13 @@ This page details the changes for version 0.3.14 of Flood Modeller Python API
 
 New features
 --------------
-- 
+- Urban 1D (INP file) - Added support for JUNCTIONS, OUTFALLS, CONDUITS,RAINGAUGES, LOSSES and XSECTIONS. 
 
 Updates
 --------------
 - Improved exception handling
 - Added ``.conduits`` and ``.losses`` unit categories in DAT and IED classes
-- Added support for OUTFALLS, CONDUITS, LOSSES into Urban 1D 
+
 
 Bug fixes
 --------------

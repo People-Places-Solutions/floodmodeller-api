@@ -7,7 +7,9 @@ load an existing drainage network.
 
 .. note::
    
-   Currently, the API only supports editing of a limited number of unit types (Junctions and Raingauges). Furthermore, the API does not yet support adding/deleting units. Support of 
+   The API functionality for Urban 1D INP files is currently in development.  
+   
+   The API currently only supports a reading/writing of limited number of unit types. Furthermore, the API does not yet support adding/deleting units. Support of 
    additional unit types, as well as functionality to create and build networks will be implemented in a future release.   
    
 .. code:: python

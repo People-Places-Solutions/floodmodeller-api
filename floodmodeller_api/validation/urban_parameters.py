@@ -88,6 +88,118 @@ urban_parameter_options = {
          "type": "value-match",
         "options": ["IN", "MM"]
     },
+    "type": { #outfall type
+         "type": "value-match",
+        "options": ["FREE", "NORMAL", "FIXED", "TIDAL", "TIMESERIES"]
+    },
+    "stage": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "tcurve": { #tidal curve name
+        "type": "type-match",
+        "options": (str)
+    },
+    "tseries": { #tidal curve name
+        "type": "type-match",
+        "options": (str)
+    },
+    "gated": { #outfall type
+         "type": "value-match",
+        "options": [None, "", "YES", "NO"]
+    },
+    "routeto": { #outfall type
+        "type": "type-match",
+        "options": (str)
+    },
+    "node1": {
+        "type": "type-match",
+        "options": (str)
+    },
+    "node2": {
+        "type": "type-match",
+        "options": (str)
+    },
+    "length": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "n": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "z1": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "z2": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "q0": {
+        "type": "type-match",
+        "options": (type(None), float, int)
+    },
+    "qmax": {
+        "type": "type-match",
+        "options": (type(None), float, int)
+    },
+    "kentry": {
+        "type": "type-match",
+        "options": ( float, int)
+    },
+    "kexit": {
+        "type": "type-match",
+        "options": ( float, int)
+    },
+    "kavg": {
+        "type": "type-match",
+        "options": ( float, int)
+    },
+    "flap": { #outfall type
+         "type": "value-match",
+        "options": [None, "YES", "NO"]
+    },    
+    "seepage": { #outfall type
+        "type": "type-match",
+        "options": (type(None), float, int)
+    },  
+    "shape": { #xsection shape
+         "type": "value-match",
+        "options": ["CIRCULAR", "FORCE_MAIN", "FILLED_CIRCULAR2", "RECT_CLOSED", "RECT_OPEN", "TRAPEZOIDAL", "TRIANGULAR", "HORIZ_ELLIPSE", "VERT_ELLIPSE", "ARCH", "PARABOLIC", "POWER", "RECT_TRIANGULAR", "RECT_ROUND", "MODBASKETHANDLE", "EGG", "HORSESHOE", "GOTHIC", "CATENARY", "SEMIELLIPTICAL", "BASKETHANDLE", "SEMICIRCULAR", "CUSTOM", "IRREGULAR"]
+    },  
+    "geom1": {
+        "type": "type-match",
+        "options": (type(None), float, int, str) 
+    },
+    "geom2": {
+        "type": "type-match",
+        "options": (type(None), float, int, str)
+    },
+    "geom3": {
+        "type": "type-match",
+        "options": (type(None), float, int, str)
+    },
+    "geom4": {
+        "type": "type-match",
+        "options": (type(None), float, int, str)
+    },
+    "barrels": {
+        "type": "type-match",
+        "options": (type(None), int)
+    },
+    "culvert": {
+        "type": "type-match",
+        "options": (type(None), int, str) #TODO: str added to allow case when optional parameter not provided (and so is ""). Update to improve handling
+    },
+    "curve": { #curve name
+        "type": "type-match",
+        "options": (str)
+    },
+    "tsec": {
+        "type": "type-match",
+        "options": (str)
+    },
     "options": {
         "type": "dict-match",
         "options": {
