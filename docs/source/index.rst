@@ -8,7 +8,9 @@
 Welcome to Flood Modeller Python API's documentation!
 =====================================================
 
-Flood Modeller API is a python package which provides a bridge between `Flood Modeller <https://www.floodmodeller.com/>`_ and the python programming language to extend the capabilities of Flood Modeller in automated workflows.
+Flood Modeller API is a python package which provides a bridge between 
+`Flood Modeller <https://www.floodmodeller.com/>`_ and the python programming language 
+to extend the capabilities of Flood Modeller in automated workflows.
 
 .. panels::
     :card: + intro-card text-center

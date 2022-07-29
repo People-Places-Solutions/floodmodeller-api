@@ -27,14 +27,14 @@ class OUTFALL(UrbanUnit):
     """Class to hold and process OUTFALL unit type
 
     Args:
-        self.name (str): Unit name
-        self.elevation (float): Elevation of outfall invert (ft or m). (required)
-        self.type (string): "FREE", "NORMAL", "FIXED", "TIDAL" or "TIMESERIES". (required)
-        self.stage (float): elevation of fixed stage for outfall (ft or m) (required when "FIXED" type)
-        self.tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
-        self.tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
-        self.gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO") TODO: is this required, or can it be missing
-        self.routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge) 
+        name (str): Unit name
+        elevation (float): Elevation of outfall invert (ft or m). (required)
+        type (string): "FREE", "NORMAL", "FIXED", "TIDAL" or "TIMESERIES". (required)
+        stage (float): elevation of fixed stage for outfall (ft or m) (required when "FIXED" type)
+        tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
+        tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
+        gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO") TODO: is this required, or can it be missing
+        routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge) 
         
     Returns:
         OUTFALL: Flood Modeller OUTFALL Unit class object TODO: add urban 1d in to all instances within urban 1d API
