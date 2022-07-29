@@ -65,7 +65,10 @@ class LOSS(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        return join_n_char_ljust(15, self.name, self.kentry, self.kexit, self.kavg, self.flap, self.seepage)
+        return (
+            join_n_char_ljust(17, self.name)
+            + join_n_char_ljust(15, self.kentry, self.kexit, self.kavg, self.flap, self.seepage)
+        )
 
 class LOSSES(UrbanSubsection):
     """Class to read/write the table of losses"""

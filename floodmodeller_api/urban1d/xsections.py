@@ -92,7 +92,7 @@ class XSECTION(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        params1 = join_n_char_ljust( 15, self.name)
+        params1 = join_n_char_ljust(17, self.name)
 
         if self.shape in _shape_options:
             params2 = join_n_char_ljust(15, self.shape, self.geom1, self.geom2, self.geom3, self.geom4, self.barrels, self.culvert)

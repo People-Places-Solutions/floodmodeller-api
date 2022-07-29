@@ -89,10 +89,13 @@ class OUTFALL(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        params1 = join_n_char_ljust(15, self.name, self.elevation, self.type)
+        params1 = (
+            join_n_char_ljust(17, self.name) 
+            + join_n_char_ljust(15, self.elevation, self.type)
+        )
 
         if self.type == "FREE" or self.type == "NORMAL":
-            params2 = join_n_char_ljust(15, self.stage,self.gated, self.routeto)
+            params2 = join_n_char_ljust(15, "", self.gated, self.routeto)
 
         elif self.type =="FIXED":
             params2 = join_n_char_ljust(15, self.stage, self.gated, self.routeto)
