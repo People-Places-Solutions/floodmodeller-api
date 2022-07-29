@@ -35,7 +35,7 @@ def _validate_unit(unit, urban=False):
                 all_valid = False
 
     if not all_valid:
-        errors = ",\n".join(
+        errors = ",\n     ".join(
             [
                 f"{param} {value[1]}"
                 for param, value in param_validation_dict.items()
@@ -43,7 +43,7 @@ def _validate_unit(unit, urban=False):
             ]
         )
         raise ValueError(
-            f"""One or more parameters in {unit.__repr__()} are invalid: \n{errors}"""
+            f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}"
         )
 
 
