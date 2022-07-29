@@ -3,8 +3,9 @@ IEF Class
 **********
 Summary
 ---------
-The ``IEF`` class is used to read, write and update Flood Modeller's ief file format. The class can be initiated with the full filepath of an ief file to load 
-an existing ief, or with no path to create a new ief file in memory.
+The ``IEF`` class is used to read, write and update Flood Modeller's ief file format. 
+The class can be initiated with the full filepath of an ief file to load an existing ief, 
+or with no path to create a new ief file in memory.
 
 .. code:: python
 
@@ -13,23 +14,31 @@ an existing ief, or with no path to create a new ief file in memory.
     ief = IEF('path/to/simulation.ief') # Loads existing IEF into memory 
     new_ief = IEF() # Used to create new 'blank' IEF 
 
-All standard IEF settings can be changed by the user by simply updating the class property with the same name. For example to set the model title, simply type: 
+All standard IEF settings can be changed by the user by simply updating the class property 
+with the same name. For example to set the model title, simply type: 
 
 .. code:: python
     
-    ief.Title = "My New Title"
+    ief.title = "My New Title"
 
 .. warning::
    Any changes made to the IEF class object are only made to the object itself and do not change the source IEF file until the
    ``.update()`` method is called. Alternatively if the ``.save()`` method is called then the changes are saved to a new file (based on the given
    path) and the original source IEF remains unchanged
 
-Class properties can be updated in this fashion for existing IEF settings as well as to add new settings. To remove a particular setting from the IEF simply delete 
-the propery object, for example to remove 'LINKFLOW' simple type: 
+Class properties can be updated in this fashion for existing IEF settings as well as to 
+add new settings. To remove a particular setting from the IEF simply delete the propery 
+object, for example to remove 'LINKFLOW' simple type: 
 
 .. code:: python
 
-    del ief.LINKFLOW
+    del ief.linkflow
+
+.. note:: 
+   IEF properties can be accessed using any casing (e.g. ``ief.results`` is equivalent to
+   ``ief.Results``) therefore any scripts using the IEF class can be implemented using 
+   typical python style with lowercase properties, whilst retaining the casing in the original
+   file. 
 
 Class properties can also be managed using python's built-in ``getattr()``, ``setattr()`` and ``delattr()`` functions, using these methods is recommended for more 
 complex updates such as updating settings from a dictionary of values, but is required for certain IEF settings which are prefixed with a number such as '2DFLOW' 

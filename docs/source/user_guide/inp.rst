@@ -2,15 +2,19 @@ INP Class
 =====================================================
 Summary
 --------
-The ``INP`` class is used to read and update Flood Modeller's inp file format that is associated with 1D Urban models. The class is initiated with the full filepath of an INP file to 
-load an existing drainage network. 
+The ``INP`` class is used to read and update Flood Modeller's inp file format that is 
+associated with 1D Urban models. The class is initiated with the full filepath of an INP 
+file to load an existing drainage network. 
 
-.. note::
+.. attention::
    
-   The API functionality for Urban 1D INP files is currently in development.  
-   
-   The API currently only supports a reading/writing of limited number of unit types. Furthermore, the API does not yet support adding/deleting units. Support of 
-   additional unit types, as well as functionality to create and build networks will be implemented in a future release.   
+   The API functionality for Urban 1D INP files is currently in development and should be 
+   treated as experimental.
+     
+   The API currently only supports reading/writing of a limited number of unit types. 
+   Furthermore, the API does not yet support adding/deleting units. Support of additional 
+   unit types, as well as functionality to create and build networks will be implemented 
+   in a future release.
    
 .. code:: python
 
@@ -20,8 +24,12 @@ load an existing drainage network.
 
 Once you have initialised a INP class, the supported units can be accessed via the attributes: 
 
--  ``.junctions`` (see: :ref:`Junction units <Junction_units>`)
--  ``.raingauges`` (see: :ref:`Raingauge units <Raingauge_units>`)
+-  ``.junctions`` (see: :ref:`Junction units <junction_units>`)
+-  ``.raingauges`` (see: :ref:`Raingauge units <raingauge_units>`)
+-  ``.conduits`` (see: :ref:`Conduit units <conduit_units>`)
+-  ``.outfalls`` (see: :ref:`Outfall units <outfall_units>`)
+-  ``.losses`` (see: :ref:`Loss units <loss_units>`)
+-  ``.xsections`` (see: :ref:`XSection units <xsection_units>`)
 
 In each, the individual units of each type are stored in a dictionary of unit names and unit classes. Only units which are supported in the API will be accesible via these attributes, 
 all of which can be found in the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
@@ -29,11 +37,12 @@ all of which can be found in the :doc:`Individual Urban 1D Unit Classes <urban1d
 .. code:: python 
 
     # Print string representation of all units.
-    print(dat.junctions)
-    print(inp.raingauge)
+    print(inp.junctions)
+    print(inp.raingauges)
 
 Each individual unit class is somewhat unique in how they can be worked with in python. 
-For each unit, the associated data can be accessed and edited via the unit's class attributes.  For example, for a ``JUNCTION`` the the invet elevation can be accessed via the ``.elevation`` attribute: 
+For each unit, the associated data can be accessed and edited via the unit's class attributes.  
+For example, for a ``JUNCTION`` the the invert elevation can be accessed via the ``.elevation`` attribute: 
 
 .. code:: python
 
@@ -42,9 +51,11 @@ For each unit, the associated data can be accessed and edited via the unit's cla
 
     inp.junctions['MC0918'].elevation = 5 # Update the invert elevation to 5m
 
-Although it is possible to rename units by passing a new name into the ``.name`` attribute, it is recommended to avoid this as it may cause label issues within the network. 
-Currently the INP class only allows for editing existing units, however functionality to add/remove sections will be included in a future release. For full documentation on 
-the available unit classes, please refer to the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
+Although it is possible to rename units by passing a new name into the ``.name`` attribute, 
+it is recommended to avoid this as it may cause label issues within the network. Currently the 
+INP class only allows for editing existing units, however functionality to add/remove sections
+will be included in a future release. For full documentation on the available unit classes, 
+please refer to the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
 
 In addition to the units, the general options for the INP file can be accessed through the ``.options`` attribute. This contains a dictionary of all the general 
 INP settings and can be edited by assigning them new values. 
@@ -104,7 +115,7 @@ Reference
 
 Examples
 -----------
-**Example 1 - Increase non-zero initial depths for all junctions  ** 
+**Example 1 - Increase non-zero initial depths for all junctions** 
 
 In this example, the the initial depth of all junctions is to be increased by 200m only where the exiting initial depth is non-zero.  The updated INP file is saved to a new
 location rather than updating the original file.
