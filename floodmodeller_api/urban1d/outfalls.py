@@ -15,11 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from ._base import UrbanSubsection, UrbanUnit
-
-# from floodmodeller_api.units.helpers import split_n_char, _to_float, _to_str
-
-
-from ._base import UrbanSubsection, UrbanUnit
 from floodmodeller_api.units.helpers import (
     split_n_char,
     _to_float,
@@ -28,34 +23,94 @@ from floodmodeller_api.units.helpers import (
 )
 from floodmodeller_api.validation import _validate_unit
 
+class OUTFALL(UrbanUnit):
+    """Class to hold and process OUTFALL unit type
 
-# class OUTFALL(UrbanUnit): #TODO: need to update to be 'JUNCTION' with no S
-#     """ TO BE COMPLETED
-#     """
+    Args:
+        name (str): Unit name
+        elevation (float): Elevation of outfall invert (ft or m). (required)
+        type (string): "FREE", "NORMAL", "FIXED", "TIDAL" or "TIMESERIES". (required)
+        stage (float): elevation of fixed stage for outfall (ft or m) (required when "FIXED" type)
+        tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
+        tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
+        gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO") TODO: is this required, or can it be missing
+        routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge) 
+        
+    Returns:
+        OUTFALL: Flood Modeller OUTFALL Unit class object TODO: add urban 1d in to all instances within urban 1d API
+    """
 
-#     _unit = 'OUTFALL' # NOTE: this is used to assigned class name via setter
+    _unit = 'OUTFALL'
 
-#     def _read(self, line):
+    def _read(self, line):
 
-#         unit_data = line.split()
+        unit_data = line.split()
 
-#         while len(unit_data)<6:
-#             unit_data.append('')
+        # TODO: add functionality to read comments
+        # TODO: considering raising an exception if any of the required parameters are missing
 
-#         self.name = str(unit_data[0]) #TODO: update once Class inheritance sorted.
-#         #TODO: need to catch instence when optional parameters are not provided
-#         self.elevation = _to_float(unit_data[1], 0.0) # Elevation of junction invert (ft or m). (required)
-#         self.type = str(unit_data[2]) # Depth from ground to invert elevation (ft or m) (default is 0). (optional)
-#         self.stage_data = _to_float(unit_data[3], 0.0) # Water depth at start of simulation (ft or m) (default is 0). (optional)
-#         self.gated = str(unit_data[4]) # Maximum additional head above ground elevation that manhole junction can sustain under surcharge conditions (ft or m) (default is 0). (optional)
-#         self.route_to = _to_float(unit_data[5], 0.0) # Area subjected to surface ponding once water depth exceeds Ymax (ft2 or m2) (default is 0) (optional).
+        self.name = str(unit_data[0])
+        self.elevation = _to_float(unit_data[1], 0.0) 
+        self.type = str(unit_data[2])
 
-#     def _write(self):
+        if self.type == "FREE" or self.type == "NORMAL":
 
-#         #TODO:Improve indentation
-#         return join_n_char_ljust(15, self.name, self.elevation, self.max_depth, self.initial_depth, self.surface_depth, self.area_ponded)
+            # Extend length of unit_data to account for missing optional arguments.
+            while (len(unit_data) < 5):  
+                unit_data.append("")
 
-# class OUTFALLS(UrbanSubsection):
-#     ''' Class to read the table of junctions'''
-#     _urban_unit_class = OUTFALL
-#     _attribute = 'outfalls'
+            self.gated = _to_str(unit_data[3], "NO")
+            self.routeto = _to_str(unit_data[4], "")
+    
+        elif self.type == "FIXED" or self.type == "NORMAL" or self.type == "TIMESERIES":
+                
+            # Extend length of unit_data to account for missing optional arguments.
+            while (len(unit_data) < 6):  
+                unit_data.append("")
+           
+            if self.type =="FIXED":
+                self.stage = _to_float(unit_data[3],0.0)
+                
+            elif self.type == "NORMAL":
+                self.tcurve = _to_str(unit_data[3],"")
+
+            elif self.type == "TIMESERIES":
+                self.tseries = _to_str(unit_data[3],"") 
+
+            self.gated = _to_str(unit_data[4], "NO")
+            self.routeto = _to_str(unit_data[5], "")
+            
+           
+
+    def _write(self):
+        """Function to write a valid OUTFALL line"""
+
+        _validate_unit(self, urban=True)
+
+        # TODO:Improve indentation format when writing and include header for completeness
+
+        params1 = (
+            join_n_char_ljust(17, self.name) 
+            + join_n_char_ljust(15, self.elevation, self.type)
+        )
+
+        if self.type == "FREE" or self.type == "NORMAL":
+            params2 = join_n_char_ljust(15, "", self.gated, self.routeto)
+
+        elif self.type =="FIXED":
+            params2 = join_n_char_ljust(15, self.stage, self.gated, self.routeto)
+            
+        elif self.type == "NORMAL":
+            params2 = join_n_char_ljust(15, self.tcurve, self.gated, self.routeto)
+
+        elif self.type == "TIMESERIES":
+            params2 = join_n_char_ljust(15, self.tseries, self.gated, self.routeto)
+
+        return params1 + params2
+
+class OUTFALLS(UrbanSubsection):
+    """Class to read/write the table of outfalls"""
+
+    _urban_unit_class = OUTFALL
+    _attribute = "outfalls"
+

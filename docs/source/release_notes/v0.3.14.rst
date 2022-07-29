@@ -1,17 +1,20 @@
 ************************************
-What's new in 0.3.14 (June 2022)
+What's new in 0.3.14 (July 2022)
 ************************************
 
 This page details the changes for version 0.3.14 of Flood Modeller Python API
 
 New features
 --------------
-- 
+- Urban 1D (INP file) - Added support for ``JUNCTIONS``, ``OUTFALLS``, ``CONDUITS``,
+  ``RAINGAUGES``, ``LOSSES`` and ``XSECTIONS``. 
 
 Updates
 --------------
 - Improved exception handling
 - Added ``.conduits`` and ``.losses`` unit categories in DAT and IED classes
+- Improved attribute acces in IEF class. All attributes can now be accessed using any casing
+  and will fetch the correct data without changing the original casing in the file. 
 
 
 Bug fixes
@@ -23,4 +26,5 @@ Bug fixes
 - Fix to validation of pier_faces to allow no value as parameter is optional
 - Added 'REBDY' to unsupported units
 - Allow for culvert inlet 'reverse_flow_mode' parameter to be 0.00 (as well as 'CALCULATED and 'ZERO' that are already included)
+- Updated logical rules _read() to recognise "ENDIF" as end of rule (as well as "END") 
 

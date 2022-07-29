@@ -25,6 +25,7 @@ class UrbanUnit:
     def __init__(self, unit_block=None, **kwargs):
         if unit_block != None:
             self._read(unit_block)
+            #TODO: add functionality to read description
         else:
             self._create_from_blank(**kwargs)
 
