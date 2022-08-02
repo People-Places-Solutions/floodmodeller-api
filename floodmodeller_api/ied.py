@@ -20,7 +20,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from . import units  # Import for using as package
+from . import units
 from ._base import FMFile
 
 
