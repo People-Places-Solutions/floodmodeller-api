@@ -35,10 +35,10 @@ class LF1(FMFile):
 
     _ultimate_prefix = "!!"
     _prefixes_dict = {
-            #"Timestep": "Info1 Timestep",
+            "Timestep": "Info1 Timestep",
             "Elapsed time": "Info1 Elapsed",
             "Simulated time": "Info1 Simulated",
-            #"Estimated finish time": "Info1 EFT:",
+            "Estimated finish time": "Info1 EFT:",
             "Estimated time remaining": "Info1 ETR:",
             #"Iterations": "PlotI1",
             #"Convergence": "PlotC1",
@@ -83,24 +83,23 @@ class LF1(FMFile):
 
         # loop through lines that haven't already been read
         raw_lines = self._raw_data[self._lines_read:]
-
         for raw_line in raw_lines:
             
             # categorise lines according to prefix
             for key in self._prefixes_dict.keys():
 
-                # lists to append to
-                sorted_lines = self._sorted_lines_dict[key]
-                processed_data = self._processed_data_dict[key]
-
                 # lines which start with prefix
                 start_of_line = self._ultimate_prefix + self._prefixes_dict[key]
-
-                # add everything after prefix to the lists
                 if raw_line.startswith(start_of_line):
+
+                    # lists to append to
+                    sorted_lines = self._sorted_lines_dict[key]
+                    processed_data = self._processed_data_dict[key]
+
+                    # add everything after prefix to lists
                     end_of_line = raw_line.split(start_of_line)[1].lstrip()
                     sorted_lines.append(end_of_line)
-                    processed_data.append(self._process_data(end_of_line))
+                    processed_data.append(self._process_string(end_of_line, key))
             
             # update counter
             self._lines_read += 1
@@ -109,18 +108,39 @@ class LF1(FMFile):
 
     def _print_lines_read(self):
         """Prints the number of lines that have been read so far"""
+
         print("Lines read: " + str(self._lines_read))
 
-    def _process_data(self, data_str):
+    def _process_string(self, data_str, key):
         """Processes string into meaningful data"""
-        if data_str == "...":
-            processed_data = float("nan")     
+
+        # float
+        if key == "Timestep":
+            processed_data = float(data_str)
+
+        # an actual time
+        elif key == "Estimated finish time":
+            if data_str == "calculating...":
+                processed_data = "nan"
+            else:
+                processed_data = data_str
+
+        # an amount of time
+        elif key in ("Elapsed time","Simulated time","Estimated time remaining"):
+            if data_str == "...":
+                processed_data = float("nan")     
+            else:
+                processed_data = self._str_to_sec(data_str)
+
         else:
-            processed_data = self._str_to_sec(data_str)
+            print("not implemented")
+
         return(processed_data)
 
     def _str_to_sec(self, time_str):
         """Converts time string HH:MM:SS to seconds"""
+
         h,m,s = time_str.split(":")
         time_sec = 3600*int(h) + 60*int(m) + int(s) 
+
         return(time_sec)
