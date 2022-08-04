@@ -17,9 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from pathlib import Path
 from typing import Optional, Union
 from unicodedata import category
-from datetime import datetime
 
 import pandas as pd
+import datetime
 
 from ._base import FMFile
 
@@ -135,24 +135,34 @@ class LF1(FMFile):
         return(processed_data)
 
     def _str_to_time(self, time_str):
-        """Converts time string HH:MM:SS to time object"""
+        """Converts time string HH:MM:SS to time"""
         
         try:
-            time_time = datetime.strptime(time_str, "%H:%M:%S").time()
+            time_time = datetime.datetime.strptime(time_str, "%H:%M:%S").time()
 
-        except ValueError: #i.e. "calculating..."
-            time_time = pd.NaT
+        except ValueError:
+            if time_str == "calculating...":
+                time_time = pd.NaT
+            else:
+                print("unexpected")
         
         return(time_time)
 
     def _str_to_sec(self, time_str):
-        """Converts time string HH:MM:SS to seconds"""
+        """Converts time string HH:MM:SS to timedelta"""
 
         try:
             h,m,s = time_str.split(":")
-            time_sec = 3600*int(h) + 60*int(m) + int(s) 
+            time_timedelta = datetime.timedelta(
+                hours = int(h),
+                minutes = int(m),
+                seconds = int(s)
+                )
 
-        except ValueError: #i.e. "..."
-            time_sec = float("nan")
+        except ValueError:
+            if time_str == "...":
+                time_timedelta = pd.NaT
+            else:
+                print("unexpected")
 
-        return(time_sec)
+        return(time_timedelta)
