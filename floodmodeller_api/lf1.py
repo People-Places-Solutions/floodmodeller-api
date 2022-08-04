@@ -34,16 +34,16 @@ class LF1(FMFile):
     _suffix: str = ".lf1"
 
     _ultimate_prefix = "!!"
-    _prefixes = [
-            "Info1 Timestep",
-            "Info1 Elapsed",
-            "Info1 Simulated",
-            "Info1 EFT:",
-            "Info1 ETR:",
-            "PlotI1",
-            "PlotC1",
-            "PlotF1"
-        ]
+    _prefixes_dict = {
+            #"Timestep": "Info1 Timestep",
+            "Elapsed time": "Info1 Elapsed",
+            "Simulated time": "Info1 Simulated",
+            #"Estimated finish time": "Info1 EFT:",
+            "Estimated time remaining": "Info1 ETR:",
+            #"Iterations": "PlotI1",
+            #"Convergence": "PlotC1",
+            #"Flow": "PlotF1",
+        }
 
     def __init__(self, lf1_filepath: Optional[Union[str, Path]]):
         try:
@@ -53,8 +53,11 @@ class LF1(FMFile):
             # counter to keep track of file during simulation
             self._lines_read = 0 
 
-            # dictionary to hold sorted lines according to prefix
-            self._prefixes_dict = {prefix: [] for prefix in self._prefixes}
+            # dictionary to hold sorted lines according to type (for use during development)
+            self._sorted_lines_dict = {key: [] for key in self._prefixes_dict.keys()}
+
+            # dictionary to hold processed data according to type
+            self._processed_data_dict = {key: [] for key in self._prefixes_dict.keys()}
 
             self._read()
 
@@ -84,17 +87,20 @@ class LF1(FMFile):
         for raw_line in raw_lines:
             
             # categorise lines according to prefix
-            for prefix in self._prefixes_dict:
+            for key in self._prefixes_dict.keys():
 
-                # list to append line to
-                sorted_lines = self._prefixes_dict[prefix]
+                # lists to append to
+                sorted_lines = self._sorted_lines_dict[key]
+                processed_data = self._processed_data_dict[key]
 
                 # lines which start with prefix
-                start_of_line = self._ultimate_prefix + prefix
+                start_of_line = self._ultimate_prefix + self._prefixes_dict[key]
 
-                # add everything after the prefix to its list
+                # add everything after prefix to the lists
                 if raw_line.startswith(start_of_line):
-                    sorted_lines.append(raw_line.split(start_of_line)[1].lstrip())
+                    end_of_line = raw_line.split(start_of_line)[1].lstrip()
+                    sorted_lines.append(end_of_line)
+                    processed_data.append(self._process_data(end_of_line))
             
             # update counter
             self._lines_read += 1
@@ -103,17 +109,18 @@ class LF1(FMFile):
 
     def _print_lines_read(self):
         """Prints the number of lines that have been read so far"""
-
         print("Lines read: " + str(self._lines_read))
 
-    def _get_elapsed_time(self):
-        pass
+    def _process_data(self, data_str):
+        """Processes string into meaningful data"""
+        if data_str == "...":
+            processed_data = float("nan")     
+        else:
+            processed_data = self._str_to_sec(data_str)
+        return(processed_data)
 
-    def _get_simulated_time(self):
-        pass
-
-    def _get_EFT(self):
-        pass
-
-    def _get_ETR(self):
-        pass
+    def _str_to_sec(self, time_str):
+        """Converts time string HH:MM:SS to seconds"""
+        h,m,s = time_str.split(":")
+        time_sec = 3600*int(h) + 60*int(m) + int(s) 
+        return(time_sec)
