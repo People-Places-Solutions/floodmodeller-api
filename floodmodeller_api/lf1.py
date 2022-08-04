@@ -46,6 +46,8 @@ class LF1(FMFile):
             "Iterations": "PlotI1",
             "Convergence": "PlotC1",
             "Flow": "PlotF1",
+            "Mass error": "Info1 Mass %error =",
+            "Progress": "Progress1",
         }
 
     def __init__(self, lf1_filepath: Optional[Union[str, Path]]):
@@ -116,52 +118,56 @@ class LF1(FMFile):
         if key == "Timestep":
             processed_data = float(data_str)
 
-        # three floats
-        elif key in ("Iterations", "Convergence", "Flow"):
+        # multiple floats
+        elif key in ("Iterations", "Convergence", "Flow", "Mass error"):
             processed_data = [float(x) for x in data_str.split()]
 
-        # an actual time
+        # time
         elif key == "Estimated finish time":
             processed_data = self._str_to_time(data_str)
 
-        # an amount of time
+        # timedelta
         elif key in ("Elapsed time", "Simulated time", "Estimated time remaining"):
             processed_data = self._str_to_timedelta(data_str)
+
+        # percentage
+        elif key == "Progress":
+            processed_data = float(data_str.split("%")[0])/100
 
         else:
             print("not implemented")
 
         return(processed_data)
 
-    def _str_to_time(self, time_str):
-        """Converts time string HH:MM:SS to time"""
+    def _str_to_time(self, data_str):
+        """Converts string HH:MM:SS to time"""
         
         try:
-            time_time = dt.datetime.strptime(time_str, "%H:%M:%S").time()
+            data_time = dt.datetime.strptime(data_str, "%H:%M:%S").time()
 
         except ValueError:
-            if time_str == "calculating...": #at start of simulation
-                time_time = pd.NaT
+            if data_str == "calculating...": #at start of simulation
+                data_time = pd.NaT
             else:
                 print("unexpected")
         
-        return(time_time)
+        return(data_time)
 
-    def _str_to_timedelta(self, time_str):
-        """Converts time string HH:MM:SS to timedelta"""
+    def _str_to_timedelta(self, data_str):
+        """Converts string HH:MM:SS to timedelta"""
 
         try:
-            h,m,s = time_str.split(":")
-            time_timedelta = dt.timedelta(
+            h,m,s = data_str.split(":")
+            data_timedelta = dt.timedelta(
                 hours = int(h),
                 minutes = int(m),
                 seconds = int(s)
                 )
 
         except ValueError:
-            if time_str == "...": #at start of simulation
-                time_timedelta = pd.NaT
+            if data_str == "...": #at start of simulation
+                data_timedelta = pd.NaT
             else:
                 print("unexpected")
 
-        return(time_timedelta)
+        return(data_timedelta)
