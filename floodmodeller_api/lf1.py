@@ -17,6 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from pathlib import Path
 from typing import Optional, Union
 from unicodedata import category
+from datetime import datetime
+
+import pandas as pd
 
 from ._base import FMFile
 
@@ -114,33 +117,42 @@ class LF1(FMFile):
     def _process_string(self, data_str, key):
         """Processes string into meaningful data"""
 
-        # float
+        # float, not a time
         if key == "Timestep":
             processed_data = float(data_str)
 
         # an actual time
         elif key == "Estimated finish time":
-            if data_str == "calculating...":
-                processed_data = "nan"
-            else:
-                processed_data = data_str
+            processed_data = self._str_to_time(data_str)
 
         # an amount of time
         elif key in ("Elapsed time","Simulated time","Estimated time remaining"):
-            if data_str == "...":
-                processed_data = float("nan")     
-            else:
-                processed_data = self._str_to_sec(data_str)
+            processed_data = self._str_to_sec(data_str)
 
         else:
             print("not implemented")
 
         return(processed_data)
 
+    def _str_to_time(self, time_str):
+        """Converts time string HH:MM:SS to time object"""
+        
+        try:
+            time_time = datetime.strptime(time_str, "%H:%M:%S").time()
+
+        except ValueError: #i.e. "calculating..."
+            time_time = pd.NaT
+        
+        return(time_time)
+
     def _str_to_sec(self, time_str):
         """Converts time string HH:MM:SS to seconds"""
 
-        h,m,s = time_str.split(":")
-        time_sec = 3600*int(h) + 60*int(m) + int(s) 
+        try:
+            h,m,s = time_str.split(":")
+            time_sec = 3600*int(h) + 60*int(m) + int(s) 
+
+        except ValueError: #i.e. "..."
+            time_sec = float("nan")
 
         return(time_sec)
