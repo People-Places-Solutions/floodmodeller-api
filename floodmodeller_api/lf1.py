@@ -19,7 +19,7 @@ from typing import Optional, Union
 from unicodedata import category
 
 import pandas as pd
-import datetime
+import datetime as dt
 
 from ._base import FMFile
 
@@ -43,9 +43,9 @@ class LF1(FMFile):
             "Simulated time": "Info1 Simulated",
             "Estimated finish time": "Info1 EFT:",
             "Estimated time remaining": "Info1 ETR:",
-            #"Iterations": "PlotI1",
-            #"Convergence": "PlotC1",
-            #"Flow": "PlotF1",
+            "Iterations": "PlotI1",
+            "Convergence": "PlotC1",
+            "Flow": "PlotF1",
         }
 
     def __init__(self, lf1_filepath: Optional[Union[str, Path]]):
@@ -56,11 +56,8 @@ class LF1(FMFile):
             # counter to keep track of file during simulation
             self._lines_read = 0 
 
-            # dictionary to hold sorted lines according to type (for use during development)
-            self._sorted_lines_dict = {key: [] for key in self._prefixes_dict.keys()}
-
             # dictionary to hold processed data according to type
-            self._processed_data_dict = {key: [] for key in self._prefixes_dict.keys()}
+            self._processed_lines_dict = {key: [] for key in self._prefixes_dict.keys()}
 
             self._read()
 
@@ -77,10 +74,10 @@ class LF1(FMFile):
             self._lines_read = 0
 
         # Process file
-        self._sort_lines()
+        self._process_lines()
 
-    def _sort_lines(self):
-        """Sorts raw data into lists for each prefix"""
+    def _process_lines(self):
+        """Sorts and processes raw data into lists for each prefix"""
 
         self._print_lines_read()
 
@@ -95,14 +92,12 @@ class LF1(FMFile):
                 start_of_line = self._ultimate_prefix + self._prefixes_dict[key]
                 if raw_line.startswith(start_of_line):
 
-                    # lists to append to
-                    sorted_lines = self._sorted_lines_dict[key]
-                    processed_data = self._processed_data_dict[key]
+                    # list to append to
+                    processed_lines = self._processed_lines_dict[key]
 
-                    # add everything after prefix to lists
+                    # add everything after prefix to list
                     end_of_line = raw_line.split(start_of_line)[1].lstrip()
-                    sorted_lines.append(end_of_line)
-                    processed_data.append(self._process_string(end_of_line, key))
+                    processed_lines.append(self._str_to_data(end_of_line, key))
             
             # update counter
             self._lines_read += 1
@@ -114,20 +109,24 @@ class LF1(FMFile):
 
         print("Lines read: " + str(self._lines_read))
 
-    def _process_string(self, data_str, key):
+    def _str_to_data(self, data_str, key):
         """Processes string into meaningful data"""
 
-        # float, not a time
+        # one float
         if key == "Timestep":
             processed_data = float(data_str)
+
+        # three floats
+        elif key in ("Iterations", "Convergence", "Flow"):
+            processed_data = [float(x) for x in data_str.split()]
 
         # an actual time
         elif key == "Estimated finish time":
             processed_data = self._str_to_time(data_str)
 
         # an amount of time
-        elif key in ("Elapsed time","Simulated time","Estimated time remaining"):
-            processed_data = self._str_to_sec(data_str)
+        elif key in ("Elapsed time", "Simulated time", "Estimated time remaining"):
+            processed_data = self._str_to_timedelta(data_str)
 
         else:
             print("not implemented")
@@ -138,29 +137,29 @@ class LF1(FMFile):
         """Converts time string HH:MM:SS to time"""
         
         try:
-            time_time = datetime.datetime.strptime(time_str, "%H:%M:%S").time()
+            time_time = dt.datetime.strptime(time_str, "%H:%M:%S").time()
 
         except ValueError:
-            if time_str == "calculating...":
+            if time_str == "calculating...": #at start of simulation
                 time_time = pd.NaT
             else:
                 print("unexpected")
         
         return(time_time)
 
-    def _str_to_sec(self, time_str):
+    def _str_to_timedelta(self, time_str):
         """Converts time string HH:MM:SS to timedelta"""
 
         try:
             h,m,s = time_str.split(":")
-            time_timedelta = datetime.timedelta(
+            time_timedelta = dt.timedelta(
                 hours = int(h),
                 minutes = int(m),
                 seconds = int(s)
                 )
 
         except ValueError:
-            if time_str == "...":
+            if time_str == "...": #at start of simulation
                 time_timedelta = pd.NaT
             else:
                 print("unexpected")
