@@ -44,12 +44,13 @@ class LF1(FMFile):
 
             # to keep track of file during simulation
             self._lines_read = 0 # number of lines that have been read so far
-            self._stage_of_sim = 0 # 1 = start, 2 = running, 3 = end
+            self._sim_stage = 0 # 1 = start, 2 = running, 3 = end
 
             # to process and hold data according to type         
             self.version = String("!!Info1 version1d")
             self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:")
 
+            self.progress = IntSplit("!!Progress1", split = "%")
             self.timestep = Float("!!Info1 Timestep")
             self.elapsed_time = TimeDelta("!!Info1 Elapsed")
             self.simulated_time = TimeDelta("!!Info1 Simulated")
@@ -58,15 +59,30 @@ class LF1(FMFile):
             self.iterations = FloatMult("!!PlotI1")
             self.convergence = FloatMult("!!PlotC1")
             self.flow = FloatMult("!!PlotF1")
-
             self.mass_error = FloatMult("!!Info1 Mass %error =")
-            self.progress = IntSplit("!!Progress1")
-            self.initial_volume = FloatSplit("!!output1  Initial volume:")
-            self.final_volume = FloatSplit("!!output1  Final volume:")
+            
+            self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:")
+            self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", split = "%")
+            self.initial_vol = FloatSplit("!!output1  Initial volume:", split = "m3")
+            self.final_vol = FloatSplit("!!output1  Final volume:", split = "m3")
+            self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", split = "m3")
+            self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", split = "m3")
+            self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", split = "m3")
+            self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", split = "m3")
+            self.max_system_volume = FloatSplit("!!output1  Max. system volume:", split = "m3")
+            self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", split = "m3")
+            self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", split = "m3")
+            self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", split = "m3")
+            self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", split = "m3")
+            self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", split = "m3")
+            self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", split = "%")
+            self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", split = "%")
 
             self._data_to_extract = [
                 self.version,
                 self.number_of_nodes,
+                #
+                self.progress,
                 self.timestep,
                 self.elapsed_time,
                 self.simulated_time,
@@ -76,9 +92,23 @@ class LF1(FMFile):
                 self.convergence,
                 self.flow,
                 self.mass_error,
-                self.progress,
-                self.initial_volume,
-                self.final_volume
+                #
+                self.no_unconverged_timesteps,
+                self.prop_simulation_unconverged,
+                self.initial_vol,
+                self.final_vol,
+                self.tot_boundary_inflow,
+                self.tot_boundary_outflow,
+                self.tot_lat_link_inflow,
+                self.tot_lat_link_outflow,
+                self.max_system_volume,
+                self.max_vol_increase,
+                self.max_boundary_inflow,
+                self.net_vol_increase,
+                self.net_inflow_vol,
+                self.vol_discrepancy,
+                self.mass_balance_error,
+                self.mass_balance_error_2
             ]
             
             self._read()
@@ -107,23 +137,16 @@ class LF1(FMFile):
         raw_lines = self._raw_data[self._lines_read:]
         for raw_line in raw_lines:
 
-            # what stage of simulation we are in (TODO: check robust)
-            if self._stage_of_sim == 0 and raw_line == "!!output1":
-                self._stage_of_sim = 1 #start
-            elif self._stage_of_sim == 1 and raw_line == "!!Progress1   0%":
-                self._stage_of_sim = 2 #running
-            elif self._stage_of_sim == 2 and raw_line == "!!output1":
-                self._stage_of_sim = 3 #end
+            self._update_sim_stage(raw_line)
 
-            # loop through types of lines
+            # loop through line types
             for line_type in self._data_to_extract:
 
                 # lines which start with prefix
-                start_of_line = line_type._prefix
-                if raw_line.startswith(start_of_line):
+                if raw_line.startswith(line_type._prefix):
 
                     # add everything after prefix to list
-                    end_of_line = raw_line.split(start_of_line)[1].lstrip()
+                    end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
                     line_type._store_line(end_of_line)
             
             # update counter
@@ -136,11 +159,34 @@ class LF1(FMFile):
 
         print("Lines read: " + str(self._lines_read))
 
+    def _update_sim_stage(self, raw_line):
+        """Update what stage of simulation we are in"""
+
+        # TODO: check classification is robust
+
+        # start
+        if self._sim_stage == 0 and raw_line == "!!output1":
+            self._sim_stage = 1
+
+        # running
+        elif self._sim_stage == 1 and raw_line == "!!Progress1   0%":
+            self._sim_stage = 2
+
+        # end
+        elif self._sim_stage == 2 and raw_line == "!!output1":
+            self._sim_stage = 3
+
+        elif self._sim_stage >= 4:
+            raise ValueError(f"Unexpected simulation stage {self._sim_stage}")
+
 class LineType:
 
     def __init__(self, prefix):
         self._prefix = prefix
         self._init_value()
+
+    def __str__(self):
+        return str(self.value)
 
     def _init_value(self):
         self.value = []
@@ -166,7 +212,7 @@ class Time(LineType):
             else:
                 raise e
         
-        return(processed)
+        return processed
 
 class TimeDelta(LineType):
 
@@ -187,7 +233,7 @@ class TimeDelta(LineType):
             else:
                 raise e
 
-        return(processed)
+        return processed
 
 class Float(LineType):
 
@@ -196,7 +242,7 @@ class Float(LineType):
 
         processed = float(raw)
 
-        return(processed)
+        return processed
 
 class Int(LineType):
 
@@ -205,25 +251,33 @@ class Int(LineType):
 
         processed = int(raw)
 
-        return(processed)
+        return processed
 
 class FloatSplit(LineType):
+
+    def __init__(self, prefix, split):
+        super().__init__(prefix)
+        self._split = split
 
     def _process_line(self, raw):
         """Converts string to float, removing m3 units"""
 
-        processed = float(raw.split("m3")[0])
+        processed = float(raw.split(self._split)[0])
 
-        return(processed)
+        return processed
 
 class IntSplit(LineType):
+
+    def __init__(self, prefix, split):
+        super().__init__(prefix)
+        self._split = split
 
     def _process_line(self, raw):
         """Converts string to integer, removing % sign"""
 
-        processed = int(raw.split("%")[0])
+        processed = int(raw.split(self._split)[0])
 
-        return(processed)
+        return processed
 
 class String(LineType):
 
@@ -232,7 +286,7 @@ class String(LineType):
 
         processed = raw
 
-        return(processed)
+        return processed
 
 class FloatMult(LineType):
 
@@ -241,4 +295,4 @@ class FloatMult(LineType):
 
         processed = [float(x) for x in raw.split()]
 
-        return(processed)
+        return processed
