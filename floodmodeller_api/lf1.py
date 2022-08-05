@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from concurrent.futures import process
 from pathlib import Path
 from typing import Optional, Union
 from unicodedata import category
@@ -38,6 +39,10 @@ class LF1(FMFile):
 
     _ultimate_prefix = "!!"
     _prefixes_dict = {
+            # start
+            "Version": "Info1 version1d",
+            "Number of nodes": "output1  Number of 1D river nodes in model:",
+            # running
             "Timestep": "Info1 Timestep",
             "Elapsed time": "Info1 Elapsed",
             "Simulated time": "Info1 Simulated",
@@ -48,6 +53,9 @@ class LF1(FMFile):
             "Flow": "PlotF1",
             "Mass error": "Info1 Mass %error =",
             "Progress": "Progress1",
+            # end
+            "Initial volume": "output1  Initial volume:",
+            "Final volume": "output1  Final volume:",
         }
 
     def __init__(self, lf1_filepath: Optional[Union[str, Path]]):
@@ -118,9 +126,21 @@ class LF1(FMFile):
         if key == "Timestep":
             processed_data = float(data_str)
 
+        # one integer
+        elif key == "Number of nodes":
+            processed_data = int(data_str)
+
         # multiple floats
         elif key in ("Iterations", "Convergence", "Flow", "Mass error"):
             processed_data = [float(x) for x in data_str.split()]
+
+        # volume (m3)
+        elif key in ("Initial volume", "Final volume"):
+            processed_data = float(data_str.split("m3")[0])
+
+        # percentage (%)
+        elif key == "Progress":
+            processed_data = float(data_str.split("%")[0])/100
 
         # time
         elif key == "Estimated finish time":
@@ -130,12 +150,12 @@ class LF1(FMFile):
         elif key in ("Elapsed time", "Simulated time", "Estimated time remaining"):
             processed_data = self._str_to_timedelta(data_str)
 
-        # percentage
-        elif key == "Progress":
-            processed_data = float(data_str.split("%")[0])/100
+        # string
+        elif key == "Version":
+            processed_data = data_str
 
         else:
-            print("not implemented")
+            raise ValueError(f"{key} is not a valid prefix")
 
         return(processed_data)
 
@@ -145,11 +165,11 @@ class LF1(FMFile):
         try:
             data_time = dt.datetime.strptime(data_str, "%H:%M:%S").time()
 
-        except ValueError:
+        except ValueError as e:
             if data_str == "calculating...": #at start of simulation
                 data_time = pd.NaT
             else:
-                print("unexpected")
+                raise e
         
         return(data_time)
 
@@ -164,10 +184,10 @@ class LF1(FMFile):
                 seconds = int(s)
                 )
 
-        except ValueError:
+        except ValueError as e:
             if data_str == "...": #at start of simulation
                 data_timedelta = pd.NaT
             else:
-                print("unexpected")
+                raise e
 
         return(data_timedelta)
