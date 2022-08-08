@@ -62,13 +62,17 @@ class LF1(FMFile):
         stage = "start"    
         self.version = String("!!Info1 version1d", stage = stage)
         self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
+        self.qtol = Float("!!Info1 qtol =", stage = stage)
+        self.htol = Float("!!Info1 htol =", stage = stage)
+        #self.start_time = Time("!!Info1 Start Time:", stage = stage, code = "%H.%f hrs") #should be timedelta
+        #self.end_time = Time("!!Info1 End Time:", stage = stage, code = "%H.%f hrs") #should be timedelta
 
         stage = "run"
         self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
         self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
         self.elapsed_time = TimeDelta("!!Info1 Elapsed", stage = stage)
         self.simulated_time = TimeDelta("!!Info1 Simulated", stage = stage)
-        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage)
+        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, code = "%H:%M:%S")
         self.estimated_time_remaining = TimeDelta("!!Info1 ETR:", stage = stage)
         self.iterations = FloatMult("!!PlotI1", stage = stage)
         self.convergence = FloatMult("!!PlotC1", stage = stage)
@@ -97,6 +101,10 @@ class LF1(FMFile):
             # start
             self.version,
             self.number_of_nodes,
+            self.qtol,
+            self.htol,
+            #self.start_time,
+            #self.end_time,
             # run
             self.progress,
             self.timestep,
@@ -239,11 +247,15 @@ class LineType(ABC):
 
 class Time(LineType):
 
+    def __init__(self, prefix, stage, code, defines_iters = False):
+        super().__init__(prefix, stage, defines_iters)
+        self._code = code
+
     def _process_line(self, raw):
-        """Converts string HH:MM:SS to time"""
+        """Converts string to time"""
         
         try:
-            processed = dt.datetime.strptime(raw, "%H:%M:%S").time()
+            processed = dt.datetime.strptime(raw, self._code).time()
 
         except ValueError as e:
             if raw == "calculating...": #at start of simulation
