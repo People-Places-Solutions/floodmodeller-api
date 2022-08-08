@@ -42,18 +42,19 @@ class LF1(FMFile):
         try:
             self._filepath = lf1_filepath
             FMFile.__init__(self)
-
-            # to keep track of file during simulation
-            self._no_lines = 0 #number of lines that have been read so far
-            self._no_iters = 0 #number of iterations so far
-            self._sim_stage = "init" #init, start, run, end
-
+            self._init_counters()
             self._init_data_to_extract()
-            
             self._read()
 
         except Exception as e:
             self._handle_exception(e, when="read")
+
+    def _init_counters(self):
+        """To keep track of file during simulation"""
+
+        self._no_lines = 0 #number of lines that have been read so far
+        self._no_iters = 0 #number of iterations so far
+        self._stage = "init" #init, start, run, end
 
     def _init_data_to_extract(self):
         """To process and hold data according to type"""
@@ -133,13 +134,8 @@ class LF1(FMFile):
 
         # Force rereading from start of file
         if force_reread == True:
-            # Reset counters
-            self._no_lines = 0
-            self._no_iters = 0
-
-            # Wipe values
-            for line_type in self._data_to_extract:
-                line_type.value = [] # FIXME: not all of them are lists
+            self._init_counters()
+            self._init_data_to_extract()
 
         # Process file
         self._process_lines()
@@ -153,7 +149,7 @@ class LF1(FMFile):
         raw_lines = self._raw_data[self._no_lines:]
         for raw_line in raw_lines:
 
-            self._update_sim_stage(raw_line)
+            self._update_stage(raw_line)
 
             # loop through line types
             for line_type in self._data_to_extract:
@@ -163,7 +159,7 @@ class LF1(FMFile):
 
                     # store everything after prefix
                     end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
-                    line_type._store(end_of_line)
+                    line_type._update(end_of_line)
                     self._no_iters = line_type._update_iters(self._no_iters)
             
             # update counter
@@ -176,26 +172,26 @@ class LF1(FMFile):
 
         print("Lines read: " + str(self._no_lines))
 
-    def _update_sim_stage(self, raw):
+    def _update_stage(self, raw):
         """Update what stage of simulation we are in"""
 
         # TODO: check classification is robust
         # TODO: check necessary
 
         # start
-        if self._sim_stage == "init" and raw == "!!output1":
-            self._sim_stage = "start"
+        if self._stage == "init" and raw == "!!output1":
+            self._stage = "start"
 
         # running
-        elif self._sim_stage == "start" and raw== "!!Progress1   0%":
-            self._sim_stage = "run"
+        elif self._stage == "start" and raw== "!!Progress1   0%":
+            self._stage = "run"
 
         # end
-        elif self._sim_stage == "run" and raw == "!!output1":
-            self._sim_stage = "end"
+        elif self._stage == "run" and raw == "!!output1":
+            self._stage = "end"
 
-        elif self._sim_stage not in ("init", "start", "run", "end"):
-            raise ValueError(f"Unexpected simulation stage \"{self._sim_stage}\"")
+        elif self._stage not in ("init", "start", "run", "end"):
+            raise ValueError(f"Unexpected simulation stage \"{self._stage}\"")
 
 class LineType(ABC):
     """Abstract base class for processing and storing different types of line"""
@@ -210,10 +206,10 @@ class LineType(ABC):
 
         if stage == "run":
             self.value = [] #list
-            self._store = self._append
+            self._update = self._append
         elif stage in ("start", "end"):
             self.value = None #single value
-            self._store = self._replace
+            self._update = self._replace
         else:
             raise ValueError(f"Unexpected simulation stage \"{stage}\"")
 
