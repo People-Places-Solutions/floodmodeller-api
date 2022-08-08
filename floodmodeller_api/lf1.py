@@ -48,79 +48,83 @@ class LF1(FMFile):
             self._no_iters = 0 #number of iterations so far
             self._sim_stage = "init" #init, start, run, end
 
-            # to process and hold data according to type 
-            stage = "start"    
-            self.version = String("!!Info1 version1d", stage = stage)
-            self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
-
-            stage = "run"
-            self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
-            self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
-            self.elapsed_time = TimeDelta("!!Info1 Elapsed", stage = stage)
-            self.simulated_time = TimeDelta("!!Info1 Simulated", stage = stage)
-            self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage)
-            self.estimated_time_remaining = TimeDelta("!!Info1 ETR:", stage = stage)
-            self.iterations = FloatMult("!!PlotI1", stage = stage)
-            self.convergence = FloatMult("!!PlotC1", stage = stage)
-            self.flow = FloatMult("!!PlotF1", stage = stage)
-            self.mass_error = FloatMult("!!Info1 Mass %error =", stage = stage)
-            
-            stage = "end"
-            self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:", stage = stage)
-            self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", stage = stage, split = "%")
-            self.initial_vol = FloatSplit("!!output1  Initial volume:", stage = stage, split = "m3")
-            self.final_vol = FloatSplit("!!output1  Final volume:", stage = stage, split = "m3")
-            self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", stage = stage, split = "m3")
-            self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", stage = stage, split = "m3")
-            self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", stage = stage, split = "m3")
-            self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", stage = stage, split = "m3")
-            self.max_system_volume = FloatSplit("!!output1  Max. system volume:", stage = stage, split = "m3")
-            self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", stage = stage, split = "m3")
-            self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", stage = stage, split = "m3")
-            self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", stage = stage, split = "m3")
-            self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", stage = stage, split = "m3")
-            self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", stage = stage, split = "m3")
-            self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", stage = stage, split = "%")
-            self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", stage = stage, split = "%")
-
-            self._data_to_extract = [
-                # start
-                self.version,
-                self.number_of_nodes,
-                # run
-                self.progress,
-                self.timestep,
-                self.elapsed_time,
-                self.simulated_time,
-                self.estimated_finish_time,
-                self.estimated_time_remaining,
-                self.iterations,
-                self.convergence,
-                self.flow,
-                self.mass_error,
-                # end
-                self.no_unconverged_timesteps,
-                self.prop_simulation_unconverged,
-                self.initial_vol,
-                self.final_vol,
-                self.tot_boundary_inflow,
-                self.tot_boundary_outflow,
-                self.tot_lat_link_inflow,
-                self.tot_lat_link_outflow,
-                self.max_system_volume,
-                self.max_vol_increase,
-                self.max_boundary_inflow,
-                self.net_vol_increase,
-                self.net_inflow_vol,
-                self.vol_discrepancy,
-                self.mass_balance_error,
-                self.mass_balance_error_2
-            ]
+            self._init_data_to_extract()
             
             self._read()
 
         except Exception as e:
             self._handle_exception(e, when="read")
+
+    def _init_data_to_extract(self):
+        """To process and hold data according to type"""
+        
+        stage = "start"    
+        self.version = String("!!Info1 version1d", stage = stage)
+        self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
+
+        stage = "run"
+        self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
+        self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
+        self.elapsed_time = TimeDelta("!!Info1 Elapsed", stage = stage)
+        self.simulated_time = TimeDelta("!!Info1 Simulated", stage = stage)
+        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage)
+        self.estimated_time_remaining = TimeDelta("!!Info1 ETR:", stage = stage)
+        self.iterations = FloatMult("!!PlotI1", stage = stage)
+        self.convergence = FloatMult("!!PlotC1", stage = stage)
+        self.flow = FloatMult("!!PlotF1", stage = stage)
+        self.mass_error = FloatMult("!!Info1 Mass %error =", stage = stage)
+        
+        stage = "end"
+        self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:", stage = stage)
+        self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", stage = stage, split = "%")
+        self.initial_vol = FloatSplit("!!output1  Initial volume:", stage = stage, split = "m3")
+        self.final_vol = FloatSplit("!!output1  Final volume:", stage = stage, split = "m3")
+        self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", stage = stage, split = "m3")
+        self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", stage = stage, split = "m3")
+        self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", stage = stage, split = "m3")
+        self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", stage = stage, split = "m3")
+        self.max_system_volume = FloatSplit("!!output1  Max. system volume:", stage = stage, split = "m3")
+        self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", stage = stage, split = "m3")
+        self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", stage = stage, split = "m3")
+        self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", stage = stage, split = "m3")
+        self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", stage = stage, split = "m3")
+        self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", stage = stage, split = "m3")
+        self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", stage = stage, split = "%")
+        self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", stage = stage, split = "%")
+
+        self._data_to_extract = [
+            # start
+            self.version,
+            self.number_of_nodes,
+            # run
+            self.progress,
+            self.timestep,
+            self.elapsed_time,
+            self.simulated_time,
+            self.estimated_finish_time,
+            self.estimated_time_remaining,
+            self.iterations,
+            self.convergence,
+            self.flow,
+            self.mass_error,
+            # end
+            self.no_unconverged_timesteps,
+            self.prop_simulation_unconverged,
+            self.initial_vol,
+            self.final_vol,
+            self.tot_boundary_inflow,
+            self.tot_boundary_outflow,
+            self.tot_lat_link_inflow,
+            self.tot_lat_link_outflow,
+            self.max_system_volume,
+            self.max_vol_increase,
+            self.max_boundary_inflow,
+            self.net_vol_increase,
+            self.net_inflow_vol,
+            self.vol_discrepancy,
+            self.mass_balance_error,
+            self.mass_balance_error_2
+        ]
 
     def _read(self, force_reread = False):
         # Read LF1 file
@@ -135,7 +139,7 @@ class LF1(FMFile):
 
             # Wipe values
             for line_type in self._data_to_extract:
-                line_type.value = []
+                line_type.value = [] # FIXME: not all of them are lists
 
         # Process file
         self._process_lines()
@@ -176,6 +180,7 @@ class LF1(FMFile):
         """Update what stage of simulation we are in"""
 
         # TODO: check classification is robust
+        # TODO: check necessary
 
         # start
         if self._sim_stage == "init" and raw == "!!output1":
