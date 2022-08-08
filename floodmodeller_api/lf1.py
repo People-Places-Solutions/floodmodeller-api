@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Optional, Union
 from unicodedata import category
 
+from abc import ABC, abstractmethod
 import pandas as pd
 import datetime as dt
 
@@ -44,12 +45,14 @@ class LF1(FMFile):
 
             # to keep track of file during simulation
             self._lines_read = 0 # number of lines that have been read so far
-            self._sim_stage = 0 # 1 = start, 2 = running, 3 = end
+            self._sim_stage = "init" # init, start, run, end
 
-            # to process and hold data according to type         
+            # to process and hold data according to type 
+            # start        
             self.version = String("!!Info1 version1d")
             self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:")
 
+            # run
             self.progress = IntSplit("!!Progress1", split = "%")
             self.timestep = Float("!!Info1 Timestep")
             self.elapsed_time = TimeDelta("!!Info1 Elapsed")
@@ -61,6 +64,7 @@ class LF1(FMFile):
             self.flow = FloatMult("!!PlotF1")
             self.mass_error = FloatMult("!!Info1 Mass %error =")
             
+            # end
             self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:")
             self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", split = "%")
             self.initial_vol = FloatSplit("!!output1  Initial volume:", split = "m3")
@@ -79,9 +83,10 @@ class LF1(FMFile):
             self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", split = "%")
 
             self._data_to_extract = [
+                # start
                 self.version,
                 self.number_of_nodes,
-                #
+                # run
                 self.progress,
                 self.timestep,
                 self.elapsed_time,
@@ -92,7 +97,7 @@ class LF1(FMFile):
                 self.convergence,
                 self.flow,
                 self.mass_error,
-                #
+                # end
                 self.no_unconverged_timesteps,
                 self.prop_simulation_unconverged,
                 self.initial_vol,
@@ -123,7 +128,12 @@ class LF1(FMFile):
 
         # Force rereading from start of file
         if force_reread == True:
+            # reset counter
             self._lines_read = 0
+
+            # wipe values
+            for line_type in self._data_to_extract:
+                line_type.value = []
 
         # Process file
         self._process_lines()
@@ -165,38 +175,42 @@ class LF1(FMFile):
         # TODO: check classification is robust
 
         # start
-        if self._sim_stage == 0 and raw_line == "!!output1":
-            self._sim_stage = 1
+        if self._sim_stage == "init" and raw_line == "!!output1":
+            self._sim_stage = "start"
 
         # running
-        elif self._sim_stage == 1 and raw_line == "!!Progress1   0%":
-            self._sim_stage = 2
+        elif self._sim_stage == "start" and raw_line == "!!Progress1   0%":
+            self._sim_stage = "run"
 
         # end
-        elif self._sim_stage == 2 and raw_line == "!!output1":
-            self._sim_stage = 3
+        elif self._sim_stage == "run" and raw_line == "!!output1":
+            self._sim_stage = "end"
 
-        elif self._sim_stage >= 4:
-            raise ValueError(f"Unexpected simulation stage {self._sim_stage}")
+        elif self._sim_stage not in ("init", "start", "run", "end"):
+            raise ValueError(f"Unexpected simulation stage \"{self._sim_stage}\"")
 
-class LineType:
+class LineType(ABC):
+    """Abstract base class for processing and storing different types of line"""
 
     def __init__(self, prefix):
         self._prefix = prefix
         self._init_value()
 
-    def __str__(self):
+    def __repr__(self):
         return str(self.value)
 
     def _init_value(self):
         self.value = []
+        self.last_value = None
 
     def _store_line(self, raw_line):
         processed_line = self._process_line(raw_line)
+        self.last_value = processed_line
         self.value.append(processed_line)
 
+    @abstractmethod
     def _process_line(self):
-        raise NotImplementedError
+        pass
 
 class Time(LineType):
 
@@ -260,7 +274,7 @@ class FloatSplit(LineType):
         self._split = split
 
     def _process_line(self, raw):
-        """Converts string to float, removing m3 units"""
+        """Converts string to float, removing everything after split"""
 
         processed = float(raw.split(self._split)[0])
 
@@ -273,7 +287,7 @@ class IntSplit(LineType):
         self._split = split
 
     def _process_line(self, raw):
-        """Converts string to integer, removing % sign"""
+        """Converts string to integer, removing everything after split"""
 
         processed = int(raw.split(self._split)[0])
 
