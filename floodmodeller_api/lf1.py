@@ -48,39 +48,39 @@ class LF1(FMFile):
             self._sim_stage = "init" # init, start, run, end
 
             # to process and hold data according to type 
-            # start        
-            self.version = String("!!Info1 version1d")
-            self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:")
+            stage = "start"    
+            self.version = String("!!Info1 version1d", stage = stage)
+            self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
 
-            # run
-            self.progress = IntSplit("!!Progress1", split = "%")
-            self.timestep = Float("!!Info1 Timestep")
-            self.elapsed_time = TimeDelta("!!Info1 Elapsed")
-            self.simulated_time = TimeDelta("!!Info1 Simulated")
-            self.estimated_finish_time = Time("!!Info1 EFT:")
-            self.estimated_time_remaining = TimeDelta("!!Info1 ETR:")
-            self.iterations = FloatMult("!!PlotI1")
-            self.convergence = FloatMult("!!PlotC1")
-            self.flow = FloatMult("!!PlotF1")
-            self.mass_error = FloatMult("!!Info1 Mass %error =")
+            stage = "run"
+            self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
+            self.timestep = Float("!!Info1 Timestep", stage = stage)
+            self.elapsed_time = TimeDelta("!!Info1 Elapsed", stage = stage)
+            self.simulated_time = TimeDelta("!!Info1 Simulated", stage = stage)
+            self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage)
+            self.estimated_time_remaining = TimeDelta("!!Info1 ETR:", stage = stage)
+            self.iterations = FloatMult("!!PlotI1", stage = stage)
+            self.convergence = FloatMult("!!PlotC1", stage = stage)
+            self.flow = FloatMult("!!PlotF1", stage = stage)
+            self.mass_error = FloatMult("!!Info1 Mass %error =", stage = stage)
             
-            # end
-            self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:")
-            self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", split = "%")
-            self.initial_vol = FloatSplit("!!output1  Initial volume:", split = "m3")
-            self.final_vol = FloatSplit("!!output1  Final volume:", split = "m3")
-            self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", split = "m3")
-            self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", split = "m3")
-            self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", split = "m3")
-            self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", split = "m3")
-            self.max_system_volume = FloatSplit("!!output1  Max. system volume:", split = "m3")
-            self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", split = "m3")
-            self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", split = "m3")
-            self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", split = "m3")
-            self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", split = "m3")
-            self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", split = "m3")
-            self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", split = "%")
-            self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", split = "%")
+            stage = "end"
+            self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:", stage = stage)
+            self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", stage = stage, split = "%")
+            self.initial_vol = FloatSplit("!!output1  Initial volume:", stage = stage, split = "m3")
+            self.final_vol = FloatSplit("!!output1  Final volume:", stage = stage, split = "m3")
+            self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", stage = stage, split = "m3")
+            self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", stage = stage, split = "m3")
+            self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", stage = stage, split = "m3")
+            self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", stage = stage, split = "m3")
+            self.max_system_volume = FloatSplit("!!output1  Max. system volume:", stage = stage, split = "m3")
+            self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", stage = stage, split = "m3")
+            self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", stage = stage, split = "m3")
+            self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", stage = stage, split = "m3")
+            self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", stage = stage, split = "m3")
+            self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", stage = stage, split = "m3")
+            self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", stage = stage, split = "%")
+            self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", stage = stage, split = "%")
 
             self._data_to_extract = [
                 # start
@@ -128,10 +128,10 @@ class LF1(FMFile):
 
         # Force rereading from start of file
         if force_reread == True:
-            # reset counter
+            # Reset counter
             self._lines_read = 0
 
-            # wipe values
+            # Wipe values
             for line_type in self._data_to_extract:
                 line_type.value = []
 
@@ -155,9 +155,9 @@ class LF1(FMFile):
                 # lines which start with prefix
                 if raw_line.startswith(line_type._prefix):
 
-                    # add everything after prefix to list
+                    # store everything after prefix
                     end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
-                    line_type._store_line(end_of_line)
+                    line_type._store(end_of_line)
             
             # update counter
             self._lines_read += 1
@@ -192,21 +192,28 @@ class LF1(FMFile):
 class LineType(ABC):
     """Abstract base class for processing and storing different types of line"""
 
-    def __init__(self, prefix):
+    def __init__(self, prefix, stage):
         self._prefix = prefix
-        self._init_value()
+
+        if stage == "run":
+            self.value = []
+            self._store = self._append
+        elif stage in ("start", "end"):
+            self.value = None
+            self._store = self._replace
+        else:
+            raise ValueError(f"Unexpected simulation stage \"{stage}\"")
 
     def __repr__(self):
         return str(self.value)
 
-    def _init_value(self):
-        self.value = []
-        self.last_value = None
-
-    def _store_line(self, raw_line):
+    def _append(self, raw_line):
         processed_line = self._process_line(raw_line)
-        self.last_value = processed_line
         self.value.append(processed_line)
+
+    def _replace(self, raw_line):
+        processed_line = self._process_line(raw_line)
+        self.value = processed_line
 
     @abstractmethod
     def _process_line(self):
@@ -269,8 +276,8 @@ class Int(LineType):
 
 class FloatSplit(LineType):
 
-    def __init__(self, prefix, split):
-        super().__init__(prefix)
+    def __init__(self, prefix, stage, split):
+        super().__init__(prefix, stage)
         self._split = split
 
     def _process_line(self, raw):
@@ -282,8 +289,8 @@ class FloatSplit(LineType):
 
 class IntSplit(LineType):
 
-    def __init__(self, prefix, split):
-        super().__init__(prefix)
+    def __init__(self, prefix, stage, split):
+        super().__init__(prefix, stage)
         self._split = split
 
     def _process_line(self, raw):
