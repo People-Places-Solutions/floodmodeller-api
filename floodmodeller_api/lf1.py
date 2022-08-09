@@ -179,8 +179,10 @@ class LF1(FMFile):
                     # store everything after prefix
                     end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
                     processed_line = line_type._process_line_wrapper(end_of_line)
-                    line_type._update(processed_line)
-                    self._no_iters = line_type._update_iters(self._no_iters)
+                    line_type._update_value_wrapper(processed_line)
+
+                    # update number of iterations (if line type defines this)
+                    self._no_iters = line_type._update_iters_wrapper(self._no_iters)
 
                     # no need to check other line types
                     break
@@ -225,26 +227,26 @@ class LineType(ABC):
         self._exclude_replace = exclude_replace
 
         if defines_iters == True:
-            self._update_iters = self._increment
+            self._update_iters_wrapper = self._increment
         else:
-            self._update_iters = self._do_not_increment
+            self._update_iters_wrapper = self._do_not_increment
 
         if stage == "run":
             self.value = [] #list
-            self._update = self._append
+            self._update_value_wrapper = self._append_to_value
         elif stage in ("start", "end"):
             self.value = None #single value
-            self._update = self._replace
+            self._update_value_wrapper = self._replace_value
         else:
             raise ValueError(f"Unexpected simulation stage \"{stage}\"")
 
     def __repr__(self):
         return str(self.value)
 
-    def _append(self, processed_line):
+    def _append_to_value(self, processed_line):
         self.value.append(processed_line)
 
-    def _replace(self, processed_line):
+    def _replace_value(self, processed_line):
         self.value = processed_line
 
     def _process_line_wrapper(self, raw_line):
@@ -280,20 +282,20 @@ class DateTime(LineType):
         self._code = code
 
     def _process_line(self, raw):
-        """Converts string to time"""
+        """Converts string to datetime"""
 
         processed = dt.datetime.strptime(raw, self._code)
-        processed = self._further_process_line(processed)
         
         return processed
 
-    def _further_process_line(self, raw):
-        return raw
-
 class Time(DateTime):
 
-    def _further_process_line(self, raw):
-        return raw.time()
+    def _process_line(self, raw):
+        """Converts string to time"""
+
+        processed = super()._process_line(raw)
+        
+        return processed.time()
 
 class TimeDeltaHMS(LineType):
 
