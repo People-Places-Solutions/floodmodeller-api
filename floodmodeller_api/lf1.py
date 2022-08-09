@@ -75,8 +75,8 @@ class LF1(FMFile):
         self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
         self.elapsed_time = TimeDeltaHMS("!!Info1 Elapsed", stage = stage)
         self.simulated_time = TimeDeltaHMS("!!Info1 Simulated", stage = stage)
-        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, code = "%H:%M:%S")
-        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", stage = stage)
+        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, exclude = "calculating...", code = "%H:%M:%S")
+        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", exclude = "...", stage = stage)
         self.iterations = FloatMult("!!PlotI1", stage = stage)
         self.convergence = FloatMult("!!PlotC1", stage = stage)
         self.flow = FloatMult("!!PlotF1", stage = stage)
@@ -257,9 +257,10 @@ class LineType(ABC):
 
 class DateTime(LineType):
 
-    def __init__(self, prefix, stage, code, defines_iters = False):
+    def __init__(self, prefix, stage, code, exclude = None, defines_iters = False):
         super().__init__(prefix, stage, defines_iters)
         self._code = code
+        self._exclude = exclude
 
     def _process_line(self, raw):
         """Converts string to time"""
@@ -269,7 +270,7 @@ class DateTime(LineType):
             processed = self._further_process_line(processed)
 
         except ValueError as e:
-            if raw == "calculating...": #at start of simulation
+            if raw == self._exclude:
                 processed = pd.NaT
             else:
                 raise e
@@ -286,6 +287,10 @@ class Time(DateTime):
 
 class TimeDeltaHMS(LineType):
 
+    def __init__(self, prefix, stage, exclude = None, defines_iters=False):
+        super().__init__(prefix, stage, defines_iters)
+        self._exclude = exclude
+
     def _process_line(self, raw):
         """Converts string HH:MM:SS to timedelta"""
 
@@ -298,7 +303,7 @@ class TimeDeltaHMS(LineType):
                 )
 
         except ValueError as e:
-            if raw == "...": #at start of simulation
+            if raw == self._exclude:
                 processed = pd.NaT
             else:
                 raise e
