@@ -25,6 +25,7 @@ import datetime as dt
 
 from ._base import FMFile
 
+
 class LF1(FMFile):
     """Reads and processes Flood Modeller 1D log file '.lf1'
 
@@ -52,55 +53,101 @@ class LF1(FMFile):
     def _init_counters(self):
         """To keep track of file during simulation"""
 
-        self._no_lines = 0 #number of lines that have been read so far
-        self._no_iters = 0 #number of iterations so far
-        self._stage = "init" #init, start, run, end
+        self._no_lines = 0  # number of lines that have been read so far
+        self._no_iters = 0  # number of iterations so far
+        self._stage = "init"  # init, start, run, end
 
     def _init_data_to_extract(self):
         """To process and hold data according to type"""
-        
-        stage = "start"    
-        self.version = String("!!Info1 version1d", stage = stage)
-        self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
-        self.qtol = Float("!!Info1 qtol =", stage = stage)
-        self.htol = Float("!!Info1 htol =", stage = stage)
-        self.start_time = TimeDeltaH("!!Info1 Start Time:", stage = stage)
-        self.end_time = TimeDeltaH("!!Info1 End Time:", stage = stage)
-        self.ran_at = DateTime("!!Info1 Ran at", stage = stage, code = "%H:%M:%S on %d/%m/%Y")
-        self.max_itr = Int("!!Info1 maxitr =", stage = stage)
-        self.min_itr = Int("!!Info1 minitr =", stage = stage)
+
+        stage = "start"
+        self.version = String("!!Info1 version1d", stage=stage)
+        self.number_of_nodes = Int(
+            "!!output1  Number of 1D river nodes in model:", stage=stage
+        )
+        self.qtol = Float("!!Info1 qtol =", stage=stage)
+        self.htol = Float("!!Info1 htol =", stage=stage)
+        self.start_time = TimeDeltaH("!!Info1 Start Time:", stage=stage)
+        self.end_time = TimeDeltaH("!!Info1 End Time:", stage=stage)
+        self.ran_at = DateTime(
+            "!!Info1 Ran at", stage=stage, code="%H:%M:%S on %d/%m/%Y"
+        )
+        self.max_itr = Int("!!Info1 maxitr =", stage=stage)
+        self.min_itr = Int("!!Info1 minitr =", stage=stage)
 
         stage = "run"
-        self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
-        self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
-        self.elapsed_time = TimeDeltaHMS("!!Info1 Elapsed", stage = stage)
-        self.simulated_time = TimeDeltaHMS("!!Info1 Simulated", stage = stage)
-        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, exclude = "calculating...", exclude_replace = pd.NaT, code = "%H:%M:%S")
-        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", exclude = "...", exclude_replace = pd.NaT, stage = stage)
-        self.iterations = FloatMult("!!PlotI1", stage = stage)
-        self.convergence = FloatMult("!!PlotC1", stage = stage)
-        self.flow = FloatMult("!!PlotF1", stage = stage)
-        self.mass_error = FloatMult("!!Info1 Mass %error =", stage = stage)
-        
+        self.progress = IntSplit("!!Progress1", stage=stage, split="%")
+        self.timestep = Float("!!Info1 Timestep", stage=stage, defines_iters=True)
+        self.elapsed_time = TimeDeltaHMS("!!Info1 Elapsed", stage=stage)
+        self.simulated_time = TimeDeltaHMS("!!Info1 Simulated", stage=stage)
+        self.estimated_finish_time = Time(
+            "!!Info1 EFT:",
+            stage=stage,
+            exclude="calculating...",
+            exclude_replace=pd.NaT,
+            code="%H:%M:%S",
+        )
+        self.estimated_time_remaining = TimeDeltaHMS(
+            "!!Info1 ETR:", exclude="...", exclude_replace=pd.NaT, stage=stage
+        )
+        self.iterations = FloatMult("!!PlotI1", stage=stage)
+        self.convergence = FloatMult("!!PlotC1", stage=stage)
+        self.flow = FloatMult("!!PlotF1", stage=stage)
+        self.mass_error = FloatMult("!!Info1 Mass %error =", stage=stage)
+
         stage = "end"
-        self.simulation_time = Int("!!output1 Simulation time elapsed (s):", stage = stage) #TODO: timedelta
-        self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:", stage = stage)
-        self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", stage = stage, split = "%")
-        self.mass_balance_interval = FloatSplit("!!output1  Mass balance calculated every", stage = stage, split = "s") #TODO: timedelta
-        self.initial_vol = FloatSplit("!!output1  Initial volume:", stage = stage, split = "m3")
-        self.final_vol = FloatSplit("!!output1  Final volume:", stage = stage, split = "m3")
-        self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", stage = stage, split = "m3")
-        self.tot_boundary_outflow = FloatSplit("!!output1  Total boundary outflow :", stage = stage, split = "m3")
-        self.tot_lat_link_inflow = FloatSplit("!!output1  Total lat. link inflow :", stage = stage, split = "m3")
-        self.tot_lat_link_outflow = FloatSplit("!!output1  Total lat. link outflow:", stage = stage, split = "m3")
-        self.max_system_volume = FloatSplit("!!output1  Max. system volume:", stage = stage, split = "m3")
-        self.max_vol_increase = FloatSplit("!!output1  Max. |volume| increase:", stage = stage, split = "m3")
-        self.max_boundary_inflow = FloatSplit("!!output1  Max. boundary inflow:", stage = stage, split = "m3")
-        self.net_vol_increase = FloatSplit("!!output1  Net increase in volume:", stage = stage, split = "m3")
-        self.net_inflow_vol = FloatSplit("!!output1  Net inflow volume:", stage = stage, split = "m3")
-        self.vol_discrepancy = FloatSplit("!!output1  Volume discrepancy:", stage = stage, split = "m3")
-        self.mass_balance_error = FloatSplit("!!output1  Mass balance error:", stage = stage, split = "%")
-        self.mass_balance_error_2 = FloatSplit("!!output1  Mass balance error [2]:", stage = stage, split = "%")
+        self.simulation_time = Int(
+            "!!output1 Simulation time elapsed (s):", stage=stage
+        )  # TODO: timedelta
+        self.no_unconverged_timesteps = Int(
+            "!!output1  Number of unconverged timesteps:", stage=stage
+        )
+        self.prop_simulation_unconverged = FloatSplit(
+            "!!output1  Proportion of simulation unconverged:", stage=stage, split="%"
+        )
+        self.mass_balance_interval = FloatSplit(
+            "!!output1  Mass balance calculated every", stage=stage, split="s"
+        )  # TODO: timedelta
+        self.initial_vol = FloatSplit(
+            "!!output1  Initial volume:", stage=stage, split="m3"
+        )
+        self.final_vol = FloatSplit("!!output1  Final volume:", stage=stage, split="m3")
+        self.tot_boundary_inflow = FloatSplit(
+            "!!output1  Total boundary inflow  :", stage=stage, split="m3"
+        )
+        self.tot_boundary_outflow = FloatSplit(
+            "!!output1  Total boundary outflow :", stage=stage, split="m3"
+        )
+        self.tot_lat_link_inflow = FloatSplit(
+            "!!output1  Total lat. link inflow :", stage=stage, split="m3"
+        )
+        self.tot_lat_link_outflow = FloatSplit(
+            "!!output1  Total lat. link outflow:", stage=stage, split="m3"
+        )
+        self.max_system_volume = FloatSplit(
+            "!!output1  Max. system volume:", stage=stage, split="m3"
+        )
+        self.max_vol_increase = FloatSplit(
+            "!!output1  Max. |volume| increase:", stage=stage, split="m3"
+        )
+        self.max_boundary_inflow = FloatSplit(
+            "!!output1  Max. boundary inflow:", stage=stage, split="m3"
+        )
+        self.net_vol_increase = FloatSplit(
+            "!!output1  Net increase in volume:", stage=stage, split="m3"
+        )
+        self.net_inflow_vol = FloatSplit(
+            "!!output1  Net inflow volume:", stage=stage, split="m3"
+        )
+        self.vol_discrepancy = FloatSplit(
+            "!!output1  Volume discrepancy:", stage=stage, split="m3"
+        )
+        self.mass_balance_error = FloatSplit(
+            "!!output1  Mass balance error:", stage=stage, split="%"
+        )
+        self.mass_balance_error_2 = FloatSplit(
+            "!!output1  Mass balance error [2]:", stage=stage, split="%"
+        )
 
         self._data_to_extract = [
             # start
@@ -142,10 +189,10 @@ class LF1(FMFile):
             self.net_inflow_vol,
             self.vol_discrepancy,
             self.mass_balance_error,
-            self.mass_balance_error_2
+            self.mass_balance_error_2,
         ]
 
-    def _read(self, force_reread = False):
+    def _read(self, force_reread=False):
         # Read LF1 file
         with open(self._filepath, "r") as lf1_file:
             self._raw_data = [line.rstrip("\n") for line in lf1_file.readlines()]
@@ -164,7 +211,7 @@ class LF1(FMFile):
         self._print_no_lines()
 
         # loop through lines that haven't already been read
-        raw_lines = self._raw_data[self._no_lines:]
+        raw_lines = self._raw_data[self._no_lines :]
         for raw_line in raw_lines:
 
             # update simulation stage (start/run/end)
@@ -186,7 +233,7 @@ class LF1(FMFile):
 
                     # no need to check other line types
                     break
-            
+
             # update counter
             self._no_lines += 1
 
@@ -216,12 +263,15 @@ class LF1(FMFile):
             self._stage = "end"
 
         elif self._stage not in ("init", "start", "run", "end"):
-            raise ValueError(f"Unexpected simulation stage \"{self._stage}\"")
+            raise ValueError(f'Unexpected simulation stage "{self._stage}"')
+
 
 class LineType(ABC):
     """Abstract base class for processing and storing different types of line"""
 
-    def __init__(self, prefix, stage, exclude = None, exclude_replace = None, defines_iters = False):
+    def __init__(
+        self, prefix, stage, exclude=None, exclude_replace=None, defines_iters=False
+    ):
         self._prefix = prefix
         self._exclude = exclude
         self._exclude_replace = exclude_replace
@@ -232,13 +282,13 @@ class LineType(ABC):
             self._update_iters_wrapper = self._do_not_increment
 
         if stage == "run":
-            self.value = [] #list
+            self.value = []  # list
             self._update_value_wrapper = self._append_to_value
         elif stage in ("start", "end"):
-            self.value = None #single value
+            self.value = None  # single value
             self._update_value_wrapper = self._replace_value
         else:
-            raise ValueError(f"Unexpected simulation stage \"{stage}\"")
+            raise ValueError(f'Unexpected simulation stage "{stage}"')
 
     def __repr__(self):
         return str(self.value)
@@ -251,6 +301,7 @@ class LineType(ABC):
 
     def _process_line_wrapper(self, raw_line):
         """self._process_line but with exception handling e.g. of nans"""
+
         try:
             processed_line = self._process_line(raw_line)
 
@@ -275,9 +326,17 @@ class LineType(ABC):
     def _process_line(self):
         pass
 
-class DateTime(LineType):
 
-    def __init__(self, prefix, stage, code, exclude = None, exclude_replace = None, defines_iters = False):
+class DateTime(LineType):
+    def __init__(
+        self,
+        prefix,
+        stage,
+        code,
+        exclude=None,
+        exclude_replace=None,
+        defines_iters=False,
+    ):
         super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._code = code
 
@@ -285,43 +344,39 @@ class DateTime(LineType):
         """Converts string to datetime"""
 
         processed = dt.datetime.strptime(raw, self._code)
-        
+
         return processed
 
-class Time(DateTime):
 
+class Time(DateTime):
     def _process_line(self, raw):
         """Converts string to time"""
 
         processed = super()._process_line(raw)
-        
+
         return processed.time()
 
-class TimeDeltaHMS(LineType):
 
+class TimeDeltaHMS(LineType):
     def _process_line(self, raw):
         """Converts string HH:MM:SS to timedelta"""
 
-        h,m,s = raw.split(":")
-        processed = dt.timedelta(
-            hours = int(h),
-            minutes = int(m),
-            seconds = int(s)
-            )
+        h, m, s = raw.split(":")
+        processed = dt.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
         return processed
 
-class TimeDeltaH(LineType):
 
+class TimeDeltaH(LineType):
     def _process_line(self, raw):
         """Converts string H (with decimal place) to timedelta"""
 
         h = raw.split("hrs")[0]
-        processed = dt.timedelta(hours = float(h))
+        processed = dt.timedelta(hours=float(h))
         return processed
 
-class Float(LineType):
 
+class Float(LineType):
     def _process_line(self, raw):
         """Converts string to float"""
 
@@ -329,8 +384,8 @@ class Float(LineType):
 
         return processed
 
-class Int(LineType):
 
+class Int(LineType):
     def _process_line(self, raw):
         """Converts string to integer"""
 
@@ -338,9 +393,17 @@ class Int(LineType):
 
         return processed
 
-class FloatSplit(LineType):
 
-    def __init__(self, prefix, stage, split, exclude = None, exclude_replace = None, defines_iters = False):
+class FloatSplit(LineType):
+    def __init__(
+        self,
+        prefix,
+        stage,
+        split,
+        exclude=None,
+        exclude_replace=None,
+        defines_iters=False,
+    ):
         super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._split = split
 
@@ -351,9 +414,17 @@ class FloatSplit(LineType):
 
         return processed
 
-class IntSplit(LineType):
 
-    def __init__(self, prefix, stage, split, exclude = None, exclude_replace = None, defines_iters = False):
+class IntSplit(LineType):
+    def __init__(
+        self,
+        prefix,
+        stage,
+        split,
+        exclude=None,
+        exclude_replace=None,
+        defines_iters=False,
+    ):
         super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._split = split
 
@@ -364,8 +435,8 @@ class IntSplit(LineType):
 
         return processed
 
-class String(LineType):
 
+class String(LineType):
     def _process_line(self, raw):
         """No conversion necessary"""
 
@@ -373,8 +444,8 @@ class String(LineType):
 
         return processed
 
-class FloatMult(LineType):
 
+class FloatMult(LineType):
     def _process_line(self, raw):
         """Converts string to list of floats"""
 
