@@ -75,8 +75,8 @@ class LF1(FMFile):
         self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
         self.elapsed_time = TimeDeltaHMS("!!Info1 Elapsed", stage = stage)
         self.simulated_time = TimeDeltaHMS("!!Info1 Simulated", stage = stage)
-        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, exclude = "calculating...", code = "%H:%M:%S")
-        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", exclude = "...", stage = stage)
+        self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, exclude = "calculating...", exclude_replace = pd.NaT, code = "%H:%M:%S")
+        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", exclude = "...", exclude_replace = pd.NaT, stage = stage)
         self.iterations = FloatMult("!!PlotI1", stage = stage)
         self.convergence = FloatMult("!!PlotC1", stage = stage)
         self.flow = FloatMult("!!PlotF1", stage = stage)
@@ -167,6 +167,7 @@ class LF1(FMFile):
         raw_lines = self._raw_data[self._no_lines:]
         for raw_line in raw_lines:
 
+            # update simulation stage (start/run/end)
             self._update_stage(raw_line)
 
             # loop through line types
@@ -177,7 +178,8 @@ class LF1(FMFile):
 
                     # store everything after prefix
                     end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
-                    line_type._update(end_of_line)
+                    processed_line = line_type._process_line_wrapper(end_of_line)
+                    line_type._update(processed_line)
                     self._no_iters = line_type._update_iters(self._no_iters)
 
                     # no need to check other line types
@@ -204,7 +206,7 @@ class LF1(FMFile):
             self._stage = "start"
 
         # running
-        elif self._stage == "start" and raw== "!!Progress1   0%":
+        elif self._stage == "start" and raw == "!!Progress1   0%":
             self._stage = "run"
 
         # end
@@ -217,8 +219,10 @@ class LF1(FMFile):
 class LineType(ABC):
     """Abstract base class for processing and storing different types of line"""
 
-    def __init__(self, prefix, stage, defines_iters = False):
+    def __init__(self, prefix, stage, exclude = None, exclude_replace = None, defines_iters = False):
         self._prefix = prefix
+        self._exclude = exclude
+        self._exclude_replace = exclude_replace
 
         if defines_iters == True:
             self._update_iters = self._increment
@@ -237,13 +241,24 @@ class LineType(ABC):
     def __repr__(self):
         return str(self.value)
 
-    def _append(self, raw_line):
-        processed_line = self._process_line(raw_line)
+    def _append(self, processed_line):
         self.value.append(processed_line)
 
-    def _replace(self, raw_line):
-        processed_line = self._process_line(raw_line)
+    def _replace(self, processed_line):
         self.value = processed_line
+
+    def _process_line_wrapper(self, raw_line):
+        """self._process_line but with exception handling e.g. of nans"""
+        try:
+            processed_line = self._process_line(raw_line)
+
+        except ValueError as e:
+            if raw_line == self._exclude:
+                processed_line = self._exclude_replace
+            else:
+                raise e
+
+        return processed_line
 
     @staticmethod
     def _increment(iters):
@@ -260,23 +275,15 @@ class LineType(ABC):
 
 class DateTime(LineType):
 
-    def __init__(self, prefix, stage, code, exclude = None, defines_iters = False):
-        super().__init__(prefix, stage, defines_iters)
+    def __init__(self, prefix, stage, code, exclude = None, exclude_replace = None, defines_iters = False):
+        super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._code = code
-        self._exclude = exclude
 
     def _process_line(self, raw):
         """Converts string to time"""
-        
-        try:
-            processed = dt.datetime.strptime(raw, self._code)
-            processed = self._further_process_line(processed)
 
-        except ValueError as e:
-            if raw == self._exclude:
-                processed = pd.NaT
-            else:
-                raise e
+        processed = dt.datetime.strptime(raw, self._code)
+        processed = self._further_process_line(processed)
         
         return processed
 
@@ -290,26 +297,15 @@ class Time(DateTime):
 
 class TimeDeltaHMS(LineType):
 
-    def __init__(self, prefix, stage, exclude = None, defines_iters=False):
-        super().__init__(prefix, stage, defines_iters)
-        self._exclude = exclude
-
     def _process_line(self, raw):
         """Converts string HH:MM:SS to timedelta"""
 
-        try:
-            h,m,s = raw.split(":")
-            processed = dt.timedelta(
-                hours = int(h),
-                minutes = int(m),
-                seconds = int(s)
-                )
-
-        except ValueError as e:
-            if raw == self._exclude:
-                processed = pd.NaT
-            else:
-                raise e
+        h,m,s = raw.split(":")
+        processed = dt.timedelta(
+            hours = int(h),
+            minutes = int(m),
+            seconds = int(s)
+            )
 
         return processed
 
@@ -342,8 +338,8 @@ class Int(LineType):
 
 class FloatSplit(LineType):
 
-    def __init__(self, prefix, stage, split, defines_iters = False):
-        super().__init__(prefix, stage, defines_iters)
+    def __init__(self, prefix, stage, split, exclude = None, exclude_replace = None, defines_iters = False):
+        super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._split = split
 
     def _process_line(self, raw):
@@ -355,8 +351,8 @@ class FloatSplit(LineType):
 
 class IntSplit(LineType):
 
-    def __init__(self, prefix, stage, split, defines_iters = False):
-        super().__init__(prefix, stage, defines_iters)
+    def __init__(self, prefix, stage, split, exclude = None, exclude_replace = None, defines_iters = False):
+        super().__init__(prefix, stage, exclude, exclude_replace, defines_iters)
         self._split = split
 
     def _process_line(self, raw):
