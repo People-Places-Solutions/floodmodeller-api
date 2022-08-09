@@ -179,6 +179,9 @@ class LF1(FMFile):
                     end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
                     line_type._update(end_of_line)
                     self._no_iters = line_type._update_iters(self._no_iters)
+
+                    # no need to check other line types
+                    break
             
             # update counter
             self._no_lines += 1
