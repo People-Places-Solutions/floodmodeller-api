@@ -64,24 +64,29 @@ class LF1(FMFile):
         self.number_of_nodes = Int("!!output1  Number of 1D river nodes in model:", stage = stage)
         self.qtol = Float("!!Info1 qtol =", stage = stage)
         self.htol = Float("!!Info1 htol =", stage = stage)
-        #self.start_time = Time("!!Info1 Start Time:", stage = stage, code = "%H.%f hrs") #should be timedelta
-        #self.end_time = Time("!!Info1 End Time:", stage = stage, code = "%H.%f hrs") #should be timedelta
+        self.start_time = TimeDeltaH("!!Info1 Start Time:", stage = stage)
+        self.end_time = TimeDeltaH("!!Info1 End Time:", stage = stage)
+        self.ran_at = DateTime("!!Info1 Ran at", stage = stage, code = "%H:%M:%S on %d/%m/%Y")
+        self.max_itr = Int("!!Info1 maxitr =", stage = stage)
+        self.min_itr = Int("!!Info1 minitr =", stage = stage)
 
         stage = "run"
         self.progress = IntSplit("!!Progress1", stage = stage, split = "%")
         self.timestep = Float("!!Info1 Timestep", stage = stage, defines_iters = True)
-        self.elapsed_time = TimeDelta("!!Info1 Elapsed", stage = stage)
-        self.simulated_time = TimeDelta("!!Info1 Simulated", stage = stage)
+        self.elapsed_time = TimeDeltaHMS("!!Info1 Elapsed", stage = stage)
+        self.simulated_time = TimeDeltaHMS("!!Info1 Simulated", stage = stage)
         self.estimated_finish_time = Time("!!Info1 EFT:", stage = stage, code = "%H:%M:%S")
-        self.estimated_time_remaining = TimeDelta("!!Info1 ETR:", stage = stage)
+        self.estimated_time_remaining = TimeDeltaHMS("!!Info1 ETR:", stage = stage)
         self.iterations = FloatMult("!!PlotI1", stage = stage)
         self.convergence = FloatMult("!!PlotC1", stage = stage)
         self.flow = FloatMult("!!PlotF1", stage = stage)
         self.mass_error = FloatMult("!!Info1 Mass %error =", stage = stage)
         
         stage = "end"
+        self.simulation_time = Int("!!output1 Simulation time elapsed (s):", stage = stage) #TODO: timedelta
         self.no_unconverged_timesteps = Int("!!output1  Number of unconverged timesteps:", stage = stage)
         self.prop_simulation_unconverged = FloatSplit("!!output1  Proportion of simulation unconverged:", stage = stage, split = "%")
+        self.mass_balance_interval = FloatSplit("!!output1  Mass balance calculated every", stage = stage, split = "s") #TODO: timedelta
         self.initial_vol = FloatSplit("!!output1  Initial volume:", stage = stage, split = "m3")
         self.final_vol = FloatSplit("!!output1  Final volume:", stage = stage, split = "m3")
         self.tot_boundary_inflow = FloatSplit("!!output1  Total boundary inflow  :", stage = stage, split = "m3")
@@ -103,8 +108,11 @@ class LF1(FMFile):
             self.number_of_nodes,
             self.qtol,
             self.htol,
-            #self.start_time,
-            #self.end_time,
+            self.start_time,
+            self.end_time,
+            self.ran_at,
+            self.max_itr,
+            self.min_itr,
             # run
             self.progress,
             self.timestep,
@@ -117,8 +125,10 @@ class LF1(FMFile):
             self.flow,
             self.mass_error,
             # end
+            self.simulation_time,
             self.no_unconverged_timesteps,
             self.prop_simulation_unconverged,
+            self.mass_balance_interval,
             self.initial_vol,
             self.final_vol,
             self.tot_boundary_inflow,
@@ -245,7 +255,7 @@ class LineType(ABC):
     def _process_line(self):
         pass
 
-class Time(LineType):
+class DateTime(LineType):
 
     def __init__(self, prefix, stage, code, defines_iters = False):
         super().__init__(prefix, stage, defines_iters)
@@ -255,7 +265,8 @@ class Time(LineType):
         """Converts string to time"""
         
         try:
-            processed = dt.datetime.strptime(raw, self._code).time()
+            processed = dt.datetime.strptime(raw, self._code)
+            processed = self._further_process_line(processed)
 
         except ValueError as e:
             if raw == "calculating...": #at start of simulation
@@ -265,7 +276,15 @@ class Time(LineType):
         
         return processed
 
-class TimeDelta(LineType):
+    def _further_process_line(self, raw):
+        return raw
+
+class Time(DateTime):
+
+    def _further_process_line(self, raw):
+        return raw.time()
+
+class TimeDeltaHMS(LineType):
 
     def _process_line(self, raw):
         """Converts string HH:MM:SS to timedelta"""
@@ -284,6 +303,15 @@ class TimeDelta(LineType):
             else:
                 raise e
 
+        return processed
+
+class TimeDeltaH(LineType):
+
+    def _process_line(self, raw):
+        """Converts string H (with decimal place) to timedelta"""
+
+        h = raw.split("hrs")[0]
+        processed = dt.timedelta(hours = float(h))
         return processed
 
 class Float(LineType):
