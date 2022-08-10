@@ -32,17 +32,21 @@ class LineType(ABC):
         if stage == "run":
             self.value = []  # list
             self.update_value_wrapper = self._append_to_value
+            self.no_values = 0
         elif stage in ("start", "end"):
             self.value = None  # single value
             self.update_value_wrapper = self._replace_value
+            self.no_values = 0
         else:
             raise ValueError(f'Unexpected simulation stage "{stage}"')
 
     def _append_to_value(self, processed_line):
         self.value.append(processed_line)
+        self.no_values += 1
 
     def _replace_value(self, processed_line):
         self.value = processed_line
+        self.no_values = 1
 
     def process_line_wrapper(self, raw_line):
         """self._process_line but with exception handling e.g. of nans"""

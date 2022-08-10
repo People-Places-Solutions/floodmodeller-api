@@ -100,24 +100,24 @@ class LF1(FMFile):
                 # lines which start with prefix
                 if raw_line.startswith(line_type.prefix):
 
-                    self._match_rows(line_type)
-
                     # store everything after prefix
                     end_of_line = raw_line.split(line_type.prefix)[1].lstrip()
                     processed_line = line_type.process_line_wrapper(end_of_line)
                     line_type.update_value_wrapper(processed_line)
 
-                    # no need to check other line types
-                    break
+                    if line_type.defines_iters == True:
+                        self._sync_rows()
+                        self._no_iters += 1
 
             # update counter
             self._no_lines += 1
 
         self._print_no_lines()
+        self._sync_rows()
         self._make_attributes()
 
     def _make_attributes(self):
-        """Make each line type in dictionary an attribute of lf1"""
+        """Make each line type value in dictionary an attribute of lf1"""
 
         for key in self._data_to_extract:
             setattr(
@@ -126,23 +126,23 @@ class LF1(FMFile):
                 self._data_to_extract[key]["object"].value
             )
 
-    def _match_rows(self, line_type):
+    def _sync_rows(self):
         """Matches up rows of dataframe according to iterations"""
 
-        # increment iters
-        if line_type.defines_iters == True:
-            self._no_iters += 1
+        if self._no_iters >= 1:
 
-        # if it's the first one of its type
-        elif (
-            line_type.stage == "run"
-            and len(line_type.value) == 0
-            and self._no_iters >= 1
-        ):
-            # fill in previous iterations with nan
-            for i in range(self._no_iters - 1):
-                line_type.value.append(line_type._nan)
+            # loop through other line types
+            for key in self._data_to_extract:
+                line_type = self._data_to_extract[key]["object"]
+                stage = line_type.stage
+                defines_iters = line_type.defines_iters
 
+                # if their number of values is not in sync
+                if stage == "run" and defines_iters == False and line_type.no_values < self._no_iters:
+                    # add a nan value
+                    line_type.update_value_wrapper(line_type._nan)
+            
+    
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
 
