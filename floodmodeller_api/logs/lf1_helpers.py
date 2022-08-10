@@ -38,9 +38,6 @@ class LineType(ABC):
         else:
             raise ValueError(f'Unexpected simulation stage "{stage}"')
 
-    def __repr__(self):
-        return str(self.value)
-
     def _append_to_value(self, processed_line):
         self.value.append(processed_line)
 

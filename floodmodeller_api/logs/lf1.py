@@ -65,6 +65,16 @@ class LF1(FMFile):
             }
             subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
 
+    def _rename_extracted_data(self):
+        """Make each line type in dictionary an attribute of lf1"""
+
+        for key in self._data_to_extract:
+            setattr(
+                self,
+                key,
+                self._data_to_extract[key]["object"].value
+            )
+
     def _read(self, force_reread=False):
         # Read LF1 file
         with open(self._filepath, "r") as lf1_file:
@@ -112,6 +122,7 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
+        self._rename_extracted_data()
 
     def _match_rows(self, line_type):
         """Matches up rows of dataframe according to iterations"""
@@ -127,8 +138,8 @@ class LF1(FMFile):
             and self._no_iters >= 1
         ):
             # fill in previous iterations with nan
-            for i in range(self._no_iters):
-                line_type.value.append("missing")  # TODO: actual nan
+            for i in range(self._no_iters - 1):
+                line_type.value.append(line_type._nan)
 
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
