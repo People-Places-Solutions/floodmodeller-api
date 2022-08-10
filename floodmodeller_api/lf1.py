@@ -222,15 +222,14 @@ class LF1(FMFile):
             for line_type in self._data_to_extract:
 
                 # lines which start with prefix
-                if raw_line.startswith(line_type._prefix):
+                if raw_line.startswith(line_type.prefix):
+
+                    self._match_rows(line_type)
 
                     # store everything after prefix
-                    end_of_line = raw_line.split(line_type._prefix)[1].lstrip()
-                    processed_line = line_type._process_line_wrapper(end_of_line)
-                    line_type._update_value_wrapper(processed_line)
-
-                    # update number of iterations (if line type defines this)
-                    self._no_iters = line_type._update_iters_wrapper(self._no_iters)
+                    end_of_line = raw_line.split(line_type.prefix)[1].lstrip()
+                    processed_line = line_type.process_line_wrapper(end_of_line)
+                    line_type.update_value_wrapper(processed_line)
 
                     # no need to check other line types
                     break
@@ -240,6 +239,23 @@ class LF1(FMFile):
 
         self._print_no_lines()
 
+    def _match_rows(self, line_type):
+        """Matches up rows of dataframe according to iterations"""
+
+        # increment iters
+        if line_type.defines_iters == True:
+            self._no_iters += 1
+
+        # if it's the first one of its type
+        elif (
+            line_type.stage == "run"
+            and len(line_type.value) == 0
+            and self._no_iters >= 1
+        ):
+            # fill in previous iterations with nan
+            for i in range(self._no_iters):
+                line_type.value.append("missing")  # TODO: actual nan
+    
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
 
@@ -273,21 +289,19 @@ class LineType(ABC):
     def __init__(
         self, prefix, stage, exclude=None, exclude_replace=None, defines_iters=False
     ):
-        self._prefix = prefix
+        self.prefix = prefix
+        self.stage = stage
+        self.defines_iters = defines_iters
+
         self._exclude = exclude
         self._exclude_replace = exclude_replace
 
-        if defines_iters == True:
-            self._update_iters_wrapper = self._increment
-        else:
-            self._update_iters_wrapper = self._do_not_increment
-
         if stage == "run":
             self.value = []  # list
-            self._update_value_wrapper = self._append_to_value
+            self.update_value_wrapper = self._append_to_value
         elif stage in ("start", "end"):
             self.value = None  # single value
-            self._update_value_wrapper = self._replace_value
+            self.update_value_wrapper = self._replace_value
         else:
             raise ValueError(f'Unexpected simulation stage "{stage}"')
 
@@ -300,7 +314,7 @@ class LineType(ABC):
     def _replace_value(self, processed_line):
         self.value = processed_line
 
-    def _process_line_wrapper(self, raw_line):
+    def process_line_wrapper(self, raw_line):
         """self._process_line but with exception handling e.g. of nans"""
 
         try:
@@ -313,15 +327,6 @@ class LineType(ABC):
                 raise e
 
         return processed_line
-
-    @staticmethod
-    def _increment(iters):
-        iters += 1
-        return iters
-
-    @staticmethod
-    def _do_not_increment(iters):
-        return iters
 
     @abstractmethod
     def _process_line(self):
