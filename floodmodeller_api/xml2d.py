@@ -59,9 +59,6 @@ class XML2D(FMFile):
                     "Creating new XML2D files is currently not supported. "
                     "Please point to an existing xml 2d file"
                 )
-
-            # Fetch XML Schema
-            self._xsd = etree.XMLSchema(etree.parse(self._xsd_loc))
         except Exception as e:
             self._handle_exception(e, when="read")
 
@@ -70,12 +67,19 @@ class XML2D(FMFile):
         self._ns = "{https://www.floodmodeller.com}"
         # etree.register_namespace('', 'https://www.floodmodeller.com')
         self._xmltree = etree.parse(self._filepath)
+        self._xsd = etree.parse(self._xsd_loc)
+        self._xsdschema = etree.XMLSchema(self._xsd)
+        self._get_multi_value_keys()
+
 
         self._create_dict()
         for key, data in self.data.items():
             #TODO: This only works for single domain atm
             # Need to have an attr called domains: list of each domain
-            setattr(self, key, data)
+            if key == 'domain':
+                self.domains = {domain['domain_id']: domain for domain in data}
+            else:
+                setattr(self, key, data)
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -83,7 +87,7 @@ class XML2D(FMFile):
         root = self._xmltree.getroot()
 
         xml_dict.update(
-            {"name": root.attrib["name"], "description": root.attrib["description"]}
+            {"name": root.attrib["name"]}
         )
 
         xml_dict = self._recursive_elements_to_dict(xml_dict, root)
@@ -96,18 +100,28 @@ class XML2D(FMFile):
         # e.g. xml.domains[domain_id]["computational_area"]... etc
 
         for child in tree:
+            if isinstance(child, etree._Comment):
+                continue # Skips comments in xml
             child_key = child.tag.replace(self._ns, "")
-            xml_dict[child_key] = {}  # Create new key for element
+            if child_key in self._multi_value_keys:
+                if child_key in xml_dict:
+                    xml_dict[child_key].append({})
+                else:
+                    xml_dict[child_key] = [{}]
+                child_dict = xml_dict[child_key][-1]
+            else:
+                xml_dict[child_key] = {}  # Create new key for element
+                child_dict = xml_dict[child_key]
             value = "" if child.text is None else child.text.replace("\n", "").strip()
             if len(child.attrib) != 0:
-                xml_dict[child_key].update(child.attrib)
+                child_dict.update(child.attrib)
                 if value != "":
-                    xml_dict[child_key].update({"value": value_from_string(value)})
+                    child_dict.update({"value": value_from_string(value)})
 
-                self._recursive_elements_to_dict(xml_dict[child_key], child)
+                self._recursive_elements_to_dict(child_dict, child)
 
             elif value == "":
-                self._recursive_elements_to_dict(xml_dict[child_key], child)
+                self._recursive_elements_to_dict(child_dict, child)
 
             else:
                 xml_dict[child_key] = value_from_string(value)
@@ -116,7 +130,7 @@ class XML2D(FMFile):
 
     def _validate(self):
         try:
-            self._xsd.assert_(self._xmltree)
+            self._xsdschema.assert_(self._xmltree)
         except AssertionError as err:
             msg = (
                 f"XML Validation Error for {self.__repr__()}:\n"
@@ -124,7 +138,7 @@ class XML2D(FMFile):
             )
             raise ValueError(msg)
 
-    def _recursive_update_xml(self, new_dict, orig_dict, parent_key):
+    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):
         #TODO: Handle adding/removing params
         # For adding, need to use schema to check where it should be added. (or just 
         # assume user puts in right place and validate?)
@@ -133,10 +147,17 @@ class XML2D(FMFile):
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
-                parent = next(self._xmltree.iter(f"{self._ns}{parent_key}"))
+                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
 
             if type(item) == dict:
-                self._recursive_update_xml(item, orig_dict[key], key)
+                self._recursive_update_xml(item, orig_dict[key], key, list_idx)
+            elif type(item) == list:
+                for i, _item in enumerate(item):
+                    if type(_item) == dict:
+                        self._recursive_update_xml(
+                            _item, orig_dict[key][i], key, list_idx=i
+                        )
+                    
             else:
                 if parent_key == "ROOT":
                     item = getattr(self, key)
@@ -161,7 +182,15 @@ class XML2D(FMFile):
 
         except Exception as e:
             self._handle_exception(e, when="write")
-
+    
+    def _get_multi_value_keys(self):
+        self._multi_value_keys = []
+        root = self._xsd.getroot()
+        for elem in root.findall('.//{http://www.w3.org/2001/XMLSchema}element'):
+            if elem.attrib.get('maxOccurs') not in (None, '0', '1'):
+                self._multi_value_keys.append(elem.attrib['name'])
+        self._multi_value_keys = set(self._multi_value_keys)
+        
     def update(self) -> None:
         """Updates the existing XML based on any altered attributes"""
         self._update()

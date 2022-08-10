@@ -24,12 +24,12 @@ file to load an existing drainage network.
 
 Once you have initialised a INP class, the supported units can be accessed via the attributes: 
 
--  ``.junctions`` (see: :ref:`Junction units <junction_units>`)
--  ``.raingauges`` (see: :ref:`Raingauge units <raingauge_units>`)
--  ``.conduits`` (see: :ref:`Conduit units <conduit_units>`)
--  ``.outfalls`` (see: :ref:`Outfall units <outfall_units>`)
--  ``.losses`` (see: :ref:`Loss units <loss_units>`)
--  ``.xsections`` (see: :ref:`XSection units <xsection_units>`)
+-  ``.junctions`` (see: :ref:`Junction units <junction_units_urban>`)
+-  ``.raingauges`` (see: :ref:`Raingauge units <raingauge_units_urban>`)
+-  ``.conduits`` (see: :ref:`Conduit units <conduit_units_urban>`)
+-  ``.outfalls`` (see: :ref:`Outfall units <outfall_units_urban>`)
+-  ``.losses`` (see: :ref:`Loss units <loss_units_urban>`)
+-  ``.xsections`` (see: :ref:`XSection units <xsection_units_urban>`)
 
 In each, the individual units of each type are stored in a dictionary of unit names and unit classes. Only units which are supported in the API will be accesible via these attributes, 
 all of which can be found in the :doc:`Individual Urban 1D Unit Classes <urban1d_units>` section.
