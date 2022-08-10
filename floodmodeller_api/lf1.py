@@ -96,18 +96,19 @@ class LF1(FMFile):
         self.mass_error = FloatMult("!!Info1 Mass %error =", stage=stage)
 
         stage = "end"
-        self.simulation_time = Int(
+        self.simulation_time = TimeDeltaS(
             "!!output1 Simulation time elapsed (s):", stage=stage
-        )  # TODO: timedelta
+        )
         self.no_unconverged_timesteps = Int(
             "!!output1  Number of unconverged timesteps:", stage=stage
         )
         self.prop_simulation_unconverged = FloatSplit(
             "!!output1  Proportion of simulation unconverged:", stage=stage, split="%"
         )
-        self.mass_balance_interval = FloatSplit(
-            "!!output1  Mass balance calculated every", stage=stage, split="s"
-        )  # TODO: timedelta
+        self.mass_balance_interval = TimeDeltaS(
+            "!!output1  Mass balance calculated every",
+            stage=stage,
+        )
         self.initial_vol = FloatSplit(
             "!!output1  Initial volume:", stage=stage, split="m3"
         )
@@ -373,6 +374,15 @@ class TimeDeltaH(LineType):
 
         h = raw.split("hrs")[0]
         processed = dt.timedelta(hours=float(h))
+        return processed
+
+
+class TimeDeltaS(LineType):
+    def _process_line(self, raw):
+        """Converts string S (with decimal place) to timedelta"""
+
+        s = raw.split("s")[0]  # TODO: not necessary for simulation time
+        processed = dt.timedelta(seconds=float(s))
         return processed
 
 
