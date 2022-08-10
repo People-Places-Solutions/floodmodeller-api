@@ -41,7 +41,7 @@ data_to_extract = {
     "min_itr": {"class": Int, "prefix": "!!Info1 minitr =", "stage" : "start"},
     # run
     "progress": {"class": IntSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%"},
-    "timestep": {"class": Float, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
+    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
     "elapsed_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
     "simulated_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},
     "estimated_finish_time": {"class": Time, "prefix": "!!Info1 EFT:", "stage" : "run", "exclude": "calculating...", "code":"%H:%M:%S"},

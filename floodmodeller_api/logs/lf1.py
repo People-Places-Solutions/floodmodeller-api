@@ -45,36 +45,6 @@ class LF1(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def _init_counters(self):
-        """To keep track of file during simulation"""
-
-        self._no_lines = 0  # number of lines that have been read so far
-        self._no_iters = 0  # number of iterations so far
-        self._stage = "init"  # init, start, run, end
-
-    def _init_data_to_extract(self):
-        """To process and hold data according to type"""
-
-        self._data_to_extract = data_to_extract
-
-        for key in self._data_to_extract:
-            subdictionary = self._data_to_extract[key]
-            subdictionary_class = subdictionary["class"]
-            subdictionary_noclass = {
-                k: v for k, v in subdictionary.items() if k != "class"
-            }
-            subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
-
-    def _rename_extracted_data(self):
-        """Make each line type in dictionary an attribute of lf1"""
-
-        for key in self._data_to_extract:
-            setattr(
-                self,
-                key,
-                self._data_to_extract[key]["object"].value
-            )
-
     def _read(self, force_reread=False):
         # Read LF1 file
         with open(self._filepath, "r") as lf1_file:
@@ -87,6 +57,28 @@ class LF1(FMFile):
 
         # Process file
         self._process_lines()
+
+    def _init_counters(self):
+        """To keep track of file during simulation"""
+
+        self._no_lines = 0  # number of lines that have been read so far
+        self._no_iters = 0  # number of iterations so far
+        self._stage = "init"  # init, start, run, end
+
+    def _init_data_to_extract(self):
+        """To process and hold data according to type"""
+
+        # dictionary from lf1_params.py
+        self._data_to_extract = data_to_extract
+
+        # create LineType object for/in each item in dictionary
+        for key in self._data_to_extract:
+            subdictionary = self._data_to_extract[key]
+            subdictionary_class = subdictionary["class"]
+            subdictionary_noclass = {
+                k: v for k, v in subdictionary.items() if k != "class"
+            }
+            subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
 
     def _process_lines(self):
         """Sorts and processes raw data into lists for each prefix"""
@@ -122,7 +114,17 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
-        self._rename_extracted_data()
+        self._make_attributes()
+
+    def _make_attributes(self):
+        """Make each line type in dictionary an attribute of lf1"""
+
+        for key in self._data_to_extract:
+            setattr(
+                self,
+                key,
+                self._data_to_extract[key]["object"].value
+            )
 
     def _match_rows(self, line_type):
         """Matches up rows of dataframe according to iterations"""
