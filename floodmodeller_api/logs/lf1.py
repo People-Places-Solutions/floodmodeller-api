@@ -23,7 +23,7 @@ from abc import ABC, abstractmethod
 import pandas as pd
 import datetime as dt
 
-from ._base import FMFile
+from .._base import FMFile
 
 
 class LF1(FMFile):
