@@ -72,7 +72,7 @@ class IEF(FMFile):
 
             elif "=" in line:
                 # Using strip() method to remove any leading/trailing whitespace
-                prop, value = [itm.strip() for itm in line.split("=")]
+                prop, value = [itm.strip() for itm in line.split("=", 1)]
                 # Handle 'EventData' properties so that multiple can be set
                 if prop.upper() == "EVENTDATA":
                     if hasattr(self, "EventData"):

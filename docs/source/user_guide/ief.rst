@@ -88,7 +88,7 @@ The following example shows how the `IEF` class could be used to iteratively upd
 
     for ief_path in ief_files:
         ief = IEF(ief_path) # Initiate IEF Class Object
-        ief.Datafile = r'..\NEW_RIVER_001.DAT' # Set 'Datafile' setting to new DAT file location
+        ief.datafile = r'..\NEW_RIVER_001.DAT' # Set 'Datafile' setting to new DAT file location
         ief.update() # Update the IEF file
 
 **Example 2 - Create new set of IEFs versions based on previous IEF files**
@@ -98,6 +98,7 @@ The following example shows how the `IEF` class could be used to create a new se
 .. code:: python
 
     # Import modules
+    import od
     from glob import glob
     from floodmodeller_api import IEF
 
@@ -113,11 +114,11 @@ The following example shows how the `IEF` class could be used to create a new se
         new_ief_path = os.path.join(folder, new_ief_name) # get updated filepath
 
         ief = IEF(ief_path) # Initiate IEF Class Object
-        ief.Title += '_v2' # Update title
-        if 'Results' in dir(ief):
-            ief.Results += '_v2' # If Results setting already exists, append v2
-        else:
-            ief.Results = 'v2' # If no results yet specified, set results to v2
+        ief.title += '_v2' # Update title
+        try:
+            ief.results += '_v2' # If Results setting already exists, append v2
+        except AttributeError:
+            ief.results = 'v2' # If no results yet specified, set results to v2
 
         ief.save(new_ief_path) # Save updated IEF files to the new filepath
 

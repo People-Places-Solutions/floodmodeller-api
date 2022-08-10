@@ -57,6 +57,11 @@ html_theme_options = {
     "navbar_end": ["search-field.html"], #["navbar-icon-links.html", "search-field.html"],
     "icon_links": [
         {
+            "name": "GitHub",
+            "url": "https://github.com/People-Places-Solutions/floodmodeller-api",
+            "icon": "fab fa-github",
+        },
+        {
             "name": "Contact Us",
             "url": "https://www.floodmodeller.com/contact",
             "icon": "fas fa-inbox",

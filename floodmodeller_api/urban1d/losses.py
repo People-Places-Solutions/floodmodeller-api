@@ -26,12 +26,12 @@ class LOSS(UrbanUnit):
     """Class to hold and process LOSS unit type
 
     Args:
-        self.name (str): Name of conduit. (required)
-        self.kentry (float): Entrance minor head loss coefficient. (required) # TODO: FM name - Entry Loss Coeff.
-        self.kexit (float): Exit minor head loss coefficient. (required) # TODO: FM name - Exit Loss Coeff.
-        self.kavg (float): Average minor head loss coefficient across lenght of culvert. (required) # TODO: FM name - Avg. Loss Coeff.
-        self.flap (str): YES/NO.  If conduit has a flat valve that prevents back flow. (optional, default NO ) # TODO: FM name - Flap Gate.
-        self.seepage (float): Rate of seepage loss into surrounding soil (in/hr or mm/hr). (optional, default is 0) # TODO: FM name - Seepage Loss Rate
+        name (str): Name of conduit. (required)
+        kentry (float): Entrance minor head loss coefficient. (required) # TODO: FM name - Entry Loss Coeff.
+        kexit (float): Exit minor head loss coefficient. (required) # TODO: FM name - Exit Loss Coeff.
+        kavg (float): Average minor head loss coefficient across lenght of culvert. (required) # TODO: FM name - Avg. Loss Coeff.
+        flap (str): YES/NO.  If conduit has a flat valve that prevents back flow. (optional, default NO ) # TODO: FM name - Flap Gate.
+        seepage (float): Rate of seepage loss into surrounding soil (in/hr or mm/hr). (optional, default is 0) # TODO: FM name - Seepage Loss Rate
         
 
     Returns:

@@ -26,15 +26,15 @@ class CONDUIT(UrbanUnit):
     """Class to hold and process CONDUIT unit type
 
     Args:
-        self.name (str): Unit name. (required)
-        self.node1 (str): Name of upstream node. (required)
-        self.node2 (str): Name of downstream node. (required)
-        self.length (float): Conduit length (ft or m). (required)
-        self.n (float): Mannings n value. (required)
-        self.z1 (float): Offset of upstream end of conduit invert above the invert elevation of it's upstream node (ft or m). (required)
-        self.z1 (float): Offset of downstream end of conduit invert above the invert elevation of it's downstream node (ft or m). (required)
-        self.q0 (float): Flow in conduit at start of simulation (flow units).(optional, default 0)
-        self.qmax (float): maximum flow allowed in the conduit (flow units) (optional, default unlimited)
+        name (str): Unit name. (required)
+        node1 (str): Name of upstream node. (required)
+        node2 (str): Name of downstream node. (required)
+        length (float): Conduit length (ft or m). (required)
+        n (float): Mannings n value. (required)
+        z1 (float): Offset of upstream end of conduit invert above the invert elevation of it's upstream node (ft or m). (required)
+        z1 (float): Offset of downstream end of conduit invert above the invert elevation of it's downstream node (ft or m). (required)
+        q0 (float): Flow in conduit at start of simulation (flow units).(optional, default 0)
+        qmax (float): maximum flow allowed in the conduit (flow units) (optional, default unlimited)
 
     Returns:
         CONDUIT: Flood Modeller CONDUIT Unit class object

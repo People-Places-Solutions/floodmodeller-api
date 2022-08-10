@@ -28,15 +28,15 @@ class RAINGAUGE(UrbanUnit):
     """Class to hold and process RAINGAUGE unit type
 
     Args:
-        self.name (str): Unit name
-        self.format (str): Form of recorded rainfall, either 'INTENSITY', 'VOLUME' or 'CUMULATIVE' (mandatory)
-        self.interval (float): Time interval between gauge readings in decimal hours or hours:minutes format (e.g., 0:15 for 15-minute readings). (mandatory)
-        self.snow_catch_factor (float): Snow catch deficiency correction factor (SCF) (use 1.0 for no adjustment). (mandatory)
-        self.data_option (str):'TIMESERIES' or 'FILE' defining where the data is provdied.
-        self.timeseries (str): Name of time series in [TIMESERIES] section with rainfall data (mandatory, if data_option = 'TIMESERIES')
-        self.filename (str): Name of external file with rainfall data. (mandatory, if data_option = 'File')
-        self.station (str)Name of recording station used in the rain file (mandatory, if data_option = 'File')
-        self.units (str): Rain depth units used in the rain file, either 'IN' (inches) or 'MM' (millimeters).(mandatory, if data_option = 'File')
+        name (str): Unit name
+        format (str): Form of recorded rainfall, either 'INTENSITY', 'VOLUME' or 'CUMULATIVE' (mandatory)
+        interval (float): Time interval between gauge readings in decimal hours or hours:minutes format (e.g., 0:15 for 15-minute readings). (mandatory)
+        snow_catch_factor (float): Snow catch deficiency correction factor (SCF) (use 1.0 for no adjustment). (mandatory)
+        data_option (str):'TIMESERIES' or 'FILE' defining where the data is provdied.
+        timeseries (str): Name of time series in [TIMESERIES] section with rainfall data (mandatory, if data_option = 'TIMESERIES')
+        filename (str): Name of external file with rainfall data. (mandatory, if data_option = 'File')
+        station (str)Name of recording station used in the rain file (mandatory, if data_option = 'File')
+        units (str): Rain depth units used in the rain file, either 'IN' (inches) or 'MM' (millimeters).(mandatory, if data_option = 'File')
 
     Returns:
         RAINGAUGE: Flood Modeller RAINGAUGE Unit class object
