@@ -14,8 +14,19 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from .lf1_helpers import DateTime, Time, TimeDeltaHMS, TimeDeltaH, TimeDeltaS, Float, Int, FloatSplit, IntSplit, String, FloatMult
-import pandas as pd
+from .lf1_helpers import (
+    DateTime,
+    Time,
+    TimeDeltaHMS,
+    TimeDeltaH,
+    TimeDeltaS,
+    Float,
+    Int,
+    FloatSplit,
+    IntSplit,
+    String,
+    FloatMult,
+)
 
 data_to_extract = {
     # start
@@ -33,8 +44,8 @@ data_to_extract = {
     "timestep": {"class": Float, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
     "elapsed_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
     "simulated_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},
-    "estimated_finish_time": {"class": Time, "prefix": "!!Info1 EFT:", "stage" : "run", "exclude": "calculating...", "exclude_replace":pd.NaT, "code":"%H:%M:%S"},
-    "estimated_time_remaining": {"class": TimeDeltaHMS, "prefix" : "!!Info1 ETR:", "exclude":"...", "exclude_replace":pd.NaT, "stage" : "run" },
+    "estimated_finish_time": {"class": Time, "prefix": "!!Info1 EFT:", "stage" : "run", "exclude": "calculating...", "code":"%H:%M:%S"},
+    "estimated_time_remaining": {"class": TimeDeltaHMS, "prefix" : "!!Info1 ETR:", "exclude":"...", "stage" : "run" },
     "iterations": {"class": FloatMult, "prefix": "!!PlotI1", "stage" : "run"},
     "convergence": {"class": FloatMult, "prefix": "!!PlotC1", "stage" : "run"},
     "flow": {"class": FloatMult, "prefix": "!!PlotF1", "stage" : "run"},

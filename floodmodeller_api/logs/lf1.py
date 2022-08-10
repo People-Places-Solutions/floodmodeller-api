@@ -60,7 +60,9 @@ class LF1(FMFile):
         for key in self._data_to_extract:
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
-            subdictionary_noclass = {k: v for k, v in subdictionary.items() if k != "class"}
+            subdictionary_noclass = {
+                k: v for k, v in subdictionary.items() if k != "class"
+            }
             subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
 
     def _read(self, force_reread=False):
@@ -127,7 +129,7 @@ class LF1(FMFile):
             # fill in previous iterations with nan
             for i in range(self._no_iters):
                 line_type.value.append("missing")  # TODO: actual nan
-    
+
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
 
@@ -153,5 +155,3 @@ class LF1(FMFile):
 
         elif self._stage not in ("init", "start", "run", "end"):
             raise ValueError(f'Unexpected simulation stage "{self._stage}"')
-
-
