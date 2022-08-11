@@ -22,21 +22,31 @@ import pandas as pd
 class LineType(ABC):
     """Abstract base class for processing and storing different types of line"""
 
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
         self.prefix = prefix
         self.stage = stage
         self.defines_iters = defines_iters
+        self.before_defines_iters = before_defines_iters
 
         self._exclude = exclude
+
+        self.no_values = 0
 
         if stage == "run":
             self.value = []  # list
             self.update_value_wrapper = self._append_to_value
-            self.no_values = 0
+
         elif stage in ("start", "end"):
             self.value = None  # single value
             self.update_value_wrapper = self._replace_value
-            self.no_values = 0
+
         else:
             raise ValueError(f'Unexpected simulation stage "{stage}"')
 
@@ -75,8 +85,9 @@ class DateTime(LineType):
         code,
         exclude=None,
         defines_iters=False,
+        before_defines_iters=False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters)
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._code = code
         self._nan = pd.NaT
 
@@ -89,8 +100,18 @@ class DateTime(LineType):
 
 
 class Time(DateTime):
-    def __init__(self, prefix, stage, code, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, code, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        code,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(
+            prefix, stage, code, exclude, defines_iters, before_defines_iters
+        )
         self._nan = pd.NaT
 
     def _process_line(self, raw):
@@ -102,8 +123,15 @@ class Time(DateTime):
 
 
 class TimeDeltaHMS(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
     def _process_line(self, raw):
@@ -116,8 +144,15 @@ class TimeDeltaHMS(LineType):
 
 
 class TimeDeltaH(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
     def _process_line(self, raw):
@@ -129,8 +164,15 @@ class TimeDeltaH(LineType):
 
 
 class TimeDeltaS(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
     def _process_line(self, raw):
@@ -142,8 +184,15 @@ class TimeDeltaS(LineType):
 
 
 class Float(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = float("nan")
 
     def _process_line(self, raw):
@@ -155,8 +204,15 @@ class Float(LineType):
 
 
 class Int(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = -99999
 
     def _process_line(self, raw):
@@ -175,8 +231,9 @@ class FloatSplit(LineType):
         split,
         exclude=None,
         defines_iters=False,
+        before_defines_iters=False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters)
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._split = split
         self._nan = float("nan")
 
@@ -189,8 +246,15 @@ class FloatSplit(LineType):
 
 
 class String(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+    def __init__(
+        self,
+        prefix,
+        stage,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = ""
 
     def _process_line(self, raw):
@@ -201,11 +265,19 @@ class String(LineType):
         return processed
 
 
-class FloatMult(LineType):
-    def __init__(self, prefix, stage, names, exclude=None, defines_iters=False):
-        super().__init__(prefix, stage, exclude, defines_iters)
+class TimeFloatMult(LineType):
+    def __init__(
+        self,
+        prefix,
+        stage,
+        names,
+        exclude=None,
+        defines_iters=False,
+        before_defines_iters=False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._names = names
-        
+
         self._nan = []
         for name in names:
             self._nan.append(float("nan"))
@@ -214,5 +286,6 @@ class FloatMult(LineType):
         """Converts string to list of floats"""
 
         processed = [float(x) for x in raw.split()]
+        processed[0] = dt.timedelta(hours=float(processed[0]))
 
         return processed

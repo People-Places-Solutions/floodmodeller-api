@@ -22,7 +22,7 @@ import pandas as pd
 
 from .._base import FMFile
 from .lf1_params import data_to_extract
-from .lf1_helpers import FloatMult
+from .lf1_helpers import TimeFloatMult
 
 
 class LF1(FMFile):
@@ -113,7 +113,7 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
-        self._sync_cols()
+        self._sync_cols(final = True)
         self._create_direct_attributes()
         self._create_dataframe()
 
@@ -126,50 +126,66 @@ class LF1(FMFile):
     def _create_dataframe(self):
         """Combine all line types (run) into dataframe"""
 
+        # (1) create dictionary
         run = {}
 
+        # loop through line types
         for key in self._data_to_extract:
 
             subdictionary = self._data_to_extract[key]
             stage = subdictionary["stage"]
 
+            # only want "run" line types in data frame
             if stage == "run":
+
                 line_type = subdictionary["class"]
                 value = subdictionary["object"].value
 
-                if line_type == FloatMult:
+                # line types with multiple entries per line
+                if line_type == TimeFloatMult:
+
                     names = subdictionary["names"]
                     no_names = len(names)
 
+                    # give each entry a column
                     for i in range(no_names):
-                        new_key = names[i]                        
+                        new_key = names[i]
                         new_value = [item[i] for item in value]
                         run[new_key] = new_value
 
+                # otherwise, one entry per line type
                 else:
                     run[key] = value
 
+        # (2) turn dictionary into dataframe
         self.df = pd.DataFrame(run)
 
-    def _sync_cols(self):
+    def _sync_cols(self, final = False):
         """Matches up columns of dataframe according to iterations"""
 
-        if self._no_iters >= 1:
+        # loop through other line types
+        for key in self._data_to_extract:
+            line_type = self._data_to_extract[key]["object"]
 
-            # loop through other line types
-            for key in self._data_to_extract:
-                line_type = self._data_to_extract[key]["object"]
-                stage = line_type.stage
-                defines_iters = line_type.defines_iters
+            stage = line_type.stage
+            defines_iters = line_type.defines_iters
+            no_values = line_type.no_values
+            before_defines_iters = line_type.before_defines_iters
 
-                # if their number of values is not in sync
-                if (
-                    stage == "run"
-                    and defines_iters == False
-                    and line_type.no_values < self._no_iters
-                ):
-                    # append nan to the list
-                    line_type.update_value_wrapper(line_type._nan)
+            # create buffer if it comes before line type that defines iters
+            if before_defines_iters == True and final == False:
+                buffer = 1
+            else:
+                buffer = 0
+
+            # if their number of values is not in sync
+            if (
+                stage == "run"
+                and defines_iters == False
+                and no_values < (self._no_iters + buffer)
+            ):
+                # append nan to the list
+                line_type.update_value_wrapper(line_type._nan)
 
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
