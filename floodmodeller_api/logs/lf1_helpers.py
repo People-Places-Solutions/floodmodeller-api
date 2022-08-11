@@ -178,33 +178,12 @@ class FloatSplit(LineType):
     ):
         super().__init__(prefix, stage, exclude, defines_iters)
         self._split = split
-        self._nan = []
+        self._nan = float("nan")
 
     def _process_line(self, raw):
         """Converts string to float, removing everything after split"""
 
         processed = float(raw.split(self._split)[0])
-
-        return processed
-
-
-class IntSplit(LineType):
-    def __init__(
-        self,
-        prefix,
-        stage,
-        split,
-        exclude=None,
-        defines_iters=False,
-    ):
-        super().__init__(prefix, stage, exclude, defines_iters)
-        self._split = split
-        self._nan = []
-
-    def _process_line(self, raw):
-        """Converts string to integer, removing everything after split"""
-
-        processed = int(raw.split(self._split)[0])
 
         return processed
 

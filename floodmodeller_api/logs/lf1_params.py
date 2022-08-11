@@ -23,7 +23,6 @@ from .lf1_helpers import (
     Float,
     Int,
     FloatSplit,
-    IntSplit,
     String,
     FloatMult,
 )
@@ -40,7 +39,7 @@ data_to_extract = {
     "max_itr": {"class": Int, "prefix": "!!Info1 maxitr =", "stage" : "start"},
     "min_itr": {"class": Int, "prefix": "!!Info1 minitr =", "stage" : "start"},
     # run
-    "progress": {"class": IntSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%"},
+    "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%"},
     "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
     "elapsed_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
     "simulated_time": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},

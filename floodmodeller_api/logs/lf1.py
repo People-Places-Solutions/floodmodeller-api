@@ -15,7 +15,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
+from re import sub
 from typing import Optional, Union
+
+import pandas as pd
 
 from .._base import FMFile
 from .lf1_params import data_to_extract
@@ -63,7 +66,6 @@ class LF1(FMFile):
 
         self._no_lines = 0  # number of lines that have been read so far
         self._no_iters = 0  # number of iterations so far
-        self._stage = "init"  # init, start, run, end
 
     def _init_data_to_extract(self):
         """To process and hold data according to type"""
@@ -89,9 +91,6 @@ class LF1(FMFile):
         raw_lines = self._raw_data[self._no_lines :]
         for raw_line in raw_lines:
 
-            # update simulation stage (start/run/end)
-            self._update_stage(raw_line)
-
             # loop through line types
             for key in self._data_to_extract:
 
@@ -106,18 +105,19 @@ class LF1(FMFile):
                     line_type.update_value_wrapper(processed_line)
 
                     if line_type.defines_iters == True:
-                        self._sync_rows()
+                        self._sync_cols()
                         self._no_iters += 1
 
             # update counter
             self._no_lines += 1
 
         self._print_no_lines()
-        self._sync_rows()
-        self._make_attributes()
+        self._sync_cols()
+        self._create_direct_attributes()
+        self._create_dataframe()
 
-    def _make_attributes(self):
-        """Make each line type value in dictionary an attribute of lf1"""
+    def _create_direct_attributes(self):
+        """Make each line type value in dictionary a direct attribute of lf1"""
 
         for key in self._data_to_extract:
             setattr(
@@ -126,8 +126,17 @@ class LF1(FMFile):
                 self._data_to_extract[key]["object"].value
             )
 
-    def _sync_rows(self):
-        """Matches up rows of dataframe according to iterations"""
+    def _create_dataframe(self):
+        """Combine all line types (run) into dataframe"""
+        
+        run = {
+            k: v["object"].value for k, v in self._data_to_extract.items() if v["stage"] == "run"
+        }
+
+        self.df = pd.DataFrame(run)
+
+    def _sync_cols(self):
+        """Matches up columns of dataframe according to iterations"""
 
         if self._no_iters >= 1:
 
@@ -139,7 +148,7 @@ class LF1(FMFile):
 
                 # if their number of values is not in sync
                 if stage == "run" and defines_iters == False and line_type.no_values < self._no_iters:
-                    # add a nan value
+                    # append nan to the list
                     line_type.update_value_wrapper(line_type._nan)
             
     
@@ -147,24 +156,3 @@ class LF1(FMFile):
         """Prints the number of lines that have been read so far"""
 
         print("Lines read: " + str(self._no_lines))
-
-    def _update_stage(self, raw):
-        """Update what stage of simulation we are in"""
-
-        # TODO: check classification is robust
-        # TODO: check necessary
-
-        # start
-        if self._stage == "init" and raw == "!!output1":
-            self._stage = "start"
-
-        # running
-        elif self._stage == "start" and raw == "!!Progress1   0%":
-            self._stage = "run"
-
-        # end
-        elif self._stage == "run" and raw == "!!output1":
-            self._stage = "end"
-
-        elif self._stage not in ("init", "start", "run", "end"):
-            raise ValueError(f'Unexpected simulation stage "{self._stage}"')
