@@ -22,6 +22,7 @@ import pandas as pd
 
 from .._base import FMFile
 from .lf1_params import data_to_extract
+from .lf1_helpers import FloatMult
 
 
 class LF1(FMFile):
@@ -120,18 +121,33 @@ class LF1(FMFile):
         """Make each line type value in dictionary a direct attribute of lf1"""
 
         for key in self._data_to_extract:
-            setattr(
-                self,
-                key,
-                self._data_to_extract[key]["object"].value
-            )
+            setattr(self, key, self._data_to_extract[key]["object"].value)
 
     def _create_dataframe(self):
         """Combine all line types (run) into dataframe"""
-        
-        run = {
-            k: v["object"].value for k, v in self._data_to_extract.items() if v["stage"] == "run"
-        }
+
+        run = {}
+
+        for key in self._data_to_extract:
+
+            subdictionary = self._data_to_extract[key]
+            stage = subdictionary["stage"]
+
+            if stage == "run":
+                line_type = subdictionary["class"]
+                value = subdictionary["object"].value
+
+                if line_type == FloatMult:
+                    names = subdictionary["names"]
+                    no_names = len(names)
+
+                    for i in range(no_names):
+                        new_key = names[i]                        
+                        new_value = [item[i] for item in value]
+                        run[new_key] = new_value
+
+                else:
+                    run[key] = value
 
         self.df = pd.DataFrame(run)
 
@@ -147,11 +163,14 @@ class LF1(FMFile):
                 defines_iters = line_type.defines_iters
 
                 # if their number of values is not in sync
-                if stage == "run" and defines_iters == False and line_type.no_values < self._no_iters:
+                if (
+                    stage == "run"
+                    and defines_iters == False
+                    and line_type.no_values < self._no_iters
+                ):
                     # append nan to the list
                     line_type.update_value_wrapper(line_type._nan)
-            
-    
+
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
 

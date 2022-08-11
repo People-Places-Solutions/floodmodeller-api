@@ -202,9 +202,13 @@ class String(LineType):
 
 
 class FloatMult(LineType):
-    def __init__(self, prefix, stage, exclude=None, defines_iters=False):
+    def __init__(self, prefix, stage, names, exclude=None, defines_iters=False):
         super().__init__(prefix, stage, exclude, defines_iters)
+        self._names = names
+        
         self._nan = []
+        for name in names:
+            self._nan.append(float("nan"))
 
     def _process_line(self, raw):
         """Converts string to list of floats"""
