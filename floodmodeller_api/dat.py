@@ -77,6 +77,23 @@ class DAT(FMFile):
             with open(new_gxy_path, "w") as gxy_file:
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
+    
+    def diff(self, other: 'DAT') -> None:
+        """Compares the DAT class against another DAT class to check whether they are 
+        equivalent, or if not, what the differences are. Two instances of a DAT class are
+        deemed equivalent if all of their attributes are equal except for the filepath and
+        raw data. For example, two DAT files from different filepaths that had the same
+        data except maybe some differences in decimal places and some default parameters
+        ommitted, would be classed as equaivalent as they would produce the same DAT instance
+        and write the exact same data.
+
+        The result is printed to the console. If you need to access the returned data, use
+        the method ``DAT._get_diff()``
+        
+        Args:
+            other (floodmodeller_api.DAT): Other instance of a DAT class
+        """
+        self._diff(other)
 
     def _read(self):
         # Read DAT data
