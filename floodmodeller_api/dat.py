@@ -77,9 +77,9 @@ class DAT(FMFile):
             with open(new_gxy_path, "w") as gxy_file:
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
-    
-    def diff(self, other: 'DAT', force_print: bool = False) -> None:
-        """Compares the DAT class against another DAT class to check whether they are 
+
+    def diff(self, other: "DAT", force_print: bool = False) -> None:
+        """Compares the DAT class against another DAT class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a DAT class are
         deemed equivalent if all of their attributes are equal except for the filepath and
         raw data. For example, two DAT files from different filepaths that had the same
@@ -89,7 +89,7 @@ class DAT(FMFile):
 
         The result is printed to the console. If you need to access the returned data, use
         the method ``DAT._get_diff()``
-        
+
         Args:
             other (floodmodeller_api.DAT): Other instance of a DAT class
             force_print (bool): Forces the API to print every difference found, rather than
@@ -168,19 +168,19 @@ class DAT(FMFile):
 
         self.general_parameters["Node Count"] = int(params[0])
         self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
-        self.general_parameters["Upper Froude"] = _to_float(params[2],0.9)
+        self.general_parameters["Upper Froude"] = _to_float(params[2], 0.9)
         self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
         self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
         self._label_len = int(params[5])  # label length
-        self.general_parameters["Units"] = params[6] # "DEFAULT" set during read above. 
+        self.general_parameters["Units"] = params[6]  # "DEFAULT" set during read above.
         self.general_parameters["Water Temperature"] = _to_float(params[7], 10)
         self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.1)
         self.general_parameters["Convergence Head"] = _to_float(params[9], 0.1)
-        self.general_parameters["Mathematical Damping"] = _to_float(params[10],0.7)
-        self.general_parameters["Pivotal Choice"] = _to_float(params[11],0.1)
-        self.general_parameters["Under-relaxation"] = _to_float(params[12],0.7)  
-        self.general_parameters["Matrix Dummy"] = _to_float(params[13],0) 
-        self.general_parameters["RAD File"] = self._raw_data[5] # No default, optional
+        self.general_parameters["Mathematical Damping"] = _to_float(params[10], 0.7)
+        self.general_parameters["Pivotal Choice"] = _to_float(params[11], 0.1)
+        self.general_parameters["Under-relaxation"] = _to_float(params[12], 0.7)
+        self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0)
+        self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
     def _update_general_parameters(self):
         self._raw_data[0] = self.title

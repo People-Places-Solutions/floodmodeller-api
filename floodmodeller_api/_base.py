@@ -84,24 +84,32 @@ class FMFile:
         self._filepath = filepath  # Updates the filepath attribute to the given path
 
         print(f"{self._filetype} File Saved to: {filepath}")
-    
+
     def _diff(self, other, force_print=False):
         try:
             if self._filetype != other._filetype:
-                raise TypeError('Cannot compare objects of different filetypes')
+                raise TypeError("Cannot compare objects of different filetypes")
             diff = self._get_diff(other)
             if diff[0]:
-                print('No difference, files are equivalent')
+                print("No difference, files are equivalent")
             else:
                 print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
                 if len(diff[1]) > 25 and not force_print:
                     print("[Showing first 25 differences...] ")
-                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1][:25]]))
-                    print("\n...To see full list of all differences add force_print=True")
+                    print(
+                        "\n".join(
+                            [f"  {name}:  {reason}" for name, reason in diff[1][:25]]
+                        )
+                    )
+                    print(
+                        "\n...To see full list of all differences add force_print=True"
+                    )
                 else:
-                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
+                    print(
+                        "\n".join([f"  {name}:  {reason}" for name, reason in diff[1]])
+                    )
         except Exception as e:
-            self._handle_exception(e, when='compare')
+            self._handle_exception(e, when="compare")
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
@@ -121,37 +129,37 @@ class FMFile:
             f"\nMsg: {err}"
             "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api"
         )
-    
+
     def __eq__(self, other, return_diff=False):
         result = True
         diff = []
         try:
             for key, item in self.__dict__.items():
                 try:
-                    if key in (
-                        '_filepath',
-                        '_raw_data',
-                        '_gxy_filepath',
-                        '_gxy_data'
-                    ):
+                    if key in ("_filepath", "_raw_data", "_gxy_filepath", "_gxy_data"):
                         continue
                     else:
                         _result, diff = check_item_with_dataframe_equal(
-                            item, 
-                            other.__dict__[key], 
-                            name=f"{self._filetype}->{key}", 
+                            item,
+                            other.__dict__[key],
+                            name=f"{self._filetype}->{key}",
                             diff=diff,
-                            special_types=(Unit, IIC, UrbanUnit, UrbanSubsection)
+                            special_types=(Unit, IIC, UrbanUnit, UrbanSubsection),
                         )
                         if not _result:
                             result = False
                 except KeyError as ke:
                     result = False
-                    diff.append((f"{self._filetype}->{key}", f"Key: '{ke.args[0]}' missing in other"))
+                    diff.append(
+                        (
+                            f"{self._filetype}->{key}",
+                            f"Key: '{ke.args[0]}' missing in other",
+                        )
+                    )
                     continue
 
         except Exception as e:
             result = False
             diff.append((f"{self._filetype}->{key}", f"Error encountered: {e.args[0]}"))
-        
+
         return (result, diff) if return_diff else result

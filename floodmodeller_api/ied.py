@@ -262,8 +262,8 @@ class IED(FMFile):
         self._ied_struct = ied_struct
         pass
 
-    def diff(self, other: 'IED', force_print: bool = False) -> None:
-        """Compares the IED class against another IED class to check whether they are 
+    def diff(self, other: "IED", force_print: bool = False) -> None:
+        """Compares the IED class against another IED class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IED class are
         deemed equivalent if all of their attributes are equal except for the filepath and
         raw data. For example, two IED files from different filepaths that had the same
@@ -273,7 +273,7 @@ class IED(FMFile):
 
         The result is printed to the console. If you need to access the returned data, use
         the method ``IED._get_diff()``
-        
+
         Args:
             other (floodmodeller_api.IED): Other instance of an IED class
             force_print (bool): Forces the API to print every difference found, rather than

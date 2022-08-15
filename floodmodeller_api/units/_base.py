@@ -18,6 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from ..diff import check_item_with_dataframe_equal
 
+
 class Unit:
     _unit = None
     _subtype = None
@@ -81,21 +82,20 @@ class Unit:
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print('No difference, units are equivalent')
+            print("No difference, units are equivalent")
         else:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
-    
+
     def __eq__(self, other, return_diff=False):
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, 
-            other.__dict__, 
+            self.__dict__,
+            other.__dict__,
             name=f"{self._unit}.{self._subtype or ''}.{self._name}",
-            diff=diff
+            diff=diff,
         )
         return (result, diff) if return_diff else result
-

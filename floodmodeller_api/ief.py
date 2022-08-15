@@ -297,19 +297,19 @@ class IEF(FMFile):
             if name.lower() == attr.lower():
                 super().__delattr__(attr)
                 existing_attr_deleted = True
-        
+
         if not existing_attr_deleted:
             super().__delattr__(name)
 
-    def diff(self, other: 'IEF', force_print: bool = False) -> None:
-        """Compares the IEF class against another IEF class to check whether they are 
+    def diff(self, other: "IEF", force_print: bool = False) -> None:
+        """Compares the IEF class against another IEF class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IEF class are
         deemed equivalent if all of their attributes are equal except for the filepath and
         raw data.
 
         The result is printed to the console. If you need to access the returned data, use
         the method ``IEF._get_diff()``
-        
+
         Args:
             other (floodmodeller_api.IEF): Other instance of an IEF class
             force_print (bool): Forces the API to print every difference found, rather than
