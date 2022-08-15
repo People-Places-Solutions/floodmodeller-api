@@ -83,7 +83,7 @@ class Unit:
         if diff[0]:
             print('No difference, units are equivalent')
         else:
-            print("\n".join([f"{name+':':>40}{reason}" for name, reason in diff[1]]))
+            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
