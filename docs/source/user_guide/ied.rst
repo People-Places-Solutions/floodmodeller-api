@@ -82,6 +82,8 @@ Reference
 
    .. automethod:: save
 
+   .. automethod:: diff
+
 Examples
 -----------
 
