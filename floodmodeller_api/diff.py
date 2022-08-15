@@ -13,7 +13,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
                 if isinstance(item_a, pd.Series):
                     item_a = pd.DataFrame(item_a).reset_index()
                     item_b = pd.DataFrame(item_b).reset_index()
-                    
+
                 df_diff = pd.concat([item_a, item_b]).drop_duplicates(keep=False)
                 rows = df_diff.index.unique().to_list()
                 msg = f"{len(rows)} row(s) not equal:\n"
@@ -30,6 +30,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
         elif isinstance(item_a, special_types):
             # item is a Unit or other fmapi class
            result, new_diff = item_a._get_diff(item_b)
+           new_diff = [(f"{name}->{new_name}", new_item) for new_name, new_item in new_diff]
            diff.extend(new_diff)
         else:
             if not item_a == item_b:

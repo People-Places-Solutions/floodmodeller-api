@@ -21,6 +21,7 @@ from .version import __version__
 from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
+from .urban1d._base import UrbanSubsection, UrbanUnit
 
 
 class FMFile:
@@ -140,7 +141,7 @@ class FMFile:
                             other.__dict__[key], 
                             name=f"{self._filetype}->{key}", 
                             diff=diff,
-                            special_types=(Unit, IIC)
+                            special_types=(Unit, IIC, UrbanUnit, UrbanSubsection)
                         )
                         if not _result:
                             result = False

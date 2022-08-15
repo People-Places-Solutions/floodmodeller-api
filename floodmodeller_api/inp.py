@@ -240,6 +240,25 @@ class INP(FMFile):
 
         self._inp_struct = inp_struct
 
+    def diff(self, other: 'INP', force_print: bool = False) -> None:
+        """Compares the INP class against another INP class to check whether they are 
+        equivalent, or if not, what the differences are. Two instances of an INP class are
+        deemed equivalent if all of their attributes are equal except for the filepath and
+        raw data. For example, two INP files from different filepaths that had the same
+        data except maybe some differences in decimal places and some default parameters
+        ommitted, would be classed as equaivalent as they would produce the same INP instance
+        and write the exact same data.
+
+        The result is printed to the console. If you need to access the returned data, use
+        the method ``INP._get_diff()``
+        
+        Args:
+            other (floodmodeller_api.INP): Other instance of an INP class
+            force_print (bool): Forces the API to print every difference found, rather than
+                just the first 25 differences. Defaults to False.
+        """
+        self._diff(other, force_print=force_print)
+
     def update(self) -> None:
         """Updates the existing INP based on any altered attributes"""
 
