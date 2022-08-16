@@ -114,6 +114,8 @@ Reference
 
    .. automethod:: save
 
+   .. automethod:: diff
+
 Examples
 -----------
 **Example 1 - Adding 300mm siltation to all river sections** 

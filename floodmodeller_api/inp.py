@@ -70,7 +70,7 @@ class INP(FMFile):
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
         try:
-            
+
             _validate_unit(self, urban=True)
 
             block_shift = 0  # Used to allow changes in the length of subsections.
@@ -178,8 +178,10 @@ class INP(FMFile):
                             ):
                                 data = units.helpers.split_n_char(line, 21)
 
-                                #Set type to Float or Stirng, as appropirate. 
-                                self.options[data[0].lower()] = _to_str(data[1], None, check_float = True)
+                                # Set type to Float or Stirng, as appropirate.
+                                self.options[data[0].lower()] = _to_str(
+                                    data[1], None, check_float=True
+                                )
 
                 # Create appropriate sub-class instences for supported units
                 elif (
@@ -189,7 +191,7 @@ class INP(FMFile):
                     subsection_class = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
                     ]["class"]
-                    
+
                     subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
                     ]["attribute"]
@@ -239,6 +241,25 @@ class INP(FMFile):
             inp_struct.append(unit_block)  # add final block
 
         self._inp_struct = inp_struct
+
+    def diff(self, other: "INP", force_print: bool = False) -> None:
+        """Compares the INP class against another INP class to check whether they are
+        equivalent, or if not, what the differences are. Two instances of an INP class are
+        deemed equivalent if all of their attributes are equal except for the filepath and
+        raw data. For example, two INP files from different filepaths that had the same
+        data except maybe some differences in decimal places and some default parameters
+        ommitted, would be classed as equaivalent as they would produce the same INP instance
+        and write the exact same data.
+
+        The result is printed to the console. If you need to access the returned data, use
+        the method ``INP._get_diff()``
+
+        Args:
+            other (floodmodeller_api.INP): Other instance of an INP class
+            force_print (bool): Forces the API to print every difference found, rather than
+                just the first 25 differences. Defaults to False.
+        """
+        self._diff(other, force_print=force_print)
 
     def update(self) -> None:
         """Updates the existing INP based on any altered attributes"""
