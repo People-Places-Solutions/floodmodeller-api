@@ -40,6 +40,7 @@ data_to_extract = {
     "min_itr": {"class": Int, "prefix": "!!Info1 minitr =", "stage" : "start"},
     # run
     "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%", "before_defines_iters": True},
+    #"progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "end", "split": "%"},
     "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
     "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},

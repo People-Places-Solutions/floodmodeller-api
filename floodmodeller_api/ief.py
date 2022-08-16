@@ -407,17 +407,18 @@ class IEF(FMFile):
                     run_command, cwd=os.path.dirname(self._filepath)
                 )  # execute simulation
 
-                # Log files
+                # Initialise log files
                 log_filepath = self._filepath.with_suffix(".lf1") # TODO: also LF2
-                lf1 = LF1(log_filepath)
+                if Path(log_filepath).is_file(): #FIXME: what if it's an old log file?
+                    lf1 = LF1(log_filepath)
 
                 while process.poll() is None:
                     # Process still running
 
-                    # Log files
+                    # Update log files
                     if Path(log_filepath).is_file():
                         lf1._read() #FIXME: shouldn't have underscore
-                        print(lf1.df)
+                        print("Progress: " + str(lf1.progress))
 
                     time.sleep(1)
 
