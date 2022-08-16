@@ -79,12 +79,13 @@ class LF1(FMFile):
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
             subdictionary_noclass = {
-                k: v for k, v in subdictionary.items() if k != "class"
-            }
+                k: v for k, v in subdictionary.items() if k not in ("class","object")
+            } # FIXME: "object" because it is passed by reference, leading to error in ief.py
             subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
+            
 
     def _process_lines(self):
-        """Sorts and processes raw data into lists for each prefix"""
+        """Sorts and processes raw data for each prefix"""
 
         self._print_no_lines()
 
@@ -113,7 +114,7 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
-        self._sync_cols(final = True)
+        self._sync_cols(final_iter = True)
         self._create_direct_attributes()
         self._create_dataframe()
 
@@ -160,7 +161,7 @@ class LF1(FMFile):
         # (2) turn dictionary into dataframe
         self.df = pd.DataFrame(run)
 
-    def _sync_cols(self, final = False):
+    def _sync_cols(self, final_iter = False):
         """Matches up columns of dataframe according to iterations"""
 
         # loop through other line types
@@ -173,7 +174,7 @@ class LF1(FMFile):
             before_defines_iters = line_type.before_defines_iters
 
             # create buffer if it comes before line type that defines iters
-            if before_defines_iters == True and final == False:
+            if before_defines_iters == True and final_iter == False:
                 buffer = 1
             else:
                 buffer = 0

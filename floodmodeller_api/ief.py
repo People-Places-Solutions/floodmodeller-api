@@ -26,6 +26,7 @@ import pandas as pd
 from ._base import FMFile
 from .ief_flags import flags
 from .zzn import ZZN
+from .logs import LF1
 
 
 class IEF(FMFile):
@@ -405,8 +406,19 @@ class IEF(FMFile):
                 process = Popen(
                     run_command, cwd=os.path.dirname(self._filepath)
                 )  # execute simulation
+
+                # Log files
+                log_filepath = self._filepath.with_suffix(".lf1") # TODO: also LF2
+                lf1 = LF1(log_filepath)
+
                 while process.poll() is None:
                     # Process still running
+
+                    # Log files
+                    if Path(log_filepath).is_file():
+                        lf1._read() #FIXME: shouldn't have underscore
+                        print(lf1.df)
+
                     time.sleep(1)
 
                 result, summary = self._summarise_exy()

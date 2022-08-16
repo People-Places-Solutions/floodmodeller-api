@@ -160,6 +160,7 @@ class TimeDeltaH(LineType):
 
         h = raw.split("hrs")[0]
         processed = dt.timedelta(hours=float(h))
+        
         return processed
 
 
@@ -180,6 +181,7 @@ class TimeDeltaS(LineType):
 
         s = raw.split("s")[0]  # TODO: not necessary for simulation time
         processed = dt.timedelta(seconds=float(s))
+
         return processed
 
 
