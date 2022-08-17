@@ -21,6 +21,7 @@ from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
 
+import datetime as dt
 import pandas as pd
 
 from ._base import FMFile
@@ -403,27 +404,20 @@ class IEF(FMFile):
             if method.upper() == "WAIT":
                 # Executing simulation...
                 print("Executing simulation...")
-
-                # execute simulation
                 process = Popen(
                     run_command, cwd=os.path.dirname(self._filepath)
-                )
-
-                # initialise log files
-                # TODO: also LF2
-                # FIXME: what if it's an old log file? needs deleted/rewritten
-                log_filepath = self._filepath.with_suffix(".lf1")
-                if Path(log_filepath).is_file(): 
-                    lf1 = LF1(log_filepath)
+                ) # execute simulation
+                
+                self._init_log_file()
 
                 while process.poll() is None:
                     # Process still running
 
                     # update log files
                     # FIXME: _read() shouldn't have underscore
-                    if Path(log_filepath).is_file():
-                        lf1._read() 
-                        print("Progress: " + str(lf1.progress))
+                    if Path(self._lf1_filepath).is_file():
+                        self._lf1._read() 
+                        print("Progress: " + str(self._lf1.progress))
 
                     time.sleep(1)
 
@@ -467,6 +461,39 @@ class IEF(FMFile):
 
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
+
+    def _init_log_file(self):
+        """Initialises log file"""
+
+        # TODO: also LF2
+        # FIXME: need to periodically check if it exists
+
+        self._lf1_filepath = self._filepath.with_suffix(".lf1")
+
+        # check log file exists
+        log_file_exists = Path(self._lf1_filepath).is_file()
+
+        if log_file_exists:
+
+            # check it's not an old log file
+            old_log_file = True
+
+            while old_log_file: 
+
+                # difference between now and when log file was last modified
+                last_modified_timestamp = Path(self._lf1_filepath).stat().st_mtime
+                last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
+                time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
+                
+                old_log_file = (time_diff_sec > 5) #TODO: is 5 robust?
+
+                if old_log_file:
+                    print("old log file")
+                    time.sleep(1)
+                else:
+                    print("new log file")
+                
+            self._lf1 = LF1(self._lf1_filepath)
 
     def _summarise_exy(self):
         """Reads and summarises associated exy file if available"""

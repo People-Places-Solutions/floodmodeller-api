@@ -72,8 +72,8 @@ class LF1(FMFile):
         """To process and hold data according to type"""
 
         # dictionary from lf1_params.py
-        self._data_to_extract = data_to_extract #FIXME: I am assuming this is a copy but it's not
         self._extracted_data = {}
+        self._data_to_extract = data_to_extract
 
         # create LineType object for/in each item in dictionary
         for key in self._data_to_extract:
@@ -116,7 +116,7 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
-        self._sync_cols(final_iter = True)
+        self._sync_cols(final_iter = True) #FIXME: not robust when run during simulation
         self._create_direct_attributes()
         self._create_dataframe()
 
