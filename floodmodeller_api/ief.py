@@ -406,7 +406,7 @@ class IEF(FMFile):
                 print("Executing simulation...")
                 process = Popen(
                     run_command, cwd=os.path.dirname(self._filepath)
-                ) # execute simulation
+                )  # execute simulation
 
                 self._init_log_file()
 
@@ -415,9 +415,8 @@ class IEF(FMFile):
 
                     # update log files
                     # FIXME: _read() shouldn't have underscore
-                    if Path(self._lf1_filepath).is_file():
-                        self._lf1._read() 
-                        print("Progress: " + str(self._lf1.progress))
+                    self._lf1._read()
+                    print("Progress: " + str(self._lf1.progress))
 
                     time.sleep(1)
 
@@ -463,7 +462,7 @@ class IEF(FMFile):
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
     def _init_log_file(self):
-        """Initialises log file"""
+        """Checks for a new log file, waiting for its creation if necessary"""
 
         # TODO: also LF2
 
@@ -474,22 +473,22 @@ class IEF(FMFile):
 
         # wait for it to exist
         while not log_file_exists:
-            log_file_exists = Path(self._lf1_filepath).is_file()
+            log_file_exists = self._lf1_filepath.is_file()
 
         # check it's not an old log file
         old_log_file = True
 
         # wait for a new log file
-        while old_log_file: 
+        while old_log_file:
 
             # difference between now and when log file was last modified
-            last_modified_timestamp = Path(self._lf1_filepath).stat().st_mtime
+            last_modified_timestamp = self._lf1_filepath.stat().st_mtime
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
-            
+
             # it's old if it's over 5 seconds old (TODO: is this robust?)
-            old_log_file = (time_diff_sec > 5)
-            
+            old_log_file = time_diff_sec > 5
+
         self._lf1 = LF1(self._lf1_filepath)
 
     def _summarise_exy(self):

@@ -77,19 +77,18 @@ class LF1(FMFile):
 
         # create LineType object for/in each item in dictionary
         for key in self._data_to_extract:
-            subdictionary = self._data_to_extract[key] 
+            subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
-            subdictionary_noclass = {
+            subdictionary_no_class = {
                 k: v for k, v in subdictionary.items() if k != "class"
             }
 
-            self._extracted_data[key] = subdictionary_class(**subdictionary_noclass)
-            
+            self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
 
     def _process_lines(self):
         """Sorts and processes raw data for each prefix"""
 
-        self._print_no_lines()
+        # self._print_no_lines()
 
         # loop through lines that haven't already been read
         raw_lines = self._raw_data[self._no_lines :]
@@ -116,7 +115,7 @@ class LF1(FMFile):
             self._no_lines += 1
 
         self._print_no_lines()
-        self._sync_cols(final_iter = True) #FIXME: not robust when run during simulation
+        self._sync_cols(final_iter=True)  # FIXME: not robust when run during simulation
         self._create_direct_attributes()
         self._create_dataframe()
 
@@ -163,7 +162,7 @@ class LF1(FMFile):
         # (2) turn dictionary into dataframe
         self.df = pd.DataFrame(run)
 
-    def _sync_cols(self, final_iter = False):
+    def _sync_cols(self, final_iter=False):
         """Matches up columns of dataframe according to iterations"""
 
         # loop through other line types
@@ -193,4 +192,4 @@ class LF1(FMFile):
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
 
-        print("Lines read: " + str(self._no_lines))
+        print("Last line read: " + str(self._no_lines))
