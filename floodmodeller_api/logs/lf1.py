@@ -117,7 +117,7 @@ class LF1(FMFile):
         # self._print_no_lines()
         self._sync_cols(final_iter=True)  # FIXME: not robust when run during simulation
         self._create_direct_attributes()
-        # self._create_dataframe()
+        # self._create_dataframe() # FIXME: commented out because _sync_cols() isn't robust
 
     def _create_direct_attributes(self):
         """Make each line type value in dictionary a direct attribute of lf1"""

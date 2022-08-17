@@ -20,7 +20,7 @@ import time
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
-from tqdm import tqdm
+from tqdm import trange
 
 import pandas as pd
 import datetime as dt
@@ -409,25 +409,21 @@ class IEF(FMFile):
                     run_command, cwd=os.path.dirname(self._filepath)
                 )  # execute simulation
 
-                self._init_log_file()
+                self._init_log_file() # FIXME: lf1 hardcoded
 
                 # progress bar based on log files
-                for i in tqdm(range(100)):
+                for i in trange(100):
 
                     while process.poll() is None:
                         # Process still running
 
-                        while True: 
-                            self._lf1._read() #FIXME: no underscore
-                            progress = self._lf1.progress
+                        self._lf1._read() #FIXME: underscore
+                        progress = self._lf1.progress
 
-                            if progress is not None and progress > i:
-                                break
+                        if progress is not None and progress > i: #FIXME: None?
+                            break
 
-                            time.sleep(0.01)
-                            
-                        break
-
+                        time.sleep(0.01)
 
                 result, summary = self._summarise_exy()
 
@@ -472,8 +468,6 @@ class IEF(FMFile):
 
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
-
-        # TODO: also LF2
 
         self._lf1_filepath = self._filepath.with_suffix(".lf1")
 
