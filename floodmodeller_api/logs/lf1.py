@@ -114,7 +114,7 @@ class LF1(FMFile):
             # update counter
             self._no_lines += 1
 
-        self._print_no_lines()
+        # self._print_no_lines()
         self._sync_cols(final_iter=True)  # FIXME: not robust when run during simulation
         self._create_direct_attributes()
         self._create_dataframe()

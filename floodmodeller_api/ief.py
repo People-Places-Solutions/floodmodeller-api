@@ -20,9 +20,10 @@ import time
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
+from tqdm import tqdm
 
-import datetime as dt
 import pandas as pd
+import datetime as dt
 
 from ._base import FMFile
 from .ief_flags import flags
@@ -410,15 +411,16 @@ class IEF(FMFile):
 
                 self._init_log_file()
 
-                while process.poll() is None:
-                    # Process still running
+                # progress bar based on log files
+                for i in tqdm(range(100)):
 
-                    # update log files
-                    # FIXME: _read() shouldn't have underscore
-                    self._lf1._read()
-                    print("Progress: " + str(self._lf1.progress))
+                    while process.poll() is None:
+                        # Process still running
 
-                    time.sleep(1)
+                        self._lf1._read() #FIXME: no underscore
+                        progress = str(self._lf1.progress)
+                        i = progress
+                        time.sleep(1)
 
                 result, summary = self._summarise_exy()
 
