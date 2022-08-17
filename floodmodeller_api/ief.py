@@ -403,21 +403,26 @@ class IEF(FMFile):
             if method.upper() == "WAIT":
                 # Executing simulation...
                 print("Executing simulation...")
+
+                # execute simulation
                 process = Popen(
                     run_command, cwd=os.path.dirname(self._filepath)
-                )  # execute simulation
+                )
 
-                # Initialise log files
-                log_filepath = self._filepath.with_suffix(".lf1") # TODO: also LF2
-                if Path(log_filepath).is_file(): #FIXME: what if it's an old log file?
+                # initialise log files
+                # TODO: also LF2
+                # FIXME: what if it's an old log file? needs deleted/rewritten
+                log_filepath = self._filepath.with_suffix(".lf1")
+                if Path(log_filepath).is_file(): 
                     lf1 = LF1(log_filepath)
 
                 while process.poll() is None:
                     # Process still running
 
-                    # Update log files
+                    # update log files
+                    # FIXME: _read() shouldn't have underscore
                     if Path(log_filepath).is_file():
-                        lf1._read() #FIXME: shouldn't have underscore
+                        lf1._read() 
                         print("Progress: " + str(lf1.progress))
 
                     time.sleep(1)

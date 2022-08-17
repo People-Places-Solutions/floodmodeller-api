@@ -72,16 +72,18 @@ class LF1(FMFile):
         """To process and hold data according to type"""
 
         # dictionary from lf1_params.py
-        self._data_to_extract = data_to_extract
+        self._data_to_extract = data_to_extract #FIXME: I am assuming this is a copy but it's not
+        self._extracted_data = {}
 
         # create LineType object for/in each item in dictionary
         for key in self._data_to_extract:
-            subdictionary = self._data_to_extract[key]
+            subdictionary = self._data_to_extract[key] 
             subdictionary_class = subdictionary["class"]
             subdictionary_noclass = {
-                k: v for k, v in subdictionary.items() if k not in ("class","object")
-            } # FIXME: "object" because it is passed by reference, leading to error in ief.py
-            subdictionary["object"] = subdictionary_class(**subdictionary_noclass)
+                k: v for k, v in subdictionary.items() if k != "class"
+            }
+
+            self._extracted_data[key] = subdictionary_class(**subdictionary_noclass)
             
 
     def _process_lines(self):
@@ -96,7 +98,7 @@ class LF1(FMFile):
             # loop through line types
             for key in self._data_to_extract:
 
-                line_type = self._data_to_extract[key]["object"]
+                line_type = self._extracted_data[key]
 
                 # lines which start with prefix
                 if raw_line.startswith(line_type.prefix):
@@ -122,7 +124,7 @@ class LF1(FMFile):
         """Make each line type value in dictionary a direct attribute of lf1"""
 
         for key in self._data_to_extract:
-            setattr(self, key, self._data_to_extract[key]["object"].value)
+            setattr(self, key, self._extracted_data[key].value)
 
     def _create_dataframe(self):
         """Combine all line types (run) into dataframe"""
@@ -140,7 +142,7 @@ class LF1(FMFile):
             if stage == "run":
 
                 line_type = subdictionary["class"]
-                value = subdictionary["object"].value
+                value = self._extracted_data[key].value
 
                 # line types with multiple entries per line
                 if line_type == TimeFloatMult:
@@ -166,7 +168,7 @@ class LF1(FMFile):
 
         # loop through other line types
         for key in self._data_to_extract:
-            line_type = self._data_to_extract[key]["object"]
+            line_type = self._extracted_data[key]
 
             stage = line_type.stage
             defines_iters = line_type.defines_iters
