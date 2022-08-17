@@ -417,10 +417,17 @@ class IEF(FMFile):
                     while process.poll() is None:
                         # Process still running
 
-                        self._lf1._read() #FIXME: no underscore
-                        progress = str(self._lf1.progress)
-                        i = progress
-                        time.sleep(1)
+                        while True: 
+                            self._lf1._read() #FIXME: no underscore
+                            progress = self._lf1.progress
+
+                            if progress is not None and progress > i:
+                                break
+
+                            time.sleep(0.01)
+                            
+                        break
+
 
                 result, summary = self._summarise_exy()
 
