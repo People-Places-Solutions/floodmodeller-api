@@ -58,6 +58,7 @@ class LF1(FMFile):
         if force_reread == True:
             self._init_counters()
             self._init_data_to_extract()
+            # FIXME: add direct attributes and dataframe
 
         # Process file
         self._process_lines()
@@ -175,7 +176,7 @@ class LF1(FMFile):
 
                 # if their number of values is not in sync
                 if line_type.stage == "run" and line_type.no_values < (
-                    self._no_iters + line_type.before_defines_iters
+                    self._no_iters + int(line_type.before_defines_iters)
                 ):
                     # append nan to the list
                     line_type.update_value_wrapper(line_type._nan)
@@ -194,19 +195,25 @@ class LF1(FMFile):
                 length = len(line_type.value)
                 max_length = max(max_length, length)
 
-        # make other lists the same size by adding nan
+        # make other lists same size by adding nan, if necessary
         for key in self._data_to_extract:
 
             line_type = self._extracted_data[key]
 
             if line_type.stage == "run":
                 length = len(line_type.value)
-                if length < max_length:
-                    # append nan to the list
+
+                # before "timestep" but stops just before "timestep"
+                if length == (max_length - 1):
+                    line_type.update_value_wrapper(line_type._nan)
+
+                # after "timestep" but stops just before "timestep"
+                elif length == (max_length - 2):
+                    line_type.update_value_wrapper(line_type._nan)
                     line_type.update_value_wrapper(line_type._nan)
 
         # FIXME: What if you restart after this point?
-        # Will end up with two patrial rows of nans
+        # Will end up with two partial rows of nans
 
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""
