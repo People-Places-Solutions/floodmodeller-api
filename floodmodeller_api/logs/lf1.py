@@ -109,15 +109,15 @@ class LF1(FMFile):
 
                     if line_type.defines_iters == True:
                         self._sync_cols()
-                        self._no_iters += 1
+                        self._no_iters += 1 
 
             # update counter
             self._no_lines += 1
 
         # self._print_no_lines()
-        self._sync_cols(final_iter=True)  # FIXME: not robust when run during simulation
+        self._final_sync_cols()
         self._create_direct_attributes()
-        # self._create_dataframe() # FIXME: commented out because _sync_cols() isn't robust
+        self._create_dataframe()
 
     def _create_direct_attributes(self):
         """Make each line type value in dictionary a direct attribute of lf1"""
@@ -162,32 +162,51 @@ class LF1(FMFile):
         # (2) turn dictionary into dataframe
         self.df = pd.DataFrame(run)
 
-    def _sync_cols(self, final_iter=False):
-        """Matches up columns of dataframe according to iterations"""
+    def _sync_cols(self):
+        """Matches up columns of dataframe according to "timestep" iterations"""
 
-        # loop through other line types
+        # loop through line types
         for key in self._data_to_extract:
+
             line_type = self._extracted_data[key]
 
-            stage = line_type.stage
-            defines_iters = line_type.defines_iters
-            no_values = line_type.no_values
-            before_defines_iters = line_type.before_defines_iters
+            # sync line types that are not "timestep"
+            if line_type.defines_iters == False:
 
-            # create buffer if it comes before line type that defines iters
-            if before_defines_iters == True and final_iter == False:
-                buffer = 1
-            else:
-                buffer = 0
+                # if their number of values is not in sync
+                if line_type.stage == "run" and line_type.no_values < (
+                    self._no_iters + line_type.before_defines_iters
+                ):
+                    # append nan to the list
+                    line_type.update_value_wrapper(line_type._nan)
 
-            # if their number of values is not in sync
-            if (
-                stage == "run"
-                and defines_iters == False
-                and no_values < (self._no_iters + buffer)
-            ):
-                # append nan to the list
-                line_type.update_value_wrapper(line_type._nan)
+    def _final_sync_cols(self):
+        """Makes columns of dataframe the same length"""
+
+        # find length of longest list
+        max_length = 0
+
+        for key in self._data_to_extract:
+
+            line_type = self._extracted_data[key]
+
+            if line_type.stage == "run":
+                length = len(line_type.value)
+                max_length = max(max_length, length)
+
+        # make other lists the same size by adding nan
+        for key in self._data_to_extract:
+
+            line_type = self._extracted_data[key]
+
+            if line_type.stage == "run":
+                length = len(line_type.value)
+                if length < max_length:
+                    # append nan to the list
+                    line_type.update_value_wrapper(line_type._nan)
+
+        # FIXME: What if you restart after this point?
+        # Will end up with two patrial rows of nans
 
     def _print_no_lines(self):
         """Prints the number of lines that have been read so far"""

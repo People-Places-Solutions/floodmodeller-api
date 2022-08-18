@@ -41,7 +41,7 @@ data_to_extract = {
     # run
     #"progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%", "before_defines_iters": True},
     "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "end", "split": "%"},
-    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True},
+    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True}, # timestep defines iterations
     "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},
     "EFT": {"class": Time, "prefix": "!!Info1 EFT:", "stage" : "run", "exclude": "calculating...", "code":"%H:%M:%S"},
