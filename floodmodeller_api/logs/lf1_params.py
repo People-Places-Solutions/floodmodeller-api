@@ -39,16 +39,16 @@ data_to_extract = {
     "max_itr": {"class": Int, "prefix": "!!Info1 maxitr =", "stage" : "start"},
     "min_itr": {"class": Int, "prefix": "!!Info1 minitr =", "stage" : "start"},
     # run
+    "mass_error": {"class": TimeFloatMult, "prefix": "!!Info1 Mass %error =", "stage" : "run", "names" : ["ME_simulated", "ME_mass_error"], "before_defines_iters": True},
     "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage" : "run", "split": "%", "before_defines_iters": True},
-    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "defines_iters": True}, # timestep defines iterations
-    "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run"},
+    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage" : "run", "before_defines_iters": True},
+    "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage" : "run", "defines_iters": True}, # one entry each iteration
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage" : "run"},
     "EFT": {"class": Time, "prefix": "!!Info1 EFT:", "stage" : "run", "exclude": "calculating...", "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMS, "prefix" : "!!Info1 ETR:", "exclude":"...", "stage" : "run" },
     "iterations": {"class": TimeFloatMult, "prefix": "!!PlotI1", "stage" : "run", "names": ["PlotI1_simulated", "PlotI1_iter", "PlotI1_log(dt)"]},
     "convergence": {"class": TimeFloatMult, "prefix": "!!PlotC1", "stage" : "run", "names": ["PlotC1_simulated", "PlotC1_flow", "PlotC1_level"]},
     "flow": {"class": TimeFloatMult, "prefix": "!!PlotF1", "stage" : "run", "names": ["PlotF1_simulated", "PlotF1_inflow", "PlotF1_outflow"]},
-    "mass_error": {"class": TimeFloatMult, "prefix": "!!Info1 Mass %error =", "stage" : "run", "names" : ["ME_simulated", "ME_mass_error"], "before_defines_iters": True},
     # end
     "sim_time": {"class": TimeDeltaS, "prefix" : "!!output1 Simulation time elapsed (s):", "stage": "end" },
     "no_unconverged_timesteps": {"class": Int, "prefix" : "!!output1  Number of unconverged timesteps:", "stage" : "end" },

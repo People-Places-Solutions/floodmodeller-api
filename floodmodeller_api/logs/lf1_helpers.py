@@ -24,11 +24,11 @@ class LineType(ABC):
 
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         self.prefix = prefix
         self.stage = stage
@@ -50,15 +50,15 @@ class LineType(ABC):
         else:
             raise ValueError(f'Unexpected simulation stage "{stage}"')
 
-    def _append_to_value(self, processed_line):
+    def _append_to_value(self, processed_line: str):
         self.value.append(processed_line)
         self.no_values += 1
 
-    def _replace_value(self, processed_line):
+    def _replace_value(self, processed_line: str):
         self.value = processed_line
         self.no_values = 1
 
-    def process_line_wrapper(self, raw_line):
+    def process_line_wrapper(self, raw_line: str) -> str:
         """self._process_line but with exception handling e.g. of nans"""
 
         try:
@@ -80,18 +80,18 @@ class LineType(ABC):
 class DateTime(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        code,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        code: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._code = code
         self._nan = pd.NaT
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string to datetime"""
 
         processed = dt.datetime.strptime(raw, self._code)
@@ -102,19 +102,19 @@ class DateTime(LineType):
 class Time(DateTime):
     def __init__(
         self,
-        prefix,
-        stage,
-        code,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        code: str,
+        exclude: bool = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(
             prefix, stage, code, exclude, defines_iters, before_defines_iters
         )
         self._nan = pd.NaT
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string to time"""
 
         processed = super()._process_line(raw)
@@ -125,16 +125,16 @@ class Time(DateTime):
 class TimeDeltaHMS(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string HH:MM:SS to timedelta"""
 
         h, m, s = raw.split(":")
@@ -146,37 +146,37 @@ class TimeDeltaHMS(LineType):
 class TimeDeltaH(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string H (with decimal place) to timedelta"""
 
         h = raw.split("hrs")[0]
         processed = dt.timedelta(hours=float(h))
-        
+
         return processed
 
 
 class TimeDeltaS(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = pd.NaT
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string S (with decimal place) to timedelta"""
 
         s = raw.split("s")[0]  # TODO: not necessary for simulation time
@@ -188,16 +188,16 @@ class TimeDeltaS(LineType):
 class Float(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = float("nan")
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str) -> str:
         """Converts string to float"""
 
         processed = float(raw)
@@ -208,16 +208,16 @@ class Float(LineType):
 class Int(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = -99999
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str):
         """Converts string to integer"""
 
         processed = int(raw)
@@ -228,18 +228,18 @@ class Int(LineType):
 class FloatSplit(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        split,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        split: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._split = split
         self._nan = float("nan")
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str):
         """Converts string to float, removing everything after split"""
 
         processed = float(raw.split(self._split)[0])
@@ -250,16 +250,16 @@ class FloatSplit(LineType):
 class String(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._nan = ""
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str):
         """No conversion necessary"""
 
         processed = raw
@@ -270,12 +270,12 @@ class String(LineType):
 class TimeFloatMult(LineType):
     def __init__(
         self,
-        prefix,
-        stage,
-        names,
-        exclude=None,
-        defines_iters=False,
-        before_defines_iters=False,
+        prefix: str,
+        stage: str,
+        names: list,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
     ):
         super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
         self._names = names
@@ -284,7 +284,7 @@ class TimeFloatMult(LineType):
         for name in names:
             self._nan.append(float("nan"))
 
-    def _process_line(self, raw):
+    def _process_line(self, raw: str):
         """Converts string to list of floats"""
 
         processed = [float(x) for x in raw.split()]

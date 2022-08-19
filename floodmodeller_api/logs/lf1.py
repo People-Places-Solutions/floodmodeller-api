@@ -49,7 +49,7 @@ class LF1(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def _read(self, force_reread=False, suppress_final_steps=False):
+    def _read(self, force_reread: bool = False, suppress_final_steps: bool = False):
         # Read LF1 file
         with open(self._filepath, "r") as lf1_file:
             self._raw_data = [line.rstrip("\n") for line in lf1_file.readlines()]
@@ -58,7 +58,7 @@ class LF1(FMFile):
         if force_reread == True:
             self._init_counters()
             self._init_data_to_extract()
-            # FIXME: add direct attributes and dataframe
+            # FIXME: direct attributes and dataframe
 
         # Process file
         self._process_lines()
@@ -68,6 +68,9 @@ class LF1(FMFile):
             self._create_direct_attributes()
             self._create_dataframe()
 
+    def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
+        self._read(force_reread, suppress_final_steps)
+    
     def _init_counters(self):
         """To keep track of file during simulation"""
 
@@ -113,6 +116,7 @@ class LF1(FMFile):
                     processed_line = line_type.process_line_wrapper(end_of_line)
                     line_type.update_value_wrapper(processed_line)
 
+                    # "elapsed" lines mark the end of an iteration
                     if line_type.defines_iters == True:
                         self._sync_cols()
                         self._no_iters += 1
@@ -166,14 +170,14 @@ class LF1(FMFile):
         self.df = pd.DataFrame(run)
 
     def _sync_cols(self):
-        """Matches up columns of dataframe according to "timestep" iterations"""
+        """Matches up columns of dataframe according to "elapsed" iterations"""
 
         # loop through line types
         for key in self._data_to_extract:
 
             line_type = self._extracted_data[key]
 
-            # sync line types that are not "timestep"
+            # sync line types that are not "elapsed"
             if line_type.defines_iters == False:
 
                 # if their number of values is not in sync
@@ -205,11 +209,11 @@ class LF1(FMFile):
             if line_type.stage == "run":
                 length = len(line_type.value)
 
-                # before "timestep" but stops just before "timestep"
+                # before "elapsed" but stops just before "elapsed"
                 if length == (max_length - 1):
                     line_type.update_value_wrapper(line_type._nan)
 
-                # after "timestep" but stops just before "timestep"
+                # after "elapsed" but stops just before "elapsed"
                 elif length == (max_length - 2):
                     line_type.update_value_wrapper(line_type._nan)
                     line_type.update_value_wrapper(line_type._nan)
@@ -222,11 +226,11 @@ class LF1(FMFile):
 
         print("Last line read: " + str(self._no_lines))
 
-    def report_progress(self):
+    def report_progress(self) -> float:
         """Returns last progress percentage; doesn't require direct attribute"""
 
         progress = self._extracted_data["progress"].value
 
-        last_progress = max(progress, default = 0)
-        
-        return(last_progress)
+        last_progress = max(progress, default=0)
+
+        return last_progress
