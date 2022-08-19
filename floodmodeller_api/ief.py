@@ -410,27 +410,12 @@ class IEF(FMFile):
                 )  # execute simulation
 
                 # progress bar based on log files
-                self._init_log_file()  # FIXME: lf1 hardcoded
-
-                for i in trange(100):
-
-                    while process.poll() is None:
-                        # Process still running
-
-                        self._lf1.read(suppress_final_steps=True)
-                        progress = self._lf1.report_progress()
-
-                        if progress > i:
-                            break
-
-                    if process.poll() is not None:
-                        break #otherwise progress bar goes to 100% if interrupted
+                self._init_log_file()
+                self._update_progress_bar(process)
 
                 while process.poll() is None:
                     # Process still running
                     time.sleep(1)
-
-                self._lf1.read(suppress_final_steps=False)
 
                 result, summary = self._summarise_exy()
 
@@ -476,6 +461,8 @@ class IEF(FMFile):
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
+        # FIXME: lf1 hardcoded
+
         self._lf1_filepath = self._filepath.with_suffix(".lf1")
 
         # check log file exists
@@ -500,6 +487,28 @@ class IEF(FMFile):
             old_log_file = time_diff_sec > 5
 
         self._lf1 = LF1(self._lf1_filepath)
+
+    def _update_progress_bar(self, process: Popen):
+        """Updates progress bar based on LF1 files"""
+
+        # FIXME: lf1 hardcoded
+
+        # tqdm progress bar
+        for i in trange(100):
+
+            # Process still running
+            while process.poll() is None:
+
+                self._lf1.read(suppress_final_steps=True)
+                progress = self._lf1.report_progress()
+
+                # Reached i% progress => move onto waiting for (i+1)%
+                if progress > i:
+                    break
+
+            # Stop progress bar if process has stopped
+            if process.poll() is not None:
+                break
 
     def _summarise_exy(self):
         """Reads and summarises associated exy file if available"""
