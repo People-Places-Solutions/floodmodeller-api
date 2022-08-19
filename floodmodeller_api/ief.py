@@ -409,21 +409,28 @@ class IEF(FMFile):
                     run_command, cwd=os.path.dirname(self._filepath)
                 )  # execute simulation
 
-                self._init_log_file() # FIXME: lf1 hardcoded
-
                 # progress bar based on log files
+                self._init_log_file()  # FIXME: lf1 hardcoded
+
                 for i in trange(100):
 
                     while process.poll() is None:
                         # Process still running
 
-                        self._lf1._read() #FIXME: underscore
-                        progress = self._lf1.progress
+                        self._lf1._read(suppress_final_steps=True)  # FIXME: underscore
+                        progress = self._lf1.report_progress()
 
-                        if progress is not None and progress > i: #FIXME: None?
+                        if progress > i:
                             break
 
-                        time.sleep(0.01)
+                    if process.poll() is not None:
+                        break #otherwise progress bar goes to 100% if interrupted
+
+                while process.poll() is None:
+                    # Process still running
+                    time.sleep(1)
+
+                self._lf1._read(suppress_final_steps=False)
 
                 result, summary = self._summarise_exy()
 

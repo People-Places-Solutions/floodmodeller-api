@@ -49,7 +49,7 @@ class LF1(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def _read(self, force_reread=False):
+    def _read(self, force_reread=False, suppress_final_steps=False):
         # Read LF1 file
         with open(self._filepath, "r") as lf1_file:
             self._raw_data = [line.rstrip("\n") for line in lf1_file.readlines()]
@@ -62,6 +62,11 @@ class LF1(FMFile):
 
         # Process file
         self._process_lines()
+
+        if not suppress_final_steps:
+            self._final_sync_cols()
+            self._create_direct_attributes()
+            self._create_dataframe()
 
     def _init_counters(self):
         """To keep track of file during simulation"""
@@ -110,15 +115,12 @@ class LF1(FMFile):
 
                     if line_type.defines_iters == True:
                         self._sync_cols()
-                        self._no_iters += 1 
+                        self._no_iters += 1
 
             # update counter
             self._no_lines += 1
 
         # self._print_no_lines()
-        self._final_sync_cols()
-        self._create_direct_attributes()
-        self._create_dataframe()
 
     def _create_direct_attributes(self):
         """Make each line type value in dictionary a direct attribute of lf1"""
@@ -219,3 +221,12 @@ class LF1(FMFile):
         """Prints the number of lines that have been read so far"""
 
         print("Last line read: " + str(self._no_lines))
+
+    def report_progress(self):
+        """Returns last progress percentage; doesn't require direct attribute"""
+
+        progress = self._extracted_data["progress"].value
+
+        last_progress = max(progress, default = 0)
+        
+        return(last_progress)
