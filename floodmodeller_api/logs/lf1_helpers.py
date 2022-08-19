@@ -59,7 +59,7 @@ class LineType(ABC):
         self.no_values = 1
 
     def process_line_wrapper(self, raw_line: str) -> str:
-        """self._process_line but with exception handling e.g. of nans"""
+        """self._process_line with exception handling of expected nan values"""
 
         try:
             processed_line = self._process_line(raw_line)
@@ -73,7 +73,8 @@ class LineType(ABC):
         return processed_line
 
     @abstractmethod
-    def _process_line(self):
+    def _process_line(self, raw: str) -> str:
+        """Converts string to meaningful data"""
         pass
 
 

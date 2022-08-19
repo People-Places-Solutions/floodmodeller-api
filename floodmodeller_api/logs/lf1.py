@@ -15,7 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from re import sub
 from typing import Optional, Union
 
 import pandas as pd
@@ -43,7 +42,7 @@ class LF1(FMFile):
             self._filepath = lf1_filepath
             FMFile.__init__(self)
             self._init_counters()
-            self._init_data_to_extract()
+            self._init_line_types()
             self._read()
 
         except Exception as e:
@@ -57,28 +56,28 @@ class LF1(FMFile):
         # Force rereading from start of file
         if force_reread == True:
             self._init_counters()
-            self._init_data_to_extract()
+            self._init_line_types()
             # FIXME: direct attributes and dataframe
 
         # Process file
-        self._process_lines()
+        self._update_line_types()
 
         if not suppress_final_steps:
             self._final_sync_cols()
-            self._create_direct_attributes()
+            self._set_attributes()
             self._create_dataframe()
 
     def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
         self._read(force_reread, suppress_final_steps)
-    
+
     def _init_counters(self):
-        """To keep track of file during simulation"""
+        """Initialises counters that keep track of file during simulation"""
 
         self._no_lines = 0  # number of lines that have been read so far
         self._no_iters = 0  # number of iterations so far
 
-    def _init_data_to_extract(self):
-        """To process and hold data according to type"""
+    def _init_line_types(self):
+        """Creates dictionary of LineType object for each entry in data_to_extract"""
 
         # dictionary from lf1_params.py
         self._extracted_data = {}
@@ -94,8 +93,8 @@ class LF1(FMFile):
 
             self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
 
-    def _process_lines(self):
-        """Sorts and processes raw data for each prefix"""
+    def _update_line_types(self):
+        """Updates value of each LineType object based on raw data"""
 
         # self._print_no_lines()
 
@@ -126,14 +125,14 @@ class LF1(FMFile):
 
         # self._print_no_lines()
 
-    def _create_direct_attributes(self):
-        """Make each line type value in dictionary a direct attribute of lf1"""
+    def _set_attributes(self):
+        """Makes each LineType value a direct attribute of LF1"""
 
         for key in self._data_to_extract:
             setattr(self, key, self._extracted_data[key].value)
 
     def _create_dataframe(self):
-        """Combine all line types (run) into dataframe"""
+        """Collects LineType values (of stage "run") into pandas dataframe"""
 
         # (1) create dictionary
         run = {}
@@ -170,7 +169,7 @@ class LF1(FMFile):
         self.df = pd.DataFrame(run)
 
     def _sync_cols(self):
-        """Matches up columns of dataframe according to "elapsed" iterations"""
+        """Ensures LineType values (of stage "run") have an entry each iteration"""
 
         # loop through line types
         for key in self._data_to_extract:
@@ -188,7 +187,7 @@ class LF1(FMFile):
                     line_type.update_value_wrapper(line_type._nan)
 
     def _final_sync_cols(self):
-        """Makes columns of dataframe the same length"""
+        """Makes LineType values (of stage "run") the same length"""
 
         # find length of longest list
         max_length = 0
@@ -222,12 +221,12 @@ class LF1(FMFile):
         # Will end up with two partial rows of nans
 
     def _print_no_lines(self):
-        """Prints the number of lines that have been read so far"""
+        """Prints number of lines that have been read so far"""
 
         print("Last line read: " + str(self._no_lines))
 
     def report_progress(self) -> float:
-        """Returns last progress percentage; doesn't require direct attribute"""
+        """Returns last progress percentage"""
 
         progress = self._extracted_data["progress"].value
 
