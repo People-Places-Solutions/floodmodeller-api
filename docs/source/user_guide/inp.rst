@@ -113,6 +113,8 @@ Reference
 
    .. automethod:: save
 
+   .. automethod:: diff
+
 Examples
 -----------
 **Example 1 - Increase non-zero initial depths for all junctions** 

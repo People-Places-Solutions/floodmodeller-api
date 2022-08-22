@@ -16,6 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM 1D units Units """
 
+from ..diff import check_item_with_dataframe_equal
+
 
 class UrbanUnit:
     _unit = None
@@ -25,7 +27,7 @@ class UrbanUnit:
     def __init__(self, unit_block=None, **kwargs):
         if unit_block != None:
             self._read(unit_block)
-            #TODO: add functionality to read description
+            # TODO: add functionality to read description
         else:
             self._create_from_blank(**kwargs)
 
@@ -57,6 +59,27 @@ class UrbanUnit:
 
     def _write(self):
         raise NotImplementedError
+
+    def _diff(self, other):
+        diff = self._get_diff(other)
+        if diff[0]:
+            print("No difference, units are equivalent")
+        else:
+            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+
+    def _get_diff(self, other):
+        return self.__eq__(other, return_diff=True)
+
+    def __eq__(self, other, return_diff=False):
+        result = True
+        diff = []
+        result, diff = check_item_with_dataframe_equal(
+            self.__dict__,
+            other.__dict__,
+            name=f"{self._unit}.{self._subtype or ''}.{self._name}",
+            diff=diff,
+        )
+        return (result, diff) if return_diff else result
 
 
 class UrbanSubsection:
@@ -138,3 +161,21 @@ class UrbanSubsection:
                 # TODO: update label in any other units where required.
 
         return block
+
+    def _diff(self, other):
+        diff = self._get_diff(other)
+        if diff[0]:
+            print("No difference, units are equivalent")
+        else:
+            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+
+    def _get_diff(self, other):
+        return self.__eq__(other, return_diff=True)
+
+    def __eq__(self, other, return_diff=False):
+        result = True
+        diff = []
+        result, diff = check_item_with_dataframe_equal(
+            self.__dict__, other.__dict__, name=f"{self._attribute.upper()}", diff=diff
+        )
+        return (result, diff) if return_diff else result

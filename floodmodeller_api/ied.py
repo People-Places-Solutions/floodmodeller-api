@@ -20,7 +20,7 @@ from typing import Optional, Union
 
 import pandas as pd
 
-from . import units  # Import for using as package
+from . import units
 from ._base import FMFile
 
 
@@ -261,6 +261,25 @@ class IED(FMFile):
 
         self._ied_struct = ied_struct
         pass
+
+    def diff(self, other: "IED", force_print: bool = False) -> None:
+        """Compares the IED class against another IED class to check whether they are
+        equivalent, or if not, what the differences are. Two instances of an IED class are
+        deemed equivalent if all of their attributes are equal except for the filepath and
+        raw data. For example, two IED files from different filepaths that had the same
+        data except maybe some differences in decimal places and some default parameters
+        ommitted, would be classed as equaivalent as they would produce the same IED instance
+        and write the exact same data.
+
+        The result is printed to the console. If you need to access the returned data, use
+        the method ``IED._get_diff()``
+
+        Args:
+            other (floodmodeller_api.IED): Other instance of an IED class
+            force_print (bool): Forces the API to print every difference found, rather than
+                just the first 25 differences. Defaults to False.
+        """
+        self._diff(other, force_print=force_print)
 
     def update(self) -> None:
         """Updates the existing IED based on any altered attributes"""

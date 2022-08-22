@@ -68,6 +68,8 @@ Reference
 
    .. automethod:: get_results
 
+   .. automethod:: diff
+
 Examples
 -----------
 **Example 1 - Update all IEFs in a folder to point to a new DAT file**
