@@ -1,0 +1,35 @@
+**************************************
+What's new in 0.3.15 (September 2022)
+**************************************
+
+This page details the changes for version 0.3.14 of Flood Modeller Python API
+
+New features
+--------------
+- 2D model support (XML2D Class): Read and edit Flood Modeller 2D model xml files
+- 1D log file support (LF1 Class): Read and analyse 1d logs and diagnostics
+
+Updates
+--------------
+- Updated methods for testing equivalence between Flood Modeller class instances. Two 
+  instances of the same class can now be tested using ``==`` to check whether they are 
+  equivalent. In addition, a detailed breakdown of any differences can be found using 
+  the ``.diff()`` method::
+    dat_a = DAT('some_network.dat')
+    dat_b = DAT('another_similar_network.dat')
+
+    if dat_a == dat_b:  # returns True/False
+        print('Files are equivalent')
+    else:
+        print('Files not equivalent')
+    
+    dat_a.diff(dat_b)  # prints a list of differences to terminal
+
+ 
+
+
+Bug fixes
+--------------
+- Fix issue that occured in IEF class if any values contained '=' in the value, for 
+  example within a flowtimeprofile line.
+
