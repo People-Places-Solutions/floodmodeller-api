@@ -28,7 +28,7 @@ import datetime as dt
 from ._base import FMFile
 from .ief_flags import flags
 from .zzn import ZZN
-from .logs import LF1
+from .logs import LF1, lf_class_factory
 
 
 class IEF(FMFile):
@@ -488,10 +488,7 @@ class IEF(FMFile):
             # it's old if it's over 5 seconds old (TODO: is this robust?)
             old_log_file = time_diff_sec > 5
 
-        if log_type == "lf1":
-            self._lf = LF1(self._lf_filepath)
-        else:
-            print(f"unexpected log file type {log_type}")
+        self._lf = lf_class_factory(self._lf_filepath, log_type)
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on LF1 files"""

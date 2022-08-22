@@ -27,7 +27,7 @@ from .lf_helpers import (
     TimeFloatMult,
 )
 
-data_to_extract = {
+lf1_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
     "number_of_nodes": {"class": Int, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},

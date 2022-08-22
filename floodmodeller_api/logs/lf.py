@@ -16,32 +16,23 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from pathlib import Path
 from typing import Optional, Union
+from abc import abstractmethod
 
 import pandas as pd
 
 from .._base import FMFile
-from .lf1_params import data_to_extract
+from .lf1_params import lf1_data_to_extract
 from .lf_helpers import TimeFloatMult
 
 
-class LF1(FMFile):
-    """Reads and processes Flood Modeller 1D log file '.lf1'
+class LF(FMFile):
 
-    Args:
-        lf1_filepath (str): Full filepath to model lf1 file
-
-    Output:
-        Initiates 'LF1' class object
-    """
-
-    _filetype: str = "LF1"
-    _suffix: str = ".lf1"
-
-    def __init__(self, lf1_filepath: Optional[Union[str, Path]]):
+    def __init__(self, lf_filepath: Optional[Union[str, Path]]):
         try:
-            self._filepath = lf1_filepath
+            self._filepath = lf_filepath
             FMFile.__init__(self)
             self._init_counters()
+            self._init_params()
             self._init_line_types()
             self._read()
 
@@ -76,14 +67,15 @@ class LF1(FMFile):
         self._no_lines = 0  # number of lines that have been read so far
         self._no_iters = 0  # number of iterations so far
 
+    @abstractmethod
+    def _init_params(self):
+        pass
+
     def _init_line_types(self):
         """Creates dictionary of LineType object for each entry in data_to_extract"""
 
-        # dictionary from lf1_params.py
         self._extracted_data = {}
-        self._data_to_extract = data_to_extract
 
-        # create LineType object for/in each item in dictionary
         for key in self._data_to_extract:
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
@@ -233,3 +225,26 @@ class LF1(FMFile):
         last_progress = max(progress, default=0)
 
         return last_progress
+
+class LF1(LF):
+    """Reads and processes Flood Modeller 1D log file '.lf1'
+
+    Args:
+        lf1_filepath (str): Full filepath to model lf1 file
+
+    Output:
+        Initiates 'LF1' class object
+    """
+    
+    _filetype: str = "LF1"
+    _suffix: str = ".lf1"
+
+    def _init_params(self):
+        """Uses dictionary from lf1_params.py to define data to extract"""
+        self._data_to_extract = lf1_data_to_extract
+
+def lf_class_factory(filepath, log_type):
+    if log_type == "lf1":
+        return LF1(filepath)
+    else:
+        raise ValueError(f"Unexpected log file type {log_type}")
