@@ -19,10 +19,11 @@ from typing import Union, Optional
 from lxml import etree
 from floodmodeller_api._base import FMFile
 
+
 def value_from_string(value: str):
     try:
         val = float(value)
-        if not '.' in value:
+        if not "." in value:
             val = int(val)
         return val
     except ValueError:
@@ -71,13 +72,12 @@ class XML2D(FMFile):
         self._xsdschema = etree.XMLSchema(self._xsd)
         self._get_multi_value_keys()
 
-
         self._create_dict()
         for key, data in self.data.items():
-            #TODO: This only works for single domain atm
+            # TODO: This only works for single domain atm
             # Need to have an attr called domains: list of each domain
-            if key == 'domain':
-                self.domains = {domain['domain_id']: domain for domain in data}
+            if key == "domain":
+                self.domains = {domain["domain_id"]: domain for domain in data}
             else:
                 setattr(self, key, data)
 
@@ -86,22 +86,20 @@ class XML2D(FMFile):
         xml_dict = {}
         root = self._xmltree.getroot()
 
-        xml_dict.update(
-            {"name": root.attrib["name"]}
-        )
+        xml_dict.update({"name": root.attrib["name"]})
 
         xml_dict = self._recursive_elements_to_dict(xml_dict, root)
         self._raw_data = xml_dict
         self.data = deepcopy(self._raw_data)
 
     def _recursive_elements_to_dict(self, xml_dict, tree):
-        # Some elements can have multiple instances e.g. domains. 
+        # Some elements can have multiple instances e.g. domains.
         # In these cases we need to have the id of that instance as a new key on the domain
         # e.g. xml.domains[domain_id]["computational_area"]... etc
 
         for child in tree:
             if isinstance(child, etree._Comment):
-                continue # Skips comments in xml
+                continue  # Skips comments in xml
             child_key = child.tag.replace(self._ns, "")
             if child_key in self._multi_value_keys:
                 if child_key in xml_dict:
@@ -139,15 +137,17 @@ class XML2D(FMFile):
             raise ValueError(msg)
 
     def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):
-        #TODO: Handle adding/removing params
-        # For adding, need to use schema to check where it should be added. (or just 
+        # TODO: Handle adding/removing params
+        # For adding, need to use schema to check where it should be added. (or just
         # assume user puts in right place and validate?)
 
         for key, item in new_dict.items():
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
-                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
+                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
+                    list_idx or 0
+                ]
 
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
@@ -157,7 +157,7 @@ class XML2D(FMFile):
                         self._recursive_update_xml(
                             _item, orig_dict[key][i], key, list_idx=i
                         )
-                    
+
             else:
                 if parent_key == "ROOT":
                     item = getattr(self, key)
@@ -177,20 +177,40 @@ class XML2D(FMFile):
         try:
             self._recursive_update_xml(self.data, self._raw_data, "ROOT")
             self._validate()
+            self._raw_data = deepcopy(self.data)  # reset raw data to equal data
 
             return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
 
         except Exception as e:
             self._handle_exception(e, when="write")
-    
+
     def _get_multi_value_keys(self):
         self._multi_value_keys = []
         root = self._xsd.getroot()
-        for elem in root.findall('.//{http://www.w3.org/2001/XMLSchema}element'):
-            if elem.attrib.get('maxOccurs') not in (None, '0', '1'):
-                self._multi_value_keys.append(elem.attrib['name'])
+        for elem in root.findall(".//{http://www.w3.org/2001/XMLSchema}element"):
+            if elem.attrib.get("maxOccurs") not in (None, "0", "1"):
+                self._multi_value_keys.append(elem.attrib["name"])
         self._multi_value_keys = set(self._multi_value_keys)
-        
+
+    def diff(self, other: "XML2D", force_print: bool = False) -> None:
+        """Compares the XML2D class against another XML2D class to check whether they are
+        equivalent, or if not, what the differences are. Two instances of a XML2D class are
+        deemed equivalent if all of their attributes are equal except for the filepath and
+        raw data. For example, two XML2D files from different filepaths that had the same
+        data except maybe some differences in decimal places and some default parameters
+        ommitted, would be classed as equaivalent as they would produce the same XML2D instance
+        and write the exact same data.
+
+        The result is printed to the console. If you need to access the returned data, use
+        the method ``XML2D._get_diff()``
+
+        Args:
+            other (floodmodeller_api.XML2D): Other instance of a XML2D class
+            force_print (bool): Forces the API to print every difference found, rather than
+                just the first 25 differences. Defaults to False.
+        """
+        self._diff(other, force_print=force_print)
+
     def update(self) -> None:
         """Updates the existing XML based on any altered attributes"""
         self._update()

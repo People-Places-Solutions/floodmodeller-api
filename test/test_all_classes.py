@@ -6,7 +6,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import pandas as pd
 from pathlib import Path
-from floodmodeller_api import IEF, IED, DAT, ZZN, INP
+from floodmodeller_api import IEF, IED, DAT, ZZN, INP, XML2D
 from floodmodeller_api.units import QTBDY
 
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
@@ -162,6 +162,46 @@ class test_ZZN(unittest.TestCase):
         output = round(output, 3)  # Round to 3dp
 
         pd.testing.assert_frame_equal(output, self.tabCSV_output, rtol=0.0001)
+
+
+class test_XML2D(unittest.TestCase):
+    """Basic benchmarking to test XML2D class"""
+
+    def setUp(self):
+        """Used if there is repetative setup before each test"""
+        self.xml_fp = os.path.join(test_workspace, "Domain1_Q.xml")
+        self.data_before = XML2D(self.xml_fp)._write()
+
+    def test_1(self):
+        """XML2D: Test str representation equal to xml file with no changes"""
+        x2d = XML2D(self.xml_fp)
+        self.assertEqual(x2d._write(), self.data_before)
+
+    def test_2(self):
+        """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
+        x2d = XML2D(self.xml_fp)
+        prev_link = x2d.link1d[0]["link"]
+        domain = list(x2d.domains)[0]
+        prev_dtm = x2d.domains[domain]["topography"]
+
+        x2d.link1d[0]["link"] = "new_link"
+        x2d.domains[domain]["topography"] = "new_dtm"
+        self.assertNotEqual(x2d._write(), self.data_before)
+
+        x2d.link1d[0]["link"] = prev_link
+        x2d.domains[domain]["topography"] = prev_dtm
+        self.assertEqual(x2d._write(), self.data_before)
+
+    def test_3(self):
+        """XML2D: Check all '.xml' files in folder by reading the _write() output into a
+        new XML2D instance and checking it stays the same."""
+        for xmlfile in Path(test_workspace).glob("*.xml"):
+            x2d = XML2D(xmlfile)
+            first_output = x2d._write()
+            x2d.save("__temp.xml")
+            second_output = XML2D("__temp.xml")._write()
+            self.assertEqual(first_output, second_output)
+            os.remove("__temp.xml")
 
 
 if __name__ == "__main__":

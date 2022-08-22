@@ -1,0 +1,42 @@
+<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/4.0/2d.xsd" name="Domain 1 H Link">
+  <link1d>
+    <link>GIS\Link1_H.shp</link>
+    <ief>Domain1_H.ief</ief>
+    <mb>Domain1_H_MB1D.csv</mb>
+  </link1d>
+  <logfile>Domain1_H.log</logfile>
+  <!--content for domain 'Domain1 20m H'-->
+  <domain domain_id="Domain1 20m H">
+    <computational_area>
+      <xll>538010.0</xll>
+      <yll>177010.0</yll>
+      <dx>50</dx>
+      <nrows>80</nrows>
+      <ncols>120</ncols>
+      <active_area>GIS\Active_Area1.shp</active_area>
+    </computational_area>
+    <topography>GIS\5M_DTM_1.asc</topography>
+    <time>
+      <start_time>00:00:00</start_time>
+      <start_date>1/1/2000</start_date>
+      <total unit="hour">12.00</total>
+    </time>
+    <run_data>
+      <time_step> 10 </time_step>
+      <scheme>ADI</scheme>
+    </run_data>
+    <initial_conditions type="globalwaterlevel"> 0.0 </initial_conditions>
+    <roughness law="manning" type="global">0.05</roughness>
+    <output_results>
+      <output output_id="" format="SMS9">
+        <variables>Depth
+Velocity
+Elevation
+Flow</variables>
+        <frequency>600</frequency>
+      </output>
+      <massfile frequency="10">Domain1_H_MB2D.csv</massfile>
+    </output_results>
+  </domain>
+</ISIS2Dproject>

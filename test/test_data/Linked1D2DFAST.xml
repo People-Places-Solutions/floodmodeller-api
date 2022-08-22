@@ -1,0 +1,54 @@
+<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/4.0/2d.xsd" name="River 10m linked FAST" description="">
+    <link1d link_to_model="ISIS1D">
+        <link>GIS\Link.shp</link>
+        <ief>Linked1D2D.ief</ief>
+        <mb frequency="60">Linked1D2D_MB1D.csv</mb>
+    </link1d>
+    <logfile>Linked1D2DFAST.log</logfile>
+    <!--content for domain 'River 10m'-->
+    <domain domain_id="River 10m">
+        <computational_area>
+            <xll>391800.0</xll>
+            <yll>172600.0</yll>
+            <dx>10</dx>
+            <nrows>100</nrows>
+            <ncols>80</ncols>
+            <active_area>GIS\River_Active_Area.shp</active_area>
+            <rotation>0</rotation>
+        </computational_area>
+        <topography>GIS\5M_DTM.asc</topography>
+        <time>
+            <start_time>00:00:00</start_time>
+            <start_date>1/1/2000</start_date>
+            <total unit="hour">5.00</total>
+        </time>
+        <run_data>
+            <time_step>18000</time_step>
+            <scheme>FAST</scheme>
+            <merge>0.1</merge>
+            <disc>0.1</disc>
+            <filter>0.05</filter>
+            <spilloption>singlespill</spilloption>
+            <frictionCoef>0</frictionCoef>
+            <momentumCoef>0</momentumCoef>
+            <maxIteration>50000</maxIteration>
+            <convergenceCrit>0.001</convergenceCrit>
+            <preprocess_fast>true</preprocess_fast>
+            <pathMarkup_fast>false</pathMarkup_fast>
+        </run_data>
+        <initial_conditions type="globalwaterlevel"> 0.0 </initial_conditions>
+        <roughness law="manning" type="global">0.05</roughness>
+        <output_results>
+            <hazard_debris_factor_method>
+                <static factor="1.0" />
+            </hazard_debris_factor_method>
+            <output output_id="" format="SMS9">
+                <variables>Depth</variables>
+                <frequency>900</frequency>
+            </output>
+            <massfile frequency="10">Linked1D2D_MB2D.csv</massfile>
+        </output_results>
+    </domain>
+    <advanced_options />
+</ISIS2Dproject>

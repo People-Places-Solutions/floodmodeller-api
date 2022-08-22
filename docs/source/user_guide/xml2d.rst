@@ -137,6 +137,8 @@ Reference
 
    .. automethod:: save
 
+   .. automethod:: diff
+
 Examples
 -----------
 **Example 1 - Updating DTM file** 

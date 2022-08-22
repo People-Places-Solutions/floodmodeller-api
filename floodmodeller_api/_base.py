@@ -136,7 +136,15 @@ class FMFile:
         try:
             for key, item in self.__dict__.items():
                 try:
-                    if key in ("_filepath", "_raw_data", "_gxy_filepath", "_gxy_data"):
+                    if key in (
+                        "_filepath",
+                        "_raw_data",
+                        "_gxy_filepath",
+                        "_gxy_data",
+                        "_xmltree",
+                        "_xsd",
+                        "_xsdschema",
+                    ):
                         continue
                     else:
                         _result, diff = check_item_with_dataframe_equal(
