@@ -65,7 +65,7 @@ class LineType(ABC):
             processed_line = self._process_line(raw_line)
 
         except ValueError as e:
-            if raw_line == self._exclude:
+            if raw_line in self._exclude:
                 processed_line = self._nan
             else:
                 raise e

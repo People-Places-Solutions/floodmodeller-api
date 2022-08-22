@@ -28,7 +28,7 @@ import datetime as dt
 from ._base import FMFile
 from .ief_flags import flags
 from .zzn import ZZN
-from .logs import LF1, lf_class_factory
+from .logs import lf_class_factory
 
 
 class IEF(FMFile):

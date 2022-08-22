@@ -21,12 +21,11 @@ from abc import abstractmethod
 import pandas as pd
 
 from .._base import FMFile
-from .lf1_params import lf1_data_to_extract
+from .lf_params import lf1_data_to_extract, lf2_data_to_extract
 from .lf_helpers import TimeFloatMult
 
 
 class LF(FMFile):
-
     def __init__(self, lf_filepath: Optional[Union[str, Path]]):
         try:
             self._filepath = lf_filepath
@@ -142,7 +141,8 @@ class LF(FMFile):
                 value = self._extracted_data[key].value
 
                 # line types with multiple entries per line
-                if line_type == TimeFloatMult:
+                # TODO: should be a LineType class method
+                if line_type == TimeFloatMult: 
 
                     names = subdictionary["names"]
                     no_names = len(names)
@@ -226,6 +226,7 @@ class LF(FMFile):
 
         return last_progress
 
+
 class LF1(LF):
     """Reads and processes Flood Modeller 1D log file '.lf1'
 
@@ -235,7 +236,7 @@ class LF1(LF):
     Output:
         Initiates 'LF1' class object
     """
-    
+
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
@@ -243,8 +244,29 @@ class LF1(LF):
         """Uses dictionary from lf1_params.py to define data to extract"""
         self._data_to_extract = lf1_data_to_extract
 
+
+
+class LF2(LF):
+    """Reads and processes Flood Modeller 1D log file '.lf2'
+
+    Args:
+        lf2_filepath (str): Full filepath to model lf1 file
+
+    Output:
+        Initiates 'LF2' class object
+    """
+
+    _filetype: str = "LF2"
+    _suffix: str = ".lf2"
+
+    def _init_params(self):
+        """Uses dictionary from lf2_params.py to define data to extract"""
+        self._data_to_extract = lf2_data_to_extract
+
 def lf_class_factory(filepath, log_type):
     if log_type == "lf1":
         return LF1(filepath)
+    elif log_type == "lf2":
+        return LF2(filepath)
     else:
         raise ValueError(f"Unexpected log file type {log_type}")

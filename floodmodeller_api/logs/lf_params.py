@@ -30,28 +30,28 @@ from .lf_helpers import (
 lf1_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
-    "number_of_nodes": {"class": Int, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
+    "number_of_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
     "qtol": {"class": Float, "prefix": "!!Info1 qtol =", "stage": "start"},
     "htol": {"class": Float, "prefix": "!!Info1 htol =", "stage": "start"},
     "start_time": {"class": TimeDeltaH, "prefix": "!!Info1 Start Time:", "stage": "start"},
     "end_time": {"class": TimeDeltaH, "prefix": "!!Info1 End Time:", "stage": "start"},
     "ran_at": {"class": DateTime, "prefix": "!!Info1 Ran at", "stage": "start", "code":"%H:%M:%S on %d/%m/%Y"},
-    "max_itr": {"class": Int, "prefix": "!!Info1 maxitr =", "stage": "start"},
-    "min_itr": {"class": Int, "prefix": "!!Info1 minitr =", "stage": "start"},
+    "max_itr": {"class": Float, "prefix": "!!Info1 maxitr =", "stage": "start"},
+    "min_itr": {"class": Float, "prefix": "!!Info1 minitr =", "stage": "start"},
     # run
     "mass_error": {"class": TimeFloatMult, "prefix": "!!Info1 Mass %error =", "stage": "run", "names": ["ME_simulated", "ME_mass_error"], "before_defines_iters": True},
     "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage": "run", "split": "%", "before_defines_iters": True},
     "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage": "run", "before_defines_iters": True},
     "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage": "run", "defines_iters": True},  # one entry each iteration
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage": "run"},
-    "EFT": {"class": Time, "prefix": "!!Info1 EFT:", "stage": "run", "exclude": "calculating...", "code":"%H:%M:%S"},
-    "ETR": {"class": TimeDeltaHMS, "prefix": "!!Info1 ETR:", "exclude":"...", "stage": "run"},
+    "EFT": {"class": Time, "prefix": "!!Info1 EFT:", "stage": "run", "exclude": ["calculating..."], "code":"%H:%M:%S"},
+    "ETR": {"class": TimeDeltaHMS, "prefix": "!!Info1 ETR:", "exclude": ["..."], "stage": "run"},
     "iterations": {"class": TimeFloatMult, "prefix": "!!PlotI1", "stage": "run", "names": ["PlotI1_simulated", "PlotI1_iter", "PlotI1_log(dt)"]},
     "convergence": {"class": TimeFloatMult, "prefix": "!!PlotC1", "stage": "run", "names": ["PlotC1_simulated", "PlotC1_flow", "PlotC1_level"]},
     "flow": {"class": TimeFloatMult, "prefix": "!!PlotF1", "stage": "run", "names": ["PlotF1_simulated", "PlotF1_inflow", "PlotF1_outflow"]},
     # end
     "sim_time": {"class": TimeDeltaS, "prefix": "!!output1 Simulation time elapsed (s):", "stage": "end"},
-    "no_unconverged_timesteps": {"class": Int, "prefix": "!!output1  Number of unconverged timesteps:", "stage": "end"},
+    "no_unconverged_timesteps": {"class": Float, "prefix": "!!output1  Number of unconverged timesteps:", "stage": "end"},
     "prop_unconverged": {"class": FloatSplit, "prefix": "!!output1  Proportion of simulation unconverged:", "stage": "end", "split": "%"},
     "mass_balance_interval": {"class": TimeDeltaS, "prefix": "!!output1  Mass balance calculated every", "stage": "end"},
     "initial_vol": {"class": FloatSplit, "prefix": "!!output1  Initial volume:", "stage": "end", "split": "m3"},
@@ -68,4 +68,25 @@ lf1_data_to_extract = {
     "vol_discrepancy": {"class": FloatSplit, "prefix": "!!output1  Volume discrepancy:", "stage": "end", "split": "m3"},
     "mass_balance_error": {"class": FloatSplit, "prefix": "!!output1  Mass balance error:", "stage": "end", "split": "%"},
     "mass_balance_error_2": {"class": FloatSplit, "prefix": "!!output1  Mass balance error [2]:", "stage": "end", "split": "%"},
+}
+
+lf2_data_to_extract = {
+    # start
+    # run
+    "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info2 Simulated", "stage": "run", "defines_iters": True}, # one entry each iteration
+    "progress": {"class": FloatSplit, "prefix": "!!Progress2", "stage": "run", "split": "%"}, 
+    "wet_cells": {"class": Float, "prefix": "!!PlotG2 Wet cells", "stage": "run"},
+    "2D_inflow": {"class": Float, "prefix": "!!PlotG2 2D boundary inflow", "stage": "run"},
+    "2D_outflow": {"class": Float, "prefix": "!!PlotG2 2D boundary outflow", "stage": "run"},
+    "1D_link_flow": {"class": Float, "prefix": "!!PlotG2 1D link flow", "stage": "run"},
+    "vol_change": {"class": Float, "prefix": "!!PlotG2 Change in volume", "stage": "run"},
+    "vol": {"class": Float, "prefix": "!!PlotG2 Volume", "stage": "run"},
+    "inst_mass_error": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
+    "inst_mass_error": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
+    "mass_error": {"class": Float, "prefix": "!!PlotG2 Mass error", "stage": "run"},
+    "largest_cr": {"class": Float, "prefix": "!!PlotG2 Largest Cr", "stage": "run"},
+    "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info2 Elapsed", "stage": "run"},  
+    "EFT": {"class": Time, "prefix": "!!Info2 EFT:", "stage": "run", "code":"%H:%M:%S"},
+    "ETR": {"class": TimeDeltaHMS, "prefix": "!!Info2 ETR:", "exclude": ["****:**:**", "****:00:**", "****:**:00"], "stage": "run"},
+    # end
 }
