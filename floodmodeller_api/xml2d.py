@@ -74,8 +74,6 @@ class XML2D(FMFile):
 
         self._create_dict()
         for key, data in self.data.items():
-            # TODO: This only works for single domain atm
-            # Need to have an attr called domains: list of each domain
             if key == "domain":
                 self.domains = {domain["domain_id"]: domain for domain in data}
             else:
