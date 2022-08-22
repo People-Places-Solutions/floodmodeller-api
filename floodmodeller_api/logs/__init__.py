@@ -1,1 +1,1 @@
-from .lf1 import LF1
+from .lf import LF1

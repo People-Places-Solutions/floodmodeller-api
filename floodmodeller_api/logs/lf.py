@@ -21,7 +21,7 @@ import pandas as pd
 
 from .._base import FMFile
 from .lf1_params import data_to_extract
-from .lf1_helpers import TimeFloatMult
+from .lf_helpers import TimeFloatMult
 
 
 class LF1(FMFile):

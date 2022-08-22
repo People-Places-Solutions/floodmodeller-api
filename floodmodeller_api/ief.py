@@ -463,14 +463,16 @@ class IEF(FMFile):
 
         # FIXME: lf1 hardcoded
 
-        self._lf1_filepath = self._filepath.with_suffix(".lf1")
+        log_type = "lf1"
+
+        self._lf_filepath = self._filepath.with_suffix("." + log_type)
 
         # check log file exists
         log_file_exists = False
 
         # wait for it to exist
         while not log_file_exists:
-            log_file_exists = self._lf1_filepath.is_file()
+            log_file_exists = self._lf_filepath.is_file()
 
         # check it's not an old log file
         old_log_file = True
@@ -479,19 +481,20 @@ class IEF(FMFile):
         while old_log_file:
 
             # difference between now and when log file was last modified
-            last_modified_timestamp = self._lf1_filepath.stat().st_mtime
+            last_modified_timestamp = self._lf_filepath.stat().st_mtime
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
             # it's old if it's over 5 seconds old (TODO: is this robust?)
             old_log_file = time_diff_sec > 5
 
-        self._lf1 = LF1(self._lf1_filepath)
+        if log_type == "lf1":
+            self._lf = LF1(self._lf_filepath)
+        else:
+            print(f"unexpected log file type {log_type}")
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on LF1 files"""
-
-        # FIXME: lf1 hardcoded
 
         # tqdm progress bar
         for i in trange(100):
@@ -499,8 +502,8 @@ class IEF(FMFile):
             # Process still running
             while process.poll() is None:
 
-                self._lf1.read(suppress_final_steps=True)
-                progress = self._lf1.report_progress()
+                self._lf.read(suppress_final_steps=True)
+                progress = self._lf.report_progress()
 
                 # Reached i% progress => move onto waiting for (i+1)%
                 if progress > i:
