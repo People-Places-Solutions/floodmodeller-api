@@ -263,7 +263,7 @@ class LF2(LF):
         self._data_to_extract = lf2_data_to_extract
 
 
-def lf_factory(filepath, log_type):
+def lf_factory(filepath: str, log_type: str) -> LF:
     if log_type == "lf1":
         return LF1(filepath)
     elif log_type == "lf2":

@@ -461,14 +461,25 @@ class IEF(FMFile):
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
-        log_type = "lf1"  # FIXME: hardcoded
-        max_wait = 10  # seconds
+        # determine log file type
+        if self.RunType == "Unsteady":
+            log_type = "lf1"
+
+        elif self.RunType == "Steady":
+            print("Log file only supported for unsteady runs")
+            self._lf = None
+            return
+        
+        else: #TODO: if 2D, use lf2
+            print("Log file only supported for 1D runs")
+            self._lf = None
+            return
 
         self._lf_filepath = self._filepath.with_suffix("." + log_type)
-
+        
         # wait for log file to exist
         log_file_exists = False
-        max_time = time.time() + max_wait
+        max_time = time.time() + 10
 
         while not log_file_exists:
 
@@ -479,12 +490,11 @@ class IEF(FMFile):
             # timeout
             if time.time() > max_time:
                 print("No log file")
-                self._lf = None
                 return
 
         # wait for new log file
         old_log_file = True
-        max_time = time.time() + max_wait
+        max_time = time.time() + 10
 
         while old_log_file:
 
