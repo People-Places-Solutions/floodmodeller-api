@@ -157,7 +157,7 @@ class TimeDeltaH(LineType):
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
-        """Converts string H (with decimal place) to timedelta"""
+        """Converts string H (with decimal place and "hrs") to timedelta"""
 
         h = raw.split("hrs")[0]
         processed = dt.timedelta(hours=float(h))
@@ -178,7 +178,7 @@ class TimeDeltaS(LineType):
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
-        """Converts string S (with decimal place) to timedelta"""
+        """Converts string S (with decimal place and "s") to timedelta"""
 
         s = raw.split("s")[0]  # TODO: not necessary for simulation time
         processed = dt.timedelta(seconds=float(s))
@@ -267,6 +267,27 @@ class String(LineType):
 
         return processed
 
+
+class StringSplit(LineType):
+    def __init__(
+        self,
+        prefix: str,
+        stage: str,
+        split: str,
+        exclude: str = None,
+        defines_iters: bool = False,
+        before_defines_iters: bool = False,
+    ):
+        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        self._split = split
+        self._nan = ""
+
+    def _process_line(self, raw: str):
+        """Converts string to float, removing everything after split"""
+
+        processed = raw.split(self._split)[0]
+
+        return processed
 
 class TimeFloatMult(LineType):
     def __init__(

@@ -21,16 +21,16 @@ from .lf_helpers import (
     TimeDeltaH,
     TimeDeltaS,
     Float,
-    Int,
     FloatSplit,
     String,
+    StringSplit,
     TimeFloatMult,
 )
 
 lf1_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
-    "number_of_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
+    "no_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
     "qtol": {"class": Float, "prefix": "!!Info1 qtol =", "stage": "start"},
     "htol": {"class": Float, "prefix": "!!Info1 htol =", "stage": "start"},
     "start_time": {"class": TimeDeltaH, "prefix": "!!Info1 Start Time:", "stage": "start"},
@@ -72,6 +72,30 @@ lf1_data_to_extract = {
 
 lf2_data_to_extract = {
     # start
+    "version": {"class": StringSplit, "prefix": "!!output2 Using Flood Modeller 2D version:", "stage": "start", "split": ","},
+    "initiated_at": {"class": DateTime, "prefix": "!!output2  Simulation initiated at", "stage": "start", "code": "%d/%m/%Y %H:%M:%S"},
+    "control_file": {"class": String, "prefix": "!!output2 Using input control file:", "stage": "start"},
+    "unit_system": {"class": String, "prefix": "!!output2 Unit system:", "stage": "start"},
+    "no_domains": {"class": Float, "prefix": "!!output2 Number of 2D domains:", "stage": "start"},
+    "model_time_zero": {"class": DateTime, "prefix": "!!output2     Model time zero:", "stage": "start", "code": "%Y-%m-%d %H:%M:%S"},
+    "model_start_time": {"class": DateTime, "prefix": "!!output2     Model start time:", "stage": "start", "code": "%Y-%m-%d %H:%M:%S"},
+    "sim_time": {"class": TimeDeltaH, "prefix": "!!output2     Simulation time:", "stage": "start"},
+    "start_time": {"class": TimeDeltaH, "prefix": "!!Info2 Start Time:", "stage": "start"},
+    "end_time": {"class": TimeDeltaH, "prefix": "!!Info2 End Time:", "stage": "start"},
+    "scheme": {"class": String, "prefix": "!!output2     Solution scheme:", "stage": "start"},
+    "timestep": {"class": Float, "prefix": "!!output2     Model timestep             :", "stage": "start"},
+    "wet_dry_depth": {"class": Float, "prefix": "!!output2     Wetting/drying depth       :", "stage": "start"},
+    "beta": {"class": Float, "prefix": "!!output2     Beta                       :", "stage": "start"},
+    "no_iters": {"class": Float, "prefix": "!!output2     Number of iterations       :", "stage": "start"},
+    "calc_depth": {"class": Float, "prefix": "!!output2     Calculation depth          :", "stage": "start"},
+    "friction_depth": {"class": Float, "prefix": "!!output2     Friction depth             :", "stage": "start"},
+    "eddy_viscosity": {"class": Float, "prefix": "!!output2     Eddy Viscosity             :", "stage": "start"},
+    "velocity_head_threshold": {"class": Float, "prefix": "!!output2     Velocity head threshold    :", "stage": "start"},
+    "accumulation_depth": {"class": Float, "prefix": "!!output2     Rainfall accumulation depth:", "stage": "start"},
+    "neg_depth_threshold": {"class": Float, "prefix": "!!output2     Negative depth threshold   :", "stage": "start"},
+    "friction_depth_threshold": {"class": Float, "prefix": "!!output2     Friction depth threshold   :", "stage": "start"},
+    "no_cells": {"class": Float, "prefix": "!!output2 Number of cells in model:", "stage": "start"},
+    "data_prep_time": {"class": TimeDeltaS, "prefix": "!!output2 Data prep completed in", "stage": "start"},
     # run
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info2 Simulated", "stage": "run", "defines_iters": True}, # one entry each iteration
     "progress": {"class": FloatSplit, "prefix": "!!Progress2", "stage": "run", "split": "%"}, 
@@ -88,5 +112,4 @@ lf2_data_to_extract = {
     "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info2 Elapsed", "stage": "run"},  
     "EFT": {"class": Time, "prefix": "!!Info2 EFT:", "stage": "run", "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMS, "prefix": "!!Info2 ETR:", "exclude": ["****:**:**", "****:00:**", "****:**:00"], "stage": "run"},
-    # end
 }
