@@ -142,7 +142,7 @@ class LF(FMFile):
 
                 # line types with multiple entries per line
                 # TODO: should be a LineType class method
-                if line_type == TimeFloatMult: 
+                if line_type == TimeFloatMult:
 
                     names = subdictionary["names"]
                     no_names = len(names)
@@ -245,7 +245,6 @@ class LF1(LF):
         self._data_to_extract = lf1_data_to_extract
 
 
-
 class LF2(LF):
     """Reads and processes Flood Modeller 1D log file '.lf2'
 
@@ -263,7 +262,8 @@ class LF2(LF):
         """Uses dictionary from lf2_params.py to define data to extract"""
         self._data_to_extract = lf2_data_to_extract
 
-def lf_class_factory(filepath, log_type):
+
+def lf_factory(filepath, log_type):
     if log_type == "lf1":
         return LF1(filepath)
     elif log_type == "lf2":

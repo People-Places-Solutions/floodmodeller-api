@@ -28,7 +28,7 @@ import datetime as dt
 from ._base import FMFile
 from .ief_flags import flags
 from .zzn import ZZN
-from .logs import lf_class_factory
+from .logs import lf_factory
 
 
 class IEF(FMFile):
@@ -467,18 +467,29 @@ class IEF(FMFile):
 
         self._lf_filepath = self._filepath.with_suffix("." + log_type)
 
-        # check log file exists
+        # wait for log file to exist
         log_file_exists = False
+        max_wait = time.time() + 60
 
-        # wait for it to exist
         while not log_file_exists:
+
+            time.sleep(0.1)
+
             log_file_exists = self._lf_filepath.is_file()
 
-        # check it's not an old log file
-        old_log_file = True
+            # timeout            
+            if time.time() > max_wait:
+                print("No log file")
+                self._lf = None
+                return 
 
-        # wait for a new log file
+        # wait for new log file
+        old_log_file = True
+        max_wait = time.time() + 60
+
         while old_log_file:
+
+            time.sleep(0.1)
 
             # difference between now and when log file was last modified
             last_modified_timestamp = self._lf_filepath.stat().st_mtime
@@ -488,27 +499,38 @@ class IEF(FMFile):
             # it's old if it's over 5 seconds old (TODO: is this robust?)
             old_log_file = time_diff_sec > 5
 
-        self._lf = lf_class_factory(self._lf_filepath, log_type)
+            # timeout
+            if time.time() > max_wait:
+                print("No new log file")
+                self._lf = None
+                return 
+
+        self._lf = lf_factory(self._lf_filepath, log_type)
 
     def _update_progress_bar(self, process: Popen):
-        """Updates progress bar based on LF1 files"""
+        """Updates progress bar based on log files"""
 
-        # tqdm progress bar
-        for i in trange(100):
+        # only if there is a log file
+        if self._lf:
 
-            # Process still running
-            while process.poll() is None:
+            # tqdm progress bar
+            for i in trange(100):
 
-                self._lf.read(suppress_final_steps=True)
-                progress = self._lf.report_progress()
+                # Process still running
+                while process.poll() is None:
 
-                # Reached i% progress => move onto waiting for (i+1)%
-                if progress > i:
+                    time.sleep(0.1)    
+
+                    self._lf.read(suppress_final_steps=True)
+                    progress = self._lf.report_progress()
+
+                    # Reached i% progress => move onto waiting for (i+1)%
+                    if progress > i:
+                        break
+
+                # Stop progress bar if process has stopped
+                if process.poll() is not None:
                     break
-
-            # Stop progress bar if process has stopped
-            if process.poll() is not None:
-                break
 
     def _summarise_exy(self):
         """Reads and summarises associated exy file if available"""

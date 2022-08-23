@@ -289,6 +289,7 @@ class StringSplit(LineType):
 
         return processed
 
+
 class TimeFloatMult(LineType):
     def __init__(
         self,

@@ -1,1 +1,1 @@
-from .lf import LF1, LF2, lf_class_factory
+from .lf import LF1, LF2, lf_factory
