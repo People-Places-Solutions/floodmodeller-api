@@ -27,7 +27,7 @@ from .lf_helpers import (
     TimeFloatMult,
 )
 
-lf1_data_to_extract = {
+lf1_unsteady_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
     "no_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
@@ -68,6 +68,17 @@ lf1_data_to_extract = {
     "vol_discrepancy": {"class": FloatSplit, "prefix": "!!output1  Volume discrepancy:", "stage": "end", "split": "m3"},
     "mass_balance_error": {"class": FloatSplit, "prefix": "!!output1  Mass balance error:", "stage": "end", "split": "%"},
     "mass_balance_error_2": {"class": FloatSplit, "prefix": "!!output1  Mass balance error [2]:", "stage": "end", "split": "%"},
+}
+
+lf1_steady_data_to_extract = {
+    # start
+    "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
+    "no_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
+    # run
+    "iter": {"class": FloatSplit, "prefix": "!!output1  network iteration", "stage": "run", "split": "c", "defines_iters": True},  # one entry each iteration
+    "max_split_diff": {"class": FloatSplit, "prefix": "!!output1  was", "stage": "run", "split": "%"},
+    # end
+    "iters": {"class": FloatSplit, "prefix": "!!output1  successful solution in", "stage": "end", "split": "n"}
 }
 
 lf2_data_to_extract = {

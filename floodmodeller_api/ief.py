@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import os
 import subprocess
 import time
+import warnings
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
@@ -463,20 +464,19 @@ class IEF(FMFile):
 
         # determine log file type
         if self.RunType == "Unsteady":
-            log_type = "lf1"
+            log_type = "lf1_unsteady"
+            self._lf_filepath = self._filepath.with_suffix(".lf1")
 
         elif self.RunType == "Steady":
-            print("Log file only supported for unsteady runs")
-            self._lf = None
-            return
-        
-        else: #TODO: if 2D, use lf2
-            print("Log file only supported for 1D runs")
+            self._no_log_file("only unsteady runs supported")
             self._lf = None
             return
 
-        self._lf_filepath = self._filepath.with_suffix("." + log_type)
-        
+        else:  # TODO: if 2D, use lf2
+            self._no_log_file("only 1D runs supported")
+            self._lf = None
+            return
+
         # wait for log file to exist
         log_file_exists = False
         max_time = time.time() + 10
@@ -489,7 +489,8 @@ class IEF(FMFile):
 
             # timeout
             if time.time() > max_time:
-                print("No log file")
+                self._no_log_file("no log file detected")
+                self._lf = None
                 return
 
         # wait for new log file
@@ -510,11 +511,18 @@ class IEF(FMFile):
 
             # timeout
             if time.time() > max_time:
-                print("No new log file")
+                self._no_log_file("log file from previous run")
                 self._lf = None
                 return
 
         self._lf = lf_factory(self._lf_filepath, log_type)
+
+    def _no_log_file(self, reason):
+        """Warning that there will be no progress bar"""
+
+        warnings.warn(
+            "No progress bar as " + reason + ". Simulation will continue as usual."
+        )
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""

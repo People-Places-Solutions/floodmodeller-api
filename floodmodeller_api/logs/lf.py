@@ -21,7 +21,7 @@ from abc import abstractmethod
 import pandas as pd
 
 from .._base import FMFile
-from .lf_params import lf1_data_to_extract, lf2_data_to_extract
+from .lf_params import lf1_unsteady_data_to_extract, lf1_steady_data_to_extract, lf2_data_to_extract
 from .lf_helpers import TimeFloatMult
 
 
@@ -240,9 +240,16 @@ class LF1(LF):
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
+    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
+        self._steady = steady
+        super().__init__(lf_filepath)
+
     def _init_params(self):
         """Uses dictionary from lf1_params.py to define data to extract"""
-        self._data_to_extract = lf1_data_to_extract
+        if self._steady:
+            self._data_to_extract = lf1_steady_data_to_extract
+        else:
+            self._data_to_extract = lf1_unsteady_data_to_extract
 
 
 class LF2(LF):
@@ -264,8 +271,10 @@ class LF2(LF):
 
 
 def lf_factory(filepath: str, log_type: str) -> LF:
-    if log_type == "lf1":
+    if log_type == "lf1_unsteady":
         return LF1(filepath)
+    # elif log_type == "lf1_steady":
+    #     return LF1(filepath, steady = True)
     elif log_type == "lf2":
         return LF2(filepath)
     else:
