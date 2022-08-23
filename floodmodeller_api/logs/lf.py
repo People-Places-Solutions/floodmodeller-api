@@ -249,7 +249,7 @@ class LF2(LF):
     """Reads and processes Flood Modeller 1D log file '.lf2'
 
     Args:
-        lf2_filepath (str): Full filepath to model lf1 file
+        lf2_filepath (str): Full filepath to model lf2 file
 
     Output:
         Initiates 'LF2' class object

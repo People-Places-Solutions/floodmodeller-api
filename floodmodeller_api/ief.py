@@ -461,15 +461,14 @@ class IEF(FMFile):
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
-        # FIXME: lf1 hardcoded
-
-        log_type = "lf1"
+        log_type = "lf1"  # FIXME: hardcoded
+        max_wait = 10  # seconds
 
         self._lf_filepath = self._filepath.with_suffix("." + log_type)
 
         # wait for log file to exist
         log_file_exists = False
-        max_wait = time.time() + 60
+        max_time = time.time() + max_wait
 
         while not log_file_exists:
 
@@ -477,15 +476,15 @@ class IEF(FMFile):
 
             log_file_exists = self._lf_filepath.is_file()
 
-            # timeout            
-            if time.time() > max_wait:
+            # timeout
+            if time.time() > max_time:
                 print("No log file")
                 self._lf = None
-                return 
+                return
 
         # wait for new log file
         old_log_file = True
-        max_wait = time.time() + 60
+        max_time = time.time() + max_wait
 
         while old_log_file:
 
@@ -500,15 +499,15 @@ class IEF(FMFile):
             old_log_file = time_diff_sec > 5
 
             # timeout
-            if time.time() > max_wait:
+            if time.time() > max_time:
                 print("No new log file")
                 self._lf = None
-                return 
+                return
 
         self._lf = lf_factory(self._lf_filepath, log_type)
 
     def _update_progress_bar(self, process: Popen):
-        """Updates progress bar based on log files"""
+        """Updates progress bar based on log file"""
 
         # only if there is a log file
         if self._lf:
@@ -519,7 +518,7 @@ class IEF(FMFile):
                 # Process still running
                 while process.poll() is None:
 
-                    time.sleep(0.1)    
+                    time.sleep(0.1)
 
                     self._lf.read(suppress_final_steps=True)
                     progress = self._lf.report_progress()
