@@ -31,7 +31,7 @@ class LF(FMFile):
             self._filepath = lf_filepath
             FMFile.__init__(self)
             self._init_counters()
-            self._init_params()
+            self._init_params_and_progress()
             self._init_line_types()
             self._read()
 
@@ -65,10 +65,6 @@ class LF(FMFile):
 
         self._no_lines = 0  # number of lines that have been read so far
         self._no_iters = 0  # number of iterations so far
-
-    @abstractmethod
-    def _init_params(self):
-        pass
 
     def _init_line_types(self):
         """Creates dictionary of LineType object for each entry in data_to_extract"""
@@ -217,7 +213,7 @@ class LF(FMFile):
 
         print("Last line read: " + str(self._no_lines))
 
-    def report_progress(self) -> float:
+    def _report_progress(self) -> float:
         """Returns last progress percentage"""
 
         progress = self._extracted_data["progress"].value
@@ -225,6 +221,13 @@ class LF(FMFile):
         last_progress = max(progress, default=0)
 
         return last_progress
+
+    def _no_report_progress(self):
+        raise NotImplementedError 
+
+    @abstractmethod
+    def _init_params_and_progress(self):
+        pass
 
 
 class LF1(LF):
@@ -244,12 +247,14 @@ class LF1(LF):
         self._steady = steady
         super().__init__(lf_filepath)
 
-    def _init_params(self):
+    def _init_params_and_progress(self):
         """Uses dictionary from lf1_params.py to define data to extract"""
         if self._steady:
             self._data_to_extract = lf1_steady_data_to_extract
+            self.report_progress = self._no_report_progress
         else:
             self._data_to_extract = lf1_unsteady_data_to_extract
+            self.report_progress = self._report_progress
 
 
 class LF2(LF):
@@ -265,9 +270,10 @@ class LF2(LF):
     _filetype: str = "LF2"
     _suffix: str = ".lf2"
 
-    def _init_params(self):
+    def _init_params_and_progress(self):
         """Uses dictionary from lf2_params.py to define data to extract"""
         self._data_to_extract = lf2_data_to_extract
+        self.report_progress = self._report_progress
 
 
 def lf_factory(filepath: str, log_type: str) -> LF:
