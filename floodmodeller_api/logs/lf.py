@@ -39,7 +39,7 @@ class LF(FMFile):
             self._handle_exception(e, when="read")
 
     def _read(self, force_reread: bool = False, suppress_final_steps: bool = False):
-        # Read LF1 file
+        # Read LF file
         with open(self._filepath, "r") as lf1_file:
             self._raw_data = [line.rstrip("\n") for line in lf1_file.readlines()]
 
@@ -59,7 +59,8 @@ class LF(FMFile):
             self._create_dataframe()
 
     def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
-        # TODO: documentation
+        """Reads LF file, starting from where it stopped reading last time"""
+        
         self._read(force_reread, suppress_final_steps)
 
     def _init_counters(self):
@@ -302,7 +303,8 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
         return LF1(filepath)
     elif suffix == "lf1" and steady:
         return LF1(filepath, steady = True)
-    elif suffix == "lf2":
+    elif suffix == "lf2" and steady:
         return LF2(filepath)
     else:
-        raise ValueError(f"Unexpected log file type {suffix}")
+        flow_type = "steady" if steady else "unsteady"
+        raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")

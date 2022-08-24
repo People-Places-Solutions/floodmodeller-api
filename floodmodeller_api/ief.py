@@ -435,6 +435,19 @@ class IEF(FMFile):
         except Exception as e:
             self._handle_exception(e, when="simulate")
 
+    def _get_result_filepath(self, suffix):
+
+        if hasattr(self, "Results"):
+            path = Path(self.Results).with_suffix("." + suffix)
+            if not path.is_absolute():
+                # set cwd to ief location and resolve path
+                path = Path(self._filepath.parent, path).resolve()
+
+        else:
+            path = self._filepath.with_suffix("." + suffix)
+
+        return path
+
     def get_results(self) -> ZZN:
         """If results for the simulation exist, this function returns them as a ZZN class object
 
@@ -442,15 +455,8 @@ class IEF(FMFile):
             floodmodeller_api.ZZN class object
         """
 
-        # Get results location
-        if hasattr(self, "Results"):
-            result_path = Path(self.Results).with_suffix(".zzn")
-            if not result_path.is_absolute():
-                # set cwd to ief location and resolve path
-                result_path = Path(self._filepath.parent, result_path).resolve()
-
-        else:
-            result_path = self._filepath.with_suffix(".zzn")
+        # Get zzn location
+        result_path = self._get_result_filepath(suffix="zzn")
 
         if result_path.exists():
             return ZZN(result_path)
@@ -458,53 +464,56 @@ class IEF(FMFile):
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
-    def _get_lf(self, suffix, filepath_only, steady):
+    def get_lf(self):
+
+        suffix, steady = self._determine_lf_type()
 
         # Get lf location
-        if hasattr(self, "Results"):
-            lf_path = Path(self.Results).with_suffix("." + suffix)
-            if not lf_path.is_absolute():
-                # set cwd to ief location and resolve path
-                lf_path = Path(self._filepath.parent, lf_path).resolve()
-
-        else:
-            lf_path = self._filepath.with_suffix("." + suffix)
-
-        if filepath_only:
-            return lf_path
+        lf_path = self._get_result_filepath(suffix)
 
         if lf_path.exists():
             return lf_factory(lf_path, suffix, steady)
 
         else:
-            raise FileNotFoundError("Log file file (" + suffix + ") not found")  
+            raise FileNotFoundError("Log file file (" + suffix + ") not found")
 
-    def get_lf1(self, filepath_only=False, steady=False):
+    def _determine_lf_type(self):  # (str, bool) or (None, None):
+        """Determine the log file type"""
 
-        return self._get_lf("lf1", filepath_only, steady)      
+        if self.RunType == "Unsteady":
+            suffix = "lf1"
+            steady = False
 
-    def get_lf2(self, filepath_only=False):
+        elif self.RunType == "Steady":
+            suffix = "lf1"
+            steady = True
 
-        return self._get_lf("lf2", filepath_only, None)     
+        # TODO: if 2D, use lf2
+
+        else:
+            raise ValueError(f'Unexpected run type "{self.RunType}"')
+
+        return suffix, steady
 
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
-        # determine log file type
-        if self.RunType == "Unsteady":
-            suffix = "lf1"
-            steady  = False
-            self._lf_filepath = self.get_lf1(filepath_only=True)
-
-        elif self.RunType == "Steady":
-            self._no_log_file("only unsteady runs supported")
+        # determine log file type based on self.RunType
+        try:
+            suffix, steady = self._determine_lf_type()
+        except ValueError:
+            self._no_log_file(f'run type "{self.RunType}" not supported')
             self._lf = None
             return
 
-        else:  # TODO: if 2D, use lf2
-            self._no_log_file("only 1D runs supported")
+        # ensure progress bar is supported for that type
+        if not (suffix == "lf1" and steady == False):
+            self._no_log_file(f'only 1D unsteady runs are supported')
             self._lf = None
             return
+
+        # find what log filepath should be
+        self._lf_filepath = self._get_result_filepath(suffix)
 
         # wait for log file to exist
         log_file_exists = False
@@ -518,7 +527,7 @@ class IEF(FMFile):
 
             # timeout
             if time.time() > max_time:
-                self._no_log_file("no log file detected")
+                self._no_log_file("log file is expected but not detected")
                 self._lf = None
                 return
 
@@ -540,18 +549,17 @@ class IEF(FMFile):
 
             # timeout
             if time.time() > max_time:
-                self._no_log_file("log file from previous run")
+                self._no_log_file("log file is from previous run")
                 self._lf = None
                 return
 
+        # create LF instance
         self._lf = lf_factory(self._lf_filepath, suffix, steady)
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
 
-        print(
-            "No progress bar as " + reason + ". Simulation will continue as usual."
-        )
+        print("No progress bar as " + reason + ". Simulation will continue as usual.")
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""

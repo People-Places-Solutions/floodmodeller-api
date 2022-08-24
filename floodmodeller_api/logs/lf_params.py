@@ -28,6 +28,7 @@ from .lf_helpers import (
 )
 
 # TODO: EFT, ETR, progress as individual values
+# LF2 is not in sync
 
 lf1_unsteady_data_to_extract = {
     # start
