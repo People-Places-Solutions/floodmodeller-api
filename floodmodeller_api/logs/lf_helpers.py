@@ -27,13 +27,13 @@ class LineType(ABC):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
         self.prefix = prefix
         self.stage = stage
-        self.defines_iters = defines_iters
-        self.before_defines_iters = before_defines_iters
+        self.index = index
+        self.before_index = before_index
 
         self._exclude = exclude
 
@@ -85,10 +85,10 @@ class DateTime(LineType):
         stage: str,
         code: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._code = code
         self._nan = pd.NaT
 
@@ -107,11 +107,11 @@ class Time(DateTime):
         stage: str,
         code: str,
         exclude: bool = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
         super().__init__(
-            prefix, stage, code, exclude, defines_iters, before_defines_iters
+            prefix, stage, code, exclude, index, before_index
         )
         self._nan = pd.NaT
 
@@ -129,10 +129,10 @@ class TimeDeltaHMS(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -150,10 +150,10 @@ class TimeDeltaH(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -171,10 +171,10 @@ class TimeDeltaS(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -192,10 +192,10 @@ class Float(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = float("nan")
 
     def _process_line(self, raw: str) -> str:
@@ -212,10 +212,10 @@ class Int(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = -99999
 
     def _process_line(self, raw: str):
@@ -233,10 +233,10 @@ class FloatSplit(LineType):
         stage: str,
         split: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._split = split
         self._nan = float("nan")
 
@@ -254,10 +254,10 @@ class String(LineType):
         prefix: str,
         stage: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -275,10 +275,10 @@ class StringSplit(LineType):
         stage: str,
         split: str,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._split = split
         self._nan = ""
 
@@ -297,10 +297,10 @@ class TimeFloatMult(LineType):
         stage: str,
         names: list,
         exclude: str = None,
-        defines_iters: bool = False,
-        before_defines_iters: bool = False,
+        index: bool = False,
+        before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, defines_iters, before_defines_iters)
+        super().__init__(prefix, stage, exclude, index, before_index)
         self._names = names
 
         self._nan = []

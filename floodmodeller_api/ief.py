@@ -513,7 +513,7 @@ class IEF(FMFile):
             return
 
         # find what log filepath should be
-        self._lf_filepath = self._get_result_filepath(suffix)
+        lf_filepath = self._get_result_filepath(suffix)
 
         # wait for log file to exist
         log_file_exists = False
@@ -523,7 +523,7 @@ class IEF(FMFile):
 
             time.sleep(0.1)
 
-            log_file_exists = self._lf_filepath.is_file()
+            log_file_exists = lf_filepath.is_file()
 
             # timeout
             if time.time() > max_time:
@@ -540,7 +540,7 @@ class IEF(FMFile):
             time.sleep(0.1)
 
             # difference between now and when log file was last modified
-            last_modified_timestamp = self._lf_filepath.stat().st_mtime
+            last_modified_timestamp = lf_filepath.stat().st_mtime
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
@@ -554,7 +554,7 @@ class IEF(FMFile):
                 return
 
         # create LF instance
-        self._lf = lf_factory(self._lf_filepath, suffix, steady)
+        self._lf = lf_factory(lf_filepath, suffix, steady)
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""

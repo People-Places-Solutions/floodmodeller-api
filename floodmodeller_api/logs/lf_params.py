@@ -42,10 +42,10 @@ lf1_unsteady_data_to_extract = {
     "max_itr": {"class": Float, "prefix": "!!Info1 maxitr =", "stage": "start"},
     "min_itr": {"class": Float, "prefix": "!!Info1 minitr =", "stage": "start"},
     # run
-    "mass_error": {"class": TimeFloatMult, "prefix": "!!Info1 Mass %error =", "stage": "run", "names": ["ME_simulated", "ME_mass_error"], "before_defines_iters": True},
-    "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage": "run", "split": "%", "before_defines_iters": True},
-    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage": "run", "before_defines_iters": True},
-    "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage": "run", "defines_iters": True},  # one entry each iteration
+    "mass_error": {"class": TimeFloatMult, "prefix": "!!Info1 Mass %error =", "stage": "run", "names": ["ME_simulated", "ME_mass_error"], "before_index": True},
+    "progress": {"class": FloatSplit, "prefix": "!!Progress1", "stage": "run", "split": "%", "before_index": True},
+    "timestep": {"class": TimeDeltaS, "prefix": "!!Info1 Timestep", "stage": "run", "before_index": True},
+    "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info1 Elapsed", "stage": "run", "index": True},  # one entry each iteration
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info1 Simulated", "stage": "run"},
     "EFT": {"class": Time, "prefix": "!!Info1 EFT:", "stage": "run", "exclude": ["calculating..."], "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMS, "prefix": "!!Info1 ETR:", "exclude": ["..."], "stage": "run"},
@@ -78,7 +78,7 @@ lf1_steady_data_to_extract = {
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
     "number_of_1D_river_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
     # run
-    "network_iteration": {"class": FloatSplit, "prefix": "!!output1  network iteration", "stage": "run", "split": "c", "defines_iters": True},  # one entry each iteration
+    "network_iteration": {"class": FloatSplit, "prefix": "!!output1  network iteration", "stage": "run", "split": "c", "index": True},  # one entry each iteration
     "largest_change_in_split_from_last_iteration": {"class": FloatSplit, "prefix": "!!output1  was", "stage": "run", "split": "%"},
     # end
     "successful_solution_in": {"class": FloatSplit, "prefix": "!!output1  successful solution in", "stage": "end", "split": "n"}
@@ -111,7 +111,7 @@ lf2_data_to_extract = {
     "number_of_cells": {"class": Float, "prefix": "!!output2 Number of cells in model:", "stage": "start"},
     "data_prep_completed_in": {"class": TimeDeltaS, "prefix": "!!output2 Data prep completed in", "stage": "start"},
     # run
-    "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info2 Simulated", "stage": "run", "defines_iters": True}, # one entry each iteration
+    "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info2 Simulated", "stage": "run", "index": True}, # one entry each iteration
     "progress": {"class": FloatSplit, "prefix": "!!Progress2", "stage": "run", "split": "%"}, 
     "wet_cells": {"class": Float, "prefix": "!!PlotG2 Wet cells", "stage": "run"},
     "2D_boundary_inflow": {"class": Float, "prefix": "!!PlotG2 2D boundary inflow", "stage": "run"},

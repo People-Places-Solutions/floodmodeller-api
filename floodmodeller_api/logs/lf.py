@@ -60,7 +60,7 @@ class LF(FMFile):
 
     def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
         """Reads LF file, starting from where it stopped reading last time"""
-        
+
         self._read(force_reread, suppress_final_steps)
 
     def _init_counters(self):
@@ -106,7 +106,7 @@ class LF(FMFile):
                     line_type.update_value_wrapper(processed_line)
 
                     # "elapsed" lines mark the end of an iteration
-                    if line_type.defines_iters == True:
+                    if line_type.index == True:
                         self._sync_cols()
                         self._no_iters += 1
 
@@ -135,9 +135,10 @@ class LF(FMFile):
         # TODO: should be a LineType class method
         # that creates dataframe for each LineType
         # then this method combines them all together
-        # Also - to_dataframe (returning df like ZZN, with filters)
-        # Indexed by simulated (and remove nan rows)
-        # Remove duplicates at start and end
+        # Also:
+        # - Replace by to_dataframe (returning df like ZZN, with filters)
+        # - Indexed by simulated (and remove nan rows)
+        # - Remove duplicates at start and end
 
         # (1) create dictionary
         run = {}
@@ -175,6 +176,7 @@ class LF(FMFile):
 
     def _del_dataframe(self):
         """Deletes df attribute"""
+
         delattr(self, "df")
 
     def _sync_cols(self):
@@ -186,11 +188,11 @@ class LF(FMFile):
             line_type = self._extracted_data[key]
 
             # sync line types that are not "elapsed"
-            if line_type.defines_iters == False:
+            if line_type.index == False:
 
                 # if their number of values is not in sync
                 if line_type.stage == "run" and line_type.no_values < (
-                    self._no_iters + int(line_type.before_defines_iters)
+                    self._no_iters + int(line_type.before_index)
                 ):
                     # append nan to the list
                     line_type.update_value_wrapper(line_type._nan)
