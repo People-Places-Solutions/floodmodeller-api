@@ -45,9 +45,10 @@ class LF(FMFile):
 
         # Force rereading from start of file
         if force_reread == True:
+            self._del_attributes()
+            self._del_dataframe()
             self._init_counters()
             self._init_line_types()
-            # FIXME: direct attributes and dataframe
 
         # Process file
         self._update_line_types()
@@ -113,10 +114,16 @@ class LF(FMFile):
         # self._print_no_lines()
 
     def _set_attributes(self):
-        """Makes each LineType value a direct attribute of LF1"""
+        """Makes each LineType value a direct attribute of LF"""
 
         for key in self._data_to_extract:
             setattr(self, key, self._extracted_data[key].value)
+
+    def _del_attributes(self):
+        """Deletes each LineType value direct attribute of LF"""
+
+        for key in self._data_to_extract:
+            delattr(self, key)
 
     def _create_dataframe(self):
         """Collects LineType values (of stage "run") into pandas dataframe"""
@@ -155,6 +162,10 @@ class LF(FMFile):
 
         # (2) turn dictionary into dataframe
         self.df = pd.DataFrame(run)
+
+    def _del_dataframe(self):
+        """Deletes df attribute"""
+        delattr(self, "df")
 
     def _sync_cols(self):
         """Ensures LineType values (of stage "run") have an entry each iteration"""

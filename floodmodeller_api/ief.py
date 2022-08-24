@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import os
 import subprocess
 import time
-import warnings
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
@@ -520,7 +519,7 @@ class IEF(FMFile):
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
 
-        warnings.warn(
+        print(
             "No progress bar as " + reason + ". Simulation will continue as usual."
         )
 
