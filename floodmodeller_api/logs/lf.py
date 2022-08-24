@@ -59,6 +59,7 @@ class LF(FMFile):
             self._create_dataframe()
 
     def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
+        # TODO: documentation
         self._read(force_reread, suppress_final_steps)
 
     def _init_counters(self):
@@ -116,6 +117,8 @@ class LF(FMFile):
     def _set_attributes(self):
         """Makes each LineType value a direct attribute of LF"""
 
+        # TODO: for values that don't change do a dictionary called info
+
         for key in self._data_to_extract:
             setattr(self, key, self._extracted_data[key].value)
 
@@ -127,6 +130,13 @@ class LF(FMFile):
 
     def _create_dataframe(self):
         """Collects LineType values (of stage "run") into pandas dataframe"""
+
+        # TODO: should be a LineType class method
+        # that creates dataframe for each LineType
+        # then this method combines them all together
+        # Also - to_dataframe (returning df like ZZN, with filters)
+        # Indexed by simulated (and remove nan rows)
+        # Remove duplicates at start and end
 
         # (1) create dictionary
         run = {}
@@ -144,7 +154,6 @@ class LF(FMFile):
                 value = self._extracted_data[key].value
 
                 # line types with multiple entries per line
-                # TODO: should be a LineType class method
                 if line_type == TimeFloatMult:
 
                     names = subdictionary["names"]
@@ -216,8 +225,9 @@ class LF(FMFile):
                     line_type.update_value_wrapper(line_type._nan)
                     line_type.update_value_wrapper(line_type._nan)
 
-        # FIXME: What if you restart after this point?
+        # TODO: What if you restart after this point?
         # Will end up with two partial rows of nans
+        # But only if you don't have suppress_final_steps
 
     def _print_no_lines(self):
         """Prints number of lines that have been read so far"""
@@ -287,12 +297,12 @@ class LF2(LF):
         self.report_progress = self._report_progress
 
 
-def lf_factory(filepath: str, log_type: str) -> LF:
-    if log_type == "lf1_unsteady":
+def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
+    if suffix == "lf1" and not steady:
         return LF1(filepath)
-    # elif log_type == "lf1_steady":
-    #     return LF1(filepath, steady = True)
-    elif log_type == "lf2":
+    elif suffix == "lf1" and steady:
+        return LF1(filepath, steady = True)
+    elif suffix == "lf2":
         return LF2(filepath)
     else:
-        raise ValueError(f"Unexpected log file type {log_type}")
+        raise ValueError(f"Unexpected log file type {suffix}")

@@ -27,10 +27,12 @@ from .lf_helpers import (
     TimeFloatMult,
 )
 
+# TODO: EFT, ETR, progress as individual values
+
 lf1_unsteady_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
-    "no_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
+    "number_of_1D_river_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
     "qtol": {"class": Float, "prefix": "!!Info1 qtol =", "stage": "start"},
     "htol": {"class": Float, "prefix": "!!Info1 htol =", "stage": "start"},
     "start_time": {"class": TimeDeltaH, "prefix": "!!Info1 Start Time:", "stage": "start"},
@@ -50,22 +52,22 @@ lf1_unsteady_data_to_extract = {
     "convergence": {"class": TimeFloatMult, "prefix": "!!PlotC1", "stage": "run", "names": ["PlotC1_simulated", "PlotC1_flow", "PlotC1_level"]},
     "flow": {"class": TimeFloatMult, "prefix": "!!PlotF1", "stage": "run", "names": ["PlotF1_simulated", "PlotF1_inflow", "PlotF1_outflow"]},
     # end
-    "sim_time": {"class": TimeDeltaS, "prefix": "!!output1 Simulation time elapsed (s):", "stage": "end"},
-    "no_unconverged_timesteps": {"class": Float, "prefix": "!!output1  Number of unconverged timesteps:", "stage": "end"},
-    "prop_unconverged": {"class": FloatSplit, "prefix": "!!output1  Proportion of simulation unconverged:", "stage": "end", "split": "%"},
-    "mass_balance_interval": {"class": TimeDeltaS, "prefix": "!!output1  Mass balance calculated every", "stage": "end"},
-    "initial_vol": {"class": FloatSplit, "prefix": "!!output1  Initial volume:", "stage": "end", "split": "m3"},
-    "final_vol": {"class": FloatSplit, "prefix": "!!output1  Final volume:", "stage": "end", "split": "m3"},
-    "tot_boundary_inflow": {"class": FloatSplit, "prefix": "!!output1  Total boundary inflow :", "stage": "end", "split": "m3"},
-    "tot_boundary_outflow": {"class": FloatSplit, "prefix": "!!output1  Total boundary outflow:", "stage": "end", "split": "m3"},
-    "tot_lat_link_inflow": {"class": FloatSplit, "prefix": "!!output1  Total lat. link inflow:", "stage": "end", "split": "m3"},
-    "tot_lat_link_outflow": {"class": FloatSplit, "prefix": "!!output1  Total lat. link outflow:", "stage": "end", "split": "m3"},
-    "max_system_vol": {"class": FloatSplit, "prefix": "!!output1  Max. system volume:", "stage": "end", "split": "m3"},
-    "max_vol_increase": {"class": FloatSplit, "prefix": "!!output1  Max. |volume| increase:", "stage": "end", "split": "m3"},
+    "simulation_time_elapsed": {"class": TimeDeltaS, "prefix": "!!output1 Simulation time elapsed (s):", "stage": "end"},
+    "number_of_unconverged_timesteps": {"class": Float, "prefix": "!!output1  Number of unconverged timesteps:", "stage": "end"},
+    "proporion_of_simulation_unconverged": {"class": FloatSplit, "prefix": "!!output1  Proportion of simulation unconverged:", "stage": "end", "split": "%"},
+    "mass_balance_calculated_every": {"class": TimeDeltaS, "prefix": "!!output1  Mass balance calculated every", "stage": "end"},
+    "initial_volume": {"class": FloatSplit, "prefix": "!!output1  Initial volume:", "stage": "end", "split": "m3"},
+    "final_volume": {"class": FloatSplit, "prefix": "!!output1  Final volume:", "stage": "end", "split": "m3"},
+    "total_boundary_inflow": {"class": FloatSplit, "prefix": "!!output1  Total boundary inflow :", "stage": "end", "split": "m3"},
+    "total_boundary_outflow": {"class": FloatSplit, "prefix": "!!output1  Total boundary outflow:", "stage": "end", "split": "m3"},
+    "total_lat_link_inflow": {"class": FloatSplit, "prefix": "!!output1  Total lat. link inflow:", "stage": "end", "split": "m3"},
+    "total_lat_link_outflow": {"class": FloatSplit, "prefix": "!!output1  Total lat. link outflow:", "stage": "end", "split": "m3"},
+    "max_system_volume": {"class": FloatSplit, "prefix": "!!output1  Max. system volume:", "stage": "end", "split": "m3"},
+    "max_volume_increase": {"class": FloatSplit, "prefix": "!!output1  Max. |volume| increase:", "stage": "end", "split": "m3"},
     "max_boundary_inflow": {"class": FloatSplit, "prefix": "!!output1  Max. boundary inflow:", "stage": "end", "split": "m3"},
-    "net_vol_increase": {"class": FloatSplit, "prefix": "!!output1  Net increase in volume:", "stage": "end", "split": "m3"},
-    "net_inflow_vol": {"class": FloatSplit, "prefix": "!!output1  Net inflow volume:", "stage": "end", "split": "m3"},
-    "vol_discrepancy": {"class": FloatSplit, "prefix": "!!output1  Volume discrepancy:", "stage": "end", "split": "m3"},
+    "net_volume_increase": {"class": FloatSplit, "prefix": "!!output1  Net increase in volume:", "stage": "end", "split": "m3"},
+    "net_inflow_volume": {"class": FloatSplit, "prefix": "!!output1  Net inflow volume:", "stage": "end", "split": "m3"},
+    "volume_discrepancy": {"class": FloatSplit, "prefix": "!!output1  Volume discrepancy:", "stage": "end", "split": "m3"},
     "mass_balance_error": {"class": FloatSplit, "prefix": "!!output1  Mass balance error:", "stage": "end", "split": "%"},
     "mass_balance_error_2": {"class": FloatSplit, "prefix": "!!output1  Mass balance error [2]:", "stage": "end", "split": "%"},
 }
@@ -73,51 +75,51 @@ lf1_unsteady_data_to_extract = {
 lf1_steady_data_to_extract = {
     # start
     "version": {"class": String, "prefix": "!!Info1 version1d", "stage": "start"},
-    "no_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
+    "number_of_1D_river_nodes": {"class": Float, "prefix": "!!output1  Number of 1D river nodes in model:", "stage": "start"},
     # run
-    "iter": {"class": FloatSplit, "prefix": "!!output1  network iteration", "stage": "run", "split": "c", "defines_iters": True},  # one entry each iteration
-    "max_split_diff": {"class": FloatSplit, "prefix": "!!output1  was", "stage": "run", "split": "%"},
+    "network_iteration": {"class": FloatSplit, "prefix": "!!output1  network iteration", "stage": "run", "split": "c", "defines_iters": True},  # one entry each iteration
+    "largest_change_in_split_from_last_iteration": {"class": FloatSplit, "prefix": "!!output1  was", "stage": "run", "split": "%"},
     # end
-    "iters": {"class": FloatSplit, "prefix": "!!output1  successful solution in", "stage": "end", "split": "n"}
+    "successful_solution_in": {"class": FloatSplit, "prefix": "!!output1  successful solution in", "stage": "end", "split": "n"}
 }
 
 lf2_data_to_extract = {
     # start
     "version": {"class": StringSplit, "prefix": "!!output2 Using Flood Modeller 2D version:", "stage": "start", "split": ","},
-    "initiated_at": {"class": DateTime, "prefix": "!!output2  Simulation initiated at", "stage": "start", "code": "%d/%m/%Y %H:%M:%S"},
-    "control_file": {"class": String, "prefix": "!!output2 Using input control file:", "stage": "start"},
+    "simulation_initiated_at": {"class": DateTime, "prefix": "!!output2  Simulation initiated at", "stage": "start", "code": "%d/%m/%Y %H:%M:%S"},
+    "input_control_file": {"class": String, "prefix": "!!output2 Using input control file:", "stage": "start"},
     "unit_system": {"class": String, "prefix": "!!output2 Unit system:", "stage": "start"},
-    "no_domains": {"class": Float, "prefix": "!!output2 Number of 2D domains:", "stage": "start"},
+    "number_of_2D_domains": {"class": Float, "prefix": "!!output2 Number of 2D domains:", "stage": "start"},
     "model_time_zero": {"class": DateTime, "prefix": "!!output2     Model time zero:", "stage": "start", "code": "%Y-%m-%d %H:%M:%S"},
     "model_start_time": {"class": DateTime, "prefix": "!!output2     Model start time:", "stage": "start", "code": "%Y-%m-%d %H:%M:%S"},
-    "sim_time": {"class": TimeDeltaH, "prefix": "!!output2     Simulation time:", "stage": "start"},
+    "simulation_time": {"class": TimeDeltaH, "prefix": "!!output2     Simulation time:", "stage": "start"},
     "start_time": {"class": TimeDeltaH, "prefix": "!!Info2 Start Time:", "stage": "start"},
     "end_time": {"class": TimeDeltaH, "prefix": "!!Info2 End Time:", "stage": "start"},
-    "scheme": {"class": String, "prefix": "!!output2     Solution scheme:", "stage": "start"},
+    "solution_scheme": {"class": String, "prefix": "!!output2     Solution scheme:", "stage": "start"},
     "timestep": {"class": Float, "prefix": "!!output2     Model timestep             :", "stage": "start"},
-    "wet_dry_depth": {"class": Float, "prefix": "!!output2     Wetting/drying depth       :", "stage": "start"},
+    "wetting_drying_depth": {"class": Float, "prefix": "!!output2     Wetting/drying depth       :", "stage": "start"},
     "beta": {"class": Float, "prefix": "!!output2     Beta                       :", "stage": "start"},
-    "no_iters": {"class": Float, "prefix": "!!output2     Number of iterations       :", "stage": "start"},
-    "calc_depth": {"class": Float, "prefix": "!!output2     Calculation depth          :", "stage": "start"},
+    "number_of_iterations": {"class": Float, "prefix": "!!output2     Number of iterations       :", "stage": "start"},
+    "calculation_depth": {"class": Float, "prefix": "!!output2     Calculation depth          :", "stage": "start"},
     "friction_depth": {"class": Float, "prefix": "!!output2     Friction depth             :", "stage": "start"},
     "eddy_viscosity": {"class": Float, "prefix": "!!output2     Eddy Viscosity             :", "stage": "start"},
     "velocity_head_threshold": {"class": Float, "prefix": "!!output2     Velocity head threshold    :", "stage": "start"},
-    "accumulation_depth": {"class": Float, "prefix": "!!output2     Rainfall accumulation depth:", "stage": "start"},
-    "neg_depth_threshold": {"class": Float, "prefix": "!!output2     Negative depth threshold   :", "stage": "start"},
+    "rainfall_accumulation_depth": {"class": Float, "prefix": "!!output2     Rainfall accumulation depth:", "stage": "start"},
+    "negative_depth_threshold": {"class": Float, "prefix": "!!output2     Negative depth threshold   :", "stage": "start"},
     "friction_depth_threshold": {"class": Float, "prefix": "!!output2     Friction depth threshold   :", "stage": "start"},
-    "no_cells": {"class": Float, "prefix": "!!output2 Number of cells in model:", "stage": "start"},
-    "data_prep_time": {"class": TimeDeltaS, "prefix": "!!output2 Data prep completed in", "stage": "start"},
+    "number_of_cells": {"class": Float, "prefix": "!!output2 Number of cells in model:", "stage": "start"},
+    "data_prep_completed_in": {"class": TimeDeltaS, "prefix": "!!output2 Data prep completed in", "stage": "start"},
     # run
     "simulated": {"class": TimeDeltaHMS, "prefix": "!!Info2 Simulated", "stage": "run", "defines_iters": True}, # one entry each iteration
     "progress": {"class": FloatSplit, "prefix": "!!Progress2", "stage": "run", "split": "%"}, 
     "wet_cells": {"class": Float, "prefix": "!!PlotG2 Wet cells", "stage": "run"},
-    "2D_inflow": {"class": Float, "prefix": "!!PlotG2 2D boundary inflow", "stage": "run"},
-    "2D_outflow": {"class": Float, "prefix": "!!PlotG2 2D boundary outflow", "stage": "run"},
+    "2D_boundary_inflow": {"class": Float, "prefix": "!!PlotG2 2D boundary inflow", "stage": "run"},
+    "2D_boundary_outflow": {"class": Float, "prefix": "!!PlotG2 2D boundary outflow", "stage": "run"},
     "1D_link_flow": {"class": Float, "prefix": "!!PlotG2 1D link flow", "stage": "run"},
-    "vol_change": {"class": Float, "prefix": "!!PlotG2 Change in volume", "stage": "run"},
-    "vol": {"class": Float, "prefix": "!!PlotG2 Volume", "stage": "run"},
-    "inst_mass_error": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
-    "inst_mass_error": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
+    "change_in_volume": {"class": Float, "prefix": "!!PlotG2 Change in volume", "stage": "run"},
+    "volume": {"class": Float, "prefix": "!!PlotG2 Volume", "stage": "run"},
+    "inst_mass_err": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
+    "inst_mass_err": {"class": Float, "prefix": "!!PlotG2 Inst. mass err", "stage": "run"},
     "mass_error": {"class": Float, "prefix": "!!PlotG2 Mass error", "stage": "run"},
     "largest_cr": {"class": Float, "prefix": "!!PlotG2 Largest Cr", "stage": "run"},
     "elapsed": {"class": TimeDeltaHMS, "prefix": "!!Info2 Elapsed", "stage": "run"},  

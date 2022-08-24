@@ -439,7 +439,7 @@ class IEF(FMFile):
         """If results for the simulation exist, this function returns them as a ZZN class object
 
         Returns:
-            floodmodeller_api.ZND class object
+            floodmodeller_api.ZZN class object
         """
 
         # Get results location
@@ -458,13 +458,43 @@ class IEF(FMFile):
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
+    def _get_lf(self, suffix, filepath_only, steady):
+
+        # Get lf location
+        if hasattr(self, "Results"):
+            lf_path = Path(self.Results).with_suffix("." + suffix)
+            if not lf_path.is_absolute():
+                # set cwd to ief location and resolve path
+                lf_path = Path(self._filepath.parent, lf_path).resolve()
+
+        else:
+            lf_path = self._filepath.with_suffix("." + suffix)
+
+        if filepath_only:
+            return lf_path
+
+        if lf_path.exists():
+            return lf_factory(lf_path, suffix, steady)
+
+        else:
+            raise FileNotFoundError("Log file file (" + suffix + ") not found")  
+
+    def get_lf1(self, filepath_only=False, steady=False):
+
+        return self._get_lf("lf1", filepath_only, steady)      
+
+    def get_lf2(self, filepath_only=False):
+
+        return self._get_lf("lf2", filepath_only, None)     
+
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
         # determine log file type
         if self.RunType == "Unsteady":
-            log_type = "lf1_unsteady"
-            self._lf_filepath = self._filepath.with_suffix(".lf1")
+            suffix = "lf1"
+            steady  = False
+            self._lf_filepath = self.get_lf1(filepath_only=True)
 
         elif self.RunType == "Steady":
             self._no_log_file("only unsteady runs supported")
@@ -514,7 +544,7 @@ class IEF(FMFile):
                 self._lf = None
                 return
 
-        self._lf = lf_factory(self._lf_filepath, log_type)
+        self._lf = lf_factory(self._lf_filepath, suffix, steady)
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
