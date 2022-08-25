@@ -70,7 +70,7 @@ class LF(FMFile):
         self._no_iters = 0  # number of iterations so far
 
     def _init_parsers(self):
-        """Creates dictionary of LineParser objects for each entry in data_to_extract"""
+        """Creates dictionary of Parser objects for each entry in data_to_extract"""
 
         self._extracted_data = {}
 
@@ -84,7 +84,7 @@ class LF(FMFile):
             self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
 
     def _update_data(self):
-        """Updates value of each LineParser object based on raw data"""
+        """Updates value of each Parser object based on raw data"""
 
         # self._print_no_lines()
 
@@ -115,7 +115,7 @@ class LF(FMFile):
         # self._print_no_lines()
 
     def _set_attributes(self):
-        """Makes each LineParser value an attribute; "last" values in dictionary"""
+        """Makes each Parser value an attribute; "last" values in dictionary"""
 
         info = {}
 
@@ -132,7 +132,7 @@ class LF(FMFile):
         self.info = info
 
     def _del_attributes(self):
-        """Deletes each LineParser value direct attribute of LF"""
+        """Deletes each Parser value direct attribute of LF"""
 
         for key in self._data_to_extract:
             data_type = self._data_to_extract[key]["data_type"]
@@ -142,23 +142,22 @@ class LF(FMFile):
         delattr(self, "info")
 
     def to_dataframe(self):
-        """Collects LineParser values (of type "all") into pandas dataframe"""
+        """Collects Parser values (of type "all") into pandas dataframe"""
 
-        # TODO:
-        # - Filters like in ZZN.to_dataframe
-        # - Remove duplicates at start and end
-        # - LF2 is not in sync
+        # TODO: make more like ZZN.to_dataframe
 
         data_type_all = {
-            k: self._extracted_data[k].data.get_value()
+            k: getattr(self, k)
             for k, v in self._data_to_extract.items()
             if v["data_type"] == "all"
         }
 
-        return pd.concat(data_type_all, axis=1)
+        df = pd.concat(data_type_all, axis=1)
+
+        return df
 
     def _sync_cols(self):
-        """Ensures LineParser values (of type "all") have an entry each iteration"""
+        """Ensures Parser values (of type "all") have an entry each iteration"""
 
         # loop through parser types
         for key in self._data_to_extract:
@@ -217,6 +216,7 @@ class LF1(LF):
 
     def _init_params_and_progress(self):
         """Uses dictionary from lf1_params.py to define data to extract"""
+        # TODO: make steady/unsteady a class
         if self._steady:
             self._data_to_extract = lf1_steady_data_to_extract
             self.report_progress = self._no_report_progress

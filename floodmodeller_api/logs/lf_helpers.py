@@ -19,9 +19,10 @@ import datetime as dt
 import pandas as pd
 
 
-class LineData(ABC):
-    def __init__(self):
+class Data(ABC):
+    def __init__(self, names):
         self.no_values = 0
+        self._names = names
 
     @abstractmethod
     def update(self):
@@ -32,9 +33,9 @@ class LineData(ABC):
         pass
 
 
-class LastData(LineData):
-    def __init__(self):
-        super().__init__()
+class LastData(Data):
+    def __init__(self, names):
+        super().__init__(names)
         self._value = None  # single value
 
     def update(self, data):
@@ -45,9 +46,9 @@ class LastData(LineData):
         return self._value
 
 
-class AllData(LineData):
-    def __init__(self):
-        super().__init__()
+class AllData(Data):
+    def __init__(self, names):
+        super().__init__(names)
         self._value = []  # list
 
     def update(self, data):
@@ -55,19 +56,28 @@ class AllData(LineData):
         self.no_values += 1
 
     def get_value(self) -> pd.DataFrame:
-        return pd.DataFrame(self._value)
+        #TODO:
+        # - simulated as index
+        # - remove duplicated simulated columns
+        # - remove duplicated rows at start and end
+        # - remove nan rows
+
+        df = pd.DataFrame(self._value)
+        if self._names is not None:
+            df.set_axis(self._names, axis = 1, inplace = True)
+        return df
 
 
-def data_factory(data_type):
+def data_factory(data_type, names = None):
     if data_type == "last":
-        return LastData()
+        return LastData(names)
     elif data_type == "all":
-        return AllData()
+        return AllData(names)
     else:
         raise ValueError(f'Unexpected simulation type "{data_type}"')
 
 
-class LineParser(ABC):
+class Parser(ABC):
     """Abstract base class for processing and storing different types of line"""
 
     def __init__(
@@ -109,7 +119,7 @@ class LineParser(ABC):
         pass
 
 
-class DateTimeParser(LineParser):
+class DateTimeParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -152,7 +162,7 @@ class TimeParser(DateTimeParser):
         return processed.time()
 
 
-class TimeDeltaHMSParser(LineParser):
+class TimeDeltaHMSParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -173,7 +183,7 @@ class TimeDeltaHMSParser(LineParser):
         return processed
 
 
-class TimeDeltaHParser(LineParser):
+class TimeDeltaHParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -194,7 +204,7 @@ class TimeDeltaHParser(LineParser):
         return processed
 
 
-class TimeDeltaSParser(LineParser):
+class TimeDeltaSParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -215,7 +225,7 @@ class TimeDeltaSParser(LineParser):
         return processed
 
 
-class FloatParser(LineParser):
+class FloatParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -235,7 +245,7 @@ class FloatParser(LineParser):
         return processed
 
 
-class FloatSplitParser(LineParser):
+class FloatSplitParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -257,7 +267,7 @@ class FloatSplitParser(LineParser):
         return processed
 
 
-class StringParser(LineParser):
+class StringParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -277,7 +287,7 @@ class StringParser(LineParser):
         return processed
 
 
-class StringSplitParser(LineParser):
+class StringSplitParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -299,7 +309,7 @@ class StringSplitParser(LineParser):
         return processed
 
 
-class TimeFloatMultParser(LineParser):
+class TimeFloatMultParser(Parser):
     def __init__(
         self,
         prefix: str,
@@ -315,6 +325,8 @@ class TimeFloatMultParser(LineParser):
         self._nan = []
         for name in names:
             self._nan.append(float("nan"))
+
+        self.data = data_factory(data_type, names)  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""

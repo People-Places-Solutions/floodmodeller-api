@@ -39,16 +39,16 @@ lf1_unsteady_data_to_extract = {
     "max_itr": {"class": FloatParser, "prefix": "!!Info1 maxitr =", "data_type": "last"},
     "min_itr": {"class": FloatParser, "prefix": "!!Info1 minitr =", "data_type": "last"},
     # run
-    "mass_error": {"class": TimeFloatMultParser, "prefix": "!!Info1 Mass %error =", "data_type": "all", "names": ["ME_simulated", "ME_mass_error"], "before_index": True},
+    "mass_error": {"class": TimeFloatMultParser, "prefix": "!!Info1 Mass %error =", "data_type": "all", "names": ["simulated", "mass_error"], "before_index": True},
     "progress": {"class": FloatSplitParser, "prefix": "!!Progress1", "data_type": "last", "split": "%", "before_index": True},
     "timestep": {"class": TimeDeltaSParser, "prefix": "!!Info1 Timestep", "data_type": "all", "before_index": True},
-    "elapsed": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Elapsed", "data_type": "all", "is_index": True},
-    "simulated": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Simulated", "data_type": "all"},
+    "elapsed": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Elapsed", "data_type": "all", "before_index": True},
+    "simulated": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Simulated", "data_type": "all", "is_index": True},
     "EFT": {"class": TimeParser, "prefix": "!!Info1 EFT:", "data_type": "last", "exclude": ["calculating..."], "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 ETR:", "exclude": ["..."], "data_type": "last"},
-    "iterations": {"class": TimeFloatMultParser, "prefix": "!!PlotI1", "data_type": "all", "names": ["PlotI1_simulated", "PlotI1_iter", "PlotI1_log(dt)"]},
-    "convergence": {"class": TimeFloatMultParser, "prefix": "!!PlotC1", "data_type": "all", "names": ["PlotC1_simulated", "PlotC1_flow", "PlotC1_level"]},
-    "flow": {"class": TimeFloatMultParser, "prefix": "!!PlotF1", "data_type": "all", "names": ["PlotF1_simulated", "PlotF1_inflow", "PlotF1_outflow"]},
+    "iterations": {"class": TimeFloatMultParser, "prefix": "!!PlotI1", "data_type": "all", "names": ["simulated", "iter", "log(dt)"]},
+    "convergence": {"class": TimeFloatMultParser, "prefix": "!!PlotC1", "data_type": "all", "names": ["simulated", "flow", "level"]},
+    "flow": {"class": TimeFloatMultParser, "prefix": "!!PlotF1", "data_type": "all", "names": ["simulated", "inflow", "outflow"]},
     # end
     "simulation_time_elapsed": {"class": TimeDeltaSParser, "prefix": "!!output1 Simulation time elapsed (s):", "data_type": "last"},
     "number_of_unconverged_timesteps": {"class": FloatParser, "prefix": "!!output1  Number of unconverged timesteps:", "data_type": "last"},
@@ -80,6 +80,8 @@ lf1_steady_data_to_extract = {
     # end
     "successful_solution_in": {"class": FloatSplitParser, "prefix": "!!output1  successful solution in", "data_type": "last", "split": "n"}
 }
+
+# TODO: LF2 is not in sync
 
 lf2_data_to_extract = {
     # start
