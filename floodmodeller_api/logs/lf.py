@@ -130,7 +130,7 @@ class LF(FMFile):
             delattr(self, key)
 
     def _create_dataframe(self):
-        """Collects LineType values (of stage "run") into pandas dataframe"""
+        """Collects LineType values (of type "many") into pandas dataframe"""
 
         # TODO: should be a LineType class method
         # that creates dataframe for each LineType
@@ -139,7 +139,7 @@ class LF(FMFile):
         # - Replace by to_dataframe (returning df like ZZN, with filters)
         # - Indexed by simulated (and remove nan rows)
         # - Remove duplicates at start and end
-        # - rename start/run/end
+        # - LF2 is not in sync
 
         # (1) create dictionary
         run = {}
@@ -148,10 +148,10 @@ class LF(FMFile):
         for key in self._data_to_extract:
 
             subdictionary = self._data_to_extract[key]
-            stage = subdictionary["stage"]
+            type = subdictionary["type"]
 
-            # only want "run" line types in data frame
-            if stage == "run":
+            # only want "many" line types in data frame
+            if type == "many":
 
                 line_type = subdictionary["class"]
                 value = self._extracted_data[key].value
@@ -181,7 +181,7 @@ class LF(FMFile):
         delattr(self, "df")
 
     def _sync_cols(self):
-        """Ensures LineType values (of stage "run") have an entry each iteration"""
+        """Ensures LineType values (of type "many") have an entry each iteration"""
 
         # loop through line types
         for key in self._data_to_extract:
@@ -192,14 +192,14 @@ class LF(FMFile):
             if line_type.index == False:
 
                 # if their number of values is not in sync
-                if line_type.stage == "run" and line_type.no_values < (
+                if line_type.type == "many" and line_type.no_values < (
                     self._no_iters + int(line_type.before_index)
                 ):
                     # append nan to the list
                     line_type.update_value_wrapper(line_type._nan)
 
     def _final_sync_cols(self):
-        """Makes LineType values (of stage "run") the same length"""
+        """Makes LineType values (of type "many") the same length"""
 
         # find length of longest list
         max_length = 0
@@ -208,7 +208,7 @@ class LF(FMFile):
 
             line_type = self._extracted_data[key]
 
-            if line_type.stage == "run":
+            if line_type.type == "many":
                 length = len(line_type.value)
                 max_length = max(max_length, length)
 
@@ -217,7 +217,7 @@ class LF(FMFile):
 
             line_type = self._extracted_data[key]
 
-            if line_type.stage == "run":
+            if line_type.type == "many":
                 length = len(line_type.value)
 
                 # before "elapsed" but stops just before "elapsed"
@@ -243,9 +243,10 @@ class LF(FMFile):
 
         progress = self._extracted_data["progress"].value
 
-        last_progress = max(progress, default=0)
+        if progress is None:
+            return 0
 
-        return last_progress
+        return progress
 
     def _no_report_progress(self):
         raise NotImplementedError 

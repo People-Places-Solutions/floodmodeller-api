@@ -471,11 +471,10 @@ class IEF(FMFile):
         # Get lf location
         lf_path = self._get_result_filepath(suffix)
 
-        if lf_path.exists():
-            return lf_factory(lf_path, suffix, steady)
-
-        else:
+        if not lf_path.exists():
             raise FileNotFoundError("Log file file (" + suffix + ") not found")
+
+        return lf_factory(lf_path, suffix, steady)
 
     def _determine_lf_type(self):  # (str, bool) or (None, None):
         """Determine the log file type"""

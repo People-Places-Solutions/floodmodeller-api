@@ -25,13 +25,13 @@ class LineType(ABC):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
         self.prefix = prefix
-        self.stage = stage
+        self.type = type
         self.index = index
         self.before_index = before_index
 
@@ -39,16 +39,16 @@ class LineType(ABC):
 
         self.no_values = 0
 
-        if stage == "run":
+        if type == "many":
             self.value = []  # list
             self.update_value_wrapper = self._append_to_value
 
-        elif stage in ("start", "end"):
+        elif type == "one":
             self.value = None  # single value
             self.update_value_wrapper = self._replace_value
 
         else:
-            raise ValueError(f'Unexpected simulation stage "{stage}"')
+            raise ValueError(f'Unexpected simulation type "{type}"')
 
     def _append_to_value(self, processed_line: str):
         self.value.append(processed_line)
@@ -82,13 +82,13 @@ class DateTime(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         code: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._code = code
         self._nan = pd.NaT
 
@@ -104,14 +104,14 @@ class Time(DateTime):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         code: str,
         exclude: bool = None,
         index: bool = False,
         before_index: bool = False,
     ):
         super().__init__(
-            prefix, stage, code, exclude, index, before_index
+            prefix, type, code, exclude, index, before_index
         )
         self._nan = pd.NaT
 
@@ -127,12 +127,12 @@ class TimeDeltaHMS(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -148,12 +148,12 @@ class TimeDeltaH(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -169,12 +169,12 @@ class TimeDeltaS(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -190,12 +190,12 @@ class Float(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = float("nan")
 
     def _process_line(self, raw: str) -> str:
@@ -210,12 +210,12 @@ class Int(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = -99999
 
     def _process_line(self, raw: str):
@@ -230,13 +230,13 @@ class FloatSplit(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         split: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._split = split
         self._nan = float("nan")
 
@@ -252,12 +252,12 @@ class String(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -272,13 +272,13 @@ class StringSplit(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         split: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._split = split
         self._nan = ""
 
@@ -294,13 +294,13 @@ class TimeFloatMult(LineType):
     def __init__(
         self,
         prefix: str,
-        stage: str,
+        type: str,
         names: list,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, stage, exclude, index, before_index)
+        super().__init__(prefix, type, exclude, index, before_index)
         self._names = names
 
         self._nan = []
