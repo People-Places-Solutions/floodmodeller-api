@@ -26,7 +26,6 @@ from .lf_params import (
     lf1_steady_data_to_extract,
     lf2_data_to_extract,
 )
-from .lf_helpers import TimeFloatMultParser
 
 
 class LF(FMFile):
@@ -50,7 +49,6 @@ class LF(FMFile):
         # Force rereading from start of file
         if force_reread == True:
             self._del_attributes()
-            self._del_dataframe()
             self._init_counters()
             self._init_parsers()
 
@@ -104,8 +102,7 @@ class LF(FMFile):
 
                     # store everything after prefix
                     end_of_line = raw_line.split(parser.prefix)[1].lstrip()
-                    processed_line = parser.process_line(end_of_line)
-                    parser.data.update(processed_line)
+                    parser.process_line(end_of_line)
 
                     # index marks the end of an iteration
                     if parser.is_index == True:
@@ -118,18 +115,31 @@ class LF(FMFile):
         # self._print_no_lines()
 
     def _set_attributes(self):
-        """Makes each LineParser value a direct attribute of LF"""
+        """Makes each LineParser value an attribute; "last" values in dictionary"""
 
-        # TODO: for values that don't change do a dictionary called info
+        info = {}
 
         for key in self._data_to_extract:
-            setattr(self, key, self._extracted_data[key].data.get_value())
+
+            data_type = self._data_to_extract[key]["data_type"]
+            value = self._extracted_data[key].data.get_value()
+
+            if data_type == "all":
+                setattr(self, key, value)
+            elif data_type == "last" and value is not None:
+                info[key] = value
+
+        self.info = info
 
     def _del_attributes(self):
         """Deletes each LineParser value direct attribute of LF"""
 
         for key in self._data_to_extract:
-            delattr(self, key)
+            data_type = self._data_to_extract[key]["data_type"]
+            if data_type == "all":
+                delattr(self, key)
+
+        delattr(self, "info")
 
     def to_dataframe(self):
         """Collects LineParser values (of type "all") into pandas dataframe"""
@@ -146,11 +156,6 @@ class LF(FMFile):
         }
 
         return pd.concat(data_type_all, axis=1)
-
-    def _del_dataframe(self):
-        """Deletes df attribute"""
-
-        delattr(self, "df")
 
     def _sync_cols(self):
         """Ensures LineParser values (of type "all") have an entry each iteration"""

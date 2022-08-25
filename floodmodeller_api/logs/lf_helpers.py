@@ -54,15 +54,8 @@ class AllData(LineData):
         self._value.append(data)
         self.no_values += 1
 
-    def _to_dataframe(self):
-        # TODO:
-        # - indexed by index
-        # - remove nan
-        # - name(s) of columns
+    def get_value(self) -> pd.DataFrame:
         return pd.DataFrame(self._value)
-
-    def get_value(self):
-        return self._to_dataframe()
 
 
 def data_factory(data_type):
@@ -96,7 +89,7 @@ class LineParser(ABC):
         self.data_type = data_type
         self.data = data_factory(data_type)
 
-    def process_line(self, raw_line: str) -> str:
+    def process_line(self, raw_line: str):
         """self._process_line with exception handling of expected nan values"""
 
         try:
@@ -108,7 +101,7 @@ class LineParser(ABC):
             else:
                 raise e
 
-        return processed_line
+        self.data.update(processed_line)
 
     @abstractmethod
     def _process_line(self, raw: str) -> str:
