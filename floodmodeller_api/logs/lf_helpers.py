@@ -55,8 +55,11 @@ class AllData(LineData):
         self.no_values += 1
 
     def _to_dataframe(self):
-        # TODO: make into dataframe!!
-        return self._value
+        # TODO:
+        # - indexed by index
+        # - remove nan
+        # - name(s) of columns
+        return pd.DataFrame(self._value)
 
     def get_value(self):
         return self._to_dataframe()
@@ -79,11 +82,11 @@ class LineParser(ABC):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
         self.prefix = prefix
-        self.index = index
+        self.is_index = is_index
         self.before_index = before_index
 
         self._exclude = exclude
@@ -120,10 +123,10 @@ class DateTimeParser(LineParser):
         data_type: str,
         code: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._code = code
         self._nan = pd.NaT
 
@@ -142,10 +145,10 @@ class TimeParser(DateTimeParser):
         data_type: str,
         code: str,
         exclude: bool = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, code, exclude, index, before_index)
+        super().__init__(prefix, data_type, code, exclude, is_index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -162,10 +165,10 @@ class TimeDeltaHMSParser(LineParser):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -183,10 +186,10 @@ class TimeDeltaHParser(LineParser):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -204,10 +207,10 @@ class TimeDeltaSParser(LineParser):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -225,10 +228,10 @@ class FloatParser(LineParser):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._nan = float("nan")
 
     def _process_line(self, raw: str) -> str:
@@ -246,10 +249,10 @@ class FloatSplitParser(LineParser):
         data_type: str,
         split: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._split = split
         self._nan = float("nan")
 
@@ -267,10 +270,10 @@ class StringParser(LineParser):
         prefix: str,
         data_type: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -288,10 +291,10 @@ class StringSplitParser(LineParser):
         data_type: str,
         split: str,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._split = split
         self._nan = ""
 
@@ -310,10 +313,10 @@ class TimeFloatMultParser(LineParser):
         data_type: str,
         names: list,
         exclude: str = None,
-        index: bool = False,
+        is_index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, data_type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, is_index, before_index)
         self._names = names
 
         self._nan = []

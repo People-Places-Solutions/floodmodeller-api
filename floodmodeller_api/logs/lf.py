@@ -21,7 +21,11 @@ from abc import abstractmethod
 import pandas as pd
 
 from .._base import FMFile
-from .lf_params import lf1_unsteady_data_to_extract, lf1_steady_data_to_extract, lf2_data_to_extract
+from .lf_params import (
+    lf1_unsteady_data_to_extract,
+    lf1_steady_data_to_extract,
+    lf2_data_to_extract,
+)
 from .lf_helpers import TimeFloatMultParser
 
 
@@ -38,7 +42,7 @@ class LF(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def _read(self, force_reread: bool = False, suppress_final_steps: bool = False):
+    def _read(self, force_reread: bool = False, suppress_final_step: bool = False):
         # Read LF file
         with open(self._filepath, "r") as lf1_file:
             self._raw_data = [line.rstrip("\n") for line in lf1_file.readlines()]
@@ -51,16 +55,15 @@ class LF(FMFile):
             self._init_parsers()
 
         # Process file
-        self._update_parsers()
+        self._update_data()
 
-        if not suppress_final_steps:
-            self._final_sync_cols()
+        if not suppress_final_step:
             self._set_attributes()
 
-    def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
+    def read(self, force_reread: bool = False, suppress_final_step: bool = False):
         """Reads LF file, starting from where it stopped reading last time"""
 
-        self._read(force_reread, suppress_final_steps)
+        self._read(force_reread, suppress_final_step)
 
     def _init_counters(self):
         """Initialises counters that keep track of file during simulation"""
@@ -82,7 +85,7 @@ class LF(FMFile):
 
             self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
 
-    def _update_parsers(self):
+    def _update_data(self):
         """Updates value of each LineParser object based on raw data"""
 
         # self._print_no_lines()
@@ -104,8 +107,8 @@ class LF(FMFile):
                     processed_line = parser.process_line(end_of_line)
                     parser.data.update(processed_line)
 
-                    # "elapsed" lines mark the end of an iteration
-                    if parser.index == True:
+                    # index marks the end of an iteration
+                    if parser.is_index == True:
                         self._sync_cols()
                         self._no_iters += 1
 
@@ -132,48 +135,17 @@ class LF(FMFile):
         """Collects LineParser values (of type "all") into pandas dataframe"""
 
         # TODO:
-        # - Parser method creates series
-        # - This method combines them together
         # - Filters like in ZZN.to_dataframe
-        # - Indexed by simulated (and remove nan rows)
         # - Remove duplicates at start and end
         # - LF2 is not in sync
 
-        # (1) create dictionary
-        run = {}
+        data_type_all = {
+            k: self._extracted_data[k].data.get_value()
+            for k, v in self._data_to_extract.items()
+            if v["data_type"] == "all"
+        }
 
-        # loop through parser types
-        for key in self._data_to_extract:
-
-            subdictionary = self._data_to_extract[key]
-            type = subdictionary["data_type"]
-
-            # only want "all" parser types in data frame
-            if type == "all":
-
-                parser = subdictionary["class"]
-                value = self._extracted_data[key].data.get_value()
-
-                # parser types with multiple entries per line
-                if parser == TimeFloatMultParser:
-
-                    names = subdictionary["names"]
-                    no_names = len(names)
-
-                    # give each entry a column
-                    for i in range(no_names):
-                        new_key = names[i]
-                        new_value = [item[i] for item in value]
-                        run[new_key] = new_value
-
-                # otherwise, one entry per parser type
-                else:
-                    run[key] = value
-
-        # (2) turn dictionary into dataframe
-        df = pd.DataFrame(run)
-
-        return df
+        return pd.concat(data_type_all, axis=1)
 
     def _del_dataframe(self):
         """Deletes df attribute"""
@@ -188,8 +160,8 @@ class LF(FMFile):
 
             parser = self._extracted_data[key]
 
-            # sync parser types that are not "elapsed"
-            if parser.index == False:
+            # sync parser types that are not the index
+            if parser.is_index == False:
 
                 # if their number of values is not in sync
                 if parser.data_type == "all" and parser.data.no_values < (
@@ -197,41 +169,6 @@ class LF(FMFile):
                 ):
                     # append nan to the list
                     parser.data.update(parser._nan)
-
-    def _final_sync_cols(self):
-        """Makes LineParser values (of type "all") the same length"""
-
-        # find length of longest list
-        max_length = 0
-
-        for key in self._data_to_extract:
-
-            parser = self._extracted_data[key]
-
-            if parser.data_type == "all":
-                length = parser.data.no_values
-                max_length = max(max_length, length)
-
-        # make other lists same size by adding nan, if necessary
-        for key in self._data_to_extract:
-
-            parser = self._extracted_data[key]
-
-            if parser.data_type == "all":
-                length = parser.data.no_values
-
-                # before "elapsed" but stops just before "elapsed"
-                if length == (max_length - 1):
-                    parser.data.update(parser._nan)
-
-                # after "elapsed" but stops just before "elapsed"
-                elif length == (max_length - 2):
-                    parser.data.update(parser._nan)
-                    parser.data.update(parser._nan)
-
-        # TODO: What if you restart after this point?
-        # Will end up with two partial rows of nans
-        # But only if you don't have suppress_final_steps
 
     def _print_no_lines(self):
         """Prints number of lines that have been read so far"""
@@ -241,7 +178,7 @@ class LF(FMFile):
     def _report_progress(self) -> float:
         """Returns last progress percentage"""
 
-        progress = self._extracted_data["progress"].value
+        progress = self._extracted_data["progress"].data.get_value()
 
         if progress is None:
             return 0
@@ -249,7 +186,7 @@ class LF(FMFile):
         return progress
 
     def _no_report_progress(self):
-        raise NotImplementedError 
+        raise NotImplementedError
 
     @abstractmethod
     def _init_params_and_progress(self):
@@ -306,7 +243,7 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
     if suffix == "lf1" and not steady:
         return LF1(filepath)
     elif suffix == "lf1" and steady:
-        return LF1(filepath, steady = True)
+        return LF1(filepath, steady=True)
     elif suffix == "lf2" and steady:
         return LF2(filepath)
     else:

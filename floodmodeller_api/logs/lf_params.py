@@ -42,7 +42,7 @@ lf1_unsteady_data_to_extract = {
     "mass_error": {"class": TimeFloatMultParser, "prefix": "!!Info1 Mass %error =", "data_type": "all", "names": ["ME_simulated", "ME_mass_error"], "before_index": True},
     "progress": {"class": FloatSplitParser, "prefix": "!!Progress1", "data_type": "last", "split": "%", "before_index": True},
     "timestep": {"class": TimeDeltaSParser, "prefix": "!!Info1 Timestep", "data_type": "all", "before_index": True},
-    "elapsed": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Elapsed", "data_type": "all", "index": True},
+    "elapsed": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Elapsed", "data_type": "all", "is_index": True},
     "simulated": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 Simulated", "data_type": "all"},
     "EFT": {"class": TimeParser, "prefix": "!!Info1 EFT:", "data_type": "last", "exclude": ["calculating..."], "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMSParser, "prefix": "!!Info1 ETR:", "exclude": ["..."], "data_type": "last"},
@@ -75,7 +75,7 @@ lf1_steady_data_to_extract = {
     "version": {"class": StringParser, "prefix": "!!Info1 version1d", "data_type": "last"},
     "number_of_1D_river_nodes": {"class": FloatParser, "prefix": "!!output1  Number of 1D river nodes in model:", "data_type": "last"},
     # run
-    "network_iteration": {"class": FloatSplitParser, "prefix": "!!output1  network iteration", "data_type": "all", "split": "c", "index": True},
+    "network_iteration": {"class": FloatSplitParser, "prefix": "!!output1  network iteration", "data_type": "all", "split": "c", "is_index": True},
     "largest_change_in_split_from_last_iteration": {"class": FloatSplitParser, "prefix": "!!output1  was", "data_type": "all", "split": "%"},
     # end
     "successful_solution_in": {"class": FloatSplitParser, "prefix": "!!output1  successful solution in", "data_type": "last", "split": "n"}
@@ -108,7 +108,7 @@ lf2_data_to_extract = {
     "number_of_cells": {"class": FloatParser, "prefix": "!!output2 Number of cells in model:", "data_type": "last"},
     "data_prep_completed_in": {"class": TimeDeltaSParser, "prefix": "!!output2 Data prep completed in", "data_type": "last"},
     # run
-    "simulated": {"class": TimeDeltaHMSParser, "prefix": "!!Info2 Simulated", "data_type": "all", "index": True}, # last entry each iteration
+    "simulated": {"class": TimeDeltaHMSParser, "prefix": "!!Info2 Simulated", "data_type": "all", "is_index": True},
     "progress": {"class": FloatSplitParser, "prefix": "!!Progress2", "data_type": "last", "split": "%"}, 
     "wet_cells": {"class": FloatParser, "prefix": "!!PlotG2 Wet cells", "data_type": "all"},
     "2D_boundary_inflow": {"class": FloatParser, "prefix": "!!PlotG2 2D boundary inflow", "data_type": "all"},

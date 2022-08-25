@@ -576,7 +576,7 @@ class IEF(FMFile):
                 time.sleep(0.1)
 
                 # Find progress
-                self._lf.read(suppress_final_steps=True)
+                self._lf.read(suppress_final_step=True)
                 progress = self._lf.report_progress()
 
                 # Reached i% progress => move onto waiting for (i+1)%
@@ -587,7 +587,7 @@ class IEF(FMFile):
             if process.poll() is not None:
 
                 # Find final progress
-                self._lf.read(suppress_final_steps=True)
+                self._lf.read(suppress_final_step=True)
                 progress = self._lf.report_progress()
 
                 if progress > i:
