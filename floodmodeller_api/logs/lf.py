@@ -22,7 +22,7 @@ import pandas as pd
 
 from .._base import FMFile
 from .lf_params import lf1_unsteady_data_to_extract, lf1_steady_data_to_extract, lf2_data_to_extract
-from .lf_helpers import TimeFloatMult
+from .lf_helpers import TimeFloatMultParser
 
 
 class LF(FMFile):
@@ -32,7 +32,7 @@ class LF(FMFile):
             FMFile.__init__(self)
             self._init_counters()
             self._init_params_and_progress()
-            self._init_line_types()
+            self._init_parsers()
             self._read()
 
         except Exception as e:
@@ -48,15 +48,14 @@ class LF(FMFile):
             self._del_attributes()
             self._del_dataframe()
             self._init_counters()
-            self._init_line_types()
+            self._init_parsers()
 
         # Process file
-        self._update_line_types()
+        self._update_parsers()
 
         if not suppress_final_steps:
             self._final_sync_cols()
             self._set_attributes()
-            self._create_dataframe()
 
     def read(self, force_reread: bool = False, suppress_final_steps: bool = False):
         """Reads LF file, starting from where it stopped reading last time"""
@@ -69,8 +68,8 @@ class LF(FMFile):
         self._no_lines = 0  # number of lines that have been read so far
         self._no_iters = 0  # number of iterations so far
 
-    def _init_line_types(self):
-        """Creates dictionary of LineType object for each entry in data_to_extract"""
+    def _init_parsers(self):
+        """Creates dictionary of LineParser objects for each entry in data_to_extract"""
 
         self._extracted_data = {}
 
@@ -83,8 +82,8 @@ class LF(FMFile):
 
             self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
 
-    def _update_line_types(self):
-        """Updates value of each LineType object based on raw data"""
+    def _update_parsers(self):
+        """Updates value of each LineParser object based on raw data"""
 
         # self._print_no_lines()
 
@@ -92,21 +91,21 @@ class LF(FMFile):
         raw_lines = self._raw_data[self._no_lines :]
         for raw_line in raw_lines:
 
-            # loop through line types
+            # loop through parser types
             for key in self._data_to_extract:
 
-                line_type = self._extracted_data[key]
+                parser = self._extracted_data[key]
 
                 # lines which start with prefix
-                if raw_line.startswith(line_type.prefix):
+                if raw_line.startswith(parser.prefix):
 
                     # store everything after prefix
-                    end_of_line = raw_line.split(line_type.prefix)[1].lstrip()
-                    processed_line = line_type.process_line_wrapper(end_of_line)
-                    line_type.update_value_wrapper(processed_line)
+                    end_of_line = raw_line.split(parser.prefix)[1].lstrip()
+                    processed_line = parser.process_line(end_of_line)
+                    parser.data.update(processed_line)
 
                     # "elapsed" lines mark the end of an iteration
-                    if line_type.index == True:
+                    if parser.index == True:
                         self._sync_cols()
                         self._no_iters += 1
 
@@ -116,27 +115,26 @@ class LF(FMFile):
         # self._print_no_lines()
 
     def _set_attributes(self):
-        """Makes each LineType value a direct attribute of LF"""
+        """Makes each LineParser value a direct attribute of LF"""
 
         # TODO: for values that don't change do a dictionary called info
 
         for key in self._data_to_extract:
-            setattr(self, key, self._extracted_data[key].value)
+            setattr(self, key, self._extracted_data[key].data.get_value())
 
     def _del_attributes(self):
-        """Deletes each LineType value direct attribute of LF"""
+        """Deletes each LineParser value direct attribute of LF"""
 
         for key in self._data_to_extract:
             delattr(self, key)
 
-    def _create_dataframe(self):
-        """Collects LineType values (of type "many") into pandas dataframe"""
+    def to_dataframe(self):
+        """Collects LineParser values (of type "all") into pandas dataframe"""
 
-        # TODO: should be a LineType class method
-        # that creates dataframe for each LineType
-        # then this method combines them all together
-        # Also:
-        # - Replace by to_dataframe (returning df like ZZN, with filters)
+        # TODO:
+        # - Parser method creates series
+        # - This method combines them together
+        # - Filters like in ZZN.to_dataframe
         # - Indexed by simulated (and remove nan rows)
         # - Remove duplicates at start and end
         # - LF2 is not in sync
@@ -144,20 +142,20 @@ class LF(FMFile):
         # (1) create dictionary
         run = {}
 
-        # loop through line types
+        # loop through parser types
         for key in self._data_to_extract:
 
             subdictionary = self._data_to_extract[key]
-            type = subdictionary["type"]
+            type = subdictionary["data_type"]
 
-            # only want "many" line types in data frame
-            if type == "many":
+            # only want "all" parser types in data frame
+            if type == "all":
 
-                line_type = subdictionary["class"]
-                value = self._extracted_data[key].value
+                parser = subdictionary["class"]
+                value = self._extracted_data[key].data.get_value()
 
-                # line types with multiple entries per line
-                if line_type == TimeFloatMult:
+                # parser types with multiple entries per line
+                if parser == TimeFloatMultParser:
 
                     names = subdictionary["names"]
                     no_names = len(names)
@@ -168,12 +166,14 @@ class LF(FMFile):
                         new_value = [item[i] for item in value]
                         run[new_key] = new_value
 
-                # otherwise, one entry per line type
+                # otherwise, one entry per parser type
                 else:
                     run[key] = value
 
         # (2) turn dictionary into dataframe
-        self.df = pd.DataFrame(run)
+        df = pd.DataFrame(run)
+
+        return df
 
     def _del_dataframe(self):
         """Deletes df attribute"""
@@ -181,53 +181,53 @@ class LF(FMFile):
         delattr(self, "df")
 
     def _sync_cols(self):
-        """Ensures LineType values (of type "many") have an entry each iteration"""
+        """Ensures LineParser values (of type "all") have an entry each iteration"""
 
-        # loop through line types
+        # loop through parser types
         for key in self._data_to_extract:
 
-            line_type = self._extracted_data[key]
+            parser = self._extracted_data[key]
 
-            # sync line types that are not "elapsed"
-            if line_type.index == False:
+            # sync parser types that are not "elapsed"
+            if parser.index == False:
 
                 # if their number of values is not in sync
-                if line_type.type == "many" and line_type.no_values < (
-                    self._no_iters + int(line_type.before_index)
+                if parser.data_type == "all" and parser.data.no_values < (
+                    self._no_iters + int(parser.before_index)
                 ):
                     # append nan to the list
-                    line_type.update_value_wrapper(line_type._nan)
+                    parser.data.update(parser._nan)
 
     def _final_sync_cols(self):
-        """Makes LineType values (of type "many") the same length"""
+        """Makes LineParser values (of type "all") the same length"""
 
         # find length of longest list
         max_length = 0
 
         for key in self._data_to_extract:
 
-            line_type = self._extracted_data[key]
+            parser = self._extracted_data[key]
 
-            if line_type.type == "many":
-                length = len(line_type.value)
+            if parser.data_type == "all":
+                length = parser.data.no_values
                 max_length = max(max_length, length)
 
         # make other lists same size by adding nan, if necessary
         for key in self._data_to_extract:
 
-            line_type = self._extracted_data[key]
+            parser = self._extracted_data[key]
 
-            if line_type.type == "many":
-                length = len(line_type.value)
+            if parser.data_type == "all":
+                length = parser.data.no_values
 
                 # before "elapsed" but stops just before "elapsed"
                 if length == (max_length - 1):
-                    line_type.update_value_wrapper(line_type._nan)
+                    parser.data.update(parser._nan)
 
                 # after "elapsed" but stops just before "elapsed"
                 elif length == (max_length - 2):
-                    line_type.update_value_wrapper(line_type._nan)
-                    line_type.update_value_wrapper(line_type._nan)
+                    parser.data.update(parser._nan)
+                    parser.data.update(parser._nan)
 
         # TODO: What if you restart after this point?
         # Will end up with two partial rows of nans

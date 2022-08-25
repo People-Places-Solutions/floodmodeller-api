@@ -19,19 +19,70 @@ import datetime as dt
 import pandas as pd
 
 
-class LineType(ABC):
+class LineData(ABC):
+    def __init__(self):
+        self.no_values = 0
+
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
+    def get_value(self):
+        pass
+
+
+class LastData(LineData):
+    def __init__(self):
+        super().__init__()
+        self._value = None  # single value
+
+    def update(self, data):
+        self._value = data
+        self.no_values = 1
+
+    def get_value(self):
+        return self._value
+
+
+class AllData(LineData):
+    def __init__(self):
+        super().__init__()
+        self._value = []  # list
+
+    def update(self, data):
+        self._value.append(data)
+        self.no_values += 1
+
+    def _to_dataframe(self):
+        # TODO: make into dataframe!!
+        return self._value
+
+    def get_value(self):
+        return self._to_dataframe()
+
+
+def data_factory(data_type):
+    if data_type == "last":
+        return LastData()
+    elif data_type == "all":
+        return AllData()
+    else:
+        raise ValueError(f'Unexpected simulation type "{data_type}"')
+
+
+class LineParser(ABC):
     """Abstract base class for processing and storing different types of line"""
 
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
         self.prefix = prefix
-        self.type = type
         self.index = index
         self.before_index = before_index
 
@@ -39,26 +90,10 @@ class LineType(ABC):
 
         self.no_values = 0
 
-        if type == "many":
-            self.value = []  # list
-            self.update_value_wrapper = self._append_to_value
+        self.data_type = data_type
+        self.data = data_factory(data_type)
 
-        elif type == "one":
-            self.value = None  # single value
-            self.update_value_wrapper = self._replace_value
-
-        else:
-            raise ValueError(f'Unexpected simulation type "{type}"')
-
-    def _append_to_value(self, processed_line: str):
-        self.value.append(processed_line)
-        self.no_values += 1
-
-    def _replace_value(self, processed_line: str):
-        self.value = processed_line
-        self.no_values = 1
-
-    def process_line_wrapper(self, raw_line: str) -> str:
+    def process_line(self, raw_line: str) -> str:
         """self._process_line with exception handling of expected nan values"""
 
         try:
@@ -78,17 +113,17 @@ class LineType(ABC):
         pass
 
 
-class DateTime(LineType):
+class DateTimeParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         code: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._code = code
         self._nan = pd.NaT
 
@@ -100,19 +135,17 @@ class DateTime(LineType):
         return processed
 
 
-class Time(DateTime):
+class TimeParser(DateTimeParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         code: str,
         exclude: bool = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(
-            prefix, type, code, exclude, index, before_index
-        )
+        super().__init__(prefix, data_type, code, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -123,16 +156,16 @@ class Time(DateTime):
         return processed.time()
 
 
-class TimeDeltaHMS(LineType):
+class TimeDeltaHMSParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -144,16 +177,16 @@ class TimeDeltaHMS(LineType):
         return processed
 
 
-class TimeDeltaH(LineType):
+class TimeDeltaHParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -165,16 +198,16 @@ class TimeDeltaH(LineType):
         return processed
 
 
-class TimeDeltaS(LineType):
+class TimeDeltaSParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -186,16 +219,16 @@ class TimeDeltaS(LineType):
         return processed
 
 
-class Float(LineType):
+class FloatParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._nan = float("nan")
 
     def _process_line(self, raw: str) -> str:
@@ -206,37 +239,17 @@ class Float(LineType):
         return processed
 
 
-class Int(LineType):
+class FloatSplitParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
-        exclude: str = None,
-        index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, type, exclude, index, before_index)
-        self._nan = -99999
-
-    def _process_line(self, raw: str):
-        """Converts string to integer"""
-
-        processed = int(raw)
-
-        return processed
-
-
-class FloatSplit(LineType):
-    def __init__(
-        self,
-        prefix: str,
-        type: str,
+        data_type: str,
         split: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._split = split
         self._nan = float("nan")
 
@@ -248,16 +261,16 @@ class FloatSplit(LineType):
         return processed
 
 
-class String(LineType):
+class StringParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -268,17 +281,17 @@ class String(LineType):
         return processed
 
 
-class StringSplit(LineType):
+class StringSplitParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         split: str,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._split = split
         self._nan = ""
 
@@ -290,17 +303,17 @@ class StringSplit(LineType):
         return processed
 
 
-class TimeFloatMult(LineType):
+class TimeFloatMultParser(LineParser):
     def __init__(
         self,
         prefix: str,
-        type: str,
+        data_type: str,
         names: list,
         exclude: str = None,
         index: bool = False,
         before_index: bool = False,
     ):
-        super().__init__(prefix, type, exclude, index, before_index)
+        super().__init__(prefix, data_type, exclude, index, before_index)
         self._names = names
 
         self._nan = []
