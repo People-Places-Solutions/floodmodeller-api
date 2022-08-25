@@ -508,7 +508,7 @@ class IEF(FMFile):
 
         # ensure progress bar is supported for that type
         if not (suffix == "lf1" and steady == False):
-            self._no_log_file(f'only 1D unsteady runs are supported')
+            self._no_log_file(f"only 1D unsteady runs are supported")
             self._lf = None
             return
 
@@ -565,26 +565,36 @@ class IEF(FMFile):
         """Updates progress bar based on log file"""
 
         # only if there is a log file
-        if self._lf:
+        if self._lf is None:
+            return
 
-            # tqdm progress bar
-            for i in trange(100):
+        # tqdm progress bar
+        for i in trange(100):
 
-                # Process still running
-                while process.poll() is None:
+            # Process still running
+            while process.poll() is None:
 
-                    time.sleep(0.1)
+                time.sleep(0.1)
 
-                    self._lf.read(suppress_final_steps=True)
-                    progress = self._lf.report_progress()
+                # Find progress
+                self._lf.read(suppress_final_steps=True)
+                progress = self._lf.report_progress()
 
-                    # Reached i% progress => move onto waiting for (i+1)%
-                    if progress > i:
-                        break
-
-                # Stop progress bar if process has stopped
-                if process.poll() is not None:
+                # Reached i% progress => move onto waiting for (i+1)%
+                if progress > i:
                     break
+
+            # Process stopped
+            if process.poll() is not None:
+
+                # Find final progress
+                self._lf.read(suppress_final_steps=True)
+                progress = self._lf.report_progress()
+
+                if progress > i:
+                    pass  # stopped because it completed
+                else:
+                    break  # stopped for another reason
 
     def _summarise_exy(self):
         """Reads and summarises associated exy file if available"""

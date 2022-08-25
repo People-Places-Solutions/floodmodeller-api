@@ -139,6 +139,7 @@ class LF(FMFile):
         # - Replace by to_dataframe (returning df like ZZN, with filters)
         # - Indexed by simulated (and remove nan rows)
         # - Remove duplicates at start and end
+        # - rename start/run/end
 
         # (1) create dictionary
         run = {}
