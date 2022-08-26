@@ -120,7 +120,15 @@ def state_factory(steady: bool, extracted_data: Data) -> State:
 
 
 class Parser(ABC):
-    """Abstract base class for processing and storing different types of line"""
+    """Abstract base class for processing and storing different types of line
+
+    Args:
+        prefix
+        data_type
+        exclude
+        is_index
+        before_index
+    """
 
     def __init__(
         self,
@@ -162,17 +170,11 @@ class Parser(ABC):
 
 
 class DateTimeParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        code: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
-        self._code = code
+    """Extra argument from superclass    code: str"""
+
+    def __init__(self, *args, **kwargs):
+        self._code = kwargs.pop("code")
+        super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -184,16 +186,8 @@ class DateTimeParser(Parser):
 
 
 class TimeParser(DateTimeParser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        code: str,
-        exclude: bool = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, code, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -205,15 +199,8 @@ class TimeParser(DateTimeParser):
 
 
 class TimeDeltaHMSParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -226,15 +213,8 @@ class TimeDeltaHMSParser(Parser):
 
 
 class TimeDeltaHParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -247,15 +227,8 @@ class TimeDeltaHParser(Parser):
 
 
 class TimeDeltaSParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
     def _process_line(self, raw: str) -> str:
@@ -268,15 +241,8 @@ class TimeDeltaSParser(Parser):
 
 
 class FloatParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = float("nan")
 
     def _process_line(self, raw: str) -> str:
@@ -288,17 +254,11 @@ class FloatParser(Parser):
 
 
 class FloatSplitParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        split: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
-        self._split = split
+    """Extra argument from superclass    split: list"""
+
+    def __init__(self, *args, **kwargs):
+        self._split = kwargs.pop("split")
+        super().__init__(*args, **kwargs)
         self._nan = float("nan")
 
     def _process_line(self, raw: str):
@@ -310,15 +270,8 @@ class FloatSplitParser(Parser):
 
 
 class StringParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -330,17 +283,11 @@ class StringParser(Parser):
 
 
 class StringSplitParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        split: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
-        self._split = split
+    """Extra argument from superclass    split: str"""
+
+    def __init__(self, *args, **kwargs):
+        self._split = kwargs.pop("split")
+        super().__init__(*args, **kwargs)
         self._nan = ""
 
     def _process_line(self, raw: str):
@@ -352,23 +299,17 @@ class StringSplitParser(Parser):
 
 
 class TimeFloatMultParser(Parser):
-    def __init__(
-        self,
-        prefix: str,
-        data_type: str,
-        names: list,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
-    ):
-        super().__init__(prefix, data_type, exclude, is_index, before_index)
-        self._names = names
+    """Extra argument from superclass    names: list"""
+
+    def __init__(self, *args, **kwargs):
+        self._names = kwargs.pop("names")
+        super().__init__(*args, **kwargs)
 
         self._nan = []
-        for name in names:
+        for name in self._names:
             self._nan.append(float("nan"))
 
-        self.data = data_factory(data_type, names)  # overwrite
+        self.data = data_factory(self.data_type, self._names)  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""
