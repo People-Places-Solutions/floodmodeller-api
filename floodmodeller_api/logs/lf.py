@@ -241,7 +241,7 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
     if suffix == "lf1":
         return LF1(filepath, steady)
     elif suffix == "lf2":
-        return LF2(filepath, steady)
+        return LF2(filepath)
     else:
         flow_type = "steady" if steady else "unsteady"
         raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
