@@ -30,9 +30,10 @@ from .lf_helpers import state_factory
 
 
 class LF(FMFile):
-    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
+    def __init__(self, lf_filepath: Optional[Union[str, Path]], data_to_extract: dict):
         try:
-            self._init_state(steady)
+            self._data_to_extract = data_to_extract
+            self.report_progress = self._state.report_progress
 
             self._filepath = lf_filepath
             FMFile.__init__(self)
@@ -186,11 +187,6 @@ class LF(FMFile):
 
         print("Last line read: " + str(self._no_lines))
 
-    @abstractmethod
-    def _init_state(self):
-        pass
-
-
 class LF1(LF):
     """Reads and processes Flood Modeller 1D log file '.lf1'
 
@@ -204,12 +200,15 @@ class LF1(LF):
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
-    def _init_state(self, steady):
+    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
+
         self._state = state_factory(
-            steady, lf1_steady_data_to_extract, lf1_unsteady_data_to_extract
+            steady, lf1_unsteady_data_to_extract, lf1_steady_data_to_extract
         )
-        self._data_to_extract = self._state.data_to_extract
-        self.report_progress = self._state.report_progress
+
+        super().__init__(lf_filepath, self._state.data_to_extract)
+
+
 
 
 class LF2(LF):
@@ -225,10 +224,13 @@ class LF2(LF):
     _filetype: str = "LF2"
     _suffix: str = ".lf2"
 
-    def _init_state(self, steady):
-        self._state = state_factory(steady, lf2_data_to_extract, lf2_data_to_extract)
-        self._data_to_extract = self._state.data_to_extract
-        self.report_progress = self._state.report_progress
+    def __init__(self, lf_filepath: Optional[Union[str, Path]]):
+
+        self._state = state_factory(
+            False, lf2_data_to_extract
+        )
+
+        super().__init__(lf_filepath, self._state.data_to_extract)
 
 
 def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:

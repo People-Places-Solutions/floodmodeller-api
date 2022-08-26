@@ -55,8 +55,8 @@ class SteadyState(State):
 
 def state_factory(
     steady: bool,
-    steady_data_to_extract: dict,
     unsteady_data_to_extract: dict,
+    steady_data_to_extract: dict = None
 ) -> State:
     if steady == True:
         return SteadyState(steady_data_to_extract)
