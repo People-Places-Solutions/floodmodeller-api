@@ -16,7 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from pathlib import Path
 from typing import Optional, Union
-from abc import abstractmethod
 
 import pandas as pd
 
@@ -30,17 +29,20 @@ from .lf_helpers import state_factory
 
 
 class LF(FMFile):
-    def __init__(self, lf_filepath: Optional[Union[str, Path]], data_to_extract: dict):
+    def __init__(
+        self,
+        lf_filepath: Optional[Union[str, Path]],
+        data_to_extract: dict,
+        steady: bool = False,
+    ):
         try:
-            self._data_to_extract = data_to_extract
-            self.report_progress = self._state.report_progress
-
             self._filepath = lf_filepath
             FMFile.__init__(self)
+
+            self._data_to_extract = data_to_extract
             self._init_counters()
             self._init_parsers()
-
-            self._state._init_progress(self._extracted_data)
+            self._state = state_factory(steady, self._extracted_data)
 
             self._read()
 
@@ -147,7 +149,7 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self):
+    def to_dataframe(self) -> pd.DataFrame:
         """Collects Parser values (of type "all") into pandas dataframe"""
 
         # TODO: make more like ZZN.to_dataframe
@@ -159,7 +161,6 @@ class LF(FMFile):
         }
 
         df = pd.concat(data_type_all, axis=1)
-
         df = df.sort_index()
 
         return df
@@ -187,6 +188,12 @@ class LF(FMFile):
 
         print("Last line read: " + str(self._no_lines))
 
+    def report_progress(self) -> float:
+        """Returns last progress percentage for unsteady simulations"""
+
+        return self._state.report_progress()
+
+
 class LF1(LF):
     """Reads and processes Flood Modeller 1D log file '.lf1'
 
@@ -202,13 +209,12 @@ class LF1(LF):
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
 
-        self._state = state_factory(
-            steady, lf1_unsteady_data_to_extract, lf1_steady_data_to_extract
-        )
+        if steady == False:
+            data_to_extract = lf1_unsteady_data_to_extract
+        else:
+            data_to_extract = lf1_steady_data_to_extract
 
-        super().__init__(lf_filepath, self._state.data_to_extract)
-
-
+        super().__init__(lf_filepath, data_to_extract, steady)
 
 
 class LF2(LF):
@@ -226,11 +232,9 @@ class LF2(LF):
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]]):
 
-        self._state = state_factory(
-            False, lf2_data_to_extract
-        )
+        data_to_extract = lf2_data_to_extract
 
-        super().__init__(lf_filepath, self._state.data_to_extract)
+        super().__init__(lf_filepath, data_to_extract, steady = False)
 
 
 def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:

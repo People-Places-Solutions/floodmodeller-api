@@ -19,51 +19,6 @@ import datetime as dt
 import pandas as pd
 
 
-class State(ABC):
-    def __init__(self, data_to_extract: dict):
-        self.data_to_extract = data_to_extract
-
-    def _init_progress(self, extracted_data):
-        pass
-
-    @abstractmethod
-    def report_progress(self):
-        pass
-
-
-class UnsteadyState(State):
-
-    def _init_progress(self, extracted_data):
-        self._progress_data = extracted_data["progress"].data
-
-    def report_progress(self) -> float:
-        """Returns last progress percentage"""
-
-        progress = self._progress_data.get_value()
-
-        if progress is None:
-            return 0
-
-        return progress
-
-
-class SteadyState(State):
-
-    def report_progress(self):
-        raise NotImplementedError("No progress reporting for steady simulations")
-
-
-def state_factory(
-    steady: bool,
-    unsteady_data_to_extract: dict,
-    steady_data_to_extract: dict = None
-) -> State:
-    if steady == True:
-        return SteadyState(steady_data_to_extract)
-    else:
-        return UnsteadyState(unsteady_data_to_extract)
-
-
 class Data(ABC):
     def __init__(self, names):
         self.no_values = 0
@@ -126,6 +81,42 @@ def data_factory(data_type, names=None):
         return AllData(names)
     else:
         raise ValueError(f'Unexpected data "{data_type}"')
+
+
+class State(ABC):
+    def __init__(self, extracted_data):
+        pass
+
+    @abstractmethod
+    def report_progress(self):
+        pass
+
+
+class UnsteadyState(State):
+    def __init__(self, extracted_data):
+        self._progress_data = extracted_data["progress"].data
+
+    def report_progress(self) -> float:
+        """Returns last progress percentage"""
+
+        progress = self._progress_data.get_value()
+
+        if progress is None:
+            return 0
+
+        return progress
+
+
+class SteadyState(State):
+    def report_progress(self):
+        raise NotImplementedError("No progress reporting for steady simulations")
+
+
+def state_factory(steady: bool, extracted_data: Data) -> State:
+    if steady == True:
+        return SteadyState(extracted_data)
+    else:
+        return UnsteadyState(extracted_data)
 
 
 class Parser(ABC):
