@@ -26,16 +26,21 @@ from .lf_params import (
     lf1_steady_data_to_extract,
     lf2_data_to_extract,
 )
+from .lf_helpers import state_factory
 
 
 class LF(FMFile):
-    def __init__(self, lf_filepath: Optional[Union[str, Path]]):
+    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
         try:
+            self._init_state(steady)
+
             self._filepath = lf_filepath
             FMFile.__init__(self)
             self._init_counters()
-            self._init_params_and_progress()
             self._init_parsers()
+
+            self._state._init_progress(self._extracted_data)
+
             self._read()
 
         except Exception as e:
@@ -154,6 +159,8 @@ class LF(FMFile):
 
         df = pd.concat(data_type_all, axis=1)
 
+        df = df.sort_index()
+
         return df
 
     def _sync_cols(self):
@@ -179,21 +186,8 @@ class LF(FMFile):
 
         print("Last line read: " + str(self._no_lines))
 
-    def _report_progress(self) -> float:
-        """Returns last progress percentage"""
-
-        progress = self._extracted_data["progress"].data.get_value()
-
-        if progress is None:
-            return 0
-
-        return progress
-
-    def _no_report_progress(self):
-        raise NotImplementedError
-
     @abstractmethod
-    def _init_params_and_progress(self):
+    def _init_state(self):
         pass
 
 
@@ -210,19 +204,12 @@ class LF1(LF):
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
-    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
-        self._steady = steady
-        super().__init__(lf_filepath)
-
-    def _init_params_and_progress(self):
-        """Uses dictionary from lf1_params.py to define data to extract"""
-        # TODO: make steady/unsteady a class
-        if self._steady:
-            self._data_to_extract = lf1_steady_data_to_extract
-            self.report_progress = self._no_report_progress
-        else:
-            self._data_to_extract = lf1_unsteady_data_to_extract
-            self.report_progress = self._report_progress
+    def _init_state(self, steady):
+        self._state = state_factory(
+            steady, lf1_steady_data_to_extract, lf1_unsteady_data_to_extract
+        )
+        self._data_to_extract = self._state.data_to_extract
+        self.report_progress = self._state.report_progress
 
 
 class LF2(LF):
@@ -238,19 +225,17 @@ class LF2(LF):
     _filetype: str = "LF2"
     _suffix: str = ".lf2"
 
-    def _init_params_and_progress(self):
-        """Uses dictionary from lf2_params.py to define data to extract"""
-        self._data_to_extract = lf2_data_to_extract
-        self.report_progress = self._report_progress
+    def _init_state(self, steady):
+        self._state = state_factory(steady, lf2_data_to_extract, lf2_data_to_extract)
+        self._data_to_extract = self._state.data_to_extract
+        self.report_progress = self._state.report_progress
 
 
 def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
-    if suffix == "lf1" and not steady:
-        return LF1(filepath)
-    elif suffix == "lf1" and steady:
-        return LF1(filepath, steady=True)
-    elif suffix == "lf2" and steady:
-        return LF2(filepath)
+    if suffix == "lf1":
+        return LF1(filepath, steady)
+    elif suffix == "lf2":
+        return LF2(filepath, steady)
     else:
         flow_type = "steady" if steady else "unsteady"
         raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")

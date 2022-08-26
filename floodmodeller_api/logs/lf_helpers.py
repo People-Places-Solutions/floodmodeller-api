@@ -19,6 +19,51 @@ import datetime as dt
 import pandas as pd
 
 
+class State(ABC):
+    def __init__(self, data_to_extract: dict):
+        self.data_to_extract = data_to_extract
+
+    def _init_progress(self, extracted_data):
+        pass
+
+    @abstractmethod
+    def report_progress(self):
+        pass
+
+
+class UnsteadyState(State):
+
+    def _init_progress(self, extracted_data):
+        self._progress_data = extracted_data["progress"].data
+
+    def report_progress(self) -> float:
+        """Returns last progress percentage"""
+
+        progress = self._progress_data.get_value()
+
+        if progress is None:
+            return 0
+
+        return progress
+
+
+class SteadyState(State):
+
+    def report_progress(self):
+        raise NotImplementedError("No progress reporting for steady simulations")
+
+
+def state_factory(
+    steady: bool,
+    steady_data_to_extract: dict,
+    unsteady_data_to_extract: dict,
+) -> State:
+    if steady == True:
+        return SteadyState(steady_data_to_extract)
+    else:
+        return UnsteadyState(unsteady_data_to_extract)
+
+
 class Data(ABC):
     def __init__(self, names):
         self.no_values = 0
@@ -56,25 +101,31 @@ class AllData(Data):
         self.no_values += 1
 
     def get_value(self) -> pd.DataFrame:
-        #TODO:
-        # - simulated as index
-        # - remove duplicated simulated columns
+        # TODO:
+        # - clean up multilevel index
         # - remove duplicated rows at start and end
-        # - remove nan rows
+        # - simulated as index
 
         df = pd.DataFrame(self._value)
-        if self._names is not None:
-            df.set_axis(self._names, axis = 1, inplace = True)
+
+        if self._names is not None and not df.empty:
+            df.set_axis(self._names, axis=1, inplace=True)
+
+        if "simulated_duplicate" in df.columns:
+            df = df.drop("simulated_duplicate", axis=1)
+
+        df = df.dropna()
+
         return df
 
 
-def data_factory(data_type, names = None):
+def data_factory(data_type, names=None):
     if data_type == "last":
         return LastData(names)
     elif data_type == "all":
         return AllData(names)
     else:
-        raise ValueError(f'Unexpected simulation type "{data_type}"')
+        raise ValueError(f'Unexpected data "{data_type}"')
 
 
 class Parser(ABC):
