@@ -20,9 +20,10 @@ import pandas as pd
 
 
 class Data(ABC):
-    def __init__(self, names):
+    def __init__(self, header, subheaders):
+        self.header = header
         self.no_values = 0
-        self._names = names
+        self._subheaders = subheaders
 
     @abstractmethod
     def update(self):
@@ -34,8 +35,8 @@ class Data(ABC):
 
 
 class LastData(Data):
-    def __init__(self, names):
-        super().__init__(names)
+    def __init__(self, header, subheaders):
+        super().__init__(header, subheaders)
         self._value = None  # single value
 
     def update(self, data):
@@ -47,8 +48,8 @@ class LastData(Data):
 
 
 class AllData(Data):
-    def __init__(self, names):
-        super().__init__(names)
+    def __init__(self, header, subheaders):
+        super().__init__(header, subheaders)
         self._value = []  # list
 
     def update(self, data):
@@ -57,34 +58,33 @@ class AllData(Data):
 
     def get_value(self) -> pd.DataFrame:
         # TODO:
-        # - remove multiindex
         # - remove duplicated rows at start and end
         # - "simulated" as index of df
 
         df = pd.DataFrame(self._value)
 
-        if self._names is not None and not df.empty:
-            df.set_axis(self._names, axis=1, inplace=True)
+        if self._subheaders is not None and not df.empty:
+            df.set_axis(self._subheaders, axis=1, inplace=True)
 
             column_to_remove = "simulated_duplicate"
             if column_to_remove in df.columns:
 
                 df.drop(column_to_remove, axis=1, inplace=True)
-                self._names.remove(column_to_remove)
+                self._subheaders.remove(column_to_remove)
 
-                if len(self._names) == 1:
-                    df.rename(columns={df.columns[0]: 0}, inplace=True)
+        if self._subheaders is None:
+            df.rename(columns={df.columns[0]: self.header}, inplace=True)
 
         df.dropna(inplace=True)
 
         return df
 
 
-def data_factory(data_type, names=None):
+def data_factory(header, data_type, subheaders=None):
     if data_type == "last":
-        return LastData(names)
+        return LastData(header, subheaders)
     elif data_type == "all":
-        return AllData(names)
+        return AllData(header, subheaders)
     else:
         raise ValueError(f'Unexpected data "{data_type}"')
 
@@ -138,12 +138,15 @@ class Parser(ABC):
 
     def __init__(
         self,
+        name: str,
         prefix: str,
         data_type: str,
         exclude: str = None,
         is_index: bool = False,
         before_index: bool = False,
     ):
+        self.name = name
+        
         self.prefix = prefix
         self.is_index = is_index
         self.before_index = before_index
@@ -153,7 +156,7 @@ class Parser(ABC):
         self.no_values = 0
 
         self.data_type = data_type
-        self.data = data_factory(data_type)
+        self.data = data_factory(name, data_type)
 
     def process_line(self, raw_line: str):
         """self._process_line with exception handling of expected nan values"""
@@ -308,14 +311,14 @@ class TimeFloatMultParser(Parser):
     """Extra argument from superclass    names: list"""
 
     def __init__(self, *args, **kwargs):
-        self._names = kwargs.pop("names")
+        self._subheaders = kwargs.pop("subheaders")
         super().__init__(*args, **kwargs)
 
         self._nan = []
-        for name in self._names:
+        for header in self._subheaders:
             self._nan.append(float("nan"))
 
-        self.data = data_factory(self.data_type, self._names)  # overwrite
+        self.data = data_factory(self.name, self.data_type, self._subheaders)  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""

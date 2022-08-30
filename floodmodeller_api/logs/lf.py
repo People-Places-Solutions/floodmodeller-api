@@ -85,11 +85,11 @@ class LF(FMFile):
         for key in self._data_to_extract:
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
-            subdictionary_no_class = {
+            subdictionary_kwargs = {
                 k: v for k, v in subdictionary.items() if k != "class"
             }
-
-            self._extracted_data[key] = subdictionary_class(**subdictionary_no_class)
+            subdictionary_kwargs["name"] = key
+            self._extracted_data[key] = subdictionary_class(**subdictionary_kwargs)
 
     def _update_data(self):
         """Updates value of each Parser object based on raw data"""
@@ -161,7 +161,9 @@ class LF(FMFile):
         }
 
         df = pd.concat(data_type_all, axis=1)
-        df = df.sort_index()
+        df.columns = df.columns.droplevel()
+
+        df.sort_index(inplace=True)
 
         return df
 
