@@ -487,8 +487,6 @@ class IEF(FMFile):
             suffix = "lf1"
             steady = True
 
-        # TODO: if 2D, use lf2
-
         else:
             raise ValueError(f'Unexpected run type "{self.RunType}"')
 

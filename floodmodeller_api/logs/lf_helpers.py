@@ -57,19 +57,25 @@ class AllData(Data):
 
     def get_value(self) -> pd.DataFrame:
         # TODO:
-        # - clean up multilevel index
+        # - remove multiindex
         # - remove duplicated rows at start and end
-        # - simulated as index
+        # - "simulated" as index of df
 
         df = pd.DataFrame(self._value)
 
         if self._names is not None and not df.empty:
             df.set_axis(self._names, axis=1, inplace=True)
 
-        if "simulated_duplicate" in df.columns:
-            df = df.drop("simulated_duplicate", axis=1)
+            column_to_remove = "simulated_duplicate"
+            if column_to_remove in df.columns:
 
-        df = df.dropna()
+                df.drop(column_to_remove, axis=1, inplace=True)
+                self._names.remove(column_to_remove)
+
+                if len(self._names) == 1:
+                    df.rename(columns={df.columns[0]: 0}, inplace=True)
+
+        df.dropna(inplace=True)
 
         return df
 

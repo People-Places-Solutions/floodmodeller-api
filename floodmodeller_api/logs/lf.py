@@ -234,7 +234,7 @@ class LF2(LF):
 
         data_to_extract = lf2_data_to_extract
 
-        super().__init__(lf_filepath, data_to_extract, steady = False)
+        super().__init__(lf_filepath, data_to_extract, steady=False)
 
 
 def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
