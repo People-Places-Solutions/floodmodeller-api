@@ -464,7 +464,12 @@ class IEF(FMFile):
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
-    def get_lf(self):
+    def get_lf1(self):
+        """If log files for the simulation exist, this function returns them as a LF1 class object
+
+        Returns:
+            floodmodeller_api.LF1 class object
+        """
 
         suffix, steady = self._determine_lf_type()
 

@@ -68,6 +68,8 @@ Reference
 
    .. automethod:: get_results
 
+   .. automethod:: get_lf
+
    .. automethod:: diff
 
 Examples
@@ -147,4 +149,28 @@ The following example shows how the `IEF` class could be used to set a simulatio
 
     # Get dataframe from results
     my_results = zzn.to_dataframe()
+
+**Example 4 - Simulate an IEF and read the results directly**
+
+The following example shows how the `IEF` class could be used to set a simulation going and then access the
+log file directly once it has completed.
+
+.. code:: python
+
+    # Import modules
+    from floodmodeller_api import IEF
+
+    ief_file = r'path\to\simualtion.ief'
+
+    # Instantiate IEF Class object 
+    ief = IEF(ief_file)
+
+    # Simulate IEF (the default is for python to wait until simulation is complete)
+    ief.simulate()
+
+    # Access results directly into LF1 class object
+    lf1 = ief.get_lf1()
+
+    # Get dataframe from log file
+    my_log = lf1.to_dataframe()
 
