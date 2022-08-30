@@ -122,15 +122,33 @@ class LF(FMFile):
 
         # self._print_no_lines()
 
+    def _get_index(self):
+        """Finds key and dataframe for variable that is the index"""
+
+        for key in self._data_to_extract:
+
+            try:
+                self._data_to_extract[key]["is_index"]
+                index_key = key
+                index_df = self._extracted_data[key].data.get_value()
+                return index_key, index_df
+
+            except KeyError:
+                pass
+        
+        raise Exception("No index variable found")
+
     def _set_attributes(self):
         """Makes each Parser value an attribute; "last" values in dictionary"""
+
+        index_key, index_df = self._get_index()
 
         info = {}
 
         for key in self._data_to_extract:
 
             data_type = self._data_to_extract[key]["data_type"]
-            value = self._extracted_data[key].data.get_value()
+            value = self._extracted_data[key].data.get_value(index_key, index_df)
 
             if data_type == "all":
                 setattr(self, key, value)

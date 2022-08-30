@@ -63,7 +63,7 @@ The `LF1` class can also be used to directly access the fixed data stored within
 
     print(lf1.info)
 
-This would print the following dictionary:
+This prints the following dictionary:
 
 .. code:: python
     {'version': '5.0.0.7752', 'qtol': 0.01, 'htol': 0.01, 'start_time': datetime.timedelta(0), 'end_time': datetime.timedelta(days=1), 'ran_at': datetime.datetime(2021, 9, 8, 12, 18, 21), 'max_itr': 11.0, 'min_itr': 3.0, 'progress': 100.0, 'EFT': datetime.time(12, 18, 24), 'ETR': datetime.timedelta(0), 'simulation_time_elapsed': datetime.timedelta(seconds=3), 'number_of_unconverged_timesteps': 0.0, 'proporion_of_simulation_unconverged': 0.0, 'mass_balance_calculated_every': datetime.timedelta(seconds=300), 'initial_volume': 39596.8, 'final_volume': 53229.4, 'total_lat_link_outflow': 0.0, 'max_system_volume': 270549.0, 'max_volume_increase': 230952.0, 'max_boundary_inflow': 129.956, 'net_volume_increase': 13632.6, 'net_inflow_volume': 13709.5, 'volume_discrepancy': 76.8984, 'mass_balance_error': -0.03, 'mass_balance_error_2': -0.0}

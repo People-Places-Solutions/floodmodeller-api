@@ -20,7 +20,7 @@ import pandas as pd
 
 
 class Data(ABC):
-    def __init__(self, header, subheaders):
+    def __init__(self, header: str, subheaders: list):
         self.header = header
         self.no_values = 0
         self._subheaders = subheaders
@@ -35,7 +35,7 @@ class Data(ABC):
 
 
 class LastData(Data):
-    def __init__(self, header, subheaders):
+    def __init__(self, header: str, subheaders: list):
         super().__init__(header, subheaders)
         self._value = None  # single value
 
@@ -43,44 +43,53 @@ class LastData(Data):
         self._value = data
         self.no_values = 1
 
-    def get_value(self):
+    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None):
         return self._value
 
 
 class AllData(Data):
-    def __init__(self, header, subheaders):
+    def __init__(self, header: str, subheaders: list):
         super().__init__(header, subheaders)
         self._value = []  # list
+        self._column_to_remove = "simulated_duplicate"
 
     def update(self, data):
         self._value.append(data)
         self.no_values += 1
 
-    def get_value(self) -> pd.DataFrame:
-        # TODO:
-        # - remove duplicated rows at start and end
-        # - "simulated" as index of df
+    def get_value(
+        self, index_key: str = None, index_df: pd.DataFrame = None
+    ) -> pd.DataFrame:
 
         df = pd.DataFrame(self._value)
 
-        if self._subheaders is not None and not df.empty:
+        if df.empty:
+            return df
+
+        # multiple values in one line => give each its own header
+        if self._subheaders is not None:
             df.set_axis(self._subheaders, axis=1, inplace=True)
 
-            column_to_remove = "simulated_duplicate"
-            if column_to_remove in df.columns:
+            if self._column_to_remove in df.columns:
 
-                df.drop(column_to_remove, axis=1, inplace=True)
-                self._subheaders.remove(column_to_remove)
-
-        if self._subheaders is None:
+                df.drop(self._column_to_remove, axis=1, inplace=True)
+                self._subheaders.remove(self._column_to_remove)
+        
+        # otherwise, header is given by overall name
+        else:
             df.rename(columns={df.columns[0]: self.header}, inplace=True)
 
-        df.dropna(inplace=True)
+        # made index the index
+        if index_key is not None:
+            df[index_key] = index_df
+            df.dropna(inplace = True)
+            df.drop_duplicates(subset=index_key, keep="last", inplace=True)
+            df.set_index(index_key, inplace=True)
 
         return df
 
 
-def data_factory(header, data_type, subheaders=None):
+def data_factory(data_type: str, header: str, subheaders: list = None):
     if data_type == "last":
         return LastData(header, subheaders)
     elif data_type == "all":
@@ -129,6 +138,7 @@ class Parser(ABC):
     """Abstract base class for processing and storing different types of line
 
     Args:
+        name
         prefix
         data_type
         exclude
@@ -145,8 +155,8 @@ class Parser(ABC):
         is_index: bool = False,
         before_index: bool = False,
     ):
-        self.name = name
-        
+        self._name = name
+
         self.prefix = prefix
         self.is_index = is_index
         self.before_index = before_index
@@ -156,7 +166,7 @@ class Parser(ABC):
         self.no_values = 0
 
         self.data_type = data_type
-        self.data = data_factory(name, data_type)
+        self.data = data_factory(data_type, name)
 
     def process_line(self, raw_line: str):
         """self._process_line with exception handling of expected nan values"""
@@ -318,7 +328,9 @@ class TimeFloatMultParser(Parser):
         for header in self._subheaders:
             self._nan.append(float("nan"))
 
-        self.data = data_factory(self.name, self.data_type, self._subheaders)  # overwrite
+        self.data = data_factory(
+            self.data_type, self._name, self._subheaders
+        )  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""
