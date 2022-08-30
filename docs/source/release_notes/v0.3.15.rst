@@ -7,7 +7,8 @@ This page details the changes for version 0.3.14 of Flood Modeller Python API
 New features
 --------------
 - 2D model support (XML2D Class): Read and edit Flood Modeller 2D model xml files
-- 1D log file support (LF1 Class): Read and analyse 1d logs and diagnostics
+- 1D & 2D log file support (LF1 & LF2 Classes): Read and analyse simulation logs and 
+  diagnostics
 
 Updates
 --------------
