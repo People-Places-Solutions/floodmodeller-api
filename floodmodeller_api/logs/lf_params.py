@@ -63,6 +63,7 @@ lf1_unsteady_data_to_extract = {
     "max_system_volume": {"class": FloatSplitParser, "prefix": "!!output1  Max. system volume:", "data_type": "last", "split": "m3"},
     "max_volume_increase": {"class": FloatSplitParser, "prefix": "!!output1  Max. |volume| increase:", "data_type": "last", "split": "m3"},
     "max_boundary_inflow": {"class": FloatSplitParser, "prefix": "!!output1  Max. boundary inflow:", "data_type": "last", "split": "m3"},
+    "max_boundary_outflow": {"class": FloatSplitParser, "prefix": "!!output1  Max. boundary outflow:", "data_type": "last", "split": "m3"},
     "net_volume_increase": {"class": FloatSplitParser, "prefix": "!!output1  Net increase in volume:", "data_type": "last", "split": "m3"},
     "net_inflow_volume": {"class": FloatSplitParser, "prefix": "!!output1  Net inflow volume:", "data_type": "last", "split": "m3"},
     "volume_discrepancy": {"class": FloatSplitParser, "prefix": "!!output1  Volume discrepancy:", "data_type": "last", "split": "m3"},
@@ -81,11 +82,13 @@ lf1_steady_data_to_extract = {
     "successful_solution_in": {"class": FloatSplitParser, "prefix": "!!output1  successful solution in", "data_type": "last", "split": "n"}
 }
 
-# TODO: LF2 is not in sync
+# TODO for LF2:
+# - "start" only works for v6
+# - what if there are multiple domains?
 
 lf2_data_to_extract = {
     # start
-    "version": {"class": StringSplitParser, "prefix": "!!output2 Using Flood Modeller 2D version:", "data_type": "last", "split": ","},
+    "version": {"class": StringSplitParser, "prefix": "!!output2 Using Flood Modeller 2D Solver version:", "data_type": "last", "split": ","},
     "simulation_initiated_at": {"class": DateTimeParser, "prefix": "!!output2  Simulation initiated at", "data_type": "last", "code": "%d/%m/%Y %H:%M:%S"},
     "input_control_file": {"class": StringParser, "prefix": "!!output2 Using input control file:", "data_type": "last"},
     "unit_system": {"class": StringParser, "prefix": "!!output2 Unit system:", "data_type": "last"},
@@ -106,6 +109,7 @@ lf2_data_to_extract = {
     "velocity_head_threshold": {"class": FloatParser, "prefix": "!!output2     Velocity head threshold    :", "data_type": "last"},
     "rainfall_accumulation_depth": {"class": FloatParser, "prefix": "!!output2     Rainfall accumulation depth:", "data_type": "last"},
     "negative_depth_threshold": {"class": FloatParser, "prefix": "!!output2     Negative depth threshold   :", "data_type": "last"},
+    "memory_use_estimate": {"class": FloatSplitParser, "prefix": "!!output2    Memory use estimate for this domain is", "data_type": "last", "split": "MB"},
     "friction_depth_threshold": {"class": FloatParser, "prefix": "!!output2     Friction depth threshold   :", "data_type": "last"},
     "number_of_cells": {"class": FloatParser, "prefix": "!!output2 Number of cells in model:", "data_type": "last"},
     "data_prep_completed_in": {"class": TimeDeltaSParser, "prefix": "!!output2 Data prep completed in", "data_type": "last"},
