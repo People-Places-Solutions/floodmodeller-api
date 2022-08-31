@@ -191,5 +191,17 @@ class test_LF1(unittest.TestCase):
         self.assertEqual(df.iloc[-1,-1], 21.06)
         self.assertEqual(df.iloc[4,0], -0.07)
 
+    def test_4(self):
+        """LF1: Check IEF.get_lf1()"""
+        lf1 = LF1(self.lf1_fp)
+
+        ief_fp = os.path.join(test_workspace, "ex3.ief")
+        ief = IEF(ief_fp)
+        lf1_from_ief = ief.get_lf1()
+
+        self.assertEqual(lf1._filepath, lf1_from_ief._filepath)
+        self.assertDictEqual(lf1.info, lf1_from_ief.info)
+        pd.testing.assert_frame_equal(lf1.to_dataframe(), lf1_from_ief.to_dataframe())
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
