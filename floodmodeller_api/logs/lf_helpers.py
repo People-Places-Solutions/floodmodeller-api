@@ -43,7 +43,7 @@ class LastData(Data):
         self._value = data
         self.no_values = 1
 
-    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None):
+    def get_value(self, index_key=None, index_df=None):
         return self._value
 
 
@@ -51,7 +51,7 @@ class AllData(Data):
     def __init__(self, header: str, subheaders: list):
         super().__init__(header, subheaders)
         self._value = []  # list
-        self._column_to_remove = "simulated_duplicate"
+        self._index_duplicate = "simulated_duplicate"
 
     def update(self, data):
         self._value.append(data)
@@ -63,28 +63,37 @@ class AllData(Data):
 
         df = pd.DataFrame(self._value)
 
+        # do nothing to empty dataframes
         if df.empty:
             return df
 
-        # multiple values in one line => give each its own header
-        if self._subheaders is not None:
-            df.set_axis(self._subheaders, axis=1, inplace=True)
-
-            if self._column_to_remove in df.columns:
-
-                df.drop(self._column_to_remove, axis=1, inplace=True)
-                self._subheaders.remove(self._column_to_remove)
-        
-        # otherwise, header is given by overall name
-        else:
+        # overall header
+        if self._subheaders is None:
             df.rename(columns={df.columns[0]: self.header}, inplace=True)
 
-        # made index the index
-        if index_key is not None:
-            df[index_key] = index_df
-            df.dropna(inplace = True)
-            df.drop_duplicates(subset=index_key, keep="last", inplace=True)
-            df.set_index(index_key, inplace=True)
+        else:
+            # subheaders
+            df.set_axis(self._subheaders, axis=1, inplace=True)
+
+            # remove duplicate of index
+            # sometimes it includes extra values
+            # it also has different precision
+            if self._index_duplicate in df.columns:
+
+                index_df = df[self._index_duplicate].round("1s")
+
+                df.drop(self._index_duplicate, axis=1, inplace=True)
+                self._subheaders.remove(self._index_duplicate)
+
+        # there is no index because *this* is the index
+        if index_key is None:
+            return df
+
+        # made lf index the dataframe index
+        df[index_key] = index_df
+        df.dropna(inplace=True)
+        df.drop_duplicates(subset=index_key, keep="last", inplace=True)
+        df.set_index(index_key, inplace=True)
 
         return df
 
