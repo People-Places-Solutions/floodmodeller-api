@@ -51,7 +51,6 @@ class AllData(Data):
     def __init__(self, header: str, subheaders: list):
         super().__init__(header, subheaders)
         self._value = []  # list
-        self._index_duplicate = "simulated_duplicate"
 
     def update(self, data):
         self._value.append(data)
@@ -78,12 +77,13 @@ class AllData(Data):
             # remove duplicate of index
             # sometimes it includes extra values
             # it also has different precision
-            if self._index_duplicate in df.columns:
+            index_duplicate = index_key + "_duplicate"
+            if index_duplicate in df.columns:
 
-                index_df = df[self._index_duplicate].round("1s")
+                index_df = df[index_duplicate].round("1s")
 
-                df.drop(self._index_duplicate, axis=1, inplace=True)
-                self._subheaders.remove(self._index_duplicate)
+                df.drop(index_duplicate, axis=1, inplace=True)
+                # self._subheaders.remove(index_duplicate)
 
         # there is no index because *this* is the index
         if index_key is None:

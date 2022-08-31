@@ -6,7 +6,7 @@ import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 import pandas as pd
 from pathlib import Path
-from floodmodeller_api import IEF, IED, DAT, ZZN, INP
+from floodmodeller_api import IEF, IED, DAT, ZZN, INP, LF1
 from floodmodeller_api.units import QTBDY
 
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
@@ -163,6 +163,33 @@ class test_ZZN(unittest.TestCase):
 
         pd.testing.assert_frame_equal(output, self.tabCSV_output, rtol=0.0001)
 
+class test_LF1(unittest.TestCase):
+    """Basic benchmarking to test LF1 class"""
+
+    def setUp(self):
+        """Used if there is repetitive setup before each test"""
+        self.lf1_fp = os.path.join(test_workspace, "ex3.lf1")
+
+    def test_1(self):
+        """LF1: Check info dictionary"""
+        lf1 = LF1(self.lf1_fp)
+        self.assertEqual(lf1.info["version"], "5.0.0.7752")
+        self.assertEqual(lf1.info["max_system_volume"], 270549)
+        self.assertEqual(lf1.info["mass_balance_error"], -0.03)
+        self.assertEqual(lf1.info["progress"], 100)
+
+    def test_2(self):
+        """LF1: Check report_progress()"""
+        lf1 = LF1(self.lf1_fp)
+        self.assertEqual(lf1.report_progress(), 100)
+
+    def test_3(self):
+        """LF1: Check to_dataframe()"""
+        lf1 = LF1(self.lf1_fp)
+        df = lf1.to_dataframe()
+        self.assertEqual(df.iloc[0,3], 6)
+        self.assertEqual(df.iloc[-1,-1], 21.06)
+        self.assertEqual(df.iloc[4,0], -0.07)
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
