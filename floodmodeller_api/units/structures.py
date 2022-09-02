@@ -553,8 +553,8 @@ class SLUICE(Unit):
         modular_limits (dict): Dictionary of modular limit values. Keys: {'weir_flow', 'under_gate_flow', 'over_gate_flow'}. If they
             are all set equal to zero, then a variable calculation method is used.
         ngates (int): number of gates
-        timeunit (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options.
-        extendmethod (str): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’.
+        timeunit (str): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options.
+        extendmethod (str): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'.
 
 
     **Attributes used when ``SLUICE.control_method == 'TIME'``**
