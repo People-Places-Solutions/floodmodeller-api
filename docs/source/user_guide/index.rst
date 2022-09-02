@@ -13,6 +13,7 @@ can be used, code reference and examples.
    ied
    dat
    inp
+   xml2d
    units
    urban1d_units
    
