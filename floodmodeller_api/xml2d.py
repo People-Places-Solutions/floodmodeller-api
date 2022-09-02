@@ -73,11 +73,25 @@ class XML2D(FMFile):
         self._get_multi_value_keys()
 
         self._create_dict()
-        for key, data in self.data.items():
+        for key, data in self._data.items():
             if key == "domain":
                 self.domains = {domain["domain_id"]: domain for domain in data}
             else:
                 setattr(self, key, data)
+        for attr in [
+            'name', 
+            'link1d', 
+            'logfile', 
+            'domains', 
+            'restart_options', 
+            'advanced_options', 
+            'processor', 
+            'unit_system', 
+            'description'
+        ]:
+            if attr not in self.__dict__:
+                setattr(self, attr, None)
+
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -88,7 +102,7 @@ class XML2D(FMFile):
 
         xml_dict = self._recursive_elements_to_dict(xml_dict, root)
         self._raw_data = xml_dict
-        self.data = deepcopy(self._raw_data)
+        self._data = deepcopy(self._raw_data)
 
     def _recursive_elements_to_dict(self, xml_dict, tree):
         # Some elements can have multiple instances e.g. domains.
@@ -173,9 +187,9 @@ class XML2D(FMFile):
 
     def _write(self) -> str:
         try:
-            self._recursive_update_xml(self.data, self._raw_data, "ROOT")
+            self._recursive_update_xml(self._data, self._raw_data, "ROOT")
             self._validate()
-            self._raw_data = deepcopy(self.data)  # reset raw data to equal data
+            self._raw_data = deepcopy(self._data)  # reset raw data to equal data
 
             return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
 
