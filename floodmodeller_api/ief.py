@@ -464,7 +464,7 @@ class IEF(FMFile):
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
-    def get_lf1(self):
+    def get_log(self):
         """If log files for the simulation exist, this function returns them as a LF1 class object
 
         Returns:
