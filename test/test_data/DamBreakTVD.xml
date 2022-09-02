@@ -1,0 +1,56 @@
+<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/4.0/2d.xsd" name="Dam break TVD" description="">
+    <!--content for domain 'Dam Break 20m'-->
+    <domain domain_id="Dam Break 20m">
+        <computational_area>
+            <xll>391000.0</xll>
+            <yll>171000.0</yll>
+            <dx>20</dx>
+            <nrows>200</nrows>
+            <ncols>300</ncols>
+            <active_area>GIS\Dam_Active_Area.shp</active_area>
+            <rotation>0</rotation>
+        </computational_area>
+        <topography>GIS\5M_DTM.asc</topography>
+        <time>
+            <start_time>00:00:00</start_time>
+            <start_date>1/1/2000</start_date>
+            <total unit="second">14400.00</total>
+        </time>
+        <run_data>
+            <time_step> 1 </time_step>
+            <scheme>TVD</scheme>
+            <pulsedepth>1.0e-04</pulsedepth>
+            <negdepththreshold>-1.0e-03</negdepththreshold>
+            <velocityheadthreshold>0.1</velocityheadthreshold>
+            <frictionincreasedepth>0.1</frictionincreasedepth>
+        </run_data>
+        <initial_conditions type="globalwaterlevel"> 0.0 </initial_conditions>
+        <roughness law="manning" type="global">0.05</roughness>
+        <boundary_conditions>
+            <boundary>
+                <BC>verticalflow</BC>
+                <file>GIS\Dam_BC.shp</file>
+                <value time_units="hour" type="timevar">0	2
+1	1000
+3	0
+</value>
+            </boundary>
+        </boundary_conditions>
+        <output_results>
+            <hazard_debris_factor_method>
+                <static factor="1.0" />
+            </hazard_debris_factor_method>
+            <output output_id="" format="SMS9">
+                <variables>Depth
+Elevation
+Flow
+Velocity
+Froude</variables>
+                <frequency>300</frequency>
+            </output>
+            <massfile frequency="10">Dam_TVD_MB.csv</massfile>
+        </output_results>
+    </domain>
+    <advanced_options />
+</ISIS2Dproject>

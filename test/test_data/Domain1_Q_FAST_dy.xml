@@ -1,0 +1,49 @@
+<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/4.0/2d.xsd" name="FAST Dy 1D Link">
+  <link1d>
+    <link>GIS\Link1_Q.shp</link>
+    <ief>Domain1_Q.ief</ief>
+    <mb>Domain1_Q_MB1D.csv</mb>
+  </link1d>
+  <logfile>Domain1_Q.log</logfile>
+  <!--content for domain 'Domain1 20m H'-->
+  <domain domain_id="Domain1 20m H">
+    <computational_area>
+      <xll>538010.0</xll>
+      <yll>177010.0</yll>
+      <dx>20</dx>
+      <nrows>200</nrows>
+      <ncols>300</ncols>
+      <active_area>GIS\Active_Area1.shp</active_area>
+    </computational_area>
+    <topography>GIS\5M_DTM_1.asc</topography>
+    <time>
+      <start_time>00:00:00</start_time>
+      <start_date>1/1/2000</start_date>
+      <total unit="second">43200</total>
+    </time>
+    <run_data>
+      <time_step>10</time_step>
+      <scheme>FAST Dynamic</scheme>
+      <merge>0.1</merge>
+      <disc>0.1</disc>
+      <filter>0.05</filter>
+      <preprocess_fast>true</preprocess_fast>
+      <pathMarkup_fast>false</pathMarkup_fast>
+    </run_data>
+    <initial_conditions type="globalwaterlevel"> 0.0 </initial_conditions>
+    <roughness law="manning" type="global">0.05</roughness>
+    <output_results>
+      <hazard_debris_factor_method>
+        <static factor="1.0" />
+      </hazard_debris_factor_method>
+      <output output_id="" format="SMS9">
+        <variables>Depth</variables>
+        <frequency>1800</frequency>
+      </output>
+      <massfile frequency="10">Domain1_Q_MB2D.csv</massfile>
+      <check>off</check>
+    </output_results>
+  </domain>
+  <advanced_options />
+</ISIS2Dproject>

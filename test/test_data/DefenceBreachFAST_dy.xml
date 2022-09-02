@@ -1,0 +1,56 @@
+<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/4.0/2d.xsd" name="Defence breach FAST Dy" description="">
+    <!--content for domain 'River 10m'-->
+    <domain domain_id="River 10m">
+        <computational_area>
+            <xll>391800.0</xll>
+            <yll>172600.0</yll>
+            <dx>10</dx>
+            <nrows>100</nrows>
+            <ncols>80</ncols>
+            <active_area>GIS\River_Active_Area.shp</active_area>
+            <rotation>0</rotation>
+        </computational_area>
+        <topography>GIS\5M_DTM.asc</topography>
+        <time>
+            <start_time>00:00:00</start_time>
+            <start_date>1/1/2000</start_date>
+            <total unit="second">3600.00</total>
+        </time>
+        <run_data>
+            <time_step>5</time_step>
+            <scheme>FAST Dynamic</scheme>
+            <merge>0.1</merge>
+            <disc>0.1</disc>
+            <filter>0.05</filter>
+            <preprocess_fast>true</preprocess_fast>
+            <pathMarkup_fast>false</pathMarkup_fast>
+        </run_data>
+        <initial_conditions type="globalwaterlevel"> 0.0 </initial_conditions>
+        <roughness law="manning" type="global">0.05</roughness>
+        <boundary_conditions>
+            <boundary>
+                <BC>verticalflow</BC>
+                <file>GIS\Defence_BC.shp</file>
+                <value time_units="second" type="timevar">0	0
+900	100
+3600	0
+</value>
+            </boundary>
+        </boundary_conditions>
+        <output_results>
+            <hazard_debris_factor_method>
+                <static factor="1.0" />
+            </hazard_debris_factor_method>
+            <output output_id="" format="SMS9">
+                <variables>Depth
+Velocity
+Elevation
+Flow</variables>
+                <frequency>3600</frequency>
+            </output>
+            <massfile frequency="10">DefenceBreach_MB.csv</massfile>
+        </output_results>
+    </domain>
+    <advanced_options />
+</ISIS2Dproject>
