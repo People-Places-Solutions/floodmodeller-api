@@ -1,0 +1,2800 @@
+!!output1
+!!output1  Flood Modeller - 1D Solver
+!!output1
+!!output1  writing messaging file output to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\ex3.lf1
+!!Info1 zzd = C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.zzd
+!!Info1 version1d 5.0.0.7752
+!!output1  Single precision, 64-bit version
+!!output1  * * * *
+!!output1  Specified initial conditions file: C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.ZZS
+!!output1  Does not exist or cannot be read. Using default initial conditions (from *.dat file)
+!!output1  * * * *
+!!output1
+!!output1  Reading main data file EX3.dat...
+!!output1
+!!output1  No errors found in node labels
+!!output1
+!!Progress1   0%
+!!Info1 Timestep   300.00
+!!Info1 Ran at 12:18:21 on 08/09/2021
+!!Info1 Start Time:             0.000 hrs
+!!Info1 End Time:              24.000 hrs
+!!Info1 Elapsed    0:00:00
+!!Info1 Simulated      0:00:00
+!!Info1 EFT: calculating...
+!!Info1 ETR: ...
+!!Info1 Timestep   300.00
+!!Info1 Ran at 12:18:21 on 08/09/2021
+!!Info1 Start Time:             0.000 hrs
+!!Info1 End Time:              24.000 hrs
+!!Info1 Elapsed    0:00:00
+!!Info1 Simulated      0:00:00
+!!Info1 EFT: calculating...
+!!Info1 ETR: ...
+!!Info1 Mass %error =       0.0000    0.00
+!!Info1 Timestep    18.75
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:00:00
+!!Info1 EFT: calculating...
+!!Info1 ETR: ...
+!!Info1 maxitr =  11
+!!Info1 minitr =   3
+!!PlotI1       0.0000   6     4.6000
+!!Info1 qtol =     0.0100
+!!Info1 htol =     0.0100
+!!PlotC1       0.0000     0.0186     0.0004
+!!PlotF1       0.0000       3.67       2.58
+!!Info1 Mass %error =       0.0833   -0.01
+!!Info1 Timestep    37.50
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:05:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.0833   5     6.2000
+!!PlotC1       0.0833     0.0086     0.0008
+!!PlotF1       0.0833       3.71       2.69
+!!Info1 Mass %error =       0.1667   -0.04
+!!Info1 Timestep    37.50
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:10:00
+!!Info1 EFT: 12:18:29
+!!Info1 ETR:   0:00:07
+!!PlotI1       0.1667   3     6.2000
+!!PlotC1       0.1667     0.0036     0.0003
+!!PlotF1       0.1667       3.75       3.04
+!!Info1 Mass %error =       0.2500   -0.05
+!!Progress1   1%
+!!Info1 Timestep    75.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:15:00
+!!Info1 EFT: 12:18:27
+!!Info1 ETR:   0:00:05
+!!PlotI1       0.2500   3     7.8000
+!!PlotC1       0.2500     0.0029     0.0002
+!!PlotF1       0.2500       3.79       3.32
+!!Info1 Mass %error =       0.3333   -0.07
+!!Info1 Timestep   150.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:20:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.3333   3     9.4000
+!!PlotC1       0.3333     0.0025     0.0002
+!!PlotF1       0.3333       3.83       3.50
+!!Info1 Mass %error =       0.4167   -0.09
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:25:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.4167   3    11.0000
+!!PlotC1       0.4167     0.0033     0.0003
+!!PlotF1       0.4167       3.87       3.62
+!!Info1 Mass %error =       0.5000   -0.10
+!!Progress1   2%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:30:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.5000   3    11.0000
+!!PlotC1       0.5000     0.0025     0.0002
+!!PlotF1       0.5000       3.91       3.72
+!!Info1 Mass %error =       0.5833   -0.10
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:35:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.5833   3    11.0000
+!!PlotC1       0.5833     0.0020     0.0002
+!!PlotF1       0.5833       3.95       3.79
+!!Info1 Mass %error =       0.6667   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:40:00
+!!Info1 EFT: 12:18:26
+!!Info1 ETR:   0:00:04
+!!PlotI1       0.6667   3    11.0000
+!!PlotC1       0.6667     0.0016     0.0002
+!!PlotF1       0.6667       3.98       3.85
+!!Info1 Mass %error =       0.7500   -0.11
+!!Progress1   3%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       0.7500   3    11.0000
+!!PlotC1       0.7500     0.0014     0.0001
+!!PlotF1       0.7500       4.02       3.91
+!!Info1 Mass %error =       0.8333   -0.12
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       0.8333   3    11.0000
+!!PlotC1       0.8333     0.0013     0.0001
+!!PlotF1       0.8333       4.06       3.95
+!!Info1 Mass %error =       0.9167   -0.12
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      0:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       0.9167   3    11.0000
+!!PlotC1       0.9167     0.0012     0.0001
+!!PlotF1       0.9167       4.10       4.00
+!!Info1 Mass %error =       1.0000   -0.12
+!!Progress1   4%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.0000   3    11.0000
+!!PlotC1       1.0000     0.0011     0.0001
+!!PlotF1       1.0000       4.14       4.04
+!!Info1 Mass %error =       1.0833   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.0833   3    11.0000
+!!PlotC1       1.0833     0.0024     0.0003
+!!PlotF1       1.0833       4.24       4.09
+!!Info1 Mass %error =       1.1667   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.1667   3    11.0000
+!!PlotC1       1.1667     0.0027     0.0002
+!!PlotF1       1.1667       4.33       4.16
+!!Info1 Mass %error =       1.2500   -0.11
+!!Progress1   5%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.2500   3    11.0000
+!!PlotC1       1.2500     0.0026     0.0002
+!!PlotF1       1.2500       4.43       4.24
+!!Info1 Mass %error =       1.3333   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.3333   3    11.0000
+!!PlotC1       1.3333     0.0026     0.0002
+!!PlotF1       1.3333       4.53       4.33
+!!Info1 Mass %error =       1.4167   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.4167   3    11.0000
+!!PlotC1       1.4167     0.0026     0.0003
+!!PlotF1       1.4167       4.63       4.42
+!!Info1 Mass %error =       1.5000   -0.12
+!!Progress1   6%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.5000   3    11.0000
+!!PlotC1       1.5000     0.0025     0.0003
+!!PlotF1       1.5000       4.72       4.51
+!!Info1 Mass %error =       1.5833   -0.12
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.5833   3    11.0000
+!!PlotC1       1.5833     0.0025     0.0003
+!!PlotF1       1.5833       4.82       4.60
+!!Info1 Mass %error =       1.6667   -0.12
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:40:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:03
+!!PlotI1       1.6667   3    11.0000
+!!PlotC1       1.6667     0.0025     0.0003
+!!PlotF1       1.6667       4.92       4.70
+!!Info1 Mass %error =       1.7500   -0.12
+!!Progress1   7%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       1.7500   3    11.0000
+!!PlotC1       1.7500     0.0024     0.0003
+!!PlotF1       1.7500       5.02       4.79
+!!Info1 Mass %error =       1.8333   -0.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       1.8333   3    11.0000
+!!PlotC1       1.8333     0.0024     0.0003
+!!PlotF1       1.8333       5.11       4.89
+!!Info1 Mass %error =       1.9167   -0.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      1:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       1.9167   3    11.0000
+!!PlotC1       1.9167     0.0024     0.0003
+!!PlotF1       1.9167       5.21       4.99
+!!Info1 Mass %error =       2.0000   -0.14
+!!Progress1   8%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.0000   3    11.0000
+!!PlotC1       2.0000     0.0023     0.0003
+!!PlotF1       2.0000       5.31       5.08
+!!Info1 Mass %error =       2.0833   -0.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.0833   3    11.0000
+!!PlotC1       2.0833     0.0036     0.0005
+!!PlotF1       2.0833       5.48       5.19
+!!Info1 Mass %error =       2.1667   -0.13
+!!Progress1   9%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.1667   3    11.0000
+!!PlotC1       2.1667     0.0039     0.0004
+!!PlotF1       2.1667       5.65       5.32
+!!Info1 Mass %error =       2.2500   -0.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.2500   3    11.0000
+!!PlotC1       2.2500     0.0038     0.0004
+!!PlotF1       2.2500       5.82       5.47
+!!Info1 Mass %error =       2.3333   -0.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.3333   3    11.0000
+!!PlotC1       2.3333     0.0038     0.0004
+!!PlotF1       2.3333       5.99       5.62
+!!Info1 Mass %error =       2.4167   -0.14
+!!Progress1  10%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.4167   3    11.0000
+!!PlotC1       2.4167     0.0037     0.0004
+!!PlotF1       2.4167       6.17       5.78
+!!Info1 Mass %error =       2.5000   -0.15
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.5000   3    11.0000
+!!PlotC1       2.5000     0.0036     0.0004
+!!PlotF1       2.5000       6.34       5.95
+!!Info1 Mass %error =       2.5833   -0.15
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.5833   3    11.0000
+!!PlotC1       2.5833     0.0036     0.0005
+!!PlotF1       2.5833       6.51       6.11
+!!Info1 Mass %error =       2.6667   -0.16
+!!Progress1  11%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.6667   3    11.0000
+!!PlotC1       2.6667     0.0035     0.0005
+!!PlotF1       2.6667       6.68       6.28
+!!Info1 Mass %error =       2.7500   -0.17
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.7500   3    11.0000
+!!PlotC1       2.7500     0.0034     0.0005
+!!PlotF1       2.7500       6.85       6.45
+!!Info1 Mass %error =       2.8333   -0.18
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.8333   3    11.0000
+!!PlotC1       2.8333     0.0034     0.0005
+!!PlotF1       2.8333       7.02       6.62
+!!Info1 Mass %error =       2.9167   -0.18
+!!Progress1  12%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      2:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       2.9167   3    11.0000
+!!PlotC1       2.9167     0.0033     0.0005
+!!PlotF1       2.9167       7.19       6.79
+!!Info1 Mass %error =       3.0000   -0.19
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.0000   3    11.0000
+!!PlotC1       3.0000     0.0032     0.0005
+!!PlotF1       3.0000       7.37       6.96
+!!Info1 Mass %error =       3.0833   -0.19
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.0833   3    11.0000
+!!PlotC1       3.0833     0.0047     0.0006
+!!PlotF1       3.0833       7.64       7.15
+!!Info1 Mass %error =       3.1667   -0.19
+!!Progress1  13%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.1667   3    11.0000
+!!PlotC1       3.1667     0.0049     0.0006
+!!PlotF1       3.1667       7.92       7.37
+!!Info1 Mass %error =       3.2500   -0.20
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.2500   3    11.0000
+!!PlotC1       3.2500     0.0048     0.0007
+!!PlotF1       3.2500       8.21       7.61
+!!Info1 Mass %error =       3.3333   -0.21
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.3333   3    11.0000
+!!PlotC1       3.3333     0.0047     0.0007
+!!PlotF1       3.3333       8.49       7.87
+!!Info1 Mass %error =       3.4167   -0.22
+!!Progress1  14%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.4167   3    11.0000
+!!PlotC1       3.4167     0.0047     0.0007
+!!PlotF1       3.4167       8.77       8.13
+!!Info1 Mass %error =       3.5000   -0.23
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.5000   3    11.0000
+!!PlotC1       3.5000     0.0045     0.0007
+!!PlotF1       3.5000       9.05       8.40
+!!Info1 Mass %error =       3.5833   -0.24
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.5833   3    11.0000
+!!PlotC1       3.5833     0.0045     0.0008
+!!PlotF1       3.5833       9.33       8.67
+!!Info1 Mass %error =       3.6667   -0.25
+!!Progress1  15%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.6667   3    11.0000
+!!PlotC1       3.6667     0.0043     0.0008
+!!PlotF1       3.6667       9.61       8.95
+!!Info1 Mass %error =       3.7500   -0.25
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.7500   3    11.0000
+!!PlotC1       3.7500     0.0042     0.0008
+!!PlotF1       3.7500       9.89       9.22
+!!Info1 Mass %error =       3.8333   -0.26
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.8333   3    11.0000
+!!PlotC1       3.8333     0.0041     0.0008
+!!PlotF1       3.8333      10.17       9.50
+!!Info1 Mass %error =       3.9167   -0.27
+!!Progress1  16%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      3:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       3.9167   3    11.0000
+!!PlotC1       3.9167     0.0040     0.0008
+!!PlotF1       3.9167      10.46       9.78
+!!Info1 Mass %error =       4.0000   -0.27
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.0000   3    11.0000
+!!PlotC1       4.0000     0.0039     0.0008
+!!PlotF1       4.0000      10.74      10.06
+!!Info1 Mass %error =       4.0833   -0.26
+!!Progress1  17%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.0833   3    11.0000
+!!PlotC1       4.0833     0.0057     0.0009
+!!PlotF1       4.0833      11.20      10.37
+!!Info1 Mass %error =       4.1667   -0.26
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.1667   3    11.0000
+!!PlotC1       4.1667     0.0059     0.0010
+!!PlotF1       4.1667      11.68      10.73
+!!Info1 Mass %error =       4.2500   -0.26
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.2500   3    11.0000
+!!PlotC1       4.2500     0.0059     0.0011
+!!PlotF1       4.2500      12.15      11.13
+!!Info1 Mass %error =       4.3333   -0.27
+!!Progress1  18%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.3333   3    11.0000
+!!PlotC1       4.3333     0.0057     0.0012
+!!PlotF1       4.3333      12.62      11.56
+!!Info1 Mass %error =       4.4167   -0.28
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.4167   3    11.0000
+!!PlotC1       4.4167     0.0056     0.0012
+!!PlotF1       4.4167      13.10      11.99
+!!Info1 Mass %error =       4.5000   -0.29
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.5000   3    11.0000
+!!PlotC1       4.5000     0.0054     0.0013
+!!PlotF1       4.5000      13.57      12.44
+!!Info1 Mass %error =       4.5833   -0.31
+!!Progress1  19%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.5833   3    11.0000
+!!PlotC1       4.5833     0.0053     0.0013
+!!PlotF1       4.5833      14.04      12.89
+!!Info1 Mass %error =       4.6667   -0.33
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.6667   3    11.0000
+!!PlotC1       4.6667     0.0052     0.0013
+!!PlotF1       4.6667      14.51      13.35
+!!Info1 Mass %error =       4.7500   -0.35
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.7500   3    11.0000
+!!PlotC1       4.7500     0.0050     0.0013
+!!PlotF1       4.7500      14.99      13.82
+!!Info1 Mass %error =       4.8333   -0.37
+!!Progress1  20%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.8333   3    11.0000
+!!PlotC1       4.8333     0.0048     0.0013
+!!PlotF1       4.8333      15.46      14.28
+!!Info1 Mass %error =       4.9167   -0.38
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      4:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       4.9167   3    11.0000
+!!PlotC1       4.9167     0.0047     0.0013
+!!PlotF1       4.9167      15.93      14.74
+!!Info1 Mass %error =       5.0000   -0.40
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.0000   3    11.0000
+!!PlotC1       5.0000     0.0045     0.0013
+!!PlotF1       5.0000      16.41      15.21
+!!Info1 Mass %error =       5.0833   -0.38
+!!Progress1  21%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.0833   3    11.0000
+!!PlotC1       5.0833     0.0064     0.0015
+!!PlotF1       5.0833      17.17      15.73
+!!Info1 Mass %error =       5.1667   -0.38
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.1667   3    11.0000
+!!PlotC1       5.1667     0.0064     0.0017
+!!PlotF1       5.1667      17.93      16.32
+!!Info1 Mass %error =       5.2500   -0.37
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.2500   3    11.0000
+!!PlotC1       5.2500     0.0063     0.0018
+!!PlotF1       5.2500      18.70      16.97
+!!Info1 Mass %error =       5.3333   -0.38
+!!Progress1  22%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.3333   3    11.0000
+!!PlotC1       5.3333     0.0062     0.0019
+!!PlotF1       5.3333      19.47      17.65
+!!Info1 Mass %error =       5.4167   -0.39
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.4167   3    11.0000
+!!PlotC1       5.4167     0.0060     0.0019
+!!PlotF1       5.4167      20.24      18.35
+!!Info1 Mass %error =       5.5000   -0.41
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.5000   3    11.0000
+!!PlotC1       5.5000     0.0058     0.0019
+!!PlotF1       5.5000      21.00      19.06
+!!Info1 Mass %error =       5.5833   -0.43
+!!Progress1  23%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.5833   3    11.0000
+!!PlotC1       5.5833     0.0056     0.0019
+!!PlotF1       5.5833      21.77      19.79
+!!Info1 Mass %error =       5.6667   -0.45
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.6667   3    11.0000
+!!PlotC1       5.6667     0.0054     0.0019
+!!PlotF1       5.6667      22.54      20.56
+!!Info1 Mass %error =       5.7500   -0.47
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.7500   3    11.0000
+!!PlotC1       5.7500     0.0052     0.0019
+!!PlotF1       5.7500      23.31      21.34
+!!Info1 Mass %error =       5.8333   -0.48
+!!Progress1  24%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.8333   3    11.0000
+!!PlotC1       5.8333     0.0049     0.0018
+!!PlotF1       5.8333      24.07      22.11
+!!Info1 Mass %error =       5.9167   -0.49
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      5:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       5.9167   3    11.0000
+!!PlotC1       5.9167     0.0046     0.0018
+!!PlotF1       5.9167      24.84      22.87
+!!Info1 Mass %error =       6.0000   -0.51
+!!Progress1  25%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.0000   3    11.0000
+!!PlotC1       6.0000     0.0045     0.0018
+!!PlotF1       6.0000      25.61      23.61
+!!Info1 Mass %error =       6.0833   -0.49
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.0833   3    11.0000
+!!PlotC1       6.0833     0.0061     0.0020
+!!PlotF1       6.0833      26.72      24.42
+!!Info1 Mass %error =       6.1667   -0.50
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.1667   3    11.0000
+!!PlotC1       6.1667     0.0061     0.0022
+!!PlotF1       6.1667      27.84      25.32
+!!Info1 Mass %error =       6.2500   -0.53
+!!Progress1  26%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.2500   3    11.0000
+!!PlotC1       6.2500     0.0060     0.0025
+!!PlotF1       6.2500      28.96      26.27
+!!Info1 Mass %error =       6.3333   -0.55
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.3333   3    11.0000
+!!PlotC1       6.3333     0.0058     0.0024
+!!PlotF1       6.3333      30.08      27.25
+!!Info1 Mass %error =       6.4167   -0.55
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.4167   3    11.0000
+!!PlotC1       6.4167     0.0055     0.0024
+!!PlotF1       6.4167      31.20      28.27
+!!Info1 Mass %error =       6.5000   -0.55
+!!Progress1  27%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.5000   3    11.0000
+!!PlotC1       6.5000     0.0054     0.0024
+!!PlotF1       6.5000      32.32      29.29
+!!Info1 Mass %error =       6.5833   -0.56
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.5833   3    11.0000
+!!PlotC1       6.5833     0.0052     0.0024
+!!PlotF1       6.5833      33.45      30.34
+!!Info1 Mass %error =       6.6667   -0.58
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.6667   3    11.0000
+!!PlotC1       6.6667     0.0050     0.0024
+!!PlotF1       6.6667      34.57      31.38
+!!Info1 Mass %error =       6.7500   -0.62
+!!Progress1  28%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.7500   3    11.0000
+!!PlotC1       6.7500     0.0050     0.0028
+!!PlotF1       6.7500      35.69      32.43
+!!Info1 Mass %error =       6.8333   -0.64
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.8333   3    11.0000
+!!PlotC1       6.8333     0.0049     0.0025
+!!PlotF1       6.8333      36.81      33.48
+!!Info1 Mass %error =       6.9167   -0.65
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      6:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       6.9167   3    11.0000
+!!PlotC1       6.9167     0.0046     0.0025
+!!PlotF1       6.9167      37.93      34.53
+!!Info1 Mass %error =       7.0000   -0.67
+!!Progress1  29%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.0000   3    11.0000
+!!PlotC1       7.0000     0.0044     0.0025
+!!PlotF1       7.0000      39.05      35.58
+!!Info1 Mass %error =       7.0833   -0.67
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.0833   3    11.0000
+!!PlotC1       7.0833     0.0049     0.0026
+!!PlotF1       7.0833      40.40      36.66
+!!Info1 Mass %error =       7.1667   -0.67
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.1667   3    11.0000
+!!PlotC1       7.1667     0.0049     0.0027
+!!PlotF1       7.1667      41.77      37.80
+!!Info1 Mass %error =       7.2500   -0.68
+!!Progress1  30%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.2500   3    11.0000
+!!PlotC1       7.2500     0.0047     0.0027
+!!PlotF1       7.2500      43.13      38.97
+!!Info1 Mass %error =       7.3333   -0.66
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.3333   3    11.0000
+!!PlotC1       7.3333     0.0044     0.0029
+!!PlotF1       7.3333      44.49      40.13
+!!Info1 Mass %error =       7.4167   -0.67
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.4167   3    11.0000
+!!PlotC1       7.4167     0.0040     0.0042
+!!PlotF1       7.4167      45.85      41.21
+!!Info1 Mass %error =       7.5000   -0.67
+!!Progress1  31%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.5000   3    11.0000
+!!PlotC1       7.5000     0.0040     0.0038
+!!PlotF1       7.5000      47.21      42.23
+!!Info1 Mass %error =       7.5833   -0.66
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.5833   3    11.0000
+!!PlotC1       7.5833     0.0050     0.0032
+!!PlotF1       7.5833      48.57      43.40
+!!Info1 Mass %error =       7.6667   -0.65
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.6667   3    11.0000
+!!PlotC1       7.6667     0.0038     0.0030
+!!PlotF1       7.6667      49.93      44.60
+!!Info1 Mass %error =       7.7500   -0.66
+!!Progress1  32%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.7500   3    11.0000
+!!PlotC1       7.7500     0.0036     0.0032
+!!PlotF1       7.7500      51.30      45.72
+!!Info1 Mass %error =       7.8333   -0.68
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.8333   3    11.0000
+!!PlotC1       7.8333     0.0034     0.0035
+!!PlotF1       7.8333      52.66      46.82
+!!Info1 Mass %error =       7.9167   -0.71
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      7:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       7.9167   3    11.0000
+!!PlotC1       7.9167     0.0033     0.0042
+!!PlotF1       7.9167      54.02      47.90
+!!Info1 Mass %error =       8.0000   -0.73
+!!Progress1  33%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      8:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.0000   3    11.0000
+!!PlotC1       8.0000     0.0032     0.0047
+!!PlotF1       8.0000      55.38      48.97
+!!Info1 Mass %error =       8.0833   -0.72
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:01
+!!Info1 Simulated      8:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.0833   3    11.0000
+!!PlotC1       8.0833     0.0033     0.0042
+!!PlotF1       8.0833      56.83      50.17
+!!Info1 Mass %error =       8.1667   -0.73
+!!Progress1  34%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.1667   3    11.0000
+!!PlotC1       8.1667     0.0032     0.0041
+!!PlotF1       8.1667      58.28      51.43
+!!Info1 Mass %error =       8.2500   -0.77
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.2500   3    11.0000
+!!PlotC1       8.2500     0.0031     0.0043
+!!PlotF1       8.2500      59.74      52.66
+!!Info1 Mass %error =       8.3333   -0.80
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.3333   3    11.0000
+!!PlotC1       8.3333     0.0030     0.0045
+!!PlotF1       8.3333      61.19      53.89
+!!Info1 Mass %error =       8.4167   -0.84
+!!Progress1  35%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.4167   3    11.0000
+!!PlotC1       8.4167     0.0029     0.0044
+!!PlotF1       8.4167      62.64      55.10
+!!Info1 Mass %error =       8.5000   -0.85
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.5000   3    11.0000
+!!PlotC1       8.5000     0.0029     0.0044
+!!PlotF1       8.5000      64.10      56.30
+!!Info1 Mass %error =       8.5833   -0.88
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.5833   3    11.0000
+!!PlotC1       8.5833     0.0028     0.0048
+!!PlotF1       8.5833      65.55      57.50
+!!Info1 Mass %error =       8.6667   -0.90
+!!Progress1  36%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:40:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.6667   3    11.0000
+!!PlotC1       8.6667     0.0030     0.0040
+!!PlotF1       8.6667      67.00      58.70
+!!Info1 Mass %error =       8.7500   -0.94
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.7500   3    11.0000
+!!PlotC1       8.7500     0.0035     0.0033
+!!PlotF1       8.7500      68.46      59.96
+!!Info1 Mass %error =       8.8333   -0.98
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.8333   3    11.0000
+!!PlotC1       8.8333     0.0037     0.0032
+!!PlotF1       8.8333      69.91      61.24
+!!Info1 Mass %error =       8.9167   -1.02
+!!Progress1  37%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      8:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       8.9167   3    11.0000
+!!PlotC1       8.9167     0.0039     0.0033
+!!PlotF1       8.9167      71.36      62.56
+!!Info1 Mass %error =       9.0000   -1.05
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.0000   3    11.0000
+!!PlotC1       9.0000     0.0037     0.0033
+!!PlotF1       9.0000      72.82      63.88
+!!Info1 Mass %error =       9.0833   -1.07
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.0833   3    11.0000
+!!PlotC1       9.0833     0.0037     0.0033
+!!PlotF1       9.0833      74.27      65.20
+!!Info1 Mass %error =       9.1667   -1.11
+!!Progress1  38%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.1667   3    11.0000
+!!PlotC1       9.1667     0.0034     0.0034
+!!PlotF1       9.1667      75.72      66.53
+!!Info1 Mass %error =       9.2500   -1.15
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.2500   3    11.0000
+!!PlotC1       9.2500     0.0032     0.0034
+!!PlotF1       9.2500      77.18      67.82
+!!Info1 Mass %error =       9.3333   -1.18
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.3333   3    11.0000
+!!PlotC1       9.3333     0.0031     0.0034
+!!PlotF1       9.3333      78.63      69.13
+!!Info1 Mass %error =       9.4167   -1.20
+!!Progress1  39%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.4167   3    11.0000
+!!PlotC1       9.4167     0.0030     0.0034
+!!PlotF1       9.4167      80.08      70.47
+!!Info1 Mass %error =       9.5000   -1.22
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.5000   3    11.0000
+!!PlotC1       9.5000     0.0029     0.0033
+!!PlotF1       9.5000      81.53      71.78
+!!Info1 Mass %error =       9.5833   -1.24
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.5833   3    11.0000
+!!PlotC1       9.5833     0.0028     0.0034
+!!PlotF1       9.5833      82.99      73.10
+!!Info1 Mass %error =       9.6667   -1.26
+!!Progress1  40%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:40:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.6667   3    11.0000
+!!PlotC1       9.6667     0.0026     0.0033
+!!PlotF1       9.6667      84.44      74.42
+!!Info1 Mass %error =       9.7500   -1.29
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.7500   3    11.0000
+!!PlotC1       9.7500     0.0024     0.0039
+!!PlotF1       9.7500      85.89      75.73
+!!Info1 Mass %error =       9.8333   -1.33
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.8333   3    11.0000
+!!PlotC1       9.8333     0.0024     0.0039
+!!PlotF1       9.8333      87.35      77.04
+!!Info1 Mass %error =       9.9167   -1.35
+!!Progress1  41%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated      9:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1       9.9167   3    11.0000
+!!PlotC1       9.9167     0.0023     0.0040
+!!PlotF1       9.9167      88.80      78.34
+!!Info1 Mass %error =      10.0000   -1.36
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.0000   3    11.0000
+!!PlotC1      10.0000     0.0022     0.0040
+!!PlotF1      10.0000      90.25      79.65
+!!Info1 Mass %error =      10.0833   -1.38
+!!Progress1  42%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.0833   3    11.0000
+!!PlotC1      10.0833     0.0021     0.0040
+!!PlotF1      10.0833      91.61      80.95
+!!Info1 Mass %error =      10.1667   -1.41
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.1667   3    11.0000
+!!PlotC1      10.1667     0.0022     0.0038
+!!PlotF1      10.1667      92.97      82.25
+!!Info1 Mass %error =      10.2500   -1.44
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.2500   3    11.0000
+!!PlotC1      10.2500     0.0022     0.0040
+!!PlotF1      10.2500      94.32      83.54
+!!Info1 Mass %error =      10.3333   -1.47
+!!Progress1  43%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.3333   3    11.0000
+!!PlotC1      10.3333     0.0020     0.0041
+!!PlotF1      10.3333      95.68      84.82
+!!Info1 Mass %error =      10.4167   -1.50
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.4167   3    11.0000
+!!PlotC1      10.4167     0.0020     0.0039
+!!PlotF1      10.4167      97.04      86.10
+!!output1
+!!output1  Model time    10.5000 hrs:
+!!output1  *** warning W2207 *** at label: BRIDU
+!!output1
+!!output1 Extrapolating pier sigma curves, sigma coefficient may not be reliable
+!!output1 Using sigma (min)= 0.6
+!!Info1 Mass %error =      10.5000   -1.52
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.5000   3    11.0000
+!!PlotC1      10.5000     0.0017     0.0049
+!!PlotF1      10.5000      98.39      87.39
+!!Info1 Mass %error =      10.5833   -1.54
+!!Progress1  44%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.5833   3    11.0000
+!!PlotC1      10.5833     0.0019     0.0039
+!!PlotF1      10.5833      99.75      88.68
+!!Info1 Mass %error =      10.6667   -1.56
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      10.6667   3    11.0000
+!!PlotC1      10.6667     0.0018     0.0039
+!!PlotF1      10.6667     101.11      89.97
+!!Info1 Mass %error =      10.7500   -1.58
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.7500   3    11.0000
+!!PlotC1      10.7500     0.0019     0.0037
+!!PlotF1      10.7500     102.46      91.26
+!!Info1 Mass %error =      10.8333   -1.60
+!!Progress1  45%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.8333   3    11.0000
+!!PlotC1      10.8333     0.0018     0.0034
+!!PlotF1      10.8333     103.82      92.55
+!!Info1 Mass %error =      10.9167   -1.62
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     10:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      10.9167   3    11.0000
+!!PlotC1      10.9167     0.0019     0.0035
+!!PlotF1      10.9167     105.18      93.84
+!!Info1 Mass %error =      11.0000   -1.64
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:02
+!!PlotI1      11.0000   3    11.0000
+!!PlotC1      11.0000     0.0017     0.0038
+!!PlotF1      11.0000     106.53      95.12
+!!Info1 Mass %error =      11.0833   -1.66
+!!Progress1  46%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.0833   3    11.0000
+!!PlotC1      11.0833     0.0015     0.0041
+!!PlotF1      11.0833     107.66      96.38
+!!Info1 Mass %error =      11.1667   -1.69
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.1667   3    11.0000
+!!PlotC1      11.1667     0.0016     0.0036
+!!PlotF1      11.1667     108.78      97.61
+!!Info1 Mass %error =      11.2500   -1.71
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.2500   3    11.0000
+!!PlotC1      11.2500     0.0017     0.0034
+!!PlotF1      11.2500     109.90      98.85
+!!Info1 Mass %error =      11.3333   -1.73
+!!Progress1  47%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.3333   3    11.0000
+!!PlotC1      11.3333     0.0016     0.0034
+!!PlotF1      11.3333     111.02     100.08
+!!Info1 Mass %error =      11.4167   -1.75
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.4167   3    11.0000
+!!PlotC1      11.4167     0.0015     0.0033
+!!PlotF1      11.4167     112.14     101.29
+!!Info1 Mass %error =      11.5000   -1.77
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.5000   3    11.0000
+!!PlotC1      11.5000     0.0015     0.0033
+!!PlotF1      11.5000     113.26     102.48
+!!Info1 Mass %error =      11.5833   -1.79
+!!Progress1  48%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.5833   3    11.0000
+!!PlotC1      11.5833     0.0014     0.0032
+!!PlotF1      11.5833     114.38     103.67
+!!Info1 Mass %error =      11.6667   -1.80
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.6667   3    11.0000
+!!PlotC1      11.6667     0.0014     0.0031
+!!PlotF1      11.6667     115.50     104.84
+!!Info1 Mass %error =      11.7500   -1.82
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.7500   3    11.0000
+!!PlotC1      11.7500     0.0014     0.0031
+!!PlotF1      11.7500     116.62     106.01
+!!Info1 Mass %error =      11.8333   -1.83
+!!Progress1  49%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.8333   3    11.0000
+!!PlotC1      11.8333     0.0013     0.0032
+!!PlotF1      11.8333     117.74     107.17
+!!Info1 Mass %error =      11.9167   -1.85
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     11:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      11.9167   3    11.0000
+!!PlotC1      11.9167     0.0012     0.0032
+!!PlotF1      11.9167     118.86     108.32
+!!Info1 Mass %error =      12.0000   -1.86
+!!Progress1  50%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.0000   3    11.0000
+!!PlotC1      12.0000     0.0013     0.0033
+!!PlotF1      12.0000     119.98     109.45
+!!Info1 Mass %error =      12.0833   -1.89
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.0833   3    11.0000
+!!PlotC1      12.0833     0.0011     0.0031
+!!PlotF1      12.0833     120.69     110.56
+!!Info1 Mass %error =      12.1667   -1.91
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.1667   3    11.0000
+!!PlotC1      12.1667     0.0010     0.0029
+!!PlotF1      12.1667     121.39     111.63
+!!Info1 Mass %error =      12.2500   -1.93
+!!Progress1  51%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.2500   3    11.0000
+!!PlotC1      12.2500     0.0010     0.0028
+!!PlotF1      12.2500     122.08     112.66
+!!Info1 Mass %error =      12.3333   -1.95
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.3333   3    11.0000
+!!PlotC1      12.3333     0.0009     0.0027
+!!PlotF1      12.3333     122.78     113.65
+!!Info1 Mass %error =      12.4167   -1.96
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.4167   3    11.0000
+!!PlotC1      12.4167     0.0009     0.0026
+!!PlotF1      12.4167     123.48     114.62
+!!Info1 Mass %error =      12.5000   -1.98
+!!Progress1  52%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.5000   3    11.0000
+!!PlotC1      12.5000     0.0009     0.0025
+!!PlotF1      12.5000     124.18     115.56
+!!Info1 Mass %error =      12.5833   -1.99
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.5833   3    11.0000
+!!PlotC1      12.5833     0.0009     0.0025
+!!PlotF1      12.5833     124.88     116.47
+!!Info1 Mass %error =      12.6667   -2.01
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.6667   3    11.0000
+!!PlotC1      12.6667     0.0008     0.0025
+!!PlotF1      12.6667     125.58     117.36
+!!Info1 Mass %error =      12.7500   -2.02
+!!Progress1  53%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.7500   3    11.0000
+!!PlotC1      12.7500     0.0008     0.0024
+!!PlotF1      12.7500     126.28     118.24
+!!Info1 Mass %error =      12.8333   -2.03
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.8333   3    11.0000
+!!PlotC1      12.8333     0.0008     0.0023
+!!PlotF1      12.8333     126.98     119.09
+!!Info1 Mass %error =      12.9167   -2.04
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     12:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      12.9167   3    11.0000
+!!PlotC1      12.9167     0.0008     0.0023
+!!PlotF1      12.9167     127.67     119.93
+!!Info1 Mass %error =      13.0000   -2.05
+!!Progress1  54%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.0000   3    11.0000
+!!PlotC1      13.0000     0.0008     0.0023
+!!PlotF1      13.0000     128.37     120.75
+!!Info1 Mass %error =      13.0833   -2.07
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.0833   3    11.0000
+!!PlotC1      13.0833     0.0007     0.0020
+!!PlotF1      13.0833     128.52     121.54
+!!Info1 Mass %error =      13.1667   -2.09
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.1667   3    11.0000
+!!PlotC1      13.1667     0.0006     0.0017
+!!PlotF1      13.1667     128.65     122.26
+!!Info1 Mass %error =      13.2500   -2.11
+!!Progress1  55%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.2500   3    11.0000
+!!PlotC1      13.2500     0.0006     0.0016
+!!PlotF1      13.2500     128.78     122.93
+!!Info1 Mass %error =      13.3333   -2.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.3333   3    11.0000
+!!PlotC1      13.3333     0.0005     0.0015
+!!PlotF1      13.3333     128.91     123.54
+!!Info1 Mass %error =      13.4167   -2.14
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.4167   3    11.0000
+!!PlotC1      13.4167     0.0005     0.0014
+!!PlotF1      13.4167     129.04     124.10
+!!Info1 Mass %error =      13.5000   -2.16
+!!Progress1  56%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.5000   3    11.0000
+!!PlotC1      13.5000     0.0004     0.0013
+!!PlotF1      13.5000     129.17     124.61
+!!Info1 Mass %error =      13.5833   -2.17
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.5833   3    11.0000
+!!PlotC1      13.5833     0.0004     0.0012
+!!PlotF1      13.5833     129.30     125.09
+!!Info1 Mass %error =      13.6667   -2.18
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.6667   3    11.0000
+!!PlotC1      13.6667     0.0004     0.0011
+!!PlotF1      13.6667     129.43     125.53
+!!Info1 Mass %error =      13.7500   -2.19
+!!Progress1  57%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.7500   3    11.0000
+!!PlotC1      13.7500     0.0003     0.0010
+!!PlotF1      13.7500     129.56     125.93
+!!Info1 Mass %error =      13.8333   -2.19
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.8333   3    11.0000
+!!PlotC1      13.8333     0.0003     0.0009
+!!PlotF1      13.8333     129.70     126.31
+!!Info1 Mass %error =      13.9167   -2.20
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     13:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      13.9167   3    11.0000
+!!PlotC1      13.9167     0.0003     0.0009
+!!PlotF1      13.9167     129.83     126.67
+!!Info1 Mass %error =      14.0000   -2.21
+!!Progress1  58%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.0000   3    11.0000
+!!PlotC1      14.0000     0.0003     0.0008
+!!PlotF1      14.0000     129.96     126.99
+!!Info1 Mass %error =      14.0833   -2.23
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.0833   3    11.0000
+!!PlotC1      14.0833     0.0003     0.0006
+!!PlotF1      14.0833     129.60     127.28
+!!Info1 Mass %error =      14.1667   -2.24
+!!Progress1  59%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.1667   3    11.0000
+!!PlotC1      14.1667     0.0003     0.0005
+!!PlotF1      14.1667     129.22     127.51
+!!Info1 Mass %error =      14.2500   -2.26
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.2500   3    11.0000
+!!PlotC1      14.2500     0.0003     0.0004
+!!PlotF1      14.2500     128.85     127.68
+!!Info1 Mass %error =      14.3333   -2.27
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.3333   3    11.0000
+!!PlotC1      14.3333     0.0003     0.0002
+!!PlotF1      14.3333     128.48     127.79
+!!Info1 Mass %error =      14.4167   -2.28
+!!Progress1  60%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.4167   3    11.0000
+!!PlotC1      14.4167     0.0003     0.0001
+!!PlotF1      14.4167     128.11     127.86
+!!Info1 Mass %error =      14.5000   -2.29
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.5000   3    11.0000
+!!PlotC1      14.5000     0.0003     0.0002
+!!PlotF1      14.5000     127.73     127.87
+!!Info1 Mass %error =      14.5833   -2.30
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.5833   3    11.0000
+!!PlotC1      14.5833     0.0003     0.0003
+!!PlotF1      14.5833     127.36     127.85
+!!Info1 Mass %error =      14.6667   -2.30
+!!Progress1  61%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.6667   3    11.0000
+!!PlotC1      14.6667     0.0003     0.0004
+!!PlotF1      14.6667     126.99     127.79
+!!Info1 Mass %error =      14.7500   -2.31
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.7500   3    11.0000
+!!PlotC1      14.7500     0.0003     0.0004
+!!PlotF1      14.7500     126.61     127.70
+!!Info1 Mass %error =      14.8333   -2.31
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.8333   3    11.0000
+!!PlotC1      14.8333     0.0003     0.0005
+!!PlotF1      14.8333     126.24     127.58
+!!Info1 Mass %error =      14.9167   -2.31
+!!Progress1  62%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     14:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      14.9167   3    11.0000
+!!PlotC1      14.9167     0.0003     0.0006
+!!PlotF1      14.9167     125.87     127.43
+!!Info1 Mass %error =      15.0000   -2.31
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.0000   3    11.0000
+!!PlotC1      15.0000     0.0003     0.0006
+!!PlotF1      15.0000     125.50     127.26
+!!Info1 Mass %error =      15.0833   -2.31
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.0833   3    11.0000
+!!PlotC1      15.0833     0.0005     0.0008
+!!PlotF1      15.0833     124.79     127.06
+!!Info1 Mass %error =      15.1667   -2.32
+!!Progress1  63%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.1667   3    11.0000
+!!PlotC1      15.1667     0.0005     0.0010
+!!PlotF1      15.1667     124.07     126.80
+!!Info1 Mass %error =      15.2500   -2.32
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.2500   3    11.0000
+!!PlotC1      15.2500     0.0005     0.0011
+!!PlotF1      15.2500     123.35     126.50
+!!Info1 Mass %error =      15.3333   -2.32
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.3333   3    11.0000
+!!PlotC1      15.3333     0.0005     0.0012
+!!PlotF1      15.3333     122.63     126.16
+!!Info1 Mass %error =      15.4167   -2.32
+!!Progress1  64%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.4167   3    11.0000
+!!PlotC1      15.4167     0.0005     0.0013
+!!PlotF1      15.4167     121.91     125.78
+!!Info1 Mass %error =      15.5000   -2.31
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.5000   3    11.0000
+!!PlotC1      15.5000     0.0005     0.0014
+!!PlotF1      15.5000     121.19     125.36
+!!Info1 Mass %error =      15.5833   -2.30
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.5833   3    11.0000
+!!PlotC1      15.5833     0.0005     0.0015
+!!PlotF1      15.5833     120.47     124.91
+!!Info1 Mass %error =      15.6667   -2.30
+!!Progress1  65%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.6667   3    11.0000
+!!PlotC1      15.6667     0.0005     0.0015
+!!PlotF1      15.6667     119.75     124.43
+!!Info1 Mass %error =      15.7500   -2.29
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.7500   3    11.0000
+!!PlotC1      15.7500     0.0005     0.0016
+!!PlotF1      15.7500     119.03     123.93
+!!Info1 Mass %error =      15.8333   -2.28
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.8333   3    11.0000
+!!PlotC1      15.8333     0.0005     0.0016
+!!PlotF1      15.8333     118.32     123.40
+!!Info1 Mass %error =      15.9167   -2.26
+!!Progress1  66%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     15:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      15.9167   3    11.0000
+!!PlotC1      15.9167     0.0005     0.0017
+!!PlotF1      15.9167     117.60     122.86
+!!Info1 Mass %error =      16.0000   -2.25
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.0000   3    11.0000
+!!PlotC1      16.0000     0.0005     0.0017
+!!PlotF1      16.0000     116.88     122.29
+!!Info1 Mass %error =      16.0833   -2.24
+!!Progress1  67%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.0833   3    11.0000
+!!PlotC1      16.0833     0.0007     0.0018
+!!PlotF1      16.0833     115.96     121.70
+!!Info1 Mass %error =      16.1667   -2.23
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.1667   3    11.0000
+!!PlotC1      16.1667     0.0007     0.0019
+!!PlotF1      16.1667     115.04     121.08
+!!Info1 Mass %error =      16.2500   -2.22
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.2500   3    11.0000
+!!PlotC1      16.2500     0.0007     0.0020
+!!PlotF1      16.2500     114.12     120.43
+!!Info1 Mass %error =      16.3333   -2.21
+!!Progress1  68%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.3333   3    11.0000
+!!PlotC1      16.3333     0.0007     0.0020
+!!PlotF1      16.3333     113.20     119.75
+!!Info1 Mass %error =      16.4167   -2.19
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.4167   3    11.0000
+!!PlotC1      16.4167     0.0007     0.0021
+!!PlotF1      16.4167     112.28     119.04
+!!Info1 Mass %error =      16.5000   -2.18
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.5000   3    11.0000
+!!PlotC1      16.5000     0.0007     0.0021
+!!PlotF1      16.5000     111.36     118.31
+!!Info1 Mass %error =      16.5833   -2.16
+!!Progress1  69%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.5833   3    11.0000
+!!PlotC1      16.5833     0.0007     0.0022
+!!PlotF1      16.5833     110.43     117.56
+!!Info1 Mass %error =      16.6667   -2.14
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.6667   3    11.0000
+!!PlotC1      16.6667     0.0007     0.0022
+!!PlotF1      16.6667     109.51     116.79
+!!Info1 Mass %error =      16.7500   -2.12
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.7500   3    11.0000
+!!PlotC1      16.7500     0.0007     0.0023
+!!PlotF1      16.7500     108.59     116.00
+!!Info1 Mass %error =      16.8333   -2.10
+!!Progress1  70%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.8333   3    11.0000
+!!PlotC1      16.8333     0.0008     0.0023
+!!PlotF1      16.8333     107.67     115.21
+!!Info1 Mass %error =      16.9167   -2.08
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:02
+!!Info1 Simulated     16:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:01
+!!PlotI1      16.9167   3    11.0000
+!!PlotC1      16.9167     0.0008     0.0023
+!!PlotF1      16.9167     106.75     114.39
+!!Info1 Mass %error =      17.0000   -2.06
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.0000   3    11.0000
+!!PlotC1      17.0000     0.0008     0.0023
+!!PlotF1      17.0000     105.83     113.57
+!!Info1 Mass %error =      17.0833   -2.04
+!!Progress1  71%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.0833   3    11.0000
+!!PlotC1      17.0833     0.0008     0.0024
+!!PlotF1      17.0833     104.78     112.73
+!!Info1 Mass %error =      17.1667   -2.02
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.1667   3    11.0000
+!!PlotC1      17.1667     0.0009     0.0025
+!!PlotF1      17.1667     103.72     111.87
+!!Info1 Mass %error =      17.2500   -2.00
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.2500   3    11.0000
+!!PlotC1      17.2500     0.0009     0.0026
+!!PlotF1      17.2500     102.67     110.99
+!!Info1 Mass %error =      17.3333   -1.98
+!!Progress1  72%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.3333   3    11.0000
+!!PlotC1      17.3333     0.0009     0.0026
+!!PlotF1      17.3333     101.62     110.09
+!!Info1 Mass %error =      17.4167   -1.96
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.4167   3    11.0000
+!!PlotC1      17.4167     0.0009     0.0026
+!!PlotF1      17.4167     100.57     109.18
+!!Info1 Mass %error =      17.5000   -1.94
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.5000   3    11.0000
+!!PlotC1      17.5000     0.0009     0.0026
+!!PlotF1      17.5000      99.51     108.24
+!!Info1 Mass %error =      17.5833   -1.91
+!!Progress1  73%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.5833   3    11.0000
+!!PlotC1      17.5833     0.0010     0.0027
+!!PlotF1      17.5833      98.46     107.29
+!!Info1 Mass %error =      17.6667   -1.88
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:40:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.6667   3    11.0000
+!!PlotC1      17.6667     0.0010     0.0026
+!!PlotF1      17.6667      97.41     106.32
+!!Info1 Mass %error =      17.7500   -1.86
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.7500   3    11.0000
+!!PlotC1      17.7500     0.0011     0.0026
+!!PlotF1      17.7500      96.35     105.34
+!!Info1 Mass %error =      17.8333   -1.83
+!!Progress1  74%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.8333   3    11.0000
+!!PlotC1      17.8333     0.0011     0.0026
+!!PlotF1      17.8333      95.30     104.34
+!!Info1 Mass %error =      17.9167   -1.81
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     17:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      17.9167   3    11.0000
+!!PlotC1      17.9167     0.0011     0.0027
+!!PlotF1      17.9167      94.25     103.34
+!!Info1 Mass %error =      18.0000   -1.78
+!!Progress1  75%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.0000   3    11.0000
+!!PlotC1      18.0000     0.0011     0.0027
+!!PlotF1      18.0000      93.19     102.33
+!!Info1 Mass %error =      18.0833   -1.76
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.0833   3    11.0000
+!!PlotC1      18.0833     0.0011     0.0028
+!!PlotF1      18.0833      92.06     101.31
+!!Info1 Mass %error =      18.1667   -1.73
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.1667   3    11.0000
+!!PlotC1      18.1667     0.0012     0.0028
+!!PlotF1      18.1667      90.93     100.28
+!!Info1 Mass %error =      18.2500   -1.70
+!!Progress1  76%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.2500   3    11.0000
+!!PlotC1      18.2500     0.0012     0.0028
+!!PlotF1      18.2500      89.80      99.23
+!!Info1 Mass %error =      18.3333   -1.68
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.3333   3    11.0000
+!!PlotC1      18.3333     0.0012     0.0028
+!!PlotF1      18.3333      88.67      98.18
+!!Info1 Mass %error =      18.4167   -1.65
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.4167   3    11.0000
+!!PlotC1      18.4167     0.0012     0.0029
+!!PlotF1      18.4167      87.54      97.11
+!!Info1 Mass %error =      18.5000   -1.62
+!!Progress1  77%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.5000   3    11.0000
+!!PlotC1      18.5000     0.0013     0.0031
+!!PlotF1      18.5000      86.41      96.02
+!!Info1 Mass %error =      18.5833   -1.59
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:35:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.5833   3    11.0000
+!!PlotC1      18.5833     0.0011     0.0035
+!!PlotF1      18.5833      85.28      94.94
+!!Info1 Mass %error =      18.6667   -1.56
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:40:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.6667   3    11.0000
+!!PlotC1      18.6667     0.0013     0.0031
+!!PlotF1      18.6667      84.14      93.85
+!!Info1 Mass %error =      18.7500   -1.53
+!!Progress1  78%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:45:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.7500   3    11.0000
+!!PlotC1      18.7500     0.0014     0.0032
+!!PlotF1      18.7500      83.01      92.73
+!!Info1 Mass %error =      18.8333   -1.50
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:50:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.8333   3    11.0000
+!!PlotC1      18.8333     0.0013     0.0033
+!!PlotF1      18.8333      81.88      91.61
+!!Info1 Mass %error =      18.9167   -1.47
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     18:55:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      18.9167   3    11.0000
+!!PlotC1      18.9167     0.0014     0.0033
+!!PlotF1      18.9167      80.75      90.48
+!!Info1 Mass %error =      19.0000   -1.44
+!!Progress1  79%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:00:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.0000   3    11.0000
+!!PlotC1      19.0000     0.0014     0.0033
+!!PlotF1      19.0000      79.62      89.34
+!!Info1 Mass %error =      19.0833   -1.41
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:05:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.0833   3    11.0000
+!!PlotC1      19.0833     0.0015     0.0032
+!!PlotF1      19.0833      78.45      88.20
+!!Info1 Mass %error =      19.1667   -1.38
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:10:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.1667   3    11.0000
+!!PlotC1      19.1667     0.0015     0.0034
+!!PlotF1      19.1667      77.29      87.05
+!!Info1 Mass %error =      19.2500   -1.35
+!!Progress1  80%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:15:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.2500   3    11.0000
+!!PlotC1      19.2500     0.0016     0.0033
+!!PlotF1      19.2500      76.12      85.89
+!!Info1 Mass %error =      19.3333   -1.32
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:20:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.3333   3    11.0000
+!!PlotC1      19.3333     0.0016     0.0033
+!!PlotF1      19.3333      74.96      84.72
+!!Info1 Mass %error =      19.4167   -1.28
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:25:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.4167   3    11.0000
+!!PlotC1      19.4167     0.0016     0.0032
+!!PlotF1      19.4167      73.79      83.55
+!!Info1 Mass %error =      19.5000   -1.25
+!!Progress1  81%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:30:00
+!!Info1 EFT: 12:18:25
+!!Info1 ETR:   0:00:01
+!!PlotI1      19.5000   3    11.0000
+!!PlotC1      19.5000     0.0018     0.0031
+!!PlotF1      19.5000      72.63      82.36
+!!Info1 Mass %error =      19.5833   -1.22
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      19.5833   3    11.0000
+!!PlotC1      19.5833     0.0017     0.0032
+!!PlotF1      19.5833      71.46      81.16
+!!Info1 Mass %error =      19.6667   -1.19
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      19.6667   3    11.0000
+!!PlotC1      19.6667     0.0017     0.0034
+!!PlotF1      19.6667      70.30      79.96
+!!Info1 Mass %error =      19.7500   -1.17
+!!Progress1  82%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      19.7500   3    11.0000
+!!PlotC1      19.7500     0.0018     0.0034
+!!PlotF1      19.7500      69.13      78.75
+!!Info1 Mass %error =      19.8333   -1.13
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      19.8333   3    11.0000
+!!PlotC1      19.8333     0.0018     0.0036
+!!PlotF1      19.8333      67.97      77.54
+!!Info1 Mass %error =      19.9167   -1.10
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     19:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      19.9167   3    11.0000
+!!PlotC1      19.9167     0.0020     0.0034
+!!PlotF1      19.9167      66.81      76.31
+!!Info1 Mass %error =      20.0000   -1.06
+!!Progress1  83%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.0000   3    11.0000
+!!PlotC1      20.0000     0.0021     0.0033
+!!PlotF1      20.0000      65.64      75.08
+!!Info1 Mass %error =      20.0833   -1.03
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.0833   3    11.0000
+!!PlotC1      20.0833     0.0022     0.0031
+!!PlotF1      20.0833      64.51      73.83
+!!Info1 Mass %error =      20.1667   -1.00
+!!Progress1  84%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.1667   3    11.0000
+!!PlotC1      20.1667     0.0022     0.0031
+!!PlotF1      20.1667      63.38      72.59
+!!Info1 Mass %error =      20.2500   -0.97
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.2500   3    11.0000
+!!PlotC1      20.2500     0.0022     0.0032
+!!PlotF1      20.2500      62.25      71.34
+!!Info1 Mass %error =      20.3333   -0.95
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.3333   3    11.0000
+!!PlotC1      20.3333     0.0022     0.0031
+!!PlotF1      20.3333      61.13      70.10
+!!Info1 Mass %error =      20.4167   -0.91
+!!Progress1  85%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.4167   3    11.0000
+!!PlotC1      20.4167     0.0023     0.0032
+!!PlotF1      20.4167      60.00      68.86
+!!Info1 Mass %error =      20.5000   -0.88
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.5000   3    11.0000
+!!PlotC1      20.5000     0.0024     0.0032
+!!PlotF1      20.5000      58.87      67.61
+!!Info1 Mass %error =      20.5833   -0.85
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.5833   3    11.0000
+!!PlotC1      20.5833     0.0024     0.0033
+!!PlotF1      20.5833      57.74      66.39
+!!Info1 Mass %error =      20.6667   -0.82
+!!Progress1  86%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.6667   3    11.0000
+!!PlotC1      20.6667     0.0026     0.0032
+!!PlotF1      20.6667      56.61      65.16
+!!Info1 Mass %error =      20.7500   -0.79
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.7500   3    11.0000
+!!PlotC1      20.7500     0.0026     0.0032
+!!PlotF1      20.7500      55.49      63.90
+!!Info1 Mass %error =      20.8333   -0.76
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.8333   3    11.0000
+!!PlotC1      20.8333     0.0026     0.0031
+!!PlotF1      20.8333      54.36      62.66
+!!Info1 Mass %error =      20.9167   -0.73
+!!Progress1  87%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     20:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      20.9167   3    11.0000
+!!PlotC1      20.9167     0.0025     0.0031
+!!PlotF1      20.9167      53.23      61.41
+!!Info1 Mass %error =      21.0000   -0.69
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.0000   3    11.0000
+!!PlotC1      21.0000     0.0024     0.0031
+!!PlotF1      21.0000      52.10      60.17
+!!Info1 Mass %error =      21.0833   -0.66
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.0833   3    11.0000
+!!PlotC1      21.0833     0.0022     0.0031
+!!PlotF1      21.0833      51.04      58.96
+!!Info1 Mass %error =      21.1667   -0.63
+!!Progress1  88%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.1667   3    11.0000
+!!PlotC1      21.1667     0.0019     0.0036
+!!PlotF1      21.1667      49.98      57.77
+!!Info1 Mass %error =      21.2500   -0.60
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.2500   3    11.0000
+!!PlotC1      21.2500     0.0019     0.0039
+!!PlotF1      21.2500      48.92      56.59
+!!Info1 Mass %error =      21.3333   -0.58
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.3333   3    11.0000
+!!PlotC1      21.3333     0.0020     0.0038
+!!PlotF1      21.3333      47.86      55.40
+!!Info1 Mass %error =      21.4167   -0.55
+!!Progress1  89%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.4167   3    11.0000
+!!PlotC1      21.4167     0.0021     0.0038
+!!PlotF1      21.4167      46.80      54.19
+!!Info1 Mass %error =      21.5000   -0.51
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.5000   3    11.0000
+!!PlotC1      21.5000     0.0022     0.0041
+!!PlotF1      21.5000      45.74      52.96
+!!Info1 Mass %error =      21.5833   -0.48
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.5833   3    11.0000
+!!PlotC1      21.5833     0.0025     0.0039
+!!PlotF1      21.5833      44.68      51.70
+!!Info1 Mass %error =      21.6667   -0.46
+!!Progress1  90%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.6667   3    11.0000
+!!PlotC1      21.6667     0.0025     0.0036
+!!PlotF1      21.6667      43.62      50.43
+!!Info1 Mass %error =      21.7500   -0.44
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.7500   3    11.0000
+!!PlotC1      21.7500     0.0025     0.0040
+!!PlotF1      21.7500      42.56      49.16
+!!Info1 Mass %error =      21.8333   -0.41
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.8333   3    11.0000
+!!PlotC1      21.8333     0.0018     0.0043
+!!PlotF1      21.8333      41.50      47.93
+!!Info1 Mass %error =      21.9167   -0.38
+!!Progress1  91%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     21:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      21.9167   3    11.0000
+!!PlotC1      21.9167     0.0018     0.0041
+!!PlotF1      21.9167      40.44      46.79
+!!Info1 Mass %error =      22.0000   -0.36
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.0000   3    11.0000
+!!PlotC1      22.0000     0.0020     0.0037
+!!PlotF1      22.0000      39.38      45.60
+!!Info1 Mass %error =      22.0833   -0.34
+!!Progress1  92%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.0833   3    11.0000
+!!PlotC1      22.0833     0.0022     0.0035
+!!PlotF1      22.0833      38.44      44.36
+!!Info1 Mass %error =      22.1667   -0.32
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.1667   3    11.0000
+!!PlotC1      22.1667     0.0026     0.0034
+!!PlotF1      22.1667      37.50      43.11
+!!Info1 Mass %error =      22.2500   -0.30
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.2500   3    11.0000
+!!PlotC1      22.2500     0.0028     0.0031
+!!PlotF1      22.2500      36.56      41.82
+!!Info1 Mass %error =      22.3333   -0.27
+!!Progress1  93%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.3333   3    11.0000
+!!PlotC1      22.3333     0.0020     0.0047
+!!PlotF1      22.3333      35.62      40.65
+!!Info1 Mass %error =      22.4167   -0.26
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.4167   3    11.0000
+!!PlotC1      22.4167     0.0026     0.0042
+!!PlotF1      22.4167      34.68      39.49
+!!Info1 Mass %error =      22.5000   -0.23
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.5000   3    11.0000
+!!PlotC1      22.5000     0.0029     0.0032
+!!PlotF1      22.5000      33.74      38.21
+!!Info1 Mass %error =      22.5833   -0.22
+!!Progress1  94%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.5833   3    11.0000
+!!PlotC1      22.5833     0.0027     0.0030
+!!PlotF1      22.5833      32.80      36.96
+!!Info1 Mass %error =      22.6667   -0.20
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.6667   3    11.0000
+!!PlotC1      22.6667     0.0026     0.0029
+!!PlotF1      22.6667      31.86      35.78
+!!Info1 Mass %error =      22.7500   -0.18
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.7500   3    11.0000
+!!PlotC1      22.7500     0.0026     0.0028
+!!PlotF1      22.7500      30.92      34.64
+!!Info1 Mass %error =      22.8333   -0.17
+!!Progress1  95%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.8333   3    11.0000
+!!PlotC1      22.8333     0.0026     0.0027
+!!PlotF1      22.8333      29.98      33.52
+!!Info1 Mass %error =      22.9167   -0.15
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     22:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      22.9167   3    11.0000
+!!PlotC1      22.9167     0.0026     0.0027
+!!PlotF1      22.9167      29.04      32.44
+!!Info1 Mass %error =      23.0000   -0.14
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.0000   3    11.0000
+!!PlotC1      23.0000     0.0026     0.0026
+!!PlotF1      23.0000      28.10      31.37
+!!Info1 Mass %error =      23.0833   -0.12
+!!Progress1  96%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:05:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.0833   3    11.0000
+!!PlotC1      23.0833     0.0025     0.0025
+!!PlotF1      23.0833      27.34      30.34
+!!Info1 Mass %error =      23.1667   -0.11
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:10:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.1667   3    11.0000
+!!PlotC1      23.1667     0.0025     0.0023
+!!PlotF1      23.1667      26.58      29.38
+!!Info1 Mass %error =      23.2500   -0.10
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:15:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.2500   3    11.0000
+!!PlotC1      23.2500     0.0024     0.0022
+!!PlotF1      23.2500      25.83      28.46
+!!Info1 Mass %error =      23.3333   -0.09
+!!Progress1  97%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:20:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.3333   3    11.0000
+!!PlotC1      23.3333     0.0023     0.0022
+!!PlotF1      23.3333      25.08      27.58
+!!Info1 Mass %error =      23.4167   -0.08
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:25:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.4167   3    11.0000
+!!PlotC1      23.4167     0.0023     0.0021
+!!PlotF1      23.4167      24.32      26.72
+!!Info1 Mass %error =      23.5000   -0.07
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:30:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.5000   3    11.0000
+!!PlotC1      23.5000     0.0024     0.0021
+!!PlotF1      23.5000      23.57      25.88
+!!Info1 Mass %error =      23.5833   -0.06
+!!Progress1  98%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:35:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.5833   3    11.0000
+!!PlotC1      23.5833     0.0024     0.0020
+!!PlotF1      23.5833      22.81      25.06
+!!Info1 Mass %error =      23.6667   -0.05
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:40:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.6667   3    11.0000
+!!PlotC1      23.6667     0.0024     0.0020
+!!PlotF1      23.6667      22.06      24.25
+!!Info1 Mass %error =      23.7500   -0.04
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:45:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.7500   3    11.0000
+!!PlotC1      23.7500     0.0025     0.0020
+!!PlotF1      23.7500      21.30      23.45
+!!Info1 Mass %error =      23.8333   -0.04
+!!Progress1  99%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:50:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.8333   3    11.0000
+!!PlotC1      23.8333     0.0026     0.0020
+!!PlotF1      23.8333      20.55      22.65
+!!Info1 Mass %error =      23.9167   -0.03
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     23:55:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      23.9167   3    11.0000
+!!PlotC1      23.9167     0.0027     0.0020
+!!PlotF1      23.9167      19.79      21.86
+!!Info1 Mass %error =      24.0000   -0.03
+!!Progress1 100%
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     24:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      24.0000   3    11.0000
+!!PlotC1      24.0000     0.0028     0.0020
+!!PlotF1      24.0000      19.04      21.06
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     24:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!output1
+!!output1
+!!output1  Model time    24.0000 hrs:
+!!output1  *** warning W2019 *** at label:
+!!output1
+!!output1  Water level rose beyond the max level of section data
+!!output1  Solution computed assuming extra   3.0m wall for non-CES sections, or max depth x 1.5 for CES sections, at max breadth
+!!output1   Full details in 1D diagnostics file...
+!!output1 Simulation time elapsed (s):             3
+!!output1
+!!output1 run completed
+!!output1
+!!output1  Number of unconverged timesteps:         0
+!!Summary1 Number of unconverged timesteps:         0
+!!output1  Proportion of simulation unconverged:   0.00%
+!!Summary1 Proportion of simulation unconverged:   0.00%
+!!output1
+!!output1  ********* Mass balance summary *********
+!!output1  Mass balance calculated every    300.0s
+!!output1
+!!output1  Initial volume:            39596.8    m3
+!!output1  Final volume:              53229.4    m3
+!!output1 -----------------------
+!!output1  Total boundary inflow  :  0.550629E+07m3
+!!output1  Total boundary outflow :  0.549258E+07m3
+!!output1  Total lat. link inflow :   0.00000    m3
+!!output1  Total lat. link outflow:   0.00000    m3
+!!output1 -----------------------
+!!output1  Max. system volume:        270549.    m3
+!!output1  Max. |volume| increase:    230952.    m3
+!!output1  Max. boundary inflow:      129.956    m3/s
+!!output1  Max. boundary outflow:     127.874    m3/s
+!!output1 -----------------------
+!!output1  Net increase in volume:    13632.6    m3
+!!output1  Net inflow volume:         13709.5    m3
+!!output1  Volume discrepancy:        76.8984    m3
+!!output1  Mass balance error:          -0.03% (of peak system volume)
+!!output1  Mass balance error [2]:      -0.00% (of boundary inflow volume)
+!!output1
+!!output1  ******* End mass balance summary *******
+!!output1
+!!output1  Writing binary results to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.zzn
+!!output1  outputting max/min/means to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.mmm
+!!Info1 Timestep   300.00
+!!Info1 Elapsed    0:00:03
+!!Info1 Simulated     24:00:00
+!!Info1 EFT: 12:18:24
+!!Info1 ETR:   0:00:00
+!!PlotI1      24.0000   3    11.0000
+!!PlotC1      24.0000     0.0028     0.0020
+!!output1  Convergence plot saved to C:\Projects\Flood Modeller API\Working Copy\sample scripts\sample_data\EX3.bmp

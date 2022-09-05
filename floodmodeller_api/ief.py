@@ -20,12 +20,15 @@ import time
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
+from tqdm import trange
 
 import pandas as pd
+import datetime as dt
 
 from ._base import FMFile
 from .ief_flags import flags
 from .zzn import ZZN
+from .logs import lf_factory
 
 
 class IEF(FMFile):
@@ -405,6 +408,11 @@ class IEF(FMFile):
                 process = Popen(
                     run_command, cwd=os.path.dirname(self._filepath)
                 )  # execute simulation
+
+                # progress bar based on log files
+                self._init_log_file()
+                self._update_progress_bar(process)
+
                 while process.poll() is None:
                     # Process still running
                     time.sleep(1)
@@ -427,28 +435,168 @@ class IEF(FMFile):
         except Exception as e:
             self._handle_exception(e, when="simulate")
 
+    def _get_result_filepath(self, suffix):
+
+        if hasattr(self, "Results"):
+            path = Path(self.Results).with_suffix("." + suffix)
+            if not path.is_absolute():
+                # set cwd to ief location and resolve path
+                path = Path(self._filepath.parent, path).resolve()
+
+        else:
+            path = self._filepath.with_suffix("." + suffix)
+
+        return path
+
     def get_results(self) -> ZZN:
         """If results for the simulation exist, this function returns them as a ZZN class object
 
         Returns:
-            floodmodeller_api.ZND class object
+            floodmodeller_api.ZZN class object
         """
 
-        # Get results location
-        if hasattr(self, "Results"):
-            result_path = Path(self.Results).with_suffix(".zzn")
-            if not result_path.is_absolute():
-                # set cwd to ief location and resolve path
-                result_path = Path(self._filepath.parent, result_path).resolve()
-
-        else:
-            result_path = self._filepath.with_suffix(".zzn")
+        # Get zzn location
+        result_path = self._get_result_filepath(suffix="zzn")
 
         if result_path.exists():
             return ZZN(result_path)
 
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
+
+    def get_log(self):
+        """If log files for the simulation exist, this function returns them as a LF1 class object
+
+        Returns:
+            floodmodeller_api.LF1 class object
+        """
+
+        suffix, steady = self._determine_lf_type()
+
+        # Get lf location
+        lf_path = self._get_result_filepath(suffix)
+
+        if not lf_path.exists():
+            raise FileNotFoundError("Log file file (" + suffix + ") not found")
+
+        return lf_factory(lf_path, suffix, steady)
+
+    def _determine_lf_type(self):  # (str, bool) or (None, None):
+        """Determine the log file type"""
+
+        if self.RunType == "Unsteady":
+            suffix = "lf1"
+            steady = False
+
+        elif self.RunType == "Steady":
+            suffix = "lf1"
+            steady = True
+
+        else:
+            raise ValueError(f'Unexpected run type "{self.RunType}"')
+
+        return suffix, steady
+
+    def _init_log_file(self):
+        """Checks for a new log file, waiting for its creation if necessary"""
+
+        # determine log file type based on self.RunType
+        try:
+            suffix, steady = self._determine_lf_type()
+        except ValueError:
+            self._no_log_file(f'run type "{self.RunType}" not supported')
+            self._lf = None
+            return
+
+        # ensure progress bar is supported for that type
+        if not (suffix == "lf1" and steady == False):
+            self._no_log_file(f"only 1D unsteady runs are supported")
+            self._lf = None
+            return
+
+        # find what log filepath should be
+        lf_filepath = self._get_result_filepath(suffix)
+
+        # wait for log file to exist
+        log_file_exists = False
+        max_time = time.time() + 10
+
+        while not log_file_exists:
+
+            time.sleep(0.1)
+
+            log_file_exists = lf_filepath.is_file()
+
+            # timeout
+            if time.time() > max_time:
+                self._no_log_file("log file is expected but not detected")
+                self._lf = None
+                return
+
+        # wait for new log file
+        old_log_file = True
+        max_time = time.time() + 10
+
+        while old_log_file:
+
+            time.sleep(0.1)
+
+            # difference between now and when log file was last modified
+            last_modified_timestamp = lf_filepath.stat().st_mtime
+            last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
+            time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
+
+            # it's old if it's over 5 seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > 5
+
+            # timeout
+            if time.time() > max_time:
+                self._no_log_file("log file is from previous run")
+                self._lf = None
+                return
+
+        # create LF instance
+        self._lf = lf_factory(lf_filepath, suffix, steady)
+
+    def _no_log_file(self, reason):
+        """Warning that there will be no progress bar"""
+
+        print("No progress bar as " + reason + ". Simulation will continue as usual.")
+
+    def _update_progress_bar(self, process: Popen):
+        """Updates progress bar based on log file"""
+
+        # only if there is a log file
+        if self._lf is None:
+            return
+
+        # tqdm progress bar
+        for i in trange(100):
+
+            # Process still running
+            while process.poll() is None:
+
+                time.sleep(0.1)
+
+                # Find progress
+                self._lf.read(suppress_final_step=True)
+                progress = self._lf.report_progress()
+
+                # Reached i% progress => move onto waiting for (i+1)%
+                if progress > i:
+                    break
+
+            # Process stopped
+            if process.poll() is not None:
+
+                # Find final progress
+                self._lf.read(suppress_final_step=True)
+                progress = self._lf.report_progress()
+
+                if progress > i:
+                    pass  # stopped because it completed
+                else:
+                    break  # stopped for another reason
 
     def _summarise_exy(self):
         """Reads and summarises associated exy file if available"""
