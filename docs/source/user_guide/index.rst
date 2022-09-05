@@ -16,6 +16,7 @@ can be used, code reference and examples.
    xml2d
    units
    urban1d_units
+   additional_functionality
    
    
 
