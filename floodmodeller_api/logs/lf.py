@@ -29,6 +29,17 @@ from .lf_helpers import state_factory
 
 
 class LF(FMFile):
+    """Reads and processes Flood Modeller log file
+
+    Args:
+        lf1_filepath (str): Full filepath to model log file
+        data_to_extract (dict): Dictionary defining each line type to parse
+        steady (bool): True if for a steady-state simulation
+
+    Output:
+        Initiates 'LF' class object
+    """
+
     def __init__(
         self,
         lf_filepath: Optional[Union[str, Path]],
@@ -66,8 +77,16 @@ class LF(FMFile):
         if not suppress_final_step:
             self._set_attributes()
 
-    def read(self, force_reread: bool = False, suppress_final_step: bool = False):
-        """Reads LF file, starting from where it stopped reading last time"""
+    def read(
+        self, force_reread: bool = False, suppress_final_step: bool = False
+    ) -> None:
+        """Reads log file
+
+        Args:
+            force_reread (bool): If False, starts reading from where it stopped last time. If True, starts reading from the start of the file.
+            suppress_final_step (bool): If False, dataframes and dictionary are not created as attributes.
+
+        """
 
         self._read(force_reread, suppress_final_step)
 
@@ -135,7 +154,7 @@ class LF(FMFile):
 
             except KeyError:
                 pass
-        
+
         raise Exception("No index variable found")
 
     def _set_attributes(self):
@@ -168,7 +187,11 @@ class LF(FMFile):
         delattr(self, "info")
 
     def to_dataframe(self) -> pd.DataFrame:
-        """Collects Parser values (of type "all") into pandas dataframe"""
+        """Collects parameter values that change throughout simulation into a dataframe
+
+        Returns:
+            pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
+        """
 
         # TODO: make more like ZZN.to_dataframe
 
@@ -209,7 +232,11 @@ class LF(FMFile):
         print("Last line read: " + str(self._no_lines))
 
     def report_progress(self) -> float:
-        """Returns last progress percentage for unsteady simulations"""
+        """Returns progress for unsteady simulations
+
+        Returns:
+            float: Last progress percentage recorded in log file
+        """
 
         return self._state.report_progress()
 
@@ -219,6 +246,26 @@ class LF1(LF):
 
     Args:
         lf1_filepath (str): Full filepath to model lf1 file
+        steady (bool): True for steady-state simulations
+
+    **Attributes (unsteady)**
+
+    Args:
+        info (dict): Parameters with one value per simulation
+        mass_error (pandas.DataFrame): Mass error
+        timestep (pandas.DataFrame): Timestep
+        elapsed (pandas.DataFrame): Elapsed
+        simulated (pandas.DataFrame): Simulated
+        iterations (pandas.DataFrame): PlotI1
+        convergence (pandas.DataFrame): PlotC1
+        flow (pandas.DataFrame): PlotF1
+
+    **Attributes (steady)**
+
+    Args:
+        info (dict): Parameters with one value per simulation
+        network_iteration (pandas.DataFrame): Network iteration
+        largest_change_in_split_from_last_iteration (pandas.DataFrame): Largest change in split from last iteration
 
     Output:
         Initiates 'LF1' class object
@@ -242,6 +289,22 @@ class LF2(LF):
 
     Args:
         lf2_filepath (str): Full filepath to model lf2 file
+
+    **Attributes**
+
+    Args:
+        info (dict): Parameters with one value per simulation
+        simulated (pandas.DataFrame): Simulated
+        wet_cells (pandas.DataFrame): Wet cells
+        2D_boundary_inflow (pandas.DataFrame): 2D boundary inflow
+        2D_boundary_outflow (pandas.DataFrame): 2D boundary outflow
+        1D_link_flow (pandas.DataFrame): 1D link flow
+        change_in_volume (pandas.DataFrame): Change in volume
+        volume (pandas.DataFrame): Volume
+        inst_mass_err (pandas.DataFrame): Inst mass error
+        mass_error (pandas.DataFrame): Mass error
+        largest_cr (pandas.DataFrame): Largest Cr
+        elapsed (pandas.DataFrame): Elapsed
 
     Output:
         Initiates 'LF2' class object

@@ -197,7 +197,7 @@ class test_LF1(unittest.TestCase):
 
         ief_fp = os.path.join(test_workspace, "ex3.ief")
         ief = IEF(ief_fp)
-        lf1_from_ief = ief.get_lf1()
+        lf1_from_ief = ief.get_log()
 
         self.assertEqual(lf1._filepath, lf1_from_ief._filepath)
         self.assertDictEqual(lf1.info, lf1_from_ief.info)

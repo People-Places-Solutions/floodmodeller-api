@@ -123,7 +123,6 @@ lf2_data_to_extract = {
     "change_in_volume": {"class": FloatParser, "prefix": "!!PlotG2 Change in volume", "data_type": "all"},
     "volume": {"class": FloatParser, "prefix": "!!PlotG2 Volume", "data_type": "all"},
     "inst_mass_err": {"class": FloatParser, "prefix": "!!PlotG2 Inst. mass err", "data_type": "all"},
-    "inst_mass_err": {"class": FloatParser, "prefix": "!!PlotG2 Inst. mass err", "data_type": "all"},
     "mass_error": {"class": FloatParser, "prefix": "!!PlotG2 Mass error", "data_type": "all"},
     "largest_cr": {"class": FloatParser, "prefix": "!!PlotG2 Largest Cr", "data_type": "all"},
     "elapsed": {"class": TimeDeltaHMSParser, "prefix": "!!Info2 Elapsed", "data_type": "all"},  

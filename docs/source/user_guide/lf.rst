@@ -14,8 +14,13 @@ The ``LF1`` and ``LF2`` classes allow for rapid reading of Flood Modeller's log 
 
 Both the ``LF1`` and ``LF2`` classes are used in the same way.
 
+.. note:: 
+   Log files will not always be present if simulations are run through the Flood Modeller UI but should be present if run via the API.
+
 Reference
 --------------
+``LF1``
+~~~~~~~
 .. autoclass:: floodmodeller_api.LF1
     
    .. automethod:: to_dataframe
@@ -24,6 +29,8 @@ Reference
 
    .. automethod:: report_progress
 
+``LF2``
+~~~~~~~
 .. autoclass:: floodmodeller_api.LF2
     
    .. automethod:: to_dataframe
@@ -64,6 +71,7 @@ This prints the following pandas dataframe object:
     0 days 23:55:00       -0.03        0 days 00:05:00 0 days 00:00:03   3.0     11.0            0.0027             0.0020   19.79    21.86
     1 days 00:00:00       -0.03        0 days 00:05:00 0 days 00:00:03   3.0     11.0            0.0028             0.0020   19.04    21.06
 
+
 **Example 2 - Reading log file and printing dictionary**
 
 The ``LF1`` class can also be used to directly access the fixed data stored within the .lf1 file, using the ``info`` dictionary.
@@ -81,3 +89,18 @@ This prints the following dictionary:
 .. code:: python
 
     {'version': '5.0.0.7752', 'qtol': 0.01, 'htol': 0.01, 'start_time': datetime.timedelta(0), 'end_time': datetime.timedelta(days=1), 'ran_at': datetime.datetime(2021, 9, 8, 12, 18, 21), 'max_itr': 11.0, 'min_itr': 3.0, 'progress': 100.0, 'EFT': datetime.time(12, 18, 24), 'ETR': datetime.timedelta(0), 'simulation_time_elapsed': datetime.timedelta(seconds=3), 'number_of_unconverged_timesteps': 0.0, 'proporion_of_simulation_unconverged': 0.0, 'mass_balance_calculated_every': datetime.timedelta(seconds=300), 'initial_volume': 39596.8, 'final_volume': 53229.4, 'total_lat_link_outflow': 0.0, 'max_system_volume': 270549.0, 'max_volume_increase': 230952.0, 'max_boundary_inflow': 129.956, 'max_boundary_outflow': 127.874, 'net_volume_increase': 13632.6, 'net_inflow_volume': 13709.5, 'volume_discrepancy': 76.8984, 'mass_balance_error': -0.03, 'mass_balance_error_2': -0.0}
+
+
+**Example 3 - Plotting convergence**
+
+The dataframe attributes of ``LF1`` can be easily plotted.
+
+.. code:: python
+
+    from floodmodeller_api import LF1
+    import matplotlib.pyplot as plt
+
+    lf1 = LF1("..\\sample_scripts\\sample_data\\ex3.lf1")
+
+    lf.convergence.plot()
+    plt.savefig("convergence.png")
