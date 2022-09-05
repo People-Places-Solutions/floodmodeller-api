@@ -14,8 +14,13 @@ The ``LF1`` and ``LF2`` classes allow for rapid reading of Flood Modeller's log 
 
 Both the ``LF1`` and ``LF2`` classes are used in the same way.
 
-.. note:: 
-   Log files will not always be present if simulations are run through the Flood Modeller UI but should be present if run via the API.
+.. warning:: 
+   Log files will not always be present if simulations are run through the Flood Modeller 
+   UI but should be present if run via the API.
+
+.. note::
+    As well as reading the log files directly using the LF1 or LF2 classes, you can also get
+    the log for a simulation directly using the :py:meth:`floodmodeller_api.IEF.get_log` method.
 
 Reference
 --------------
@@ -88,7 +93,35 @@ This prints the following dictionary:
 
 .. code:: python
 
-    {'version': '5.0.0.7752', 'qtol': 0.01, 'htol': 0.01, 'start_time': datetime.timedelta(0), 'end_time': datetime.timedelta(days=1), 'ran_at': datetime.datetime(2021, 9, 8, 12, 18, 21), 'max_itr': 11.0, 'min_itr': 3.0, 'progress': 100.0, 'EFT': datetime.time(12, 18, 24), 'ETR': datetime.timedelta(0), 'simulation_time_elapsed': datetime.timedelta(seconds=3), 'number_of_unconverged_timesteps': 0.0, 'proporion_of_simulation_unconverged': 0.0, 'mass_balance_calculated_every': datetime.timedelta(seconds=300), 'initial_volume': 39596.8, 'final_volume': 53229.4, 'total_lat_link_outflow': 0.0, 'max_system_volume': 270549.0, 'max_volume_increase': 230952.0, 'max_boundary_inflow': 129.956, 'max_boundary_outflow': 127.874, 'net_volume_increase': 13632.6, 'net_inflow_volume': 13709.5, 'volume_discrepancy': 76.8984, 'mass_balance_error': -0.03, 'mass_balance_error_2': -0.0}
+    {
+        'version': '5.0.0.7752',
+        'qtol': 0.01,
+        'htol': 0.01,
+        'start_time': datetime.timedelta(0),
+        'end_time': datetime.timedelta(days=1),
+        'ran_at': datetime.datetime(2021, 9, 8, 12, 18, 21),
+        'max_itr': 11.0,
+        'min_itr': 3.0,
+        'progress': 100.0,
+        'EFT': datetime.time(12, 18, 24),
+        'ETR': datetime.timedelta(0),
+        'simulation_time_elapsed': datetime.timedelta(seconds=3),
+        'number_of_unconverged_timesteps': 0.0,
+        'proporion_of_simulation_unconverged': 0.0,
+        'mass_balance_calculated_every': datetime.timedelta(seconds=300),
+        'initial_volume': 39596.8,
+        'final_volume': 53229.4,
+        'total_lat_link_outflow': 0.0,
+        'max_system_volume': 270549.0,
+        'max_volume_increase': 230952.0,
+        'max_boundary_inflow': 129.956,
+        'max_boundary_outflow': 127.874,
+        'net_volume_increase': 13632.6,
+        'net_inflow_volume': 13709.5,
+        'volume_discrepancy': 76.8984,
+        'mass_balance_error': -0.03,
+        'mass_balance_error_2': -0.0
+    }
 
 
 **Example 3 - Plotting convergence**
@@ -104,3 +137,6 @@ The dataframe attributes of ``LF1`` can be easily plotted.
 
     lf.convergence.plot()
     plt.savefig("convergence.png")
+
+.. image:: convergence.png
+   :width: 500
