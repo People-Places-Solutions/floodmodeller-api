@@ -18,7 +18,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
 from .sections import RIVER
-from .structures import BRIDGE, CONDUIT, SLUICE, ORIFICE, SPILL, BLOCKAGE, CULVERT, RNWEIR
+from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR
+from .losses import BLOCKAGE, CULVERT
+from .conduits import CONDUIT
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {

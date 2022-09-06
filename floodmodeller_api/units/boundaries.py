@@ -30,9 +30,9 @@ class QTBDY(Unit):
         name (str, optional): Unit name. Defaults to None.
         comment (str, optional): Comment included in unit. Defaults to None.
         timeoffset (float, optional): Defaults to None.
-        timeunit (str, optional): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. Defaults to None.
-        extendmethod (str, optional): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
+        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to None.
+        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
         flowmultiplier (float, optional): Multiplier applied to all flow values at runtime. Defaults to None.
         minflow (Float, optional): Minimum flow value applied to the boundary at runtime. Defaults to None.
         data (pandas.Series, optional): Series object with variable ``'Flow'`` and index ``'Time'``. Defaults to None.
@@ -150,9 +150,9 @@ class HTBDY(Unit):
     Args:
         name (str, optional): Unit name. Defaults to None.
         comment (str, optional): Comment included in unit. Defaults to None.
-        timeunit (str, optional): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options. Defaults to None.
-        extendmethod (str, optional): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
+        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to None.
+        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
         data (pandas.Series, optional): Series object with columns ``'Time'`` and ``'Stage'``. Defaults to None.
 
     Returns:
@@ -238,7 +238,7 @@ class QHBDY(Unit):
     Args:
         name (str, optional): Unit name. Defaults to None.
         comment (str, optional): Comment included in unit. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: ‘LINEAR’ or ‘SPLINE’. Defaults to None.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
         data (pandas.Series, optional): Series object with columns ``'Flow'`` and ``'Stage'``. Defaults to None.
     Returns:
         QHBDY: Flood Modeller QHBDY Unit class object
