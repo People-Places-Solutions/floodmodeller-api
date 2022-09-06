@@ -184,8 +184,8 @@ class BLOCKAGE(Unit):
         inlet_loss (float): Inlet loss coefficient
         outlet_loss (float): Outlet loss coefficient
         timeoffset (float): Time Datum Adjustment
-        timeunit_blockage (str): Unit of time, e.g. ‘HOURS’, ‘MINUTES’ or ‘SECONDS’. See Flood Modeller documentation for all available options.
-        extendmethod (str): Data extending method: ‘EXTEND’, ‘NOEXTEND’ or ‘REPEAT’. Defaults to None.
+        timeunit_blockage (str): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options.
+        extendmethod (str): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
         data (pandas.Series): Series object with variable ``'blockage'`` and index ``'Time'``. Defaults to None.
 
 
@@ -1534,3 +1534,98 @@ class SPILL(Unit):
                 [[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"]
             )
         )
+
+
+class RNWEIR(Unit):
+    """Class to hold and process RNWEIR unit type
+
+    Args:
+        name (str, optional): Upstream label name.
+        comment (str, optional): Comment included in unit.
+        ds_label (str, optional): Downstream label.
+        velocity_coefficient (float, optional): Coefficient of approach velocity.
+        weir_length (float, optional): Length of weir crest in the direction of flow (m).
+        weir_breadth (float, optional): Breadth of weir at control section (normal to the flow direction)(m).
+        weir_elevation (float, optional): Elevation of weir crest (m AD).
+        modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode.
+        upstream_crest_height (float, optional): Height of crest above bed of upstream channnel (m).
+        downstream_crest_height (float, optional): Height of crest above downstream channel (m).
+
+    Returns:
+        RNWEIR: Flood Modeller RNWEIR Unit class object """
+
+    _unit = "RNWEIR"
+
+    def _read(self,block):
+        """Function to read a given RNWEIR block and store data as class attributes"""
+         # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = block[0].replace("RNWEIR", "").strip()
+
+        #First parameter line
+        params1 = split_10_char(f"{block[2]:<50}")
+        self.velocity_coefficient = _to_float(params1[0])
+        self.weir_length = _to_float(params1[1])
+        self.weir_breadth = _to_float(params1[2])
+        self.weir_elevation = _to_float(params1[3])
+        self.modular_limit = _to_float(params1[4])    
+
+        #Second parameter line
+        params2 = split_10_char(f"{block[3]:<20}")
+        self.upstream_crest_height = _to_float(params2[0])
+        self.downstream_crest_height = _to_float(params2[1])
+
+    def _write(self):
+        """Function to write a valid RNWEIR block"""
+        _validate_unit(self)
+        header = "RNWEIR " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+        block = [header, labels]
+
+        # First parameter line
+        if self.modular_limit == 0.0:
+            params1 = join_10_char(self.velocity_coefficient, self.weir_length, self.weir_breadth, self.weir_elevation)
+        else:
+            params1 = join_10_char(self.velocity_coefficient, self.weir_length, self.weir_breadth, self.weir_elevation, self.modular_limit)
+
+
+        block.append(params1)
+
+        # Second parameter line
+        params2 = join_10_char(self.upstream_crest_height, self.downstream_crest_height)
+        block.append(params2)
+
+        return block
+
+
+    
+    def _create_from_blank(self,
+    name = "new_rnweir",
+    comment = "",
+    ds_label = "",
+    velocity_coefficient = 1.0,
+    modular_limit = 0.7,
+    upstream_crest_height = 0.0,
+    downstream_crest_height = 0.0,
+    weir_length = 0.0,
+    weir_breadth = 0.0,
+    weir_elevation = 0.0,):
+
+        for param, val in{
+            "name":name,
+            "comment":comment,
+            "ds_label":ds_label,
+            "velocity_coefficient":velocity_coefficient,
+            "modular_limit":modular_limit,
+            "upstream_crest_height":upstream_crest_height,
+            "downstream_crest_height":downstream_crest_height,
+            "weir_length":weir_length,
+            "wier_breadth":weir_breadth,
+            "weir_elevation":weir_elevation,
+        }.items():
+            setattr(self,param,val)
+
+
+

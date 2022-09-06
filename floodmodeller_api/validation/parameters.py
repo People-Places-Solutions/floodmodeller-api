@@ -561,5 +561,21 @@ parameter_options = {
     "debris_proportion": {
         "type": "value-range",
         "options": (0.0, 1.0)
+    },
+    "velocity_coefficient":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "weir_elevation":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "upstream_crest_height":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "downstream_crest_height":{
+        "type": "type-match",
+        "options": (float, int)
     }
 }
