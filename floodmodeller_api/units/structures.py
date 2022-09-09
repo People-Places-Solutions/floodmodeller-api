@@ -1145,17 +1145,19 @@ class RNWEIR(Unit):
 
 
     
-    def _create_from_blank(self,
-    name = "new_rnweir",
-    comment = "",
-    ds_label = "",
-    velocity_coefficient = 1.0,
-    modular_limit = 0.7,
-    upstream_crest_height = 0.0,
-    downstream_crest_height = 0.0,
-    weir_length = 0.0,
-    weir_breadth = 0.0,
-    weir_elevation = 0.0,):
+    def _create_from_blank(
+        self,
+        name = "new_rnweir",
+        comment = "",
+        ds_label = "",
+        velocity_coefficient = 1.0,
+        modular_limit = 0.7,
+        upstream_crest_height = 0.0,
+        downstream_crest_height = 0.0,
+        weir_length = 0.0,
+        weir_breadth = 0.0,
+        weir_elevation = 0.0,
+    ):
 
         for param, val in{
             "name":name,
@@ -1241,18 +1243,20 @@ class CRUMP(Unit):
 
         return block
 
-    def _create_from_blank(self,
-    name = "new_crump",
-    comment = "",
-    calibration_coefficient = 1.0,
-    weir_breadth = 0.0,
-    weir_elevation = 0.0,
-    modular_limit = 0.7,
-    upstream_crest_height = 0.0,
-    downstream_crest_height = 0.0,
-    ds_label = "",
-    upstream_remote_node = "",
-    downstream_remote_node = "",):
+    def _create_from_blank(
+        self,
+        name = "new_crump",
+         comment = "",
+        calibration_coefficient = 1.0,
+        weir_breadth = 0.0,
+        weir_elevation = 0.0,
+        modular_limit = 0.7,
+        upstream_crest_height = 0.0,
+        downstream_crest_height = 0.0,
+        ds_label = "",
+        upstream_remote_node = "",
+        downstream_remote_node = "",
+    ):
 
         for param,val in{
             "name": name,
@@ -1348,23 +1352,25 @@ class FLAT_V_WEIR(Unit):
         return block
 
 
-    def _create_from_blank(self,
-    name = "new_flat_v",
-    comment = "",
-    ds_label = "",
-    upstream_remote_node = "",
-    downstream_remote_node = "",
-    weir_elevation = 0.0,
-    weir_breadth = 0.0,
-    v_slope = 0.0,
-    side_slope = 0.0,
-    upstream_crest_height = 0.0,
-    downstream_crest_height = 0.0,
-    modular_limit = 0.0,
-    calibration_coefficient = 1.0,
-    downstream_slope_flag = 5,
-    coriolis_coefficient = 1.2,
-    bank_top_elevation = 0.0,):
+    def _create_from_blank(
+        self,
+         name = "new_flat_v",
+        comment = "",
+        ds_label = "",
+        upstream_remote_node = "",
+        downstream_remote_node = "",
+        weir_elevation = 0.0,
+        weir_breadth = 0.0,
+        v_slope = 0.0,
+        side_slope = 0.0,
+        upstream_crest_height = 0.0,
+        downstream_crest_height = 0.0,
+        modular_limit = 0.0,
+        calibration_coefficient = 1.0,
+        downstream_slope_flag = 5,
+        coriolis_coefficient = 1.2,
+        bank_top_elevation = 0.0,
+    ):
 
         for param,val in{
             "name":name,
@@ -1393,7 +1399,7 @@ class RESERVOIR(Unit):
     Args:
         name (str, optional): Unit name.
         comment (str, optional): Comment included in unit.
-        alternate_labels (str, optional): Unlimited number of labels - not including first label (name).
+        all_labels (str, optional): Unlimited number of labels - not including first label (name).
         easting (float, optional): Easting coordinate of reservoir reference point (not used in computations).
         northing (float, optional): Northing coordinate of reservoir reference point (not used in computations).
         runoff_factor (float, optional): Rainfall runoff factor.
@@ -1417,7 +1423,7 @@ class RESERVOIR(Unit):
         num_labels = len(block[1])//self._label_len 
         labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
         self.name = labels[0]
-        self.alternate_labels = labels[1:len(labels)]
+        self.all_labels = labels[0:len(labels)]
         self.comment = block[0].replace("RESERVOIR", "").strip()
 
         #Line 2a (optional) and 3
@@ -1432,7 +1438,7 @@ class RESERVOIR(Unit):
             #Reservoir section data
             #nrows = int(split_10_char(block[4])[0])
             data_list = []
-            for row in block[4:]: #could be 4 or 5
+            for row in block[4:len(block)-1]: #could be 4 or 5
                 row_split = split_10_char(f"{row:<20}")
                 elevation = _to_float(row_split[0])  # elevation
                 plan_area = _to_float(row_split[1])  # plan area
@@ -1463,50 +1469,50 @@ class RESERVOIR(Unit):
         """Function to write a valid RESERVOIR block"""
         _validate_unit(self)  
         header = "RESERVOIR " + self.comment
-        self.labels = join_10_char(self.name, "         ".join(self.alternate_labels))
+        self.labels = "          ".join(self.all_labels)
         block = [header, self.labels]
 
-        """if self.comment == "#revision#1":
+        if self.comment == "#revision#1":
             #Coorindate labels
-            lat_labels = join_n_char_ljust(self.latinflow_label1, self.latinflow_label2, self.latinflow_label3, self.latinflow_label4)
+            lat_labels = join_12_char_ljust( self.latinflow_label1, self.latinflow_label2, self.latinflow_label3, self.latinflow_label4)
             block.append(lat_labels)
-            block.append(self.num_pairs)
 
             #Section data
             nrows = len(self.data)
-            block.append(join_10_char(nrows))
+            block.append(join_12_char_ljust(nrows))
             section_data = [
-                join_10_char(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
+                join_12_char_ljust(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
             ]
             block.extend(section_data)
 
             #Optional row regarding coordinate data
-            coords = join_n_char_ljust(self.easting, self.northing, self.runoff_factor)
+            coords = join_12_char_ljust(self.easting, self.northing, self.runoff_factor)
             block.append(coords)
         else:
             #Coorindate labels
             block.append(self.num_pairs)
 
-             Section data
+             #Section data
             nrows = len(self.data)
-            block.append(join_10_char(nrows))
+            block.append(nrows)
             section_data = [
-                join_10_char(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
+                join_12_char_ljust(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
             ]
-            block.extend(section_data)"""
+            block.extend(section_data)
 
 
         return block
 
 
-    def _create_from_blank(self,
-    name = "new_reservoir",
-    comment = "#revision#1",
-    easting = 0.0,
-    northing = 0.0,
-    runoff_factor = 0.0,
-    num_pairs = 1,
-    data = None,
+    def _create_from_blank(
+        self,
+        name = "new_reservoir",
+        comment = "#revision#1",
+        easting = 0.0,
+        northing = 0.0,
+        runoff_factor = 0.0,
+        num_pairs = 1,
+        data = None,
     ):
 
         for param, val in {
