@@ -15,6 +15,7 @@ setup(
         "floodmodeller_api.units",
         "floodmodeller_api.validation",
         "floodmodeller_api.urban1d",
+        "floodmodeller_api.logs"
     ],
     scripts=[],
     project_urls={
