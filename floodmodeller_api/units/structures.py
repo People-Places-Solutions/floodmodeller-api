@@ -1144,17 +1144,19 @@ class RNWEIR(Unit):
 
 
     
-    def _create_from_blank(self,
-    name = "new_rnweir",
-    comment = "",
-    ds_label = "",
-    velocity_coefficient = 1.0,
-    modular_limit = 0.7,
-    upstream_crest_height = 0.0,
-    downstream_crest_height = 0.0,
-    weir_length = 0.0,
-    weir_breadth = 0.0,
-    weir_elevation = 0.0,):
+    def _create_from_blank(
+        self,
+        name = "new_rnweir",
+        comment = "",
+        ds_label = "",
+        velocity_coefficient = 1.0,
+        modular_limit = 0.7,
+        upstream_crest_height = 0.0,
+        downstream_crest_height = 0.0,
+        weir_length = 0.0,
+        weir_breadth = 0.0,
+        weir_elevation = 0.0,
+    ):
 
         for param, val in{
             "name":name,

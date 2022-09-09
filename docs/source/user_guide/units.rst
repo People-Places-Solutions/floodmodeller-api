@@ -60,6 +60,11 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.BRIDGE
 
+``RNWEIR()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.RNWEIR
+
 ``SLUICE()``
 ~~~~~~~~~~~~~
 
