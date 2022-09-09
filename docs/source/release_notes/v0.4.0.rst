@@ -1,8 +1,8 @@
 **************************************
-What's new in 0.3.15 (September 2022)
+What's new in 0.4.0 (September 2022)
 **************************************
 
-This page details the changes for version 0.3.14 of Flood Modeller Python API
+This page details the changes for version 0.4.0 of Flood Modeller Python API
 
 New features
 --------------
@@ -25,8 +25,7 @@ Updates
         print('Files not equivalent')
     
     dat_a.diff(dat_b)  # prints a list of differences to terminal
-
- 
+- RNWEIR Unit Class added (Broad Crested Weir)
 
 
 Bug fixes
