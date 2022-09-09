@@ -264,11 +264,11 @@ parameter_options = {
     },
     "easting": {
         "type": "type-match",
-        "options": (int)
+        "options": (float, int)
     },
     "northing": {
         "type": "type-match",
-        "options": (int)
+        "options": (float, int)
     },
     "time_delay": {
         "type": "type-match",
@@ -577,5 +577,57 @@ parameter_options = {
     "downstream_crest_height":{
         "type": "type-match",
         "options": (float, int)
-    }
+    },
+    "upstream_remote_node":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "downstream_remote_node":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "coriolis_coefficient":{
+        "type": "type-match",
+        "options": (float,int)
+    },
+    "v_slope":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "side_slope":{
+        "type": "type-match",
+        "options":  (float, int)
+    },
+    "downstream_slope_flag":{
+        "type": "value-match",
+        "options": [2,5]
+    },
+    "bank_top_elevation":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "latinflow_label1":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "latinflow_label2":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "latinflow_label3":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "latinflow_label4":{
+        "type": "string-length",
+        "max_length": 12
+    },
+    "num_pairs":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "runoff_factor":{
+        "type": "type-match",
+        "options": (float, int)
+    },
 }

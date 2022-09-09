@@ -15,6 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 
+from msilib.schema import Class
 import pandas as pd
 
 from ._base import Unit
@@ -1169,6 +1170,363 @@ class RNWEIR(Unit):
             "weir_elevation":weir_elevation,
         }.items():
             setattr(self,param,val)
+
+class CRUMP(Unit):
+
+    """Class to hold and process CRUMP unit type
+    
+    Args:
+
+    name (str, optional): Upstream label name.
+    comment (str,optional): Comment included in unit.
+    calibration_coefficient (float, optional): Calibration coefficient (should be set to unity for most cases).
+    weir_breadth (float, optional): Breadth of weir at crest (m).
+    weir_elevation (float, optional): Eleveation of weir crest (m above datum).
+    modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode.
+    upstream_crest_height (float, optional): Height of crest above bed of upstream channel (m).
+    downstream_crest_height (float, optional): Height oof crest above bed of downstream channel (m).
+    ds_label (str, optional): Downstream node label.
+    upstream_remote_node (str, optional): Upstream remote node label (must be a river or conduit section) - use if name is not a river or conduit section.
+    downstream_remote_node (str, optional): Downstream remote node label (must be a river or conduit section) - use if ds_label is not a river or conduit section.
+    
+    Returns:
+        CRUMP: Flood Modeller CRUMP Unit class object"""
+
+    _unit = "CRUMP"
+       
+    def _read(self,block):
+        """Function to read a given CRUMP block and store data as class attributes"""
+         # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.upstream_remote_node = labels[2]
+        self.downstream_remote_node = labels[3]
+        self.comment = block[0].replace("CRUMP", "").strip()
+
+        #First parameter line
+        params1 = split_10_char(f"{block[2]:<40}")
+        self.calibration_coefficient = _to_float(params1[0])
+        self.weir_breadth = _to_float(params1[1])
+        self.weir_elevation = _to_float(params1[2])
+        self.modular_limit = _to_float(params1[3])
+
+        #Second parameter line
+        params2 = split_10_char(f"{block[3]:<20}")
+        self.upstream_crest_height = _to_float(params2[0])
+        self.downstream_crest_height = _to_float(params2[1])
+
+
+
+    def _write(self):
+
+        """Function to write a valid CRUMP block"""
+        _validate_unit(self)
+        header = "CRUMP " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.upstream_remote_node, self.downstream_remote_node)
+        block = [header, labels]
+
+        # First parameter line
+        if self.modular_limit == 0.0:
+            params1 = join_10_char(self.calibration_coefficient, self.weir_breadth, self.weir_elevation)
+        else:
+            params1 = join_10_char(self.calibration_coefficient, self.weir_breadth, self.weir_elevation, self.modular_limit)
+
+
+        block.append(params1)
+
+        # Second parameter line
+        params2 = join_10_char(self.upstream_crest_height, self.downstream_crest_height)
+        block.append(params2)
+
+        return block
+
+    def _create_from_blank(self,
+    name = "new_crump",
+    comment = "",
+    calibration_coefficient = 1.0,
+    weir_breadth = 0.0,
+    weir_elevation = 0.0,
+    modular_limit = 0.7,
+    upstream_crest_height = 0.0,
+    downstream_crest_height = 0.0,
+    ds_label = "",
+    upstream_remote_node = "",
+    downstream_remote_node = "",):
+
+        for param,val in{
+            "name": name,
+            "comment": comment,
+            "calibration_coefficient": calibration_coefficient,
+            "weir_breadth": weir_breadth,
+            "weir_elevation": weir_elevation,
+            "modular_limit": modular_limit,
+            "upstream_crest_height": upstream_crest_height,
+            "downstream_crest_height": downstream_crest_height,
+            "ds_label":ds_label,
+            "upstream_remote_node":upstream_remote_node,
+            "downstream_remote_node":downstream_remote_node,
+        }.items():
+            setattr(self,param,val)
+
+class FLAT_V_WEIR(Unit):
+
+    """Class to hold and process FLAT-V WEIR unit type
+    
+    Args:
+
+    name (str, optional): Upstream label name.
+    comment (str,optional): Comment included in unit.
+    ds_label (str, optional): Downstream node label.
+    upstream_remote_node (str, optional): Upstream remote node label (must be a river or conduit section) - use if name is not a river or conduit section.
+    downstream_remote_node (str, optional): Downstream remote node label (must be a river or conduit section) - use if ds_label is not a river or conduit section.
+    weir_elevation (float, optional): Eleveation of weir crest (m above datum).
+    weir_breadth (float, optional): Breadth of weir at crest (m).
+    v_slope (float, optional): 'V' slope (horizontal distance/vertical distance).
+    side_slope (float, optional): Channel side slope (horizontal distance/vertical distance).
+    upstream_crest_height (float, optional): Weir crest height above upstream bed (m).
+    downstream_crest_height (float, optional): Weir crest height above downstream bed (m).
+    modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode.
+    calibration_coefficient (float, optional): Calibration coefficient (should be set to unity for most cases).
+    downstream_slope_flag (int, optional): Flag to switch between 1:5 or 1:2 for d/s face. Can be set to 2 or 5 ONLY.
+    coriolis_coefficient (float, optional): Coriolis energy coefficient.
+    bank_top_elevation (float, optional): Elevation of channel bank top/ limit of extent of sloping channel walls (m AD).
+    
+    Returns:
+        FLAT_V_WEIR: Flood Modeller FLAT-V WEIR Unit class object"""
+
+    _unit = "FLAT-V WEIR"
+
+    def _read(self,block):
+        """Function to read a given FLAT-V WEIR block and store data as class attributes"""
+         # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.upstream_remote_node = labels[2]
+        self.downstream_remote_node = labels[3]
+        self.comment = block[0].replace("FLAT-V WEIR", "").strip()
+
+        #First parameter line
+        params1 = split_10_char(f"{block[2]:<90}")
+        self.calibration_coefficient = _to_float(params1[0])
+        self.weir_breadth = _to_float(params1[1])
+        self.weir_elevation = _to_float(params1[2])
+        self.modular_limit = _to_float(params1[3])
+        self.v_slope = _to_float(params1[4])
+        self.side_slope = _to_float(params1[5])
+        self.downstream_slope_flag = _to_float(params1[6])
+        self.coriolis_coefficient = _to_float(params1[7])
+        self.bank_top_elevation = _to_float(params1[8])
+
+        #Second parameter line
+        params2 = split_10_char(f"{block[3]:<20}")
+        self.upstream_crest_height = _to_float(params2[0])
+        self.downstream_crest_height = _to_float(params2[1])
+    
+    def _write(self):
+
+        """Function to write a valid FLAT-V WEIR block"""
+        _validate_unit(self)
+        header = "FLAT-V WEIR " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.upstream_remote_node, self.downstream_remote_node)
+        block = [header, labels]
+
+        # First parameter line
+        if self.modular_limit == 0.0:
+            params1 = join_10_char(self.calibration_coefficient, self.weir_breadth, self.weir_elevation," ",self.v_slope,self.side_slope,self.downstream_slope_flag,self.coriolis_coefficient,self.bank_top_elevation)
+        else:
+            params1 = join_10_char(self.calibration_coefficient, self.weir_breadth, self.weir_elevation,self.modular_limit,self.v_slope,self.side_slope,self.downstream_slope_flag,self.coriolis_coefficient,self.bank_top_elevation)
+
+
+        block.append(params1)
+
+        # Second parameter line
+        params2 = join_10_char(self.upstream_crest_height, self.downstream_crest_height)
+        block.append(params2)
+
+        return block
+
+
+    def _create_from_blank(self,
+    name = "new_flat_v",
+    comment = "",
+    ds_label = "",
+    upstream_remote_node = "",
+    downstream_remote_node = "",
+    weir_elevation = 0.0,
+    weir_breadth = 0.0,
+    v_slope = 0.0,
+    side_slope = 0.0,
+    upstream_crest_height = 0.0,
+    downstream_crest_height = 0.0,
+    modular_limit = 0.0,
+    calibration_coefficient = 1.0,
+    downstream_slope_flag = 5,
+    coriolis_coefficient = 1.2,
+    bank_top_elevation = 0.0,):
+
+        for param,val in{
+            "name":name,
+            "comment":comment,
+            "ds_label":ds_label,
+            "upstream_remote_node":upstream_remote_node,
+            "downstream_remote_node":downstream_remote_node,
+            "weir_elevation":weir_elevation,
+            "weir_breadth":weir_breadth,
+            "v_slope":v_slope,
+            "side_slope":side_slope,
+            "upstream_crest_height":upstream_crest_height,
+            "downstream_crest_height":downstream_crest_height,
+            "modular_limit":modular_limit,
+            "calibration_coefficient":calibration_coefficient,
+            "downstream_slope_flag":downstream_slope_flag,
+            "coriolis_coefficient":coriolis_coefficient,
+            "bank_top_elevation":bank_top_elevation,
+        }.items():
+            setattr(self,param,val)
+
+class RESERVOIR(Unit):
+
+    """Class to hold and process RESERVOIR unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        alternate_labels (str, optional): Unlimited number of labels - not including first label (name).
+        easting (float, optional): Easting coordinate of reservoir reference point (not used in computations).
+        northing (float, optional): Northing coordinate of reservoir reference point (not used in computations).
+        runoff_factor (float, optional): Rainfall runoff factor.
+        num_pairs (float, optional): Number of elevation/area pairs.
+        latinflow_label1 (str, optional): First lateral inflow label.
+        latinflow_label2 (str, optional): Second lateral inflow label.
+        latinflow_label3 (str, optional): Third lateral inflow label.
+        latinflow_label4 (str, optional): Fourth lateral inflow label.
+        data (pandas.DataFrame): Dataframe object containing all the reservoir section data.
+            Columns are ``'Elevation','Plan Area'``
+
+    Returns:
+        RESERVOIR: Flood Modeller RESERVOIR Unit class object"""
+
+    _unit = "RESERVOIR"
+
+    def _read(self,block):
+
+        """Function to read a given FLAT-V WEIR block and store data as class attributes"""
+         # Extends label line to be correct length before splitting to pick up blank labels
+        num_labels = len(block[1])//self._label_len 
+        labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.alternate_labels = labels[1:len(labels)]
+        self.comment = block[0].replace("RESERVOIR", "").strip()
+
+        #Line 2a (optional) and 3
+        if self.comment == "#revision#1":
+            lateral_labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
+            self.latinflow_label1 = lateral_labels[0]
+            self.latinflow_label2 = lateral_labels[1]
+            self.latinflow_label3 = lateral_labels[2]
+            self.latinflow_label4 = lateral_labels[3]
+            self.num_pairs = _to_float(block[3])
+
+            #Reservoir section data
+            #nrows = int(split_10_char(block[4])[0])
+            data_list = []
+            for row in block[4:]: #could be 4 or 5
+                row_split = split_10_char(f"{row:<20}")
+                elevation = _to_float(row_split[0])  # elevation
+                plan_area = _to_float(row_split[1])  # plan area
+                data_list.append([elevation,plan_area])
+            reservoir_data = pd.DataFrame(data_list, columns=["Elevation","Plan Area"])
+            self.data = reservoir_data
+
+            #Coordinate data (optional)
+            coordinate_data = split_n_char(f"{block[len(block)-1]:<{3*self._label_len}}", self._label_len)
+            self.easting = _to_float(coordinate_data[0])
+            self.northing = _to_float(coordinate_data[1])
+            self.runoff_factor = _to_float(coordinate_data[2])
+        else:   
+            self.num_pairs = _to_float(block[2])
+            #Reservoir section data
+            #nrows = int(split_10_char(block[3])[0])
+            data_list = []
+            for row in block[3:]: #could be 4 or 5
+                row_split = split_10_char(f"{row:<20}")
+                elevation = _to_float(row_split[0])  # elevation
+                plan_area = _to_float(row_split[1])  # plan area
+                data_list.append([elevation,plan_area])
+            reservoir_data = pd.DataFrame(data_list, columns=["Elevation","Plan Area"])
+            self.data = reservoir_data
+
+    def _write(self):
+
+        """Function to write a valid RESERVOIR block"""
+        _validate_unit(self)  
+        header = "RESERVOIR " + self.comment
+        self.labels = join_10_char(self.name, "         ".join(self.alternate_labels))
+        block = [header, self.labels]
+
+        """if self.comment == "#revision#1":
+            #Coorindate labels
+            lat_labels = join_n_char_ljust(self.latinflow_label1, self.latinflow_label2, self.latinflow_label3, self.latinflow_label4)
+            block.append(lat_labels)
+            block.append(self.num_pairs)
+
+            #Section data
+            nrows = len(self.data)
+            block.append(join_10_char(nrows))
+            section_data = [
+                join_10_char(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
+            ]
+            block.extend(section_data)
+
+            #Optional row regarding coordinate data
+            coords = join_n_char_ljust(self.easting, self.northing, self.runoff_factor)
+            block.append(coords)
+        else:
+            #Coorindate labels
+            block.append(self.num_pairs)
+
+             Section data
+            nrows = len(self.data)
+            block.append(join_10_char(nrows))
+            section_data = [
+                join_10_char(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
+            ]
+            block.extend(section_data)"""
+
+
+        return block
+
+
+    def _create_from_blank(self,
+    name = "new_reservoir",
+    comment = "#revision#1",
+    easting = 0.0,
+    northing = 0.0,
+    runoff_factor = 0.0,
+    num_pairs = 1,
+    data = None,
+    ):
+
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "easting": easting,
+            "northing": northing,
+            "runoff_factor":runoff_factor,
+            "num_pairs":num_pairs,
+        }.items():
+            setattr(self, param, val)
+
+        self.data = (
+            data
+            if isinstance(data, pd.DataFrame)
+            else pd.DataFrame(
+                [[0.0,0.0]], columns=["Elevation", "Plan Area"]
+            )
+        )
+
 
 
 

@@ -18,7 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
 from .sections import RIVER
-from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR
+from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, RESERVOIR
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
 
@@ -38,6 +38,9 @@ SUPPORTED_UNIT_TYPES = {
     "BLOCKAGE": {"group": "losses", "has_subtype": False},
     "CULVERT": {"group": "losses", "has_subtype": True},
     "RNWEIR": {"group":"structures","has_subtype": False},
+    "CRUMP": {"group":"structures","has_subtype": False},
+    "FLAT-V WEIR": {"group":"structures","has_subtype": False},
+    "RESERVOIR": {"group":"structures", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -50,9 +53,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "COMMENT",
     "CONPUMP",
     "CONVALVE",
-    "CRUMP",
     "FEHBDY",
-    "FLAT-V WEIR",
     "FLOOD RELIEF",
     "FLOODPLAIN",
     "FLOW CONTROL",
@@ -63,7 +64,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "GAUGE",
     "GERRBDY",
     "HBDY",
-    "INTERPOLATE",
+    "INTERPOLATE",#suitable(speak to joe)
     "INVERTED SYPHON",
     "JUNCTION",
     "LABYRINTH WEIR",
@@ -76,15 +77,14 @@ UNSUPPORTED_UNIT_TYPES = {
     "NOTWEIR",
     "NOZZLE",
     "OCPUMP",
-    "OUTFALL",
+    "OUTFALL",#suitable
     "PIPE",
     "POND",
     "QH CONTROL",
     "QRATING",
     "REBDY",
     "REFH2BDY",
-    "REPLICATE",
-    "RESERVOIR",
+    "REPLICATE",#suitable(speak to joe)
     "SCSBDY",
     "SCWEIR",
     "SYPHON",
