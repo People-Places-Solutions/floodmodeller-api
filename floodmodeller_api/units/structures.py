@@ -1143,8 +1143,6 @@ class RNWEIR(Unit):
 
         return block
 
-
-    
     def _create_from_blank(
         self,
         name = "new_rnweir",
@@ -1418,7 +1416,7 @@ class RESERVOIR(Unit):
 
     def _read(self,block):
 
-        """Function to read a given FLAT-V WEIR block and store data as class attributes"""
+        """Function to read a given RESERVOIR WEIR block and store data as class attributes"""
          # Extends label line to be correct length before splitting to pick up blank labels
         num_labels = len(block[1])//self._label_len 
         labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
@@ -1507,7 +1505,7 @@ class RESERVOIR(Unit):
     def _create_from_blank(
         self,
         name = "new_reservoir",
-        comment = "#revision#1",
+        comment = "",
         easting = 0.0,
         northing = 0.0,
         runoff_factor = 0.0,
@@ -1533,6 +1531,75 @@ class RESERVOIR(Unit):
             )
         )
 
+class INTERPOLATE(Unit):
+
+    """Class to hold and process INTERPOLATE unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        first_spill (str, optional): Spill label if required.
+        second_spill (str, optional): Spill label if required.
+        next_section_distance (float, optional): Chainage downstream to following section (m).
+        easting (float, optional): Easting coordinate of interpolated section (not used in hydraulic calculations).
+        northing (float, optional): Northing coordinate of interpolated section (not used in hydraulic calculations).
+
+    Returns:
+        INTERPOLATE: Flood Modeller INTERPOLATE Unit class object""" 
+
+    def _read(self,block):
+
+         # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{3*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.first_spill = labels[1]
+        self.second_spill = labels[2]
+        self.comment = block[0].replace("INTERPOLATE", "").strip()
+
+        #First parameter line
+        params1 = split_10_char(f"{block[2]:<30}")
+        self.next_section_distance = _to_float(params1[0])
+        self.easting = _to_float(params1[1])
+        self.northing = _to_float(params1[2])
+
+
+    def _write(self):
+
+        """Function to write a valid INTERPOLATE block"""
+        _validate_unit(self)
+        header = "INTERPOLATE " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.first_spill, self.second_spill)
+        block = [header, labels]
+
+        # First parameter line
+
+        params1 = join_n_char_ljust(15,self.next_section_distance, self.easting, self.northing)
+        block.append(params1)
+
+        return block
+
+
+    def _create_from_blank(
+        self,
+        name = "new_interpolate",
+        comment = "",
+        first_spill = "",
+        second_spill = "",
+        next_section_distance = 0,
+        easting = 0,
+        northing = 0,
+    ):
+           
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "first_spill": first_spill,
+            "second_spill": second_spill,
+            "next_section_distance": next_section_distance,
+            "easting": easting,
+            "northing": northing,
+        }.items():
+            setattr(self, param, val)
 
 
 

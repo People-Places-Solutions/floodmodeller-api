@@ -1,6 +1,6 @@
 
 #REVISION#1
-        22     0.750     0.900     0.100     0.001        12SI
+        30     0.750     0.900     0.100     0.001        12SI
     10.000     0.010     0.010     0.700     0.100     0.700     0.000
 RAD FILE
 
@@ -9,6 +9,17 @@ FLAT-V WEIR
 Flat-VDef   FVD         FVUR        FVDR
        1.0     2.300     1.200                  10         5         5       1.2       3.6
      2.300     3.200
+OUTFALL
+OPEN
+outfallDef  outfallDefD
+     1.230     3.240    56.000     4.300     2.760 RECTANGLE
+     1.000     1.200     0.700
+INTERPOLATE comment
+interDef    interDef2   interDef3
+     0.000106635.276272620.762
+REPLICATE comment
+repliDef    repliDef1   repliDef2
+     0.000     2.000 131963.83264496.508     2.000
 CRUMP
 crumpDef    crumpDefD   CU          CD
      1.000     4.000     2.000     0.700
@@ -27,6 +38,10 @@ INITIAL CONDITIONS
  label   ?      flow     stage froude no  velocity     umode    ustate         z
 Flat-VDef    y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 FVD          y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+outfallDef   y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+outfallDefD  y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+interDef     y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+repliDef     y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 crumpDef     y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 crumpDefD    y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 CU           y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
@@ -47,7 +62,14 @@ lat1         y     0.000     0.000     0.000     0.000     0.000     0.000     0
 lat2         y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 lat3         y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
 lat4         y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+interDef2    y     0.000 -9999.000     0.000     0.000     0.000     0.000     0.000
+interDef3    y     0.000 -9999.000     0.000     0.000     0.000     0.000     0.000
+repliDef1    y     0.000 -9999.000     0.000     0.000     0.000     0.000     0.000
+repliDef2    y     0.000 -9999.000     0.000     0.000     0.000     0.000     0.000
 GISINFO
 FLAT-V WEIR Flat-VDef 0 0 0 0 0
+OUTFALL OPEN outfallDef 0 0 0 0 0
+INTERPOLATE interDef 0 0 0 0 0
+REPLICATE repliDef 0 0 0 0 0
 CRUMP crumpDef 0 0 0 0 0
 RESERVOIR a 0 0 0 0 0

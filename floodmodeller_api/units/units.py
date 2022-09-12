@@ -18,7 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
 from .sections import RIVER
-from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, RESERVOIR
+from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, RESERVOIR, INTERPOLATE
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
 
@@ -41,6 +41,7 @@ SUPPORTED_UNIT_TYPES = {
     "CRUMP": {"group":"structures","has_subtype": False},
     "FLAT-V WEIR": {"group":"structures","has_subtype": False},
     "RESERVOIR": {"group":"structures", "has_subtype": False},
+    "INTERPOLATE": {"group":"structures", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -64,7 +65,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "GAUGE",
     "GERRBDY",
     "HBDY",
-    "INTERPOLATE",#suitable(speak to joe)
     "INVERTED SYPHON",
     "JUNCTION",
     "LABYRINTH WEIR",
