@@ -1244,7 +1244,7 @@ class CRUMP(Unit):
     def _create_from_blank(
         self,
         name = "new_crump",
-         comment = "",
+        comment = "",
         calibration_coefficient = 1.0,
         weir_breadth = 0.0,
         weir_elevation = 0.0,
@@ -1695,19 +1695,19 @@ class REPLICATE(Unit):
 
 
 class OUTFALL(Unit):
-    """Class to hold and process ORIFICE unit type
+    """Class to hold and process OUTFALL unit type
 
     Args:
         name (str, optional): Unit name.
         comment (str, optional): Comment included in unit.
-        flapped (bool, optional): ``True`` if orifice is flapped, ``False`` if orifice is open
+        flapped (bool, optional): ``True`` if outfall is flapped, ``False`` if outfall is open
         ds_label (str, optional): Downstream label
         invert (float, optional): Throat invert level
         soffit (float, optional): Throat soffit level
         bore_area (float, optional): Cross sectional area of throat opening
         upstream_sill (float, optional): Upstream sill level
         downstream_sill (float, optional): Downstream sill level
-        shape (str, optional): Shape of orifice aperture ('RECTANGLE' or 'CIRCULAR')
+        shape (str, optional): Shape of outfall aperture ('RECTANGLE' or 'CIRCULAR')
         weir_flow (float, optional): Calibration factor for weir flow
         surcharged_flow (float, optional): Calibration factor for surcharged flow
         modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode
@@ -1746,7 +1746,7 @@ class OUTFALL(Unit):
         self.modular_limit = _to_float(params2[2], 0.7)
 
     def _write(self):
-        """Function to write a valid ORIFICE block"""
+        """Function to write a valid OUTFALL block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = "OUTFALL " + self.comment
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
