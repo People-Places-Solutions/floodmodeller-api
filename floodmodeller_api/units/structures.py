@@ -1663,7 +1663,7 @@ class REPLICATE(Unit):
 
         # First parameter line
 
-        params1 = join_n_char_ljust(15,self.next_section_distance,self.bed_level_drop, self.easting, self.northing,self.bed_level_drop)
+        params1 = join_n_char_ljust(15, self.next_section_distance, self.bed_level_drop, self.easting, self.northing, self.bed_level_drop)
         block.append(params1)
 
         return block
@@ -1689,7 +1689,7 @@ class REPLICATE(Unit):
             "next_section_distance": next_section_distance,
             "bed_level_drop": bed_level_drop,
             "easting": easting,
-            "northing": northing,
+            "northing": northing,                                                                                                                                                                                                                                                                                                                                                                                                                                             
         }.items():
             setattr(self, param, val)
 
