@@ -1424,19 +1424,21 @@ class RESERVOIR(Unit):
         self.all_labels = labels[0:len(labels)]
         self.comment = block[0].replace("RESERVOIR", "").strip()
 
-        #Line 2a (optional) and 3
+        #Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
+            #Lateral inflow labels
             lateral_labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
             self.latinflow_label1 = lateral_labels[0]
             self.latinflow_label2 = lateral_labels[1]
             self.latinflow_label3 = lateral_labels[2]
             self.latinflow_label4 = lateral_labels[3]
-            self.num_pairs = _to_float(block[3])
+
+            #Number of pairs of data
+            self.num_pairs = _to_int(block[3])
 
             #Reservoir section data
-            #nrows = int(split_10_char(block[4])[0])
             data_list = []
-            for row in block[4:len(block)-1]: #could be 4 or 5
+            for row in block[4:len(block)-1]: 
                 row_split = split_10_char(f"{row:<20}")
                 elevation = _to_float(row_split[0])  # elevation
                 plan_area = _to_float(row_split[1])  # plan area
@@ -1444,17 +1446,18 @@ class RESERVOIR(Unit):
             reservoir_data = pd.DataFrame(data_list, columns=["Elevation","Plan Area"])
             self.data = reservoir_data
 
-            #Coordinate data (optional)
+            #Coordinate data
             coordinate_data = split_n_char(f"{block[len(block)-1]:<{3*self._label_len}}", self._label_len)
             self.easting = _to_float(coordinate_data[0])
             self.northing = _to_float(coordinate_data[1])
             self.runoff_factor = _to_float(coordinate_data[2])
-        else:   
-            self.num_pairs = _to_float(block[2])
+        else:   #Option 2 (runs if comment != "#revision#1")
+            #Number of pairs of data
+            self.num_pairs = _to_int(block[2])
+
             #Reservoir section data
-            #nrows = int(split_10_char(block[3])[0])
             data_list = []
-            for row in block[3:]: #could be 4 or 5
+            for row in block[3:]:
                 row_split = split_10_char(f"{row:<20}")
                 elevation = _to_float(row_split[0])  # elevation
                 plan_area = _to_float(row_split[1])  # plan area
@@ -1470,29 +1473,29 @@ class RESERVOIR(Unit):
         self.labels = "          ".join(self.all_labels)
         block = [header, self.labels]
 
+        #Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
-            #Coorindate labels
+            #Lateral inflow labels
             lat_labels = join_12_char_ljust( self.latinflow_label1, self.latinflow_label2, self.latinflow_label3, self.latinflow_label4)
             block.append(lat_labels)
 
-            #Section data
-            nrows = len(self.data)
-            block.append(join_12_char_ljust(nrows))
+            #Number of pairs of data
+            block.append(join_12_char_ljust(self.num_pairs))
+            
+            #Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
             ]
             block.extend(section_data)
 
-            #Optional row regarding coordinate data
+            #Coordinate data
             coords = join_12_char_ljust(self.easting, self.northing, self.runoff_factor)
             block.append(coords)
-        else:
-            #Coorindate labels
-            block.append(self.num_pairs)
+        else: #Option 2 (runs if comment != "#revision#1")
+            #Number of pairs of data
+            block.append(join_12_char_ljust(self.num_pairs))
 
-             #Section data
-            nrows = len(self.data)
-            block.append(nrows)
+            #Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area) for _, elevation, plan_area,  in self.data.itertuples()
             ]
@@ -1511,6 +1514,10 @@ class RESERVOIR(Unit):
         runoff_factor = 0.0,
         num_pairs = 1,
         data = None,
+        latinflow_label1 = "",
+        latinflow_label2 = "",
+        latinflow_label3 = "",
+        latinflow_label4 = "",
     ):
 
         for param, val in {
@@ -1520,6 +1527,10 @@ class RESERVOIR(Unit):
             "northing": northing,
             "runoff_factor":runoff_factor,
             "num_pairs":num_pairs,
+            "latinflow_label1": latinflow_label1,
+            "latinflow_label2": latinflow_label2,
+            "latinflow_label3": latinflow_label3,
+            "latinflow_label4": latinflow_label4,
         }.items():
             setattr(self, param, val)
 
@@ -1547,8 +1558,11 @@ class INTERPOLATE(Unit):
     Returns:
         INTERPOLATE: Flood Modeller INTERPOLATE Unit class object""" 
 
+    _unit = "INTERPOLATE"
+
     def _read(self,block):
 
+        """Function to read a given INTERPOLATE WEIR block and store data as class attributes"""
          # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[1]:<{3*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -1602,4 +1616,191 @@ class INTERPOLATE(Unit):
             setattr(self, param, val)
 
 
+class REPLICATE(Unit):
 
+    """Class to hold and process REPLICATE unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        first_spill (str, optional): Spill label if required.
+        second_spill (str, optional): Spill label if required.
+        next_section_distance (float, optional): Chainage downstream to following section (m).
+        easting (float, optional): Easting coordinate of interpolated section (not used in hydraulic calculations).
+        northing (float, optional): Northing coordinate of interpolated section (not used in hydraulic calculations).
+        bed_level_drop (float, optional): Drop in bed level from previous section (m).
+
+    Returns:
+        REPLICATE: Flood Modeller REPLICATE Unit class object""" 
+
+    _unit = "REPLICATE"
+
+    def _read(self,block):
+
+        """Function to read a given REPLICATE block and store data as class attributes"""
+         # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{3*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.first_spill = labels[1]
+        self.second_spill = labels[2]
+        self.comment = block[0].replace("REPLICATE", "").strip()
+
+        #First parameter line
+        params1 = split_10_char(f"{block[2]:<40}")
+        self.next_section_distance = _to_float(params1[0])
+        self.bed_level_drop = _to_float(params1[1])
+        self.easting = _to_float(params1[2])
+        self.northing = _to_float(params1[3])
+
+
+    def _write(self):
+
+        """Function to write a valid REPLICATE block"""
+        _validate_unit(self)
+        header = "REPLICATE " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.first_spill, self.second_spill)
+        block = [header, labels]
+
+        # First parameter line
+
+        params1 = join_n_char_ljust(15,self.next_section_distance,self.bed_level_drop, self.easting, self.northing,self.bed_level_drop)
+        block.append(params1)
+
+        return block
+
+
+    def _create_from_blank(
+        self,
+        name = "new_replicate",
+        comment = "",
+        first_spill = "",
+        second_spill = "",
+        next_section_distance = 0,
+        bed_level_drop = 0,
+        easting = 0,
+        northing = 0,
+    ):
+           
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "first_spill": first_spill,
+            "second_spill": second_spill,
+            "next_section_distance": next_section_distance,
+            "bed_level_drop": bed_level_drop,
+            "easting": easting,
+            "northing": northing,
+        }.items():
+            setattr(self, param, val)
+
+
+class OUTFALL(Unit):
+    """Class to hold and process ORIFICE unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        flapped (bool, optional): ``True`` if orifice is flapped, ``False`` if orifice is open
+        ds_label (str, optional): Downstream label
+        invert (float, optional): Throat invert level
+        soffit (float, optional): Throat soffit level
+        bore_area (float, optional): Cross sectional area of throat opening
+        upstream_sill (float, optional): Upstream sill level
+        downstream_sill (float, optional): Downstream sill level
+        shape (str, optional): Shape of orifice aperture ('RECTANGLE' or 'CIRCULAR')
+        weir_flow (float, optional): Calibration factor for weir flow
+        surcharged_flow (float, optional): Calibration factor for surcharged flow
+        modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode
+
+
+    Returns:
+        OUTFALL: Flood Modeller OUTFALL Unit class object
+    """
+
+    _unit = "OUTFALL"
+
+    def _read(self, block):
+        """Function to read a given OUTFALL block and store data as class attributes"""
+        self._subtype = block[1].split(" ")[0].strip()
+        self.flapped = True if self.subtype == "FLAPPED" else False
+
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = block[0].replace("OUTFALL", "").strip()
+
+        # First parameter line
+        params1 = split_10_char(f"{block[3]:<60}")
+        self.invert = _to_float(params1[0])
+        self.soffit = _to_float(params1[1])
+        self.bore_area = _to_float(params1[2])
+        self.upstream_sill = _to_float(params1[3])
+        self.downstream_sill = _to_float(params1[4])
+        self.shape = _to_str(params1[5], "RECTANGLE")
+
+        # Second parameter line
+        params2 = split_10_char(block[4])
+        self.weir_flow = _to_float(params2[0], 1.0)
+        self.surcharged_flow = _to_float(params2[1], 1.0)
+        self.modular_limit = _to_float(params2[2], 0.7)
+
+    def _write(self):
+        """Function to write a valid ORIFICE block"""
+        _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
+        header = "OUTFALL " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+
+        self._subtype = "FLAPPED" if self.flapped else "OPEN"
+        block = [header, self.subtype, labels]
+
+        # First parameter line
+        params1 = join_10_char(
+            self.invert,
+            self.soffit,
+            self.bore_area,
+            self.upstream_sill,
+            self.downstream_sill,
+            self.shape,
+        )
+
+        # Second parameter line
+        params2 = join_10_char(self.weir_flow, self.surcharged_flow, self.modular_limit)
+
+        block.extend([params1, params2])
+
+        return block
+
+    def _create_from_blank(
+        self,
+        name="new_outfall",
+        flapped=False,
+        ds_label="",
+        comment="",
+        invert=0.0,
+        soffit=0.0,
+        bore_area=1.0,
+        upstream_sill=0.0,
+        downstream_sill=0.0,
+        shape="RECTANGLE",
+        weir_flow=1.0,
+        surcharged_flow=1.0,
+        modular_limit=0.7,
+    ):
+
+        for param, val in {
+            "name": name,
+            "flapped": flapped,
+            "ds_label": ds_label,
+            "comment": comment,
+            "invert": invert,
+            "soffit": soffit,
+            "bore_area": bore_area,
+            "upstream_sill": upstream_sill,
+            "downstream_sill": downstream_sill,
+            "shape": shape,
+            "weir_flow": weir_flow,
+            "surcharged_flow": surcharged_flow,
+            "modular_limit": modular_limit,
+        }.items():
+            setattr(self, param, val)

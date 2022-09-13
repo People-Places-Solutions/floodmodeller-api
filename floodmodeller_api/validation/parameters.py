@@ -630,4 +630,8 @@ parameter_options = {
         "type": "type-match",
         "options": (float, int)
     },
+    "bed_level_drop":{
+        "type": "type-match",
+        "options": (float, int)
+    },
 }
