@@ -1689,7 +1689,7 @@ class REPLICATE(Unit):
             "next_section_distance": next_section_distance,
             "bed_level_drop": bed_level_drop,
             "easting": easting,
-            "northing": northing,                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            "northing": northing,
         }.items():
             setattr(self, param, val)
 
