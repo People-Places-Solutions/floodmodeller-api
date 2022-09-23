@@ -184,3 +184,4 @@ class RIVER(Unit):
 
         else:
             return self._raw_block
+
