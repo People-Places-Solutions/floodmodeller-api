@@ -52,7 +52,7 @@ lf1_unsteady_data_to_extract = {
     # end
     "simulation_time_elapsed": {"class": TimeDeltaSParser, "prefix": "!!output1 Simulation time elapsed (s):", "data_type": "last"},
     "number_of_unconverged_timesteps": {"class": FloatParser, "prefix": "!!output1  Number of unconverged timesteps:", "data_type": "last"},
-    "proporion_of_simulation_unconverged": {"class": FloatSplitParser, "prefix": "!!output1  Proportion of simulation unconverged:", "data_type": "last", "split": "%"},
+    "proportion_of_simulation_unconverged": {"class": FloatSplitParser, "prefix": "!!output1  Proportion of simulation unconverged:", "data_type": "last", "split": "%"},
     "mass_balance_calculated_every": {"class": TimeDeltaSParser, "prefix": "!!output1  Mass balance calculated every", "data_type": "last"},
     "initial_volume": {"class": FloatSplitParser, "prefix": "!!output1  Initial volume:", "data_type": "last", "split": "m3"},
     "final_volume": {"class": FloatSplitParser, "prefix": "!!output1  Final volume:", "data_type": "last", "split": "m3"},
