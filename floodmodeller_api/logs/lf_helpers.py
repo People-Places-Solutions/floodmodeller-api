@@ -72,7 +72,7 @@ class AllData(Data):
 
         else:
             # subheaders
-            df.set_axis(self._subheaders, axis=1, inplace=True)
+            df = df.set_axis(self._subheaders, axis=1)
 
             # remove duplicate of index
             # sometimes it includes extra values

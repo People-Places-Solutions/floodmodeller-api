@@ -477,7 +477,7 @@ class IEF(FMFile):
         lf_path = self._get_result_filepath(suffix)
 
         if not lf_path.exists():
-            raise FileNotFoundError("Log file file (" + suffix + ") not found")
+            raise FileNotFoundError("Log file (" + suffix + ") not found")
 
         return lf_factory(lf_path, suffix, steady)
 
