@@ -19,7 +19,7 @@ setup(
     ],
     scripts=[],
     project_urls={
-        "API Documentation": "https://help.floodmodeller.com/api/",
+        "API Documentation": "https://api.floodmodeller.com/api/",
         "Flood Modeller Homepage": "https://www.floodmodeller.com/",
         "Contact & Support": "https://www.floodmodeller.com/contact",
     },

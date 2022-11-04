@@ -19,4 +19,4 @@ from pathlib import Path
 
 
 def open_docs():
-    webbrowser.open_new_tab("https://help.floodmodeller.com/api/")
+    webbrowser.open_new_tab("https://api.floodmodeller.com/api/")
