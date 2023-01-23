@@ -322,7 +322,7 @@ class XML2D(FMFile):
 
             if not Path(isis2d_fp).exists:
                 raise Exception(
-                    f"Flood Modeller ending not found! Expected location: {isis2d_fp}"
+                    f"Flood Modeller engine not found! Expected location: {isis2d_fp}"
                 )
 
             run_command = f'"{isis2d_fp}" -q "{self._filepath}"'
@@ -334,6 +334,7 @@ class XML2D(FMFile):
                     run_command, cwd = os.path.dirname(self._filepath)
                 )  # execute 
                 
+
                 # No log file in 2D solver therefore no reference to log file 
                 # or progress bar, instead we check the exit code, 100 is everything
                 # is fine, anything else is a code that means something has gone wrong!
