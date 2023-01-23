@@ -336,7 +336,7 @@ class XML2D(FMFile):
                 
                 # No log file in 2D solver therefore no reference to log file 
                 # or progress bar, instead we check the exit code, 100 is everything
-                # is fine, anything else is a code that means something.
+                # is fine, anything else is a code that means something has gone wrong!
 
                 while process.poll() is None:
                     # process is still running
