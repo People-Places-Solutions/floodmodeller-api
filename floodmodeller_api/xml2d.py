@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 from pathlib import Path
+from subprocess import Popen
 from copy import deepcopy
 from typing import Union, Optional
 from lxml import etree
@@ -247,5 +248,43 @@ class XML2D(FMFile):
         # Update XML dict and tree
         self._read()
 
-    def simulate(self):
+    def simulate(
+        self,
+        method: Optional[str] = "WAIT",
+        raise_on_failure: Optional[bool] = True,
+        precision: Optional[str] = "DEFAULT",
+        enginespath: Optional[str] = "",
+    ) -> Optional[subprocess.Popen]:
         raise NotImplementedError
+        """ Simulate the XML2D file directly as a subprocess.
+
+        Args:
+            method (str, optional): {'WAIT'} | 'RETURN_PROCESS'
+                'WAIT' - The function waits for the simulation to complete before continuing (This is default)
+                'RETURN_PROCESS' - The function sets the simulation running in background and immediately continues, whilst returning the process object.
+                Defaults to 'WAIT'.
+            raise_on_failure (bool, optional): If True, an exception will be raised if the simulation fails to complete without errors.
+                If set to False, then the script will continue to run even if the simulation fails. If 'method' is set to 'RETURN_PROCESS'
+                then this argument is ignored. Defaults to True.
+            precision (str, optional): {'DEFAULT'} | 'SINGLE' | 'DOUBLE'
+                Define which engine to use for simulation, if set to 'DEFAULT' it will use the precision specified in the IEF. Alternatively,
+                this can be overwritten using 'SINGLE' or 'DOUBLE'.
+            enginespath (str, optional): {''} | '/absolute/path/to/engine/executables'
+                Define where the engine executables are located. This replaces the default location (usual installation folder) if set to
+                anything other than ''.
+
+
+
+        Raises:
+            UserWarning: Raised if ief filepath not already specified
+
+        Returns:
+            subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
+        
+        """
+
+        try:
+            if self._filepath == None:
+                raise UserWarning(
+                    "xml2D must be saved to a specific filepath before simulate() can be called."
+                )
