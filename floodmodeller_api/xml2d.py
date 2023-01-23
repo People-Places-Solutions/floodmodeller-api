@@ -13,12 +13,18 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
+
+import os 
+import time
+
 from pathlib import Path
 from subprocess import Popen
 from copy import deepcopy
 from typing import Union, Optional
 from lxml import etree
 from floodmodeller_api._base import FMFile
+
+from .zzn import ZZN
 
 
 def value_from_string(value: str):
@@ -294,11 +300,11 @@ class XML2D(FMFile):
                     if (
                         attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"
                     ):  # Unless DP specified
-                        if getattr(self, attr) == "1"
-                        precision = "DOUBLE"
-                        break
+                        if getattr(self, attr) == "1":
+                            precision = "DOUBLE"
+                            break
             
-            if enginespath = "":
+            if enginespath == "":
                 _enginespath = (
                     r"C:\Program Files\Flood Modeller\bin"  # Default location
                 )
@@ -321,7 +327,52 @@ class XML2D(FMFile):
 
             run_command = f'"{isis2d_fp}" -q "{self._filepath}"'
 
-            if method.upper() == "WAIT":            
+            if method.upper() == "WAIT":
+                # executing simulation
+                print("Executing simulation ... ")
+                process = Popen(
+                    run_command, cwd = os.path.dirname(self._filepath)
+                )  # execute 
+                
+                # No log file in 2D solver therefore no reference to log file 
+                # or progress bar, instead we check the exit code, 100 is everything
+                # is fine, anything else is a code that means something.
+
+                while process.poll() is None:
+                    # process is still running
+                    time.sleep(1)
+
+                ### Here we need something that will print/store the 
+                ### exit code value so we know if it is working well or not.
+
+            elif method.upper() == "RETURN_PROCESS":
+                # executing simulation
+                print("Executing simulation ...")
+                process = Popen(
+                    run_command, cwd = os.path.dirname(self._filepath)
+                )  # execute simulation 
+                return process
 
         except Exception as e:
             self._handle_exception(e, when='simulate')
+
+        def get_results(self) -> ZZN:
+            """If results for the simulation exist, this function returns them as a ZZN class object.
+
+            Returns:
+                floodmodeller_api.ZZN class object            
+            """
+
+            # Get zzn location
+            result_path = self._get_results_filepath(suffix = "zzn")
+
+            if result_path.exists():
+                return ZZN(result_path)
+            
+            else:
+                raise FileNotFoundError("Simulation results file (zzn) not found")
+
+        ### No get_log created as again in 2D and log file would be very complex/confusing.
+        ### Rest of functions will not be needed as would be in 1D river case.
+
+
