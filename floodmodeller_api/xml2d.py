@@ -254,8 +254,8 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-    ) -> Optional[subprocess.Popen]:
-        raise NotImplementedError
+        ) -> Optional[Popen]:   
+        
         """ Simulate the XML2D file directly as a subprocess.
 
         Args:
@@ -288,3 +288,40 @@ class XML2D(FMFile):
                 raise UserWarning(
                     "xml2D must be saved to a specific filepath before simulate() can be called."
                 )
+            if precision.upper() == "DEFAULT":
+                precision = "SINGLE"  # defaults to single precision
+                for attr in dir(self):
+                    if (
+                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"
+                    ):  # Unless DP specified
+                        if getattr(self, attr) == "1"
+                        precision = "DOUBLE"
+                        break
+            
+            if enginespath = "":
+                _enginespath = (
+                    r"C:\Program Files\Flood Modeller\bin"  # Default location
+                )
+            else:
+                _enginespath = enginespath 
+                if not Path(_enginespath).exists:
+                    raise Exception(
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}" 
+                    )
+
+            if precision.upper() == "SINGLE":
+                isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
+            else:
+                isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
+
+            if not Path(isis2d_fp).exists:
+                raise Exception(
+                    f"Flood Modeller ending not found! Expected location: {isis2d_fp}"
+                )
+
+            run_command = f'"{isis2d_fp}" -q "{self._filepath}"'
+
+            if method.upper() == "WAIT":            
+
+        except Exception as e:
+            self._handle_exception(e, when='simulate')
