@@ -25,6 +25,7 @@ from lxml import etree
 from floodmodeller_api._base import FMFile
 
 from .zzn import ZZN
+from .logs import lf_factory
 
 
 def value_from_string(value: str):
@@ -338,6 +339,10 @@ class XML2D(FMFile):
                 # No log file in 2D solver therefore no reference to log file 
                 # or progress bar, instead we check the exit code, 100 is everything
                 # is fine, anything else is a code that means something has gone wrong!
+                
+                # progress bar based on log files:
+                self._init_log_file()  # currently this is undefined
+                self._update_progress_bar(process)  #currently this is also undefined
 
                 while process.poll() is None:
                     # process is still running
@@ -359,6 +364,19 @@ class XML2D(FMFile):
 
         print("... simulation executed!")
 
+    def _get_result_filepath(self, suffix):
+
+        if hasattr(self, "Results"):
+            path = Path(self.Results).with_suffix("." + suffix)
+            if not path.is_absolute():
+                # set cwd to xml2d location and resolve path
+                path = Path(self._filepath.parent, path).resolve()
+
+        else:
+            path = self._filepath.with_suffix("." + suffix)
+
+        return path
+
     def get_results(self) -> ZZN:
         """If results for the simulation exist, this function returns them as a ZZN class object.
 
@@ -375,7 +393,103 @@ class XML2D(FMFile):
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
-        ### No get_log created as again in 2D and log file would be very complex/confusing.
-        ### Rest of functions will not be needed as would be in 1D river case.
+    
+    def get_log(self):
+        """If log files for the simulation exist, this function returns them as a LF1 class object
 
-        ## updating comments
+        Returns:
+            floodmodeller_api.LF2 class object
+        """
+
+        suffix, _ = self._determine_lf_type()  # we don't need to know if it is steady hence removed.
+
+        # Get lf location
+        lf_path = self._get_result_filepath(suffix)
+
+        if not lf_path.exists():
+            raise FileNotFoundError("Log file (" + suffix + ") not found")
+
+        return lf_factory(lf_path, suffix, _)
+        
+    ### FLAG
+    def _determine_lf_type(self):  # (str, bool) or (None, None):
+        """Determine the log file type"""
+
+        if self.RunType == "Unsteady":  # this needs to change but what to?
+            suffix = "lf2"
+
+        else:
+            raise ValueError(f'Unexpected run type "{self.RunType}"')
+
+        return suffix
+
+
+
+    def _init_log_file(self):
+        """Checks for a new log file, waiting for its creation if necessary"""
+
+        # determine log file type based on sel.RunType
+        try:
+            suffix, steady = self._determine_lf_type()  # think I may need to remove steady? FLAG
+        except ValueError:
+            self._no_log_file(f'run type "{self.RunType}" not supported')
+            self._lf = None
+            return
+
+        # ensure progress bar is supported for that type
+        if not ( suffix == 'lf2' and steady == False): #again does this need changing?? FLAG
+            #need a comment inserting here FLAG
+            self._lf = None
+            return
+
+        # find what log filepath should be
+        lf_filepath = self._get_results_filepath(suffix)
+
+        #wait for log file to exist
+        log_file_exists = False
+        max_time = time.time() + 10
+
+        while not log_file_exists:
+
+            time.sleep(0.1)
+
+            log_file_exists = lf_filepath.is_file()
+
+            #timeout
+            if time.time() > max_time:
+                self._no_log_file("log file is expected but not detected")
+                self._lf = None
+                return
+
+        # wait for new log file
+        old_log_file = True
+        max_time = time.time() + 10
+
+        while old_log_file:
+
+            time.sleep(0.1)
+
+            # difference between now and when log file was last modified
+            last_modified_timestamp = lf_filepath.stat().st_mtime
+            last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
+            time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
+
+            # it's old if it's over 5 seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > 5
+
+            # timeout
+            if time.time() > max_time:
+                self._no_log_file("log file is from previous run")
+                self._lf = None
+                return
+
+        # create LF instance
+        self._lf = lf_factory( lf_filepath, suffix )
+
+    def _no_log_file(self, reason):
+        """Warning that there will be no progress bar"""
+
+        print("No progress bar as " + reason + ". Simulation will continue as usual.")
+
+
+
