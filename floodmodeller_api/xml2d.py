@@ -357,21 +357,23 @@ class XML2D(FMFile):
         except Exception as e:
             self._handle_exception(e, when='simulate')
 
-        def get_results(self) -> ZZN:
-            """If results for the simulation exist, this function returns them as a ZZN class object.
+        print("... simulation executed!")
 
-            Returns:
-                floodmodeller_api.ZZN class object            
-            """
+    def get_results(self) -> ZZN:
+        """If results for the simulation exist, this function returns them as a ZZN class object.
 
-            # Get zzn location
-            result_path = self._get_results_filepath(suffix = "zzn")
+        Returns:
+            floodmodeller_api.ZZN class object            
+        """
 
-            if result_path.exists():
-                return ZZN(result_path)
-            
-            else:
-                raise FileNotFoundError("Simulation results file (zzn) not found")
+        # Get zzn location
+        result_path = self._get_results_filepath(suffix = "zzn")
+
+        if result_path.exists():
+            return ZZN(result_path)
+        
+        else:
+            raise FileNotFoundError("Simulation results file (zzn) not found")
 
         ### No get_log created as again in 2D and log file would be very complex/confusing.
         ### Rest of functions will not be needed as would be in 1D river case.
