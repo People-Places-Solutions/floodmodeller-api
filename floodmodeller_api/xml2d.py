@@ -24,6 +24,8 @@ from typing import Union, Optional
 from lxml import etree
 from floodmodeller_api._base import FMFile
 
+import datetime as dt
+
 from .zzn import ZZN
 from .logs import lf_factory
 
@@ -443,7 +445,7 @@ class XML2D(FMFile):
             return
 
         # find what log filepath should be
-        lf_filepath = self._get_results_filepath(suffix)
+        lf_filepath = self._get_result_filepath(suffix)
 
         #wait for log file to exist
         log_file_exists = False
@@ -490,6 +492,13 @@ class XML2D(FMFile):
         """Warning that there will be no progress bar"""
 
         print("No progress bar as " + reason + ". Simulation will continue as usual.")
+
+    def _update_progress_bar(self, process: Popen):
+        """Updates the progress bar based on the log file"""
+
+        # only if there is a log file
+        if self._lf is None:
+            return
 
 
 
