@@ -376,4 +376,4 @@ class XML2D(FMFile):
         ### No get_log created as again in 2D and log file would be very complex/confusing.
         ### Rest of functions will not be needed as would be in 1D river case.
 
-
+        ## updating comments
