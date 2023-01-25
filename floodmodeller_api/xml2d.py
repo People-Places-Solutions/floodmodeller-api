@@ -27,7 +27,8 @@ from floodmodeller_api._base import FMFile
 import datetime as dt
 
 from .zzn import ZZN
-from .logs import lf_factory 
+from .logs import lf_factory, error_2D_dict
+
 
 
 def value_from_string(value: str):
@@ -317,7 +318,7 @@ class XML2D(FMFile):
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}" 
                     )
-
+            # Can insert switch to using FAST solver, need to check that every scheme is fast for this to be the case though. 
             if precision.upper() == "SINGLE":
                 isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
             else:
@@ -407,42 +408,20 @@ class XML2D(FMFile):
         Returns:
             floodmodeller_api.LF2 class object
         """
-
-        suffix, _ = self._determine_lf_type()  # we don't need to know if it is steady hence removed.
-
+        suffix = "lf2"
         # Get lf location
         lf_path = self._get_result_filepath(suffix)
 
         if not lf_path.exists():
             raise FileNotFoundError("Log file (" + suffix + ") not found")
 
-        return lf_factory(lf_path, suffix, _)
-        
-    ### FLAG
-    def _determine_lf_type(self):  # (str, bool) or (None, None):
-        """Determine the log file type"""
-
-        if self.RunType == "Unsteady":  # this needs to change but what to?
-            suffix = "lf2"
-
-        else:
-            raise ValueError(f'Unexpected run type "{self.RunType}"')
-
-        return suffix, False
+        return lf_factory(lf_path, suffix, False) 
 
 
 
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
-
-        # determine log file type based on sel.RunType
-        try:
-            suffix, _ = self._determine_lf_type()  # think I may need to remove steady? FLAG
-        except ValueError:
-            self._no_log_file(f'run type "{self.RunType}" not supported')
-            self._lf = None
-            return
-
+        suffix = "lf2" 
         # not needed in this case
         # # ensure progress bar is supported for that type
         # if not ( suffix == 'lf2' and (not steady)): #again does this need changing?? FLAG
@@ -492,7 +471,7 @@ class XML2D(FMFile):
                 return
 
         # create LF instance
-        self._lf = lf_factory( lf_filepath, suffix )
+        self._lf = lf_factory( lf_filepath, suffix, False )
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
