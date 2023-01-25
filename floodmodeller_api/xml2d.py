@@ -27,8 +27,7 @@ from floodmodeller_api._base import FMFile
 import datetime as dt
 
 from .zzn import ZZN
-from .logs import lf_factory #, dictionary for 2d error codes
-
+from .logs import lf_factory, error_2D_dict 
 
 def value_from_string(value: str):
     try:
@@ -523,7 +522,7 @@ class XML2D(FMFile):
             print(f"Exit code not in dictionary, Error code: {exitcode}")
 
         else:
-            print(f"Exit with {exitcode}: {description}")
+            print(f"Exit with {exitcode}: {error_2D_dict['exitcode']}")
     
 
 
