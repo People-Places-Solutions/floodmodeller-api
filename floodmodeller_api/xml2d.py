@@ -23,6 +23,7 @@ from copy import deepcopy
 from typing import Union, Optional
 from lxml import etree
 from floodmodeller_api._base import FMFile
+from tqdm import trange
 
 import datetime as dt
 
