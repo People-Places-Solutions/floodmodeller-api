@@ -17,8 +17,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 ### UNIT CLASSES ###
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
-from .sections import RIVER
-from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, RESERVOIR, INTERPOLATE, REPLICATE, OUTFALL
+from .sections import RIVER, INTERPOLATE, REPLICATE
+from .structures import (
+    BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, OUTFALL
+)
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
 
@@ -40,9 +42,9 @@ SUPPORTED_UNIT_TYPES = {
     "RNWEIR": {"group":"structures","has_subtype": False},
     "CRUMP": {"group":"structures","has_subtype": False},
     "FLAT-V WEIR": {"group":"structures","has_subtype": False},
-    "RESERVOIR": {"group":"structures", "has_subtype": False},
-    "INTERPOLATE": {"group":"structures", "has_subtype": False},
-    "REPLICATE": {"group":"structures", "has_subtype": False},
+    #"RESERVOIR": {"group":"structures", "has_subtype": False}, # Needs further testing
+    "INTERPOLATE": {"group":"sections", "has_subtype": False},
+    "REPLICATE": {"group":"sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
 }
 
@@ -85,6 +87,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "QRATING",
     "REBDY",
     "REFH2BDY",
+    "RESERVOIR",
     "SCSBDY",
     "SCWEIR",
     "SYPHON",

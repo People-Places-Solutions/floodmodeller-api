@@ -17,8 +17,16 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_float, _to_int)
+from .helpers import (
+    join_10_char,
+    join_12_char_ljust,
+    join_n_char_ljust,
+    split_10_char,
+    split_12_char,
+    split_n_char,
+    _to_float,
+    _to_int,
+)
 from floodmodeller_api.validation import _validate_unit
 
 
@@ -52,6 +60,7 @@ class RIVER(Unit):
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
+
         self._subtype = riv_block[1].split(" ")[0].strip()
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
@@ -185,3 +194,203 @@ class RIVER(Unit):
         else:
             return self._raw_block
 
+
+class INTERPOLATE(Unit):
+    """Class to hold and process INTERPOLATE unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        first_spill (str, optional): Spill label if required.
+        second_spill (str, optional): Spill label if required.
+        lat1 (str, optional): First lateral inflow label.
+        lat2 (str, optional): Second lateral inflow label.
+        lat3 (str, optional): Third lateral inflow label.
+        lat4 (str, optional): Fourth lateral inflow label.
+        dist_to_next (float, optional): Chainage downstream to following section (m).
+        easting (float, optional): Easting coordinate of interpolated section (not used in hydraulic calculations).
+        northing (float, optional): Northing coordinate of interpolated section (not used in hydraulic calculations).
+
+    Returns:
+        INTERPOLATE: Flood Modeller INTERPOLATE Unit class object"""
+
+    _unit = "INTERPOLATE"
+
+    def _read(self, block):
+        """Function to read a given INTERPOLATE WEIR block and store data as class attributes"""
+
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.first_spill = labels[1]
+        self.second_spill = labels[2]
+        self.lat1 = labels[3]
+        self.lat2 = labels[4]
+        self.lat3 = labels[5]
+        self.lat4 = labels[6]
+        self.comment = block[0].replace("INTERPOLATE", "").strip()
+
+        # First parameter line
+        params1 = split_10_char(f"{block[2]:<30}")
+        self.dist_to_next = _to_float(params1[0])
+        self.easting = _to_float(params1[1])
+        self.northing = _to_float(params1[2])
+
+    def _write(self):
+        """Function to write a valid INTERPOLATE block"""
+
+        _validate_unit(self)
+        header = "INTERPOLATE " + self.comment
+        labels = join_n_char_ljust(
+            self._label_len,
+            self.name,
+            self.first_spill,
+            self.second_spill,
+            self.lat1,
+            self.lat2,
+            self.lat3,
+            self.lat4,
+        )
+        block = [header, labels]
+
+        # First parameter line
+        params1 = join_10_char(self.dist_to_next, self.easting, self.northing)
+        block.append(params1)
+
+        return block
+
+    def _create_from_blank(
+        self,
+        name="new_interp",
+        comment="",
+        first_spill="",
+        second_spill="",
+        lat1="",
+        lat2="",
+        lat3="",
+        lat4="",
+        dist_to_next=0,
+        easting=0,
+        northing=0,
+    ):
+
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "first_spill": first_spill,
+            "second_spill": second_spill,
+            "lat1": lat1,
+            "lat2": lat2,
+            "lat3": lat3,
+            "lat4": lat4,
+            "dist_to_next": dist_to_next,
+            "easting": easting,
+            "northing": northing,
+        }.items():
+            setattr(self, param, val)
+
+
+class REPLICATE(Unit):
+    """Class to hold and process REPLICATE unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        first_spill (str, optional): Spill label if required.
+        second_spill (str, optional): Spill label if required.
+        lat1 (str, optional): First lateral inflow label.
+        lat2 (str, optional): Second lateral inflow label.
+        lat3 (str, optional): Third lateral inflow label.
+        lat4 (str, optional): Fourth lateral inflow label.
+        dist_to_next (float, optional): Chainage downstream to following section (m).
+        easting (float, optional): Easting coordinate of interpolated section (not used in hydraulic calculations).
+        northing (float, optional): Northing coordinate of interpolated section (not used in hydraulic calculations).
+        bed_level_drop (float, optional): Drop in bed level from previous section (m).
+
+    Returns:
+        REPLICATE: Flood Modeller REPLICATE Unit class object"""
+
+    _unit = "REPLICATE"
+
+    def _read(self, block: list[str]):
+        """Function to read a given REPLICATE block and store data as class attributes"""
+
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.first_spill = labels[1]
+        self.second_spill = labels[2]
+        self.lat1 = labels[3]
+        self.lat2 = labels[4]
+        self.lat3 = labels[5]
+        self.lat4 = labels[6]
+
+        self.comment = block[0].replace("REPLICATE", "").strip()
+
+        # First parameter line
+        params1 = split_10_char(f"{block[2]:<40}")
+        self.dist_to_next = _to_float(params1[0])
+        self.bed_level_drop = _to_float(params1[1])
+        self.easting = _to_float(params1[2])
+        self.northing = _to_float(params1[3])
+
+    def _write(self):
+        """Function to write a valid REPLICATE block"""
+
+        _validate_unit(self)
+        header = "REPLICATE " + self.comment
+        labels = join_n_char_ljust(
+            self._label_len,
+            self.name,
+            self.first_spill,
+            self.second_spill,
+            self.lat1,
+            self.lat2,
+            self.lat3,
+            self.lat4,
+        )
+        block = [header, labels]
+
+        # First parameter line
+
+        params1 = join_10_char(
+            self.dist_to_next,
+            self.bed_level_drop,
+            self.easting,
+            self.northing,
+        )
+        block.append(params1)
+
+        return block
+
+    def _create_from_blank(
+        self,
+        name="new_repl",
+        comment="",
+        first_spill="",
+        second_spill="",
+        lat1="",
+        lat2="",
+        lat3="",
+        lat4="",
+        dist_to_next=0,
+        bed_level_drop=0,
+        easting=0,
+        northing=0,
+    ):
+
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "first_spill": first_spill,
+            "second_spill": second_spill,
+            "lat1": lat1,
+            "lat2": lat2,
+            "lat3": lat3,
+            "lat4": lat4,
+            "dist_to_next": dist_to_next,
+            "bed_level_drop": bed_level_drop,
+            "easting": easting,
+            "northing": northing,
+        }.items():
+            setattr(self, param, val)
