@@ -479,11 +479,39 @@ class XML2D(FMFile):
         print("No progress bar as " + reason + ". Simulation will continue as usual.")
 
     def _update_progress_bar(self, process: Popen):
-        """Updates the progress bar based on the log file"""
+        """Updates progress bar based on log file"""
 
         # only if there is a log file
         if self._lf is None:
             return
+
+        # tqdm progress bar
+        for i in trange(100):
+
+            # Process still running
+            while process.poll() is None:
+
+                time.sleep(0.1)
+
+                # Find progress
+                self._lf.read(suppress_final_step=True)
+                progress = self._lf.report_progress()
+
+                # Reached i% progress => move onto waiting for (i+1)%
+                if progress > i:
+                    break
+
+            # Process stopped
+            if process.poll() is not None:
+
+                # Find final progress
+                self._lf.read(suppress_final_step=True)
+                progress = self._lf.report_progress()
+
+                if progress > i:
+                    pass  # stopped because it completed
+                else:
+                    break  # stopped for another reason
 
     def _interpret_exit_code(self, exitcode):
         """ This function will interpret the exit code and tell us if this is good or bad
