@@ -27,7 +27,8 @@ from floodmodeller_api._base import FMFile
 import datetime as dt
 
 from .zzn import ZZN
-from .logs import lf_factory, error_2D_dict 
+from .logs import lf_factory 
+
 
 def value_from_string(value: str):
     try:
