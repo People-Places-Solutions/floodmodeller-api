@@ -361,10 +361,13 @@ class XML2D(FMFile):
                 )  # execute simulation 
                 return process
 
+            exitcode = Popen.returncode()
+
         except Exception as e:
             self._handle_exception(e, when='simulate')
 
-        print("... simulation executed!")
+        # print("... simulation executed!")
+        return exitcode
 
     def _get_result_filepath(self, suffix):
 
@@ -423,7 +426,7 @@ class XML2D(FMFile):
         else:
             raise ValueError(f'Unexpected run type "{self.RunType}"')
 
-        return suffix
+        return suffix, False
 
 
 
@@ -432,17 +435,18 @@ class XML2D(FMFile):
 
         # determine log file type based on sel.RunType
         try:
-            suffix, steady = self._determine_lf_type()  # think I may need to remove steady? FLAG
+            suffix, _ = self._determine_lf_type()  # think I may need to remove steady? FLAG
         except ValueError:
             self._no_log_file(f'run type "{self.RunType}" not supported')
             self._lf = None
             return
 
-        # ensure progress bar is supported for that type
-        if not ( suffix == 'lf2' and steady == False): #again does this need changing?? FLAG
-            #need a comment inserting here FLAG
-            self._lf = None
-            return
+        # not needed in this case
+        # # ensure progress bar is supported for that type
+        # if not ( suffix == 'lf2' and (not steady)): #again does this need changing?? FLAG
+        #     #need a comment inserting here FLAG
+        #     self._lf = None
+        #     return
 
         # find what log filepath should be
         lf_filepath = self._get_result_filepath(suffix)
@@ -499,6 +503,26 @@ class XML2D(FMFile):
         # only if there is a log file
         if self._lf is None:
             return
+
+    def _get_exit_code(self, exitcode):
+        """ This function will interpret the exit code and tell us if this is good or bad
+        
+        Args:
+            exitcode - this is the exitcode from the simulation
+            
+        Return:
+            String that explains the exitcode - this might be too much!
+        """
+
+        # TODO: Expand this to a dict that will tell us what the code means.
+
+        if exitcode == 100:
+            self._get_exit_code("Successfully ran")
+
+        else:
+            self._get_exit_code(f'Error with error code "{self._get_exit_code(exitcode)}"')  #this probably won't work
+
+    
 
 
 
