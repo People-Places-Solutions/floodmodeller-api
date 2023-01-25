@@ -27,7 +27,7 @@ from floodmodeller_api._base import FMFile
 import datetime as dt
 
 from .zzn import ZZN
-from .logs import lf_factory
+from .logs import lf_factory #, dictionary for 2d error codes
 
 
 def value_from_string(value: str):
@@ -337,6 +337,7 @@ class XML2D(FMFile):
                     run_command, cwd = os.path.dirname(self._filepath)
                 )  # execute 
                 
+                
 
                 # No log file in 2D solver therefore no reference to log file 
                 # or progress bar, instead we check the exit code, 100 is everything
@@ -350,6 +351,9 @@ class XML2D(FMFile):
                     # process is still running
                     time.sleep(1)
 
+                exitcode = Popen.returncode()
+                self._interpret_exit_code(exitcode)
+
                 ### Here we need something that will print/store the 
                 ### exit code value so we know if it is working well or not.
 
@@ -361,13 +365,11 @@ class XML2D(FMFile):
                 )  # execute simulation 
                 return process
 
-            exitcode = Popen.returncode()
 
         except Exception as e:
             self._handle_exception(e, when='simulate')
 
-        # print("... simulation executed!")
-        return exitcode
+
 
     def _get_result_filepath(self, suffix):
 
@@ -504,7 +506,7 @@ class XML2D(FMFile):
         if self._lf is None:
             return
 
-    def _get_exit_code(self, exitcode):
+    def _interpret_exit_code(self, exitcode):
         """ This function will interpret the exit code and tell us if this is good or bad
         
         Args:
@@ -515,13 +517,13 @@ class XML2D(FMFile):
         """
 
         # TODO: Expand this to a dict that will tell us what the code means.
+        # Description = error_2D_dict.get(exitcode, None)
 
-        if exitcode == 100:
-            self._get_exit_code("Successfully ran")
+        if exitcode is None:
+            print(f"Exit code not in dictionary, Error code: {exitcode}")
 
         else:
-            self._get_exit_code(f'Error with error code "{self._get_exit_code(exitcode)}"')  #this probably won't work
-
+            print(f"Exit with {exitcode}: {description}")
     
 
 
