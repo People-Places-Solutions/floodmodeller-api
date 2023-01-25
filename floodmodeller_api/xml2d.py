@@ -352,7 +352,7 @@ class XML2D(FMFile):
                     # process is still running
                     time.sleep(1)
 
-                exitcode = Popen.returncode()
+                exitcode = process.returncode
                 self._interpret_exit_code(exitcode)
 
                 ### Here we need something that will print/store the 
@@ -502,7 +502,7 @@ class XML2D(FMFile):
             print(f"Exit code not in dictionary, Error code: {exitcode}")
 
         else:
-            print(f"Exit with {exitcode}: {error_2D_dict['exitcode']}")
+            print(f"Exit with {exitcode}: {error_2D_dict[exitcode]}")
     
 
 
