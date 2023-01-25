@@ -38,9 +38,13 @@ Updates
     the API in how event data in IEF files is handled. Any existing code that treats eventdata
     as a list will need to be updated in order to run this version. 
 
-
+- CRUMP Unit Class added
+- FLAT_V_WEIR Unit Class added
+- INTERPOLATE Unit Class added
+- REPLICATE Unit Class added
+- OUTFALL Unit Class added
 
 Bug fixes
 --------------
-
+- Addressed 'FutureWarning' raised by lf_helpers module
 
