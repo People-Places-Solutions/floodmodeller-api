@@ -319,8 +319,18 @@ class XML2D(FMFile):
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}" 
                     )
-            # Can insert switch to using FAST solver, need to check that every scheme is fast for this to be the case though. 
-            if precision.upper() == "SINGLE":
+
+           # checking if all schemes used are fast, if so will use FAST.exe
+           # TODO: Add in option to choose to use or not to use if you can
+            is_fast =True
+            for dom in xml2d._raw_data['domain']:
+                if dom['run_data']['scheme'] != "FAST":
+                    is_fast = False
+                    break
+            
+            if is_fast == True:
+                 isis2d_fp = str(Path(_enginespath, "FAST.exe"))
+            elif precision.upper() == "SINGLE":
                 isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
             else:
                 isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
@@ -346,8 +356,8 @@ class XML2D(FMFile):
                 # is fine, anything else is a code that means something has gone wrong!
                 
                 # progress bar based on log files:
-                self._init_log_file()  # currently this is undefined
-                self._update_progress_bar(process)  #currently this is also undefined
+                self._init_log_file()  
+                self._update_progress_bar(process)  
 
                 while process.poll() is None:
                     # process is still running
