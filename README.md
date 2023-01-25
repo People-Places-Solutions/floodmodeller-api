@@ -22,7 +22,7 @@ from floodmodeller_api import DAT, ZZN, IEF, IED  # imports individual classes (
 ```
 ## How to use
 
-The best place to start is to go directly to the [Flood Modeller Python API Documentation](https://help.floodmodeller.com/api/)
+The best place to start is to go directly to the [Flood Modeller Python API Documentation](https://api.floodmodeller.com/api/)
 
 The Flood Modeller Python API is designed for users already familiar with both Flood Modeller and Python. The API is built up using distinct python classes for each of the key Flood Modeller file formats as well as key themes. The purpose of the API is not to provide ready-to-use tools for specific tasks, as there is an extensive set of tools already provided within Flood Modeller, many of which can be called from both within and outside of the Flood Modeller software. **Instead, this API provides the building blocks for users to build their own custom workflows and tools which can integrate seamlessly with Flood Modeller.**
 

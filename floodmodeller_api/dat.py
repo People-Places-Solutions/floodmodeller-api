@@ -19,7 +19,7 @@ from typing import Optional, Union
 
 from . import units  # Import for using as package
 from ._base import FMFile
-from floodmodeller_api.units.helpers import _to_str, _to_float, _to_int, _to_data_list
+from floodmodeller_api.units.helpers import _to_float
 
 
 class DAT(FMFile):

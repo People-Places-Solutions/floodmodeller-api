@@ -16,7 +16,7 @@ class test_IEF(unittest.TestCase):
     """Basic benchmarking to test IEF class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.ief_fp = os.path.join(test_workspace, "network.ief")
         with open(self.ief_fp, "r") as ief_file:
             self.data_before = ief_file.read()
@@ -32,7 +32,7 @@ class test_IED(unittest.TestCase):
     """Basic benchmarking to test IED class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.ied_fp = os.path.join(test_workspace, "network.ied")
         with open(self.ied_fp, "r") as ied_file:
             self.data_before = ied_file.read()
@@ -48,7 +48,7 @@ class test_DAT(unittest.TestCase):
     """Basic benchmarking to test DAT class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.dat_fp = os.path.join(test_workspace, "network.DAT")
         self.data_before = DAT(self.dat_fp)._write()
 
@@ -103,7 +103,7 @@ class test_INP(unittest.TestCase):
     """Basic benchmarking to test INP class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.inp_fp = os.path.join(test_workspace, "network.inp")
         self.data_before = INP(self.inp_fp)._write()
         pass
@@ -142,7 +142,7 @@ class test_ZZN(unittest.TestCase):
     """Basic benchmarking to test ZZN class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.zzn_fp = os.path.join(test_workspace, "network.zzn")
         self.tabCSV_output = pd.read_csv(
             os.path.join(test_workspace, "network_from_tabularCSV.csv")
@@ -207,7 +207,7 @@ class test_XML2D(unittest.TestCase):
     """Basic benchmarking to test XML2D class"""
 
     def setUp(self):
-        """Used if there is repetative setup before each test"""
+        """Used if there is repetitive setup before each test"""
         self.xml_fp = os.path.join(test_workspace, "Domain1_Q.xml")
         self.data_before = XML2D(self.xml_fp)._write()
 
