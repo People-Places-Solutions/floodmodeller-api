@@ -1415,8 +1415,7 @@ class FLAT_V_WEIR(Unit):
             setattr(self, param, val)
 
 
-class RESERVOIR(Unit):
-
+class RESERVOIR(Unit): # NOT CURRENTLY IN USE
     """Class to hold and process RESERVOIR unit type
 
     Args:
@@ -1440,8 +1439,8 @@ class RESERVOIR(Unit):
     _unit = "RESERVOIR"
 
     def _read(self, block):
-
         """Function to read a given RESERVOIR WEIR block and store data as class attributes"""
+
         # Extends label line to be correct length before splitting to pick up blank labels
         num_labels = len(block[1]) // self._label_len
         labels = split_n_char(
@@ -1497,8 +1496,8 @@ class RESERVOIR(Unit):
             self.data = reservoir_data
 
     def _write(self):
-
         """Function to write a valid RESERVOIR block"""
+
         _validate_unit(self)
         header = "RESERVOIR " + self.comment
         self.labels = "          ".join(self.all_labels)
