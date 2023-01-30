@@ -172,7 +172,7 @@ class XML2D(FMFile):
                 parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
                     list_idx or 0
                 ]
-
+                # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
             elif type(item) == list:
