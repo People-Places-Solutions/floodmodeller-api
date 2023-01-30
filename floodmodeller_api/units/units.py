@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 ### UNIT CLASSES ###
-from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
+from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY, FRQSIM
 from .iic import IIC
 from .sections import RIVER, INTERPOLATE, REPLICATE
 from .structures import (
@@ -46,6 +46,7 @@ SUPPORTED_UNIT_TYPES = {
     "INTERPOLATE": {"group":"sections", "has_subtype": False},
     "REPLICATE": {"group":"sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
+    "FRQSIM": {"group": "boundaries", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -62,7 +63,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "FLOOD RELIEF",
     "FLOODPLAIN",
     "FLOW CONTROL",
-    "FRQSIM",
     "FSRBDY",
     "FSSR16BDY",
     "GATED WEIR",

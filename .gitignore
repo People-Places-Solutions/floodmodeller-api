@@ -2,8 +2,12 @@
 _future/
 demo.py
 code_testing.py
+frqsim_script.py
 *.bmp
 *_internal.dat
+*_internal.DAT
+*_internal.feb
+*_internal.gxy
 __temp.*
 
 # general

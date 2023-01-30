@@ -471,3 +471,136 @@ class REFHBDY(Unit):
         refhbdy_block.extend([line6, line7, line8])
         refhbdy_block.extend(self._raw_extra_lines)
         return refhbdy_block
+
+class FRQSIM(Unit):
+    """Class to hold and process FRQSIM boundary type
+
+    Only limited support of the FRQSIM bounday is implemented.  Supported parameters listed below. 
+    There is considerable interdependency of these parameters which is not accounted for.  
+    
+    Furthermore, currently FRQSIM Units are read/edit only and cannot be created from scratch, therefore the
+    parameters below are only accessible upon instantiating a FRQSIM object from an existing
+    unit.
+
+    Args:
+        name (str): Unit name.
+        comment (str, optional): Comment included in unit. Defaults to None.
+        storm_area:(float): Storm area in square kilometres. A zero signifies that the storm area is equal to the catchment area.
+        storm_duration(float): Storm duration in hours. Must be greater than zero.  The storm duration divided by the data interval should be an odd integer.
+        event_param_unknown(float): Unknown event parameter
+        snow_melt(float): Snow melt rate in mm/day.
+        observed_rainfall_depth (float): Observed raindall depth
+        return_period(float): Flood return period (yrs)
+        arf (float): Areal reduction factor (only used if ``arf_method`` set to 'USER')
+        ddf_c (float): DDF Parameter c
+        ddf_d1 (float): DDF Parameter d1
+        ddf_d2 (float): DDF Parameter d2
+        ddf_d3 (float): DDF Parameter d3
+        ddf_e (float): DDF Parameter e
+        ddf_f (float): DDF Parameter f        
+        storm_profile_type(str): Storm profile type: "FRQRP" (FRQSIM standard profiles), "SUMRP" (FEH 50% Summer), "WINRP" (FEH 75% Winter)
+        
+        frqsim_storm_profile(str): TODO
+
+
+    Returns:
+        FRQSIM: Flood Modeller FRQSIM Unit class object
+    """
+
+    _unit = "FRQSIM"
+
+    def _read(self, frqsim_block):
+        """Function to read a given FRQSIM block and store data as class attributes"""
+
+        self._raw_extra_lines = []
+
+        self.comment = frqsim_block[0].replace("FRQSIM", "").strip()
+        self.name = frqsim_block[1][: self._label_len].strip()
+        
+        self._raw_extra_lines.append(frqsim_block[2:7]) # save unprocessed unit block
+       
+        # Extract Event Parameters TODO:formatting
+        event_params1 = split_10_char(frqsim_block[7])
+        self.storm_area = event_params1[0]
+        self.storm_duration = event_params1[1]
+        self.event_param_unknown = event_params1[2] #Parameter unknow - maybe S100
+        self.snow_melt = event_params1[3]
+                
+        self._raw_extra_lines.append(frqsim_block[8:10]) # save unprocessed unit block
+
+        # Extract FEH Event Rainfall Data
+        rainfall_params1 = split_10_char(frqsim_block[10])
+        self.observed_rainfall_depth = _to_float(rainfall_params1[0])
+        self.return_period = _to_float(rainfall_params1[1])
+        self.arf = _to_float(rainfall_params1[2]) #TODO: rounding currently to 3dp, example frqsim unit is to 6dp. 
+        self.ddf_c = _to_float(rainfall_params1[3])
+        self.ddf_d1 = _to_float(rainfall_params1[4])
+        self.ddf_d2 = _to_float(rainfall_params1[5])
+        self.ddf_d3 = _to_float(rainfall_params1[6])
+        self.ddf_e = _to_float(rainfall_params1[7])
+        self.ddf_f = _to_float(rainfall_params1[8])
+           
+        self._raw_extra_lines.append(frqsim_block[11:21]) # save unprocessed unit block
+
+        self.storm_profile_type = frqsim_block[21][: self._label_len].strip()
+
+        self._raw_extra_lines.append(frqsim_block[22:26]) # save unprocessed unit block
+
+        self.frqsim_storm_profile = frqsim_block[26]
+        
+        self._raw_extra_lines.append(frqsim_block[27:]) # save unprocessed unit block
+        
+
+        ##Import _QT##
+        frqsim_params = split_10_char(f"{frqsim_block[32]:<90}")
+        self.nrows = int(frqsim_params[0])
+        self.timeoffset = _to_float(frqsim_params[1]) # TODO: Check - make internal as these cannot be adjusted.
+        self._something = _to_float(frqsim_params[2]) # TODO: Check - make internal as these cannot be adjusted.
+        self.timeunit = _to_str(frqsim_params[3], "HOURS", check_float=True) #TODO: Check - make internal as these cannot be adjusted.
+        self.extendmethod = _to_str(frqsim_params[4], "EXTEND") #TODO: Check - make internal as these cannot be adjusted.
+        self.interpmethod = _to_str(frqsim_params[5], "LINEAR") #TODO: Check - make internal as these cannot be adjusted.
+        data_list = (
+            _to_data_list(frqsim_block[33:], date_col=1)
+            if self.timeunit == "DATES"
+            else _to_data_list(frqsim_block[33:])
+        )
+
+        self.data = pd.DataFrame(data_list, columns=["Flow", "Time"])
+        self.data = self.data.set_index("Time")
+        self.data = self.data["Flow"]  # Convert to series
+
+    
+    def _write(self):
+
+       # _validate_unit(self)  # Function to check the params are valid for FRQSIM
+
+        frqsim_block = []    
+        
+        header = "FRQSIM " + self.comment
+        name = self.name[: self._label_len]
+        
+        # Update storm duration based on chosen FRQSIM Profile used
+        if self.frqsim_storm_profile != "":
+            self.storm_duration = self.frqsim_storm_profile.split("hr")[0]
+
+        # Combine prarameters in to lines
+        event_params = join_10_char(self.storm_area, self.storm_duration, self.event_param_unknown, self.snow_melt)
+        feher_params = join_10_char(self.observed_rainfall_depth, self.return_period, self.arf, self.ddf_c, self.ddf_d1, self.ddf_d2, self.ddf_d3, self.ddf_e, self.ddf_f)        
+
+        # Create unit block TODO: how to do this more efficiently.
+        frqsim_block = [header,name]
+        frqsim_block.extend(self._raw_extra_lines[0])
+        frqsim_block.extend([event_params])
+        frqsim_block.extend(self._raw_extra_lines[1])
+        frqsim_block.extend([feher_params])
+        frqsim_block.extend(self._raw_extra_lines[2])
+        frqsim_block.extend([self.storm_profile_type])
+        frqsim_block.extend(self._raw_extra_lines[3])
+        frqsim_block.extend([self.frqsim_storm_profile])
+        frqsim_block.extend(self._raw_extra_lines[4])
+
+        #TODO: Add funictionality to write _QT block
+        
+        return frqsim_block
+
+    pass
