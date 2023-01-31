@@ -173,6 +173,9 @@ class XML2D(FMFile):
                     list_idx or 0
                 ]
                 # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
+                if not key == orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
+                    orig_dict[key] == key  # I don't think this will work! Does it need to be the parent key?
+
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
             elif type(item) == list:
