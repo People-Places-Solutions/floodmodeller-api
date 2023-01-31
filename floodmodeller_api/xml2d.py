@@ -176,10 +176,13 @@ class XML2D(FMFile):
                     list_idx or 0
                 ]
                     # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
-            if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
-                key = etree.SubElement(parent, item)
-                    # self.update(self.xml.etree.ElementTree.Element.set(key, item))
-                    # orig_dict[key] == key  # I don't think this will work! Does it need to be the parent key?
+            # if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
+            #     new_dict[item] = etree.SubElement(parent, key)
+            #     # need to add key to the dictionary in the right place
+            #     # orig_dict[key] = item # not needed as otherwise it wouldn't update.
+            #     print(etree.tostring(parent, pretty_print=True))
+            #         # self.update(self.xml.etree.ElementTree.Element.set(key, item))
+            #         #  # I don't think this will work! Does it need to be the parent key?
 
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
@@ -193,17 +196,26 @@ class XML2D(FMFile):
             else:
                 if parent_key == "ROOT":
                     item = getattr(self, key)
-                if not item == orig_dict[key]:
-                    if key == "value":
-                        # Value has been updated
-                        parent.text = str(item)
-                    else:
-                        # Attribute has been updated
-                        elem = parent.find(f"{self._ns}{key}")
-                        if elem is not None:
-                            elem.text = str(item)
+
+                orig_item = orig_dict.get(key, None)
+                if orig_item is not None:
+                    if not item == orig_item:
+                        if key == "value":
+                            # Value has been updated
+                            parent.text = str(item)
                         else:
-                            parent.set(key, str(item))
+                            # Attribute has been updated
+                            elem = parent.find(f"{self._ns}{key}")
+                            if elem is not None:
+                                elem.text = str(item)
+                            else:
+                                parent.set(key, str(item))
+                else:
+                    # parent.set(key, str(item))
+                    etree.SubElement(parent, key).text=str(item) 
+                    # orig_dict[key] = item
+        # orig_dict = deepcopy(new_dict)
+            #  # don't use currently
 
     def _write(self) -> str:
         try:
