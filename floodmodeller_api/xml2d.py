@@ -212,6 +212,8 @@ class XML2D(FMFile):
                                 parent.set(key, str(item))
                 else:
                     # parent.set(key, str(item))
+                    ### need to make sure that it is put in in the right order, will need to query
+                    ### the schema tree and work from there
                     etree.SubElement(parent, key).text=str(item) 
                     # orig_dict[key] = item
         # orig_dict = deepcopy(new_dict)
