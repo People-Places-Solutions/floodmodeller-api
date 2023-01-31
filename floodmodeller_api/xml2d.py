@@ -25,7 +25,10 @@ from lxml import etree
 from floodmodeller_api._base import FMFile
 from tqdm import trange
 
+from xml import etree.ElementTree.Element as xml_el
+
 import datetime as dt
+
 
 from .zzn import ZZN
 from .logs import lf_factory, error_2D_dict
@@ -174,7 +177,8 @@ class XML2D(FMFile):
                 ]
                 # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
                 if not key == orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
-                    orig_dict[key] == key  # I don't think this will work! Does it need to be the parent key?
+                    xml_el.set(key, item)
+                    # orig_dict[key] == key  # I don't think this will work! Does it need to be the parent key?
 
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
