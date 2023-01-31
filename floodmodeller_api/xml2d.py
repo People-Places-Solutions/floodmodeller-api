@@ -25,7 +25,7 @@ from lxml import etree
 from floodmodeller_api._base import FMFile
 from tqdm import trange
 
-from xml import etree.ElementTree.Element as xml_el
+import xml as xml
 
 import datetime as dt
 
@@ -175,9 +175,10 @@ class XML2D(FMFile):
                 parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
                     list_idx or 0
                 ]
-                # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
-                if not key == orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
-                    xml_el.set(key, item)
+                    # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
+            if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
+                key = etree.SubElement(parent, item)
+                    # self.update(self.xml.etree.ElementTree.Element.set(key, item))
                     # orig_dict[key] == key  # I don't think this will work! Does it need to be the parent key?
 
             if type(item) == dict:
