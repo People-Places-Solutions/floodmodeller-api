@@ -61,8 +61,8 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    # _xsd_loc: str = "http://schema.floodmodeller.com/5.1/2d.xsd"
-    _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
+    _xsd_loc: str = "http://schema.floodmodeller.com/5.1/2d.xsd"
+    # _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
     def __init__(self, xml_filepath: Union[str, Path] = None):
         try:
@@ -89,6 +89,7 @@ class XML2D(FMFile):
         self._get_multi_value_keys()
 
         self._create_dict()
+        # self._create_schema_dict()
         for key, data in self._data.items():
             if key == "domain":
                 self.domains = {domain["domain_id"]: domain for domain in data}
@@ -107,6 +108,26 @@ class XML2D(FMFile):
         ]:
             if attr not in self.__dict__:
                 setattr(self, attr, None)
+        
+        # for key, data in self._data_schema.items():
+        #     if key == "domain":
+        #         self.domains = {domain["domain_id"]: domain for domain in data}
+        #     else:
+        #         setattr(self, key, data)
+        # for attr in [
+        #     'name', 
+        #     'link1d', 
+        #     'logfile', 
+        #     'domains', 
+        #     'restart_options', 
+        #     'advanced_options', 
+        #     'processor', 
+        #     'unit_system', 
+        #     'description'
+        # ]:
+        #     if attr not in self.__dict__:
+        #         setattr(self, attr, None)
+
 
 
     def _create_dict(self):
@@ -119,6 +140,17 @@ class XML2D(FMFile):
         xml_dict = self._recursive_elements_to_dict(xml_dict, root)
         self._raw_data = xml_dict
         self._data = deepcopy(self._raw_data)
+
+    # def _create_schema_dict(self):
+    #     """Iterate through XML Tree to add all elements as class attributes"""
+    #     xml_dict = {}
+    #     root = self._xsdschema.getroot()
+
+    #     xml_dict.update({"name": root.attrib["name"]})
+
+    #     xml_dict = self._recursive_elements_to_dict(xml_dict, root)
+    #     self._raw_data_schema = xml_dict
+    #     self._data_schema = deepcopy(self._raw_data_schema)
 
     def _recursive_elements_to_dict(self, xml_dict, tree):
         # Some elements can have multiple instances e.g. domains.
@@ -172,11 +204,17 @@ class XML2D(FMFile):
         for key, item in new_dict.items():
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
-            else:
+            else:  
                 parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
                     list_idx or 0
                 ]
-                    # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
+
+            
+            #catching for if parent doesn't exist
+            # check if parent is empty or catch and except
+            # try except and catch on the index error to see if there is a parent or not.
+
+            # # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
             # if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
             #     new_dict[item] = etree.SubElement(parent, key)
             #     # need to add key to the dictionary in the right place
@@ -215,6 +253,16 @@ class XML2D(FMFile):
                     # parent.set(key, str(item))
                     ### need to make sure that it is put in in the right order, will need to query
                     ### the schema tree and work from there
+                    for parent_key in parent:
+                        print(parent_key.tag)
+
+                    elem = self._xsd.find(".//{http://www.w3.org/2001/XMLSchema}*[@name='computational_areaType']")
+                    sequence = elem[0]
+                    for e in sequence:
+                        print(e.attrib["name"])
+                    # print(self._xmltree)
+                    # print(self._data_schema)
+
                     etree.SubElement(parent, key).text=str(item) 
                     # orig_dict[key] = item
         # orig_dict = deepcopy(new_dict)
@@ -223,7 +271,13 @@ class XML2D(FMFile):
     def _write(self) -> str:
         try:
             self._recursive_update_xml(self._data, self._raw_data, "ROOT")
-            self._validate()
+            self._reorder_sequence()  # need to add more
+            try:
+                self._validate()
+            except:
+                self._reorder_sequence()  # need to add more
+                self._validate()
+            
             self._raw_data = deepcopy(self._data)  # reset raw data to equal data
 
             return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
