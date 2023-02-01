@@ -61,7 +61,8 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    _xsd_loc: str = "http://schema.floodmodeller.com/5.1/2d.xsd"
+    # _xsd_loc: str = "http://schema.floodmodeller.com/5.1/2d.xsd"
+    _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
     def __init__(self, xml_filepath: Union[str, Path] = None):
         try:
