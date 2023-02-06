@@ -220,7 +220,33 @@ class XML2D(FMFile):
 
             # # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
             # if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
-            #     new_dict[item] = etree.SubElement(parent, key)
+            #     print(test1)
+            # if type(new_dict[key]) is float:
+            #     if len(str(new_dict[key])) != len(str(orig_dict[key])):
+            try:
+                if len(new_dict[key]) != len(orig_dict[key]):  # checking to see if dictionaries are different lengths
+                    
+                    # loop over length of the new dictionary to see which is the new entry
+                    for el in range(len(new_dict[key])):
+                        if new_dict[key][el] not in orig_dict[key]:
+                            etree.SubElement(parent, key).text=str(item[el]) # is this correct?
+            except:  # when handling a float
+
+                if len(str(new_dict[key])) != len(str(orig_dict[key])):  # checking to see if dictionaries are different lengths
+                    
+                    # loop over length of the new dictionary to see which is the new entry
+                    for el in range(new_dict[key]):
+                        if new_dict[key][el] not in orig_dict[key]:
+                            etree.SubElement(parent, key).text=str(item[el]) # is this correct? - NO
+
+
+            # print(self._xmltree.findall(".//{parent_key}").tag)
+            # element_check = self._xmltree
+            # print(element_check)
+            # seq_check = element_check[0]
+            # for e in seq_check:
+            #     print(e.attrib["name"])
+                # etree.SubElement(parent_key, ??)
             #     # need to add key to the dictionary in the right place
             #     # orig_dict[key] = item # not needed as otherwise it wouldn't update.
             #     print(etree.tostring(parent, pretty_print=True))
@@ -230,7 +256,7 @@ class XML2D(FMFile):
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
             elif type(item) == list:
-                orig_dict = deepcopy(new_dict)  # updating original dict with extra bc in new dict. Also check it doens't break anything else/ new_dict has new bc.
+                # orig_dict = deepcopy(new_dict)  # updating original dict with extra bc in new dict. Also check it doens't break anything else/ new_dict has new bc.
                 # need to make sure element is actually missing, then make recursive call
                 # if it doesn't have the key we want to add
                 #     add the key. using adapted etree.SubElement(parent, key).text=str(item) (different syntax)
