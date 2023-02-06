@@ -205,10 +205,14 @@ class XML2D(FMFile):
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:  
-                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
-                    list_idx or 0
-                ]
-
+                try:
+                    parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
+                        list_idx or 0
+                    ]
+                
+                except: # this is case for parent being empty, would normally give error
+                    # parent = ??
+                    print(list_idx)
             
             #catching for if parent doesn't exist
             # check if parent is empty or catch and except
@@ -226,6 +230,12 @@ class XML2D(FMFile):
             if type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
             elif type(item) == list:
+                orig_dict = deepcopy(new_dict)  # updating original dict with extra bc in new dict. Also check it doens't break anything else/ new_dict has new bc.
+                # need to make sure element is actually missing, then make recursive call
+                # if it doesn't have the key we want to add
+                #     add the key. using adapted etree.SubElement(parent, key).text=str(item) (different syntax)
+                # then run recurisive call just below
+                
                 for i, _item in enumerate(item):
                     if type(_item) == dict:
                         self._recursive_update_xml(
@@ -271,11 +281,10 @@ class XML2D(FMFile):
     def _write(self) -> str:
         try:
             self._recursive_update_xml(self._data, self._raw_data, "ROOT")
-            self._reorder_sequence()  # need to add more
             try:
                 self._validate()
             except:
-                self._reorder_sequence()  # need to add more
+                # TODO:# self._reorder_sequence()  # need to add more
                 self._validate()
             
             self._raw_data = deepcopy(self._data)  # reset raw data to equal data
