@@ -25,7 +25,7 @@ from lxml import etree
 from floodmodeller_api._base import FMFile
 from tqdm import trange
 
-import xml as xml
+# import xml as xml
 
 import datetime as dt
 
@@ -185,6 +185,46 @@ class XML2D(FMFile):
                 xml_dict[child_key] = value_from_string(value)
 
         return xml_dict
+        
+    def _reorder_xmltree(self):
+        # This function will reorder the xmltree according to the schema
+
+        def sortchildby(parent, attr, schema_order):
+            # This function will take the parent as a list of keys(??) and attr (not really sure why, maybe this is the items??)
+            # and will order according to the schema_order, which I hope will be a list of some description.
+            #
+            # Input parameters:
+                # parent
+                #attr
+                # schema_order
+
+            #outputs
+                # specific branch in the correct order
+
+            # Assumptions:
+                # 1. Not sure but I think this assumes that everything is at the correct level to start with.
+
+            parent[:] = sorted(parent, key = schema_order child: child.get(attr))
+
+        tree = etree.parse(self._xmltree)  # importing xml file, this may not be correct, we want to be importing the new, updated xml file
+        parent.tree.getroot()  
+
+        # we want to attempt some for of a recursive structure:
+        parent_keys = ??? # I want this to be a list of functions
+
+
+
+        for key, item in parent_keys:  # looping through each of the elements in this level
+            schema_list = self._xsd.find(".//{http://www.w3.org/2001/XMLSchema}*[@name=key]") # this is the schema order depending on the key we are currently looking at
+            sortchildby(key, item, schema_list) 
+            print('Warning: Not sure item should be in here as attr.')
+
+
+        
+
+
+
+        tree.write(self._xmltree)  # outputting the tree at the end
 
     def _validate(self):
         try:
@@ -232,12 +272,20 @@ class XML2D(FMFile):
                             etree.SubElement(parent, key).text=str(item[el]) # is this correct?
                             
                             # adding relevant row from new_dict to the original dict so later calls will work?
-                            orig_dict[key] = new_dict[key][el]
+                            orig_dict[key].append(new_dict[key][el])  
+                    
+                    
+                    elem = self._xmltree.find(".//{http://www.w3.org/2001/XMLSchema}*[@name='boundary_conditions']")
+                    # sequence = elem[0]
+                    for e in parent:
+                        print(e)
+                        # print(e.attrib["name"])
                         
 
 
                     
-            except:  # when handling a float
+            except Exception as ee:  # when handling a float
+                print(ee)
 
                 if len(str(new_dict[key])) != len(str(orig_dict[key])):  # checking to see if dictionaries are different lengths
                     
@@ -247,7 +295,7 @@ class XML2D(FMFile):
                             etree.SubElement(parent, key).text=str(item[el]) # is this correct? - NO
 
                             # adding relevant row from new_dict to the original dict so later calls will work?
-                            orig_dict[key] = new_dict[key][el]
+                            orig_dict[key].append(new_dict[key][el])  
 
 
             # print(self._xmltree.findall(".//{parent_key}").tag)
@@ -321,6 +369,7 @@ class XML2D(FMFile):
                 self._validate()
             except:
                 # TODO:# self._reorder_sequence()  # need to add more
+                self._reorder_xmltree()
                 self._validate()
             
             self._raw_data = deepcopy(self._data)  # reset raw data to equal data
