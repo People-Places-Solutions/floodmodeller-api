@@ -41,56 +41,58 @@ SUPPORTED_UNIT_TYPES = {
 }
 
 UNSUPPORTED_UNIT_TYPES = {
-    "2DCELL",
-    "ABSTRACTION",
-    "AIR VESSEL",
-    "BERNOULLI",
-    "BREACH",
-    "CHECK VALVE",
-    "COMMENT",
-    "CONPUMP",
-    "CONVALVE",
-    "CRUMP",
-    "FEHBDY",
-    "FLAT-V WEIR",
-    "FLOOD RELIEF",
-    "FLOODPLAIN",
-    "FLOW CONTROL",
-    "FRQSIM",
-    "FSRBDY",
-    "FSSR16BDY",
-    "GATED WEIR",
-    "GAUGE",
-    "GERRBDY",
-    "HBDY",
-    "INTERPOLATE",
-    "INVERTED SYPHON",
-    "JUNCTION",
-    "LABYRINTH WEIR",
-    "LATERAL",
-    "LDPUMP",
-    "LOSS",
-    "MANHOLE",
-    "NCBDY",
-    "NCDBDY",
-    "NOTWEIR",
-    "NOZZLE",
-    "OCPUMP",
-    "OUTFALL",
-    "PIPE",
-    "POND",
-    "QH CONTROL",
-    "QRATING",
-    "REBDY",
-    "REFH2BDY",
-    "REPLICATE",
-    "RESERVOIR",
-    "SCSBDY",
-    "SCWEIR",
-    "SYPHON",
-    "TIDAL",
-    "TIDBDY",
-    "WEIR",
+    
+    #"2DCELL": {"group": ,"has_subtype": },
+    "ABSTRACTION": {"has_subtype": False},
+    #"AIR VESSEL": {"group": ,"has_subtype":},
+    "BERNOULLI": {"has_subtype": False},
+    "BREACH": {"has_subtype": False}, #breach
+    #"CHECK VALVE": {"group": ,"has_subtype": },
+    "COMMENT": {"group": 'other' ,"has_subtype": False},
+    #"CONPUMP": {"group": ,"has_subtype": },
+    #"CONVALVE": {"group": ,"has_subtype": },
+    "CRUMP": {"group": 'structures',"has_subtype": False}, #crump weir
+    "FEHBDY": {"group": "boundaries" ,"has_subtype": False}, # RAINFALL RUNOFF METHOD boundary
+    "FLAT-V WEIR": {"group": "structures" ,"has_subtype": False}, # fLAT v WEIR
+    #"FLOOD RELIEF": {"group": ,"has_subtype": },
+    "FLOODPLAIN": {"has_subtype": True}, #floodplain section culvert
+    #"FLOW CONTROL": {"group": ,"has_subtype": },
+    "FRQSIM": {"group": 'boundaries',"has_subtype": False }, #flood FReQuency SIMulation
+    "FSRBDY": {"group": 'boundaries',"has_subtype": False}, #FEH Method (FEH Rainfall Runoff Method)
+    "FSSR16BDY": {"group": 'boundaries',"has_subtype": False}, #FSSR16 Method
+    "GATED WEIR": {"group": 'structures' ,"has_subtype": False}, #gated weir
+    "GAUGE": {"has_subtype": False}, # Gauge
+    "GERRBDY": {"group": 'boundaries',"has_subtype": False}, #gen rainfall runoff
+    #"HBDY": {"group": ,"has_subtype": },
+    "INTERPOLATE": {"group":'sections' ,"has_subtype": False}, #interpolate
+    "INVERTED SYPHON": {"group": "structures" ,"has_subtype": True}, #invert syphon 
+    "JUNCTION": {"has_subtype": True}, #[connector]
+    "LABYRINTH WEIR": {"group": 'structures',"has_subtype": False}, #labyrinth weir
+    "LATERAL": {"has_subtype": False}, #[connector]
+    #"LDPUMP": {"group": ,"has_subtype": },
+    #"LOSS": {"group": ,"has_subtype": }, 
+    "MANHOLE": {"has_subtype": False}, #Manhole [connector]
+    #"NCBDY": {"group": ,"has_subtype": },
+    "NCDBDY": {"group": 'boundaries' ,"has_subtype": False}, #Normal/Critical Depth Boundary
+    "NOTWEIR": {"group":'structures' ,"has_subtype": False}, #Notional Weir
+    #"NOZZLE": {"group": ,"has_subtype": },
+    "OCPUMP": {"has_subtype": False}, #pump [junctions]
+    #"OUTFALL":{"group": ,"has_subtype": }, #urban outfall [urban]
+    #"PIPE": {"group": ,"has_subtype": }, # [urban]
+    "POND": {"has_subtype":True}, #Pond units, online pond etc [connector]
+    "QH CONTROL": {"group": 'structures',"has_subtype": False}, #Flow-head control weir
+    "QRATING": {"group": 'boundaries' ,"has_subtype": False}, #Rating Curves
+    "REBDY": {"group": 'boundaries',"has_subtype": False}, #Rainfall/Evaporation Boundary
+    "REFH2BDY": {"group": 'boundaries' ,"has_subtype": False}, #ReFH2 Method
+    "REPLICATE":{"group": 'sections' ,"has_subtype": False}, #replicate
+    "RESERVOIR": {"has_subtype": False}, #reservoir unit [connector]
+    #"SCSBDY": {"group": ,"has_subtype": }, # US SCS Method now SS
+    "SCWEIR": {"group" : "structures" ,"has_subtype": False}, #sharp crested weir
+    "SYPHON": {"group": "structures","has_subtype": False}, #syphon unit 
+    #"TIDAL": {"has_subtype": },
+    "TIDBDY": {"group": "boundaries","has_subtype": False}, #tidal 
+    "WEIR":{"group": "structures","has_subtype": False}, #general weir 
+
 }
 
 ALL_UNIT_TYPES = set(SUPPORTED_UNIT_TYPES.keys()).union(UNSUPPORTED_UNIT_TYPES)

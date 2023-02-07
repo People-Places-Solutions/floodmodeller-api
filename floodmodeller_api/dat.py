@@ -333,6 +333,15 @@ class DAT(FMFile):
                     unit_group[unit_name] = eval(
                         f'units.{block["Type"]}({unit_data}, {self._label_len})'
                     )
+            else:
+                unit_data = self._raw_data[block["start"] : block["end"] + 1]
+
+                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                    unit_name = unit_data[2][: self._label_len].strip()
+                else:
+                    unit_name = unit_data[1][: self._label_len].strip()
+                    
 
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
