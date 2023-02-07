@@ -189,7 +189,7 @@ class XML2D(FMFile):
     def _reorder_xmltree(self):
         # This function will reorder the xmltree according to the schema
 
-        def sortchildby(parent, attr, schema_order):
+        def sortchildby(parent, item, schema_order):
             # This function will take the parent as a list of keys(??) and attr (not really sure why, maybe this is the items??)
             # and will order according to the schema_order, which I hope will be a list of some description.
             #
@@ -204,19 +204,18 @@ class XML2D(FMFile):
             # Assumptions:
                 # 1. Not sure but I think this assumes that everything is at the correct level to start with.
 
-            parent[:] = sorted(parent, key = schema_order child: child.get(attr))
-
-        tree = etree.parse(self._xmltree)  # importing xml file, this may not be correct, we want to be importing the new, updated xml file
-        parent.tree.getroot()  
-
-        # we want to attempt some for of a recursive structure:
-        parent_keys = ??? # I want this to be a list of functions
+            parent[:] = sorted(parent, key = schema_order)
 
 
+        parent_keys = self._xmltree.getroot()  # this should find the keys ???
 
-        for key, item in parent_keys:  # looping through each of the elements in this level
+       
+
+
+
+        for key in parent_keys:  # looping through each of the elements in this level
             schema_list = self._xsd.find(".//{http://www.w3.org/2001/XMLSchema}*[@name=key]") # this is the schema order depending on the key we are currently looking at
-            sortchildby(key, item, schema_list) 
+            sortchildby(key, _, schema_list) 
             print('Warning: Not sure item should be in here as attr.')
 
 
