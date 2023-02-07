@@ -330,8 +330,10 @@ class DAT(FMFile):
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
                     )
                 else:
+                    #Changes done to account for unit types with spaces/dashes eg Flat-V Weir
+                    unit_type = block["Type"].replace(" ","_").replace("-","_")
                     unit_group[unit_name] = eval(
-                        f'units.{block["Type"]}({unit_data}, {self._label_len})'
+                        f'units.{unit_type}({unit_data}, {self._label_len})'
                     )
             else:
                 unit_data = self._raw_data[block["start"] : block["end"] + 1]

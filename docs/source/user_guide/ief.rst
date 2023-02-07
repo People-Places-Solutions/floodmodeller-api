@@ -56,6 +56,46 @@ wanting to have more control over checking simulation progress and performing an
 Standard Library which allows for spawning new processes and handling their input and output pipes. More information on working with ``subprocess.Popen()`` can be found
 `here <https://docs.python.org/3/library/subprocess.html#subprocess.Popen>`_.
 
+Working with Event Data attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An IEF file can have any number of 'EventData' attributes which point to the location of
+IED files. In the IEF class these are all contained within the ``.eventdata`` attribute
+as a dictionary. This allows for each event data to have an associated title which is defined in
+the IEF file as a comment before the event data attribute. The dictionary keys represent
+the titles, and the values represent the event data paths. An example would look like this:
+    
+.. code:: python 
+
+    ief = IEF("path/to/file.ief")
+    ief.eventdata = {
+        'MainInflow' : 'Q100.IED',
+        'TribInflow' : 'Q100_trib.IED',
+        'TidalBoundary' : 'T100_DSBDY.IED'
+    }
+  
+
+This would then write out the following lines in the IEF file:
+
+.. code::
+
+    ;MainInflow
+    EventData=Q100.IED
+    ;TribInflow
+    EventData=Q100_trib.IED
+    ;TidalBoundary
+    EventData=T100_DSBDY.IED
+
+When editing event data attibutes, they can simply be edited in the same way as a dictionary. 
+For example, deleting keys using ``del``, adding new keys and editing existing ones.
+
+.. warning::
+    The ``.eventdata`` attribute has been changed to use a dictionary as of version 0.4.1 of 
+    the API. Previously in v0.4.0 ``.eventdata`` would return a list instead, without support
+    for reading/editing the event data titles. This introduces a change which is incompatible 
+    with previous versions of the API in how event data in IEF files is handled. Any existing
+    code that treats eventdata as a list will need to be updated in order to run this version.
+
 Reference
 ----------
 .. autoclass:: floodmodeller_api.IEF

@@ -17,8 +17,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 ### UNIT CLASSES ###
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
-from .sections import RIVER
-from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR
+from .sections import RIVER, INTERPOLATE, REPLICATE
+from .structures import (
+    BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, OUTFALL
+)
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
 
@@ -38,6 +40,12 @@ SUPPORTED_UNIT_TYPES = {
     "BLOCKAGE": {"group": "losses", "has_subtype": False},
     "CULVERT": {"group": "losses", "has_subtype": True},
     "RNWEIR": {"group":"structures","has_subtype": False},
+    "CRUMP": {"group":"structures","has_subtype": False},
+    "FLAT-V WEIR": {"group":"structures","has_subtype": False},
+    #"RESERVOIR": {"group":"structures", "has_subtype": False}, # Needs further testing
+    "INTERPOLATE": {"group":"sections", "has_subtype": False},
+    "REPLICATE": {"group":"sections", "has_subtype": False},
+    "OUTFALL": {"group": "structures", "has_subtype": True},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -51,9 +59,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "COMMENT": {"group": 'other' ,"has_subtype": False},
     #"CONPUMP": {"group": ,"has_subtype": },
     #"CONVALVE": {"group": ,"has_subtype": },
-    "CRUMP": {"group": 'structures',"has_subtype": False}, #crump weir
     "FEHBDY": {"group": "boundaries" ,"has_subtype": False}, # RAINFALL RUNOFF METHOD boundary
-    "FLAT-V WEIR": {"group": "structures" ,"has_subtype": False}, # fLAT v WEIR
     #"FLOOD RELIEF": {"group": ,"has_subtype": },
     "FLOODPLAIN": {"has_subtype": True}, #floodplain section culvert
     #"FLOW CONTROL": {"group": ,"has_subtype": },
@@ -64,7 +70,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "GAUGE": {"has_subtype": False}, # Gauge
     "GERRBDY": {"group": 'boundaries',"has_subtype": False}, #gen rainfall runoff
     #"HBDY": {"group": ,"has_subtype": },
-    "INTERPOLATE": {"group":'sections' ,"has_subtype": False}, #interpolate
     "INVERTED SYPHON": {"group": "structures" ,"has_subtype": True}, #invert syphon 
     "JUNCTION": {"has_subtype": True}, #[connector]
     "LABYRINTH WEIR": {"group": 'structures',"has_subtype": False}, #labyrinth weir
@@ -77,14 +82,12 @@ UNSUPPORTED_UNIT_TYPES = {
     "NOTWEIR": {"group":'structures' ,"has_subtype": False}, #Notional Weir
     #"NOZZLE": {"group": ,"has_subtype": },
     "OCPUMP": {"has_subtype": False}, #pump [junctions]
-    #"OUTFALL":{"group": ,"has_subtype": }, #urban outfall [urban]
     #"PIPE": {"group": ,"has_subtype": }, # [urban]
     "POND": {"has_subtype":True}, #Pond units, online pond etc [connector]
     "QH CONTROL": {"group": 'structures',"has_subtype": False}, #Flow-head control weir
     "QRATING": {"group": 'boundaries' ,"has_subtype": False}, #Rating Curves
     "REBDY": {"group": 'boundaries',"has_subtype": False}, #Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": 'boundaries' ,"has_subtype": False}, #ReFH2 Method
-    "REPLICATE":{"group": 'sections' ,"has_subtype": False}, #replicate
     "RESERVOIR": {"has_subtype": False}, #reservoir unit [connector]
     #"SCSBDY": {"group": ,"has_subtype": }, # US SCS Method now SS
     "SCWEIR": {"group" : "structures" ,"has_subtype": False}, #sharp crested weir

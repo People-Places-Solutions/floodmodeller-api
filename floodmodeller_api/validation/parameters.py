@@ -264,11 +264,11 @@ parameter_options = {
     },
     "easting": {
         "type": "type-match",
-        "options": (int)
+        "options": (float, int)
     },
     "northing": {
         "type": "type-match",
-        "options": (int)
+        "options": (float, int)
     },
     "time_delay": {
         "type": "type-match",
@@ -577,5 +577,37 @@ parameter_options = {
     "downstream_crest_height":{
         "type": "type-match",
         "options": (float, int)
-    }
+    },
+    "coriolis_coefficient":{
+        "type": "type-match",
+        "options": (float,int)
+    },
+    "v_slope":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "side_slope":{
+        "type": "type-match",
+        "options":  (float, int)
+    },
+    "ds_face_slope":{
+        "type": "value-match",
+        "options": [2,5]
+    },
+    "bank_top_elevation":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "num_pairs":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "runoff_factor":{
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "bed_level_drop":{
+        "type": "type-match",
+        "options": (float, int)
+    },
 }
