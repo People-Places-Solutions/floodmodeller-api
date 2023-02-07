@@ -230,6 +230,13 @@ class XML2D(FMFile):
                     for el in range(len(new_dict[key])):
                         if new_dict[key][el] not in orig_dict[key]:
                             etree.SubElement(parent, key).text=str(item[el]) # is this correct?
+                            
+                            # adding relevant row from new_dict to the original dict so later calls will work?
+                            orig_dict[key] = new_dict[key][el]
+                        
+
+
+                    
             except:  # when handling a float
 
                 if len(str(new_dict[key])) != len(str(orig_dict[key])):  # checking to see if dictionaries are different lengths
@@ -238,6 +245,9 @@ class XML2D(FMFile):
                     for el in range(new_dict[key]):
                         if new_dict[key][el] not in orig_dict[key]:
                             etree.SubElement(parent, key).text=str(item[el]) # is this correct? - NO
+
+                            # adding relevant row from new_dict to the original dict so later calls will work?
+                            orig_dict[key] = new_dict[key][el]
 
 
             # print(self._xmltree.findall(".//{parent_key}").tag)
