@@ -253,9 +253,9 @@ class XML2D(FMFile):
                         list_idx or 0
                     ]
                 
-                except: # this is case for parent being empty, would normally give error
+                except Exception as e_list_idx: # this is case for parent being empty, would normally give error
                     # parent = ??
-                    print(list_idx)
+                    print(e_list_idx)
             
             #catching for if parent doesn't exist
             # check if parent is empty or catch and except
@@ -272,10 +272,11 @@ class XML2D(FMFile):
                     # loop over length of the new dictionary to see which is the new entry
                     for el in range(len(new_dict[key])):
                         if new_dict[key][el] not in orig_dict[key]:
-                            etree.SubElement(parent, key).text=str(item[el]) # is this correct?
+                            etree.SubElement(parent, f"{self._ns}{key}") #.text=str(item[el]) # is this correct?
                             
                             # adding relevant row from new_dict to the original dict so later calls will work?
-                            orig_dict[key].append(new_dict[key][el])  
+                            
+                            # orig_dict[key].append(new_dict[key][el])  
                     
                     
                     elem = self._xmltree.find(".//{http://www.w3.org/2001/XMLSchema}*[@name='boundary_conditions']")
@@ -295,10 +296,10 @@ class XML2D(FMFile):
                     # loop over length of the new dictionary to see which is the new entry
                     for el in range(new_dict[key]):
                         if new_dict[key][el] not in orig_dict[key]:
-                            etree.SubElement(parent, key).text=str(item[el]) # is this correct? - NO
+                            etree.SubElement(parent, f"{self._ns}{key}").text=str(item[el]) # is this correct? - NO
 
                             # adding relevant row from new_dict to the original dict so later calls will work?
-                            orig_dict[key].append(new_dict[key][el])  
+                            # orig_dict[key].append(new_dict[key][el])  
 
 
             # print(self._xmltree.findall(".//{parent_key}").tag)
