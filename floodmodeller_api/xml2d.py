@@ -186,30 +186,25 @@ class XML2D(FMFile):
 
         return xml_dict
         
-    def _reorder_xmltree(self):
-        # This function will reorder the xmltree according to the schema
-
-        def sortchildby(parent, item, schema_order):
-            # This function will take the parent as a list of keys(??) and attr (not really sure why, maybe this is the items??)
-            # and will order according to the schema_order, which I hope will be a list of some description.
-            #
-            # Input parameters:
-                # parent
-                #attr
-                # schema_order
-
-            #outputs
-                # specific branch in the correct order
-
-            # Assumptions:
-                # 1. Not sure but I think this assumes that everything is at the correct level to start with.
-
-            parent[:] = sorted(parent, key = schema_order)
-
-
-        parent_keys = self._xmltree.getroot()  # this should find the keys ???
-
-       
+    def _recursive_reorder_xml(self, elem=None, parent_key=):
+        if at root:
+            parent = getroot
+        parent[:] = self._sort_from_schema(parent)
+        for child in parent:
+            self._recursive_reorder_xml(child)
+    def _sort_from_schema(self, parent):
+        # find element in schema
+        parent_name = parent.attrib['name']
+        elem = self._xsd.find(f".//{http://www.w3.org/2001/XMLSchema}*[@name='{parent_name}']")
+        child_elems = [thing for thing in parent]
+        # find element order (check if there is one?)
+        if elem[0] == sequence:
+            categorical_order = {thing.attrib['name']: idx for idx, thing in enumerate(elem[0])}
+            # reorder elems in parent 
+            new_things = sorted(child_elems, key= lambda x: categorical_order[x.attrib['name']])
+            return new_things
+        else:
+            return child_elems       
 
 
 
@@ -368,7 +363,7 @@ class XML2D(FMFile):
                 self._validate()
             except:
                 # TODO:# self._reorder_sequence()  # need to add more
-                self._reorder_xmltree()
+                self._recursive_reorder_xml()
                 self._validate()
             
             self._raw_data = deepcopy(self._data)  # reset raw data to equal data
