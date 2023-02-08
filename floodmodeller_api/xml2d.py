@@ -186,39 +186,48 @@ class XML2D(FMFile):
 
         return xml_dict
         
-    def _recursive_reorder_xml(self, elem=None, parent_key=):
-        if at root:
-            parent = getroot
-        parent[:] = self._sort_from_schema(parent)
+    def _recursive_reorder_xml(self, parent_key='ROOT'):
+        # Function description
+        #
+        # Inputs:
+            # elem, default None, are these the elements whose parent is parent_key??
+            # parent_key, defualt ROOT. Should this be a single element or tather a list?
+        # Outputs
+
+        # Assumptions:
+            # 1. Branch/SubElement has to be made at the correct point.
+        if parent_key == 'ROOT': 
+            parent = self._xmltree.getroot()  # do we need an else here?
+        else:  
+            parent = self._xmltree.findall(f".//{self._ns}{parent_key}")
+
+        parent[:] = self._sort_from_schema(parent)  # this bit can't work currently, parent isn't defined unless its the root.
+
         for child in parent:
             self._recursive_reorder_xml(child)
+
     def _sort_from_schema(self, parent):
         # find element in schema
         parent_name = parent.attrib['name']
-        elem = self._xsd.find(f".//{http://www.w3.org/2001/XMLSchema}*[@name='{parent_name}']")
-        child_elems = [thing for thing in parent]
+        find_input = ".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{}']".format(parent_name)
+        print(find_input)
+        elem = self._xsd.find(find_input)
+        child_elems = [sub_element for sub_element in parent]
         # find element order (check if there is one?)
-        if elem[0] == sequence:
-            categorical_order = {thing.attrib['name']: idx for idx, thing in enumerate(elem[0])}
-            # reorder elems in parent 
-            new_things = sorted(child_elems, key= lambda x: categorical_order[x.attrib['name']])
-            return new_things
+        if elem is not None:  # i.e., requires order
+            if type(elem) is list:
+                categorical_order = {sub_element.attrib['name']: idx for idx, sub_element in enumerate(elem[0])}
+                # reorder elems in parent 
+                reorder_child_elms = sorted(child_elems, key= lambda x: categorical_order[x.attrib['name']])
+                return reorder_child_elms
+
+            else:
+                return child_elems
         else:
             return child_elems       
 
 
 
-        for key in parent_keys:  # looping through each of the elements in this level
-            schema_list = self._xsd.find(".//{http://www.w3.org/2001/XMLSchema}*[@name=key]") # this is the schema order depending on the key we are currently looking at
-            sortchildby(key, _, schema_list) 
-            print('Warning: Not sure item should be in here as attr.')
-
-
-        
-
-
-
-        tree.write(self._xmltree)  # outputting the tree at the end
 
     def _validate(self):
         try:
