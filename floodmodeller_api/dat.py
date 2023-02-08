@@ -339,7 +339,7 @@ class DAT(FMFile):
                 unit_data = self._raw_data[block["start"] : block["end"] + 1]
 
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
                 else:
                     unit_name = unit_data[1][: self._label_len].strip()
