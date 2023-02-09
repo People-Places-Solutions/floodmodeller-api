@@ -37,7 +37,7 @@ class DAT(FMFile):
 
     _filetype: str = "DAT"
     _suffix: str = ".dat"
-
+    
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = dat_filepath
@@ -339,6 +339,9 @@ class DAT(FMFile):
                 unit_data = self._raw_data[block["start"] : block["end"] + 1]
 
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+                var1 = units.UNSUPPORTED_UNIT_TYPES.get(block['Type'], None)
+                if (var1 is None):
+                    continue
                 if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
                     subtype = True 
@@ -346,7 +349,7 @@ class DAT(FMFile):
                     unit_name = unit_data[1][: self._label_len].strip()
                     subtype = False
                     
-                self.unsupported[unit_name] = UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
+                self.unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
                                                           unit_type =block["Type"], subtype = subtype)
                     
 

@@ -34,7 +34,7 @@ class UNSUPPORTED(Unit):
             self.label = labels[1]  #all other labels on one line
             
             self._unit = block[0].split(" ", 1)            #this should be self._unit? or do we have a _type? This would recognise the first chunck of first line
-            self.comment = block[0].replace(self._unit, "").strip()  #_unit? or type of somesort
+            self.comment = block[0].replace(str(self._unit), "").strip()  #_unit? or type of somesort
             
             
         else:                          #FOR UNITS WITH SUBTYPE
@@ -45,5 +45,5 @@ class UNSUPPORTED(Unit):
             self.label = labels[1] #all other labels on one line
             
             self._unit = block[0].split(" ", 1)
-            self.comment = block[0].replace(self._unit, "").strip()
+            self.comment = block[0].replace(str(self._unit), "").strip()
  
