@@ -16,12 +16,14 @@ from .helpers import (
 from floodmodeller_api.validation import _validate_unit
 
 
-class Unsupported(Unit):
+class UNSUPPORTED(Unit):
 #class for all unsupported types, ignore/dont pass the arguments
     #_unit = "UNSUPPORTED"
     
-    def _read(self, block):
-
+    def _read(self, block, unit_name, unit_type, subtype):
+        self.name = unit_name
+        self._unit = unit_type
+        self._subtype = subtype
         
     #recognise type, pass all text
         if self._subtype is False:     #IF THERE'S NO SUBTYPE READ THIS WAY
@@ -49,4 +51,4 @@ class Unsupported(Unit):
             
             self._unit = block[0].split(" ", 1)
             self.comment = block[0].replace(self._unit, "").strip()
-        
+ 

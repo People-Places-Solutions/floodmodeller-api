@@ -21,7 +21,6 @@ from . import units  # Import for using as package
 from ._base import FMFile
 from floodmodeller_api.units.helpers import _to_float
 
-
 class DAT(FMFile):
     """Reads and write Flood Modeller datafile format '.dat'
 
@@ -305,6 +304,7 @@ class DAT(FMFile):
         self.structures = {}
         self.conduits = {}
         self.losses = {}
+        self._unsupported = {}
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
@@ -341,8 +341,14 @@ class DAT(FMFile):
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
                 if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
+                    subtype = True 
+
                 else:
                     unit_name = unit_data[1][: self._label_len].strip()
+                    subtype = False
+                    
+                self.unsupported[unit_name] = UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
+                                                          unit_type =block["Type"], subtype = subtype)
                     
 
     def _update_dat_struct(self):

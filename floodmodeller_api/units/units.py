@@ -23,6 +23,7 @@ from .structures import (
 )
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
+from .unsupported import UNSUPPORTED
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {

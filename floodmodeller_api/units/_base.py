@@ -27,7 +27,7 @@ class Unit:
     def __init__(self, unit_block=None, n=12, **kwargs):
         self._label_len = n
         if unit_block != None:
-            self._read(unit_block)
+            self._read(unit_block, **kwargs)
         else:
             self._create_from_blank(**kwargs)
 
