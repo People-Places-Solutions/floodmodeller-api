@@ -342,7 +342,6 @@ class DAT(FMFile):
                 if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
                     subtype = True 
-
                 else:
                     unit_name = unit_data[1][: self._label_len].strip()
                     subtype = False
