@@ -27,11 +27,6 @@ class UNSUPPORTED(Unit):
         
     #recognise type, pass all text
         if self._subtype is False:     #IF THERE'S NO SUBTYPE READ THIS WAY
-             
-             
-        ## option 1, find name the way boundary units find them - This would pass the entire 2nd line as the name....
-            self.name = block[1][: self._label_len].strip()
-
 
         ## option 2, find name the way other units find them - issue is wwe don't know how many labels each of these would have
             labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
@@ -42,7 +37,7 @@ class UNSUPPORTED(Unit):
             self.comment = block[0].replace(self._unit, "").strip()  #_unit? or type of somesort
             
             
-         else:                          #FOR UNITS WITH SUBTYPE
+        else:                          #FOR UNITS WITH SUBTYPE
             self._subtype = block[1].split(" ")[0].strip()     #FIGURE OUT DIFFERENCE BETWEEN SELF.SUBTYPE AND SELF._SUBTYPE
             
             labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
