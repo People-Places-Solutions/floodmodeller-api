@@ -17,7 +17,7 @@ from pathlib import Path
 from copy import deepcopy
 from typing import Union, Optional
 from lxml import etree
-from floodmodeller_api._base import FMFile
+from ._base import FMFile
 
 
 def value_from_string(value: str):

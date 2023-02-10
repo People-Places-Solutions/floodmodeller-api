@@ -18,9 +18,9 @@ from pathlib import Path
 from typing import Optional, Union
 
 from . import units  # Import for using as package
-from units._base import Unit 
+from .units._base import Unit 
 from ._base import FMFile
-from floodmodeller_api.units.helpers import _to_float
+from .units.helpers import _to_float
 
 class DAT(FMFile):
     """Reads and write Flood Modeller datafile format '.dat'
@@ -113,8 +113,8 @@ class DAT(FMFile):
         
         #Check dat.sections/dat.structure name exists > error raised 
         #self._handle exception error captured and passed 
-        except Exception as e:
-            self._handle_exception(e, when="calculating next unit")
+        #except Exception as e:
+        #    self._handle_exception(e, when="calculating next unit")
         
         #if junction get list of labels and return all connections 
         

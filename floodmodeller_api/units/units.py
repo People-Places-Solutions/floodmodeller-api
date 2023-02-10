@@ -50,9 +50,12 @@ SUPPORTED_UNIT_TYPES = {
 }
 
 UNSUPPORTED_UNIT_TYPES = {
+    #"ASYMMETRIC" : CONDUIT
     "ABSTRACTION": {"has_subtype": False},
+    #"BEND": CULVERT
     "BERNOULLI": {"has_subtype": False},
     "BREACH": {"has_subtype": False}, #breach
+    #"CES": RIVER
     "COMMENT": {"group": 'other' ,"has_subtype": False},
     #"CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used 
     #"CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used 
@@ -63,6 +66,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "FRQSIM": {"group": 'boundaries',"has_subtype": False }, #flood FReQuency SIMulation
     "FSRBDY": {"group": 'boundaries',"has_subtype": False}, #FEH Method (FEH Rainfall Runoff Method)
     "FSSR16BDY": {"group": 'boundaries',"has_subtype": False}, #FSSR16 Method
+    #"FULLARCH": CONDUIT
     "GATED WEIR": {"group": 'structures' ,"has_subtype": False}, #gated weir
     "GAUGE": {"has_subtype": False}, # Gauge
     "GERRBDY": {"group": 'boundaries',"has_subtype": False}, #gen rainfall runoff
@@ -74,6 +78,10 @@ UNSUPPORTED_UNIT_TYPES = {
     "LOSS": {"has_subtype": False}, # found in .dat
     "LOSSID": {"has_subtype": False}, # found in .dat
     "MANHOLE": {"has_subtype": False}, #Manhole [connector]
+    #"MUSKINGUM": RIVER
+    #"MUSK-RSEC": RIVER
+    #"MUSK-VPMC": RIVER
+    #"MUSK-XSEC": RIVER
     "NCDBDY": {"group": 'boundaries' ,"has_subtype": False}, #Normal/Critical Depth Boundary
     "NOTWEIR": {"group":'structures' ,"has_subtype": False}, #Notional Weir
     "OCPUMP": {"has_subtype": False}, #pump [junctions]
@@ -83,8 +91,10 @@ UNSUPPORTED_UNIT_TYPES = {
     "REBDY": {"group": 'boundaries',"has_subtype": False}, #Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": 'boundaries' ,"has_subtype": False}, #ReFH2 Method
     "RESERVOIR": {"has_subtype": False}, #reservoir unit [connector]
+    #"SECTION": CONDUIT
     "SCSBDY": {"group": 'boundaries',"has_subtype": False }, # US SCS Method now SS for rainfall/runoff
     "SCWEIR": {"group" : "structures" ,"has_subtype": False}, #sharp crested weir
+    #"SPRUNG": CONDUIT
     "SYPHON": {"group": "structures","has_subtype": False}, #syphon unit 
     #"TIDAL": {"has_subtype": }, #can still be read - similar to TIDBY 
     "TIDBDY": {"group": "boundaries","has_subtype": False}, #tidal 
