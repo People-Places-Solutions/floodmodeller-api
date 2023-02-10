@@ -24,26 +24,29 @@ class UNSUPPORTED(Unit):
         self.name = unit_name
         self._unit = unit_type
         self._subtype = subtype
+        self._raw_block = block
         
     #recognise type, pass all text
         if self._subtype is False:     #IF THERE'S NO SUBTYPE READ THIS WAY
 
         ## option 2, find name the way other units find them - issue is wwe don't know how many labels each of these would have
             labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-            self.name = labels[0]
+            #self.name = labels[0]
             self.label = labels[1]  #all other labels on one line
             
-            self._unit = block[0].split(" ", 1)            #this should be self._unit? or do we have a _type? This would recognise the first chunck of first line
-            self.comment = block[0].replace(str(self._unit), "").strip()  #_unit? or type of somesort
-            
+            #self._unit = block[0].split(" ", 1)            #this should be self._unit? or do we have a _type? This would recognise the first chunck of first line
+            self.comment = block[0].replace(self._unit, "").strip()  #_unit? or type of somesort
             
         else:                          #FOR UNITS WITH SUBTYPE
-            self._subtype = block[1].split(" ")[0].strip()     #FIGURE OUT DIFFERENCE BETWEEN SELF.SUBTYPE AND SELF._SUBTYPE
+            self._subtype = block[1].split(" ")[0].strip()
             
             labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
-            self.name = labels[0]
+            #self.name = labels[0]
             self.label = labels[1] #all other labels on one line
             
-            self._unit = block[0].split(" ", 1)
-            self.comment = block[0].replace(str(self._unit), "").strip()
+            #self._unit = block[0].split(" ", 1)
+            self.comment = block[0].replace(self._unit, "").strip()
+            
+    def _write(self):
+        return self._raw_block
  

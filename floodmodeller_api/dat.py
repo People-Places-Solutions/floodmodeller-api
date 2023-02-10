@@ -349,7 +349,7 @@ class DAT(FMFile):
                     unit_name = unit_data[1][: self._label_len].strip()
                     subtype = False
                     
-                self.unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
+                self._unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
                                                           unit_type =block["Type"], subtype = subtype)
                     
 
