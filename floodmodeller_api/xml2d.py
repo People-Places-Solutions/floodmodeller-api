@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-import os 
+import os
 import time
 
 from pathlib import Path
@@ -34,8 +34,7 @@ from .zzn import ZZN
 from .logs import lf_factory, error_2D_dict
 
 
-
-def value_from_string(value: str):
+def value_from_string(value: Union[str, list[str]]):
     try:
         val = float(value)
         if not "." in value:
@@ -43,6 +42,15 @@ def value_from_string(value: str):
         return val
     except ValueError:
         return value
+    except TypeError:
+        return value
+
+
+def categorical_sort(itm, order, ns):
+    try:
+        return order[itm.tag.replace(ns, "")]
+    except:
+        return 0
 
 
 class XML2D(FMFile):
@@ -96,39 +104,18 @@ class XML2D(FMFile):
             else:
                 setattr(self, key, data)
         for attr in [
-            'name', 
-            'link1d', 
-            'logfile', 
-            'domains', 
-            'restart_options', 
-            'advanced_options', 
-            'processor', 
-            'unit_system', 
-            'description'
+            "name",
+            "link1d",
+            "logfile",
+            "domains",
+            "restart_options",
+            "advanced_options",
+            "processor",
+            "unit_system",
+            "description",
         ]:
             if attr not in self.__dict__:
                 setattr(self, attr, None)
-        
-        # for key, data in self._data_schema.items():
-        #     if key == "domain":
-        #         self.domains = {domain["domain_id"]: domain for domain in data}
-        #     else:
-        #         setattr(self, key, data)
-        # for attr in [
-        #     'name', 
-        #     'link1d', 
-        #     'logfile', 
-        #     'domains', 
-        #     'restart_options', 
-        #     'advanced_options', 
-        #     'processor', 
-        #     'unit_system', 
-        #     'description'
-        # ]:
-        #     if attr not in self.__dict__:
-        #         setattr(self, attr, None)
-
-
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -140,17 +127,6 @@ class XML2D(FMFile):
         xml_dict = self._recursive_elements_to_dict(xml_dict, root)
         self._raw_data = xml_dict
         self._data = deepcopy(self._raw_data)
-
-    # def _create_schema_dict(self):
-    #     """Iterate through XML Tree to add all elements as class attributes"""
-    #     xml_dict = {}
-    #     root = self._xsdschema.getroot()
-
-    #     xml_dict.update({"name": root.attrib["name"]})
-
-    #     xml_dict = self._recursive_elements_to_dict(xml_dict, root)
-    #     self._raw_data_schema = xml_dict
-    #     self._data_schema = deepcopy(self._raw_data_schema)
 
     def _recursive_elements_to_dict(self, xml_dict, tree):
         # Some elements can have multiple instances e.g. domains.
@@ -170,7 +146,9 @@ class XML2D(FMFile):
             else:
                 xml_dict[child_key] = {}  # Create new key for element
                 child_dict = xml_dict[child_key]
-            value = "" if child.text is None else child.text.replace("\n", "").strip()
+            value = "" if child.text is None else child.text.strip()
+            if "\n" in value:
+                value = value.split("\n")  # Only used for output variables
             if len(child.attrib) != 0:
                 child_dict.update(child.attrib)
                 if value != "":
@@ -185,49 +163,47 @@ class XML2D(FMFile):
                 xml_dict[child_key] = value_from_string(value)
 
         return xml_dict
-        
-    def _recursive_reorder_xml(self, parent_key='ROOT'):
-        # Function description
-        #
-        # Inputs:
-            # elem, default None, are these the elements whose parent is parent_key??
-            # parent_key, defualt ROOT. Should this be a single element or tather a list?
-        # Outputs
 
-        # Assumptions:
-            # 1. Branch/SubElement has to be made at the correct point.
-        if parent_key == 'ROOT': 
-            parent = self._xmltree.getroot()  # do we need an else here?
-        else:  
-            parent = self._xmltree.findall(f".//{self._ns}{parent_key}")
-
-        parent[:] = self._sort_from_schema(parent)  # this bit can't work currently, parent isn't defined unless its the root.
+    def _recursive_reorder_xml(self, parent="ROOT"):
+        if parent == "ROOT":
+            parent = self._xmltree.getroot()
+        parent[:] = self._sort_from_schema(
+            parent
+        ) 
 
         for child in parent:
-            self._recursive_reorder_xml(child)
+            if not type(child) == etree._Comment:
+                self._recursive_reorder_xml(child)
 
     def _sort_from_schema(self, parent):
         # find element in schema
-        parent_name = parent.attrib['name']
-        find_input = ".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{}']".format(parent_name)
-        print(find_input)
-        elem = self._xsd.find(find_input)
-        child_elems = [sub_element for sub_element in parent]
-        # find element order (check if there is one?)
-        if elem is not None:  # i.e., requires order
-            if type(elem) is list:
-                categorical_order = {sub_element.attrib['name']: idx for idx, sub_element in enumerate(elem[0])}
-                # reorder elems in parent 
-                reorder_child_elms = sorted(child_elems, key= lambda x: categorical_order[x.attrib['name']])
-                return reorder_child_elms
-
-            else:
-                return child_elems
+        parent_name = parent.tag.replace(self._ns, "")
+        schema_elem = self._xsd.find(
+            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']"
+        )
+        if "type" in schema_elem.attrib:
+            schema_elem = self._xsd.find(
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']"
+            )
         else:
-            return child_elems       
+            schema_elem = schema_elem.find(
+                "{http://www.w3.org/2001/XMLSchema}complexType"
+            )
+        if schema_elem is None:
+            return parent.getchildren()
 
+        seq = schema_elem.find("{http://www.w3.org/2001/XMLSchema}sequence")
+        if seq is None:
+            return parent.getchildren()
 
-
+        else:
+            categorical_order = {
+                sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)
+            }
+            return sorted(
+                parent.getchildren(),
+                key=lambda x: categorical_sort(x, categorical_order, self._ns),
+            )
 
     def _validate(self):
         try:
@@ -240,103 +216,40 @@ class XML2D(FMFile):
             raise ValueError(msg)
 
     def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):
-        # TODO: Handle adding/removing params
-        # For adding, need to use schema to check where it should be added. (or just
-        # assume user puts in right place and validate?)
+        # TODO: Handle removing params
 
         for key, item in new_dict.items():
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
-            else:  
-                try:
-                    parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
-                        list_idx or 0
-                    ]
-                
-                except Exception as e_list_idx: # this is case for parent being empty, would normally give error
-                    # parent = ??
-                    print(e_list_idx)
-            
-            #catching for if parent doesn't exist
-            # check if parent is empty or catch and except
-            # try except and catch on the index error to see if there is a parent or not.
+            else:
+                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
+                    list_idx or 0
+                ]
 
-            # # handle missing elements around here, it would be the equivalanent of adding and creating the parent variable
-            # if key not in orig_dict: # probably wrong wanting to see if it is in the dictionary somewhere? # if we are adding a new attribute to an existing element
-            #     print(test1)
-            # if type(new_dict[key]) is float:
-            #     if len(str(new_dict[key])) != len(str(orig_dict[key])):
-            try:
-                if len(new_dict[key]) != len(orig_dict[key]):  # checking to see if dictionaries are different lengths
-                    
-                    # loop over length of the new dictionary to see which is the new entry
-                    for el in range(len(new_dict[key])):
-                        if new_dict[key][el] not in orig_dict[key]:
-                            etree.SubElement(parent, f"{self._ns}{key}") #.text=str(item[el]) # is this correct?
-                            
-                            # adding relevant row from new_dict to the original dict so later calls will work?
-                            
-                            # orig_dict[key].append(new_dict[key][el])  
-                    
-                    
-                    elem = self._xmltree.find(".//{http://www.w3.org/2001/XMLSchema}*[@name='boundary_conditions']")
-                    # sequence = elem[0]
-                    for e in parent:
-                        print(e)
-                        # print(e.attrib["name"])
-                        
+            if key not in orig_dict:
+                # New key added, add recursively
+                self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-
-                    
-            except Exception as ee:  # when handling a float
-                print(ee)
-
-                if len(str(new_dict[key])) != len(str(orig_dict[key])):  # checking to see if dictionaries are different lengths
-                    
-                    # loop over length of the new dictionary to see which is the new entry
-                    for el in range(new_dict[key]):
-                        if new_dict[key][el] not in orig_dict[key]:
-                            etree.SubElement(parent, f"{self._ns}{key}").text=str(item[el]) # is this correct? - NO
-
-                            # adding relevant row from new_dict to the original dict so later calls will work?
-                            # orig_dict[key].append(new_dict[key][el])  
-
-
-            # print(self._xmltree.findall(".//{parent_key}").tag)
-            # element_check = self._xmltree
-            # print(element_check)
-            # seq_check = element_check[0]
-            # for e in seq_check:
-            #     print(e.attrib["name"])
-                # etree.SubElement(parent_key, ??)
-            #     # need to add key to the dictionary in the right place
-            #     # orig_dict[key] = item # not needed as otherwise it wouldn't update.
-            #     print(etree.tostring(parent, pretty_print=True))
-            #         # self.update(self.xml.etree.ElementTree.Element.set(key, item))
-            #         #  # I don't think this will work! Does it need to be the parent key?
-
-            if type(item) == dict:
+            elif type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
-            elif type(item) == list:
-                # orig_dict = deepcopy(new_dict)  # updating original dict with extra bc in new dict. Also check it doens't break anything else/ new_dict has new bc.
-                # need to make sure element is actually missing, then make recursive call
-                # if it doesn't have the key we want to add
-                #     add the key. using adapted etree.SubElement(parent, key).text=str(item) (different syntax)
-                # then run recurisive call just below
-                
+            elif type(item) == list and key != "variables":
                 for i, _item in enumerate(item):
                     if type(_item) == dict:
-                        self._recursive_update_xml(
-                            _item, orig_dict[key][i], key, list_idx=i
-                        )
+                        try:
+                            self._recursive_update_xml(
+                                _item, orig_dict[key][i], key, list_idx=i
+                            )
+                        except IndexError:
+                            # New thing added, Add it all recursively
+                            self._recursive_add_element(
+                                parent=parent, add_item=_item, add_key=key
+                            )
 
             else:
                 if parent_key == "ROOT":
                     item = getattr(self, key)
-
-                orig_item = orig_dict.get(key, None)
-                if orig_item is not None:
-                    if not item == orig_item:
+                try:
+                    if not item == orig_dict[key]:
                         if key == "value":
                             # Value has been updated
                             parent.text = str(item)
@@ -344,38 +257,100 @@ class XML2D(FMFile):
                             # Attribute has been updated
                             elem = parent.find(f"{self._ns}{key}")
                             if elem is not None:
-                                elem.text = str(item)
+                                if type(item) == list:
+                                    elem.text = "\n".join(item)
+                                else:
+                                    elem.text = str(item)
                             else:
                                 parent.set(key, str(item))
+                except KeyError:
+                    # New value/attribute added
+                    self._recursive_add_element(
+                        parent=parent, add_item=item, add_key=key
+                    )
+
+    def _recursive_add_element(self, parent, add_item, add_key):
+        if type(add_item) == dict:
+            new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+            for key, item in add_item.items():
+                self._recursive_add_element(
+                    parent=new_element, add_item=item, add_key=key
+                )
+        elif type(add_item) == list:
+            # new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+            if add_key == "variables":
+                # Variables is special case where we have list but add to one element
+                new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+                new_element.text = "\n".join(add_item)
+            else:
+                for item in add_item:
+                    self._recursive_add_element(
+                        parent=parent, add_item=item, add_key=add_key
+                    )
+        else:
+            if add_key == "value":  # Value has been added
+                parent.text = str(add_item)
+            else:  # Attribute or element added
+                # Check schema to see if we should use parent.set for attribute
+                # or etree.subelement() and set text
+                schema_elem = self._xsd.findall(
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+                )
+                if len(schema_elem) == 1:
+                    schema_elem = schema_elem[0]
                 else:
-                    # parent.set(key, str(item))
-                    ### need to make sure that it is put in in the right order, will need to query
-                    ### the schema tree and work from there
-                    for parent_key in parent:
-                        print(parent_key.tag)
+                    # This is just here for when there's multiple schema elements with same
+                    # name, e.g. 'frequency'
+                    parent_schema_elem = self._xsd.find(
+                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']"
+                    )
+                    if "type" in parent_schema_elem.attrib:
+                        parent_schema_elem = self._xsd.find(
+                            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']"
+                        )
+                    schema_elem = parent_schema_elem.find(
+                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+                    )
 
-                    elem = self._xsd.find(".//{http://www.w3.org/2001/XMLSchema}*[@name='computational_areaType']")
-                    sequence = elem[0]
-                    for e in sequence:
-                        print(e.attrib["name"])
-                    # print(self._xmltree)
-                    # print(self._data_schema)
+                if schema_elem.tag.endswith("attribute"):
+                    parent.set(add_key, str(add_item))
 
-                    etree.SubElement(parent, key).text=str(item) 
-                    # orig_dict[key] = item
-        # orig_dict = deepcopy(new_dict)
-            #  # don't use currently
+                else:
+                    new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+                    new_element.text = str(add_item)
+
+    def _update_dict(self):
+        self._data = {}
+        for attr in [
+            "name",
+            "link1d",
+            "logfile",
+            "domains",
+            "restart_options",
+            "advanced_options",
+            "processor",
+            "unit_system",
+            "description",
+        ]:
+            if getattr(self, attr) is not None:
+                if attr == "domains":
+                    self._data["domain"] = [
+                        domain for _, domain in self.domains.items()
+                    ]
+                else:
+                    self._data[attr] = getattr(self, attr)
 
     def _write(self) -> str:
         try:
+            self._update_dict()
             self._recursive_update_xml(self._data, self._raw_data, "ROOT")
+            etree.indent(self._xmltree, space="    ")
             try:
                 self._validate()
             except:
-                # TODO:# self._reorder_sequence()  # need to add more
                 self._recursive_reorder_xml()
                 self._validate()
-            
+
             self._raw_data = deepcopy(self._data)  # reset raw data to equal data
 
             return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
@@ -440,9 +415,9 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-        ) -> Optional[Popen]:   
-        
-        """ Simulate the XML2D file directly as a subprocess.
+    ) -> Optional[Popen]:
+
+        """Simulate the XML2D file directly as a subprocess.
 
         Args:
             method (str, optional): {'WAIT'} | 'RETURN_PROCESS'
@@ -466,7 +441,7 @@ class XML2D(FMFile):
 
         Returns:
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
-        
+
         """
 
         try:
@@ -483,28 +458,28 @@ class XML2D(FMFile):
                         if getattr(self, attr) == "1":
                             precision = "DOUBLE"
                             break
-            
+
             if enginespath == "":
                 _enginespath = (
                     r"C:\Program Files\Flood Modeller\bin"  # Default location
                 )
             else:
-                _enginespath = enginespath 
+                _enginespath = enginespath
                 if not Path(_enginespath).exists:
                     raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}" 
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
                     )
 
-           # checking if all schemes used are fast, if so will use FAST.exe
-           # TODO: Add in option to choose to use or not to use if you can
-            is_fast =True
-            for dom in xml2d._raw_data['domain']:
-                if dom['run_data']['scheme'] != "FAST":
+            # checking if all schemes used are fast, if so will use FAST.exe
+            # TODO: Add in option to choose to use or not to use if you can
+            is_fast = True
+            for dom in xml2d._raw_data["domain"]:
+                if dom["run_data"]["scheme"] != "FAST":
                     is_fast = False
                     break
-            
+
             if is_fast == True:
-                 isis2d_fp = str(Path(_enginespath, "FAST.exe"))
+                isis2d_fp = str(Path(_enginespath, "FAST.exe"))
             elif precision.upper() == "SINGLE":
                 isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
             else:
@@ -521,18 +496,16 @@ class XML2D(FMFile):
                 # executing simulation
                 print("Executing simulation ... ")
                 process = Popen(
-                    run_command, cwd = os.path.dirname(self._filepath)
-                )  # execute 
-                
-                
+                    run_command, cwd=os.path.dirname(self._filepath)
+                )  # execute
 
-                # No log file in 2D solver therefore no reference to log file 
+                # No log file in 2D solver therefore no reference to log file
                 # or progress bar, instead we check the exit code, 100 is everything
                 # is fine, anything else is a code that means something has gone wrong!
-                
+
                 # progress bar based on log files:
-                self._init_log_file()  
-                self._update_progress_bar(process)  
+                self._init_log_file()
+                self._update_progress_bar(process)
 
                 while process.poll() is None:
                     # process is still running
@@ -541,22 +514,19 @@ class XML2D(FMFile):
                 exitcode = process.returncode
                 self._interpret_exit_code(exitcode)
 
-                ### Here we need something that will print/store the 
+                ### Here we need something that will print/store the
                 ### exit code value so we know if it is working well or not.
 
             elif method.upper() == "RETURN_PROCESS":
                 # executing simulation
                 print("Executing simulation ...")
                 process = Popen(
-                    run_command, cwd = os.path.dirname(self._filepath)
-                )  # execute simulation 
+                    run_command, cwd=os.path.dirname(self._filepath)
+                )  # execute simulation
                 return process
 
-
         except Exception as e:
-            self._handle_exception(e, when='simulate')
-
-
+            self._handle_exception(e, when="simulate")
 
     def _get_result_filepath(self, suffix):
 
@@ -575,19 +545,18 @@ class XML2D(FMFile):
         """If results for the simulation exist, this function returns them as a ZZN class object.
 
         Returns:
-            floodmodeller_api.ZZN class object            
+            floodmodeller_api.ZZN class object
         """
 
         # Get zzn location
-        result_path = self._get_results_filepath(suffix = "zzn")
+        result_path = self._get_results_filepath(suffix="zzn")
 
         if result_path.exists():
             return ZZN(result_path)
-        
+
         else:
             raise FileNotFoundError("Simulation results file (zzn) not found")
 
-    
     def get_log(self):
         """If log files for the simulation exist, this function returns them as a LF1 class object
 
@@ -601,13 +570,11 @@ class XML2D(FMFile):
         if not lf_path.exists():
             raise FileNotFoundError("Log file (" + suffix + ") not found")
 
-        return lf_factory(lf_path, suffix, False) 
-
-
+        return lf_factory(lf_path, suffix, False)
 
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
-        suffix = "lf2" 
+        suffix = "lf2"
         # not needed in this case
         # # ensure progress bar is supported for that type
         # if not ( suffix == 'lf2' and (not steady)): #again does this need changing?? FLAG
@@ -618,7 +585,7 @@ class XML2D(FMFile):
         # find what log filepath should be
         lf_filepath = self._get_result_filepath(suffix)
 
-        #wait for log file to exist
+        # wait for log file to exist
         log_file_exists = False
         max_time = time.time() + 10
 
@@ -628,7 +595,7 @@ class XML2D(FMFile):
 
             log_file_exists = lf_filepath.is_file()
 
-            #timeout
+            # timeout
             if time.time() > max_time:
                 self._no_log_file("log file is expected but not detected")
                 self._lf = None
@@ -657,7 +624,7 @@ class XML2D(FMFile):
                 return
 
         # create LF instance
-        self._lf = lf_factory( lf_filepath, suffix, False )
+        self._lf = lf_factory(lf_filepath, suffix, False)
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
@@ -700,11 +667,11 @@ class XML2D(FMFile):
                     break  # stopped for another reason
 
     def _interpret_exit_code(self, exitcode):
-        """ This function will interpret the exit code and tell us if this is good or bad
-        
+        """This function will interpret the exit code and tell us if this is good or bad
+
         Args:
             exitcode - this is the exitcode from the simulation
-            
+
         Return:
             String that explains the exitcode - this might be too much!
         """
@@ -717,7 +684,3 @@ class XML2D(FMFile):
 
         else:
             print(f"Exit with {exitcode}: {error_2D_dict[exitcode]}")
-    
-
-
-
