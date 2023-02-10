@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from . import units  # Import for using as package
+from units._base import Unit 
 from ._base import FMFile
 from floodmodeller_api.units.helpers import _to_float
 
@@ -95,6 +96,64 @@ class DAT(FMFile):
                 just the first 25 differences. Defaults to False.
         """
         self._diff(other, force_print=force_print)
+
+    def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+        """_summary_
+
+        Args:
+            unit (Unit): _description_
+
+        Returns:
+            Union[Unit, list[Unit]]: _description_ #none added in 
+            
+        Raises:
+            Exception: Raised error if unit passed in doesn't exist in dat file 
+        """
+        #Read unit name for name + group + subtype
+        
+        #Check dat.sections/dat.structure name exists > error raised 
+        #self._handle exception error captured and passed 
+        except Exception as e:
+            self._handle_exception(e, when="calculating next unit")
+        
+        #if junction get list of labels and return all connections 
+        
+        #case1: next unit is in ds-lable
+        
+        #case2a: if group isd in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
+        
+            #case2b: if dist = 0 so unit names === names
+        
+        #if start of reach      
+        
+        #if return none if last unit of 
+        
+        #finding based on label and group they're in 
+        
+        #return Unit
+        
+        pass
+
+    def prev(self, unit: Unit) -> Union[Unit, list[Unit]]:
+        """_summary_
+
+        Args:
+            unit (Unit): _description_
+
+        Returns:
+            Union[Unit, list[Unit]]: _description_
+        """
+        pass
+
+    def add_units(self):
+        """_summary_
+        """
+        pass
+
+    def remove_units(self):
+        """_summary_
+        """
+        pass
 
     def _read(self):
         # Read DAT data
@@ -497,3 +556,4 @@ class DAT(FMFile):
             new = f"{unit_type}_{unit_subtype}_{new_lbl}"
 
             self._gxy_data = self._gxy_data.replace(old, new)
+

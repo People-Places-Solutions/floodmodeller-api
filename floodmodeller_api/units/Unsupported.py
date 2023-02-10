@@ -30,19 +30,18 @@ class UNSUPPORTED(Unit):
         if self._subtype is False:     #IF THERE'S NO SUBTYPE READ THIS WAY
 
         ## option 2, find name the way other units find them - issue is wwe don't know how many labels each of these would have
-            labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+            self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
             #self.name = labels[0]
-            self.label = labels[1]  #all other labels on one line
-            
+                        
             #self._unit = block[0].split(" ", 1)            #this should be self._unit? or do we have a _type? This would recognise the first chunck of first line
             self.comment = block[0].replace(self._unit, "").strip()  #_unit? or type of somesort
             
         else:                          #FOR UNITS WITH SUBTYPE
             self._subtype = block[1].split(" ")[0].strip()
             
-            labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+            self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
             #self.name = labels[0]
-            self.label = labels[1] #all other labels on one line
+            #self.labels = labels[1] #all other labels on one line
             
             #self._unit = block[0].split(" ", 1)
             self.comment = block[0].replace(self._unit, "").strip()
