@@ -347,7 +347,7 @@ class XML2D(FMFile):
                     else:
                         self._remove_element(parent=parent, remove_item=_item, remove_key=key)  # double check item or _item
                     if type(_item) == dict:
-                        if _item in dict:
+                        if _item in new_dict[key]:
                             self._recursive_remove_data_xml(
                                 _item, new_dict[key][i], key, list_idx=i
                             )
@@ -390,7 +390,20 @@ class XML2D(FMFile):
         # Outputs:
             # self - with features removed
 
-        parent.remove(remove_key)
+        # need to detail path to specific parent
+        # Step 1: Find right path, locally with the problem you want to solve
+        # Step 2: Now loop through to find the branch that we want to cut off
+        #
+        # WORRY - how do we know we are in the right path, could be trying to cut BC1 from domain 2 and how
+        # does it know to cut it from domain 2 and not domain 1? We are going to have to be careful of how 
+        # the branch is passed in.
+        #
+        # Potential solution? xpath() can 
+        
+        # Pseudocode idea - similar to stack overflow
+        for r in somepath:# could this be useful? f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+            r.getparent().remove(r)
+        etree._Element.parent.remove(remove_key)
 
             
 
