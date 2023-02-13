@@ -268,6 +268,8 @@ class XML2D(FMFile):
                     self._recursive_add_element(
                         parent=parent, add_item=item, add_key=key
                     )
+ 
+
 
     def _recursive_add_element(self, parent, add_item, add_key):
         if type(add_item) == dict:
@@ -318,6 +320,53 @@ class XML2D(FMFile):
                 else:
                     new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
                     new_element.text = str(add_item)
+
+        def _recursive_remove_structure(self, new_dict, orig_dict, parent_key, list_idx=None):
+            # This method will recursively work through the original dictionary and remove any
+            # items that are not in the new_dictionary and need to be removed.
+
+            
+            for key, item in orig_dict.items():
+                if parent_key == "ROOT":
+                    parent = self._xmltree.getroot()
+                else:
+                    parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
+                        list_idx or 0
+                    ]
+
+                if key not in new_dict:
+                # New key added, add recursively
+                    self._remove_element(parent=parent, remove_item=item, remove_key=key)
+
+                elif type(item) == dict:
+                    self._recursive_remove_structure(item, orig_dict[key], key, list_idx)
+                elif type(item) == list and key != "variables":
+                    for i, _item in enumerate(item):
+                        if type(_item) == dict:
+                            try:
+                                self._recursive_update_xml(
+                                    _item, orig_dict[key][i], key, list_idx=i
+                                )
+                            except IndexError:
+                                # New thing added, Add it all recursively
+                                self._recursive_add_element(
+                                    parent=parent, add_item=_item, add_key=key
+                                )
+
+        def _remove_element(self, parent, remove_item, remove_key):
+            # This function will remove the element from the xml file at the highest
+            # level possible.
+            #
+            # Inputs:
+                # parent - this is the path of the item to be removed
+                # remove_item - the item to be removed
+                # remove_key - the corresponding key
+            #
+            # Outputs:
+                # self - with features removed
+
+            
+
 
     def _update_dict(self):
         self._data = {}
