@@ -110,29 +110,46 @@ class DAT(FMFile):
             Exception: Raised error if unit passed in doesn't exist in dat file 
         """
         #Read unit name for name + group + subtype
-        
+
         #Check dat.sections/dat.structure name exists > error raised 
         #self._handle exception error captured and passed 
-        #except Exception as e:
-        #    self._handle_exception(e, when="calculating next unit")
+#        except Exception as e:
+#            self._handle_exception(e, when="calculating next unit")
         
         #if junction get list of labels and return all connections 
-        
-        #case1: next unit is in ds-lable
-        
-        #case2a: if group isd in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
-        
+
+        curent_unit = unit
+        unit_name = unit.name
+        unit_subtype = unit.subtype
+        next_unit = []        
+
+        try:
+            #case1: next unit is in ds-lable
+            if hasattr(curent_unit, 'ds_label'):
+                next_unit = curent_unit.ds_label #ok but need to go back into dat class to get correct unit not just name
+                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit)
+        #else:
+            #print(curent_unit.name,': no ds label')
+            #pass 
+            #case2a: if group is in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
+            elif unit.dist_to_next != 0:
+                next_unit = curent_unit.name #hmmmm how to go back into dat file to see next in dat file...
+                print(curent_unit.name,": There's a unit coming next! that unit is: ", next_unit)
             #case2b: if dist = 0 so unit names === names
-        
-        #if start of reach      
-        
+            elif unit.dist_to_next == 0:
+                print(curent_unit.name,": Dist to next is ZERO - End of reach.")
+            else:
+                print(curent_unit.name,': no ds label or dist to next')
+                return None
+            
+        except Exception as e:
+            self._handle_exception(e, when="calculating next unit")    
+        #if start of reach    
         #if return none if last unit of 
-        
         #finding based on label and group they're in 
-        
         #return Unit
         
-        pass
+
 
     def prev(self, unit: Unit) -> Union[Unit, list[Unit]]:
         """_summary_
@@ -411,7 +428,6 @@ class DAT(FMFile):
                 self._unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
                                                           unit_type =block["Type"], subtype = subtype)
                     
-
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
