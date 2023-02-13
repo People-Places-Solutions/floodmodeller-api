@@ -117,17 +117,20 @@ class DAT(FMFile):
 #            self._handle_exception(e, when="calculating next unit")
         
         #if junction get list of labels and return all connections 
-
+        
+        #Read unit name for name + group + subtype
         curent_unit = unit
         unit_name = unit.name
         unit_subtype = unit.subtype
+        structure = self._dat_struct 
         next_unit = []        
 
         try:
             #case1: next unit is in ds-lable
             if hasattr(curent_unit, 'ds_label'):
                 next_unit = curent_unit.ds_label #ok but need to go back into dat class to get correct unit not just name
-                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit)
+                # something like _dat_struct
+                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit) 
         #else:
             #print(curent_unit.name,': no ds label')
             #pass 
@@ -143,7 +146,8 @@ class DAT(FMFile):
                 return None
             
         except Exception as e:
-            self._handle_exception(e, when="calculating next unit")    
+            self._handle_exception(e, when="calculating next unit")
+                
         #if start of reach    
         #if return none if last unit of 
         #finding based on label and group they're in 
