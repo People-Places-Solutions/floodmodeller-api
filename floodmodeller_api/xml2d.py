@@ -347,10 +347,12 @@ class XML2D(FMFile):
                     else:
                         self._remove_element(parent=parent, remove_item=_item, remove_key=key)  # double check item or _item
                     if type(_item) == dict:
-                        # needs more thought.
+                        if _item in dict:
                             self._recursive_remove_data_xml(
                                 _item, new_dict[key][i], key, list_idx=i
                             )
+                        else:
+                            self._remove_element(parent=parent, remove_item=_item, remove_key=key)
                        
             # else:
             #     if parent_key == "ROOT":
