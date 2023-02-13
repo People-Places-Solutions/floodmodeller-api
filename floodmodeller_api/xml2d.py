@@ -340,41 +340,41 @@ class XML2D(FMFile):
 
             elif type(item) == dict:
                 self._recursive_remove_data_xml(item, new_dict[key], key, list_idx)
-            elif type(item) == list and key != "variables":
+            elif type(item) == list and key != "variables":  # needs handling, need to iterate through list of things.
                 for i, _item in enumerate(item):
+                    if _item in new_dict[key]:
+                        self._recursive_remove_data_xml(_item, new_dict[key][i], key, list_idx)  # double check item or _item
+                    else:
+                        self._remove_element(parent=parent, remove_item=_item, remove_key=key)  # double check item or _item
                     if type(_item) == dict:
-                        try:
+                        # needs more thought.
                             self._recursive_remove_data_xml(
                                 _item, new_dict[key][i], key, list_idx=i
                             )
-                        except IndexError:
-                            # New thing added, Add it all recursively
-                            self._remove_element(
-                                parent=parent, add_item=_item, add_key=key
-                            )
-            else:
-                if parent_key == "ROOT":
-                    item = getattr(self, key)
-                try:
-                    if not item == new_dict[key]:
-                        if key == "value":
-                            # Value found to be removed
-                            self._remove_element(parent=parent, remove_item=item, remove_key=key)
-                        else:
-                            # Attribute has been found to be removed
-                            elem = parent.find(f"{self._ns}{key}")
-                            if elem is not None:
-                                if type(item) == list:
-                                    self._remove_element(parent=parent, remove_item=item, remove_key=key)
-                                else:
-                                    self._remove_element(parent=parent, remove_item=item, remove_key=key)
-                            else:
-                                self._remove_element(parent=parent, remove_item=item, remove_key=key)
-                except KeyError:
-                    # New value/attribute added
-                    self._remove_element(
-                        parent=parent, remove_item=item, remove_key=key
-                    )
+                       
+            # else:
+            #     if parent_key == "ROOT":
+            #         item = getattr(self, key)
+            #     try:
+            #         if not item == new_dict[key]:  #problem with this part
+            #             if key == "value":
+            #                 # Value found to be removed
+            #                 self._remove_element(parent=parent, remove_item=item, remove_key=key)
+            #             else:
+            #                 # Attribute has been found to be removed
+            #                 elem = parent.find(f"{self._ns}{key}")
+            #                 if elem is not None:
+            #                     if type(item) == list:
+            #                         self._remove_element(parent=parent, remove_item=item, remove_key=key)
+            #                     else:
+            #                         self._remove_element(parent=parent, remove_item=item, remove_key=key)
+            #                 else:
+            #                     self._remove_element(parent=parent, remove_item=item, remove_key=key)
+            #     except KeyError:
+            #         # New value/attribute added
+            #         self._remove_element(
+            #             parent=parent, remove_item=item, remove_key=key
+            #         )
 
     def _remove_element(self, parent, remove_item, remove_key):
         # This function will remove the element from the xml file at the highest
@@ -388,7 +388,7 @@ class XML2D(FMFile):
         # Outputs:
             # self - with features removed
 
-        self.etree.getparent().remove(remove_key)
+        parent.remove(remove_key)
 
             
 
@@ -418,6 +418,7 @@ class XML2D(FMFile):
         try:
             self._update_dict()
             self._recursive_update_xml(self._data, self._raw_data, "ROOT")
+            self._recursive_remove_data_xml(self._data, self._raw_data, "ROOT")
             etree.indent(self._xmltree, space="    ")
             try:
                 self._validate()
