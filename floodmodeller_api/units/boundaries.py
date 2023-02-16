@@ -499,8 +499,7 @@ class FRQSIM(Unit):
         ddf_e (float): DDF Parameter e
         ddf_f (float): DDF Parameter f        
         storm_profile_type(str): Storm profile type: "FRQRP" (FRQSIM standard profiles), "SUMRP" (FEH 50% Summer), "WINRP" (FEH 75% Winter)
-        
-        frqsim_storm_profile(str): TODO
+        frqsim_storm_profile(str): FRQSIM storm profile name
 
 
     Returns:
@@ -585,7 +584,7 @@ class FRQSIM(Unit):
 
         # Combine prarameters in to lines
         event_params = join_10_char(self.storm_area, self.storm_duration, self.event_param_unknown, self.snow_melt)
-        feher_params = join_10_char(self.observed_rainfall_depth, self.return_period, self.arf, self.ddf_c, self.ddf_d1, self.ddf_d2, self.ddf_d3, self.ddf_e, self.ddf_f)        
+        feher_params = join_10_char(self.observed_rainfall_depth, f"{self.return_period:.3f}", self.arf, self.ddf_c, self.ddf_d1, self.ddf_d2, self.ddf_d3, self.ddf_e, self.ddf_f)        
 
         # Create unit block TODO: how to do this more efficiently.
         frqsim_block = [header,name]
