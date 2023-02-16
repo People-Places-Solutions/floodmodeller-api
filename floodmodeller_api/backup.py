@@ -66,9 +66,9 @@ class BackUp():
             print("Backup Exists")
 
 
-file = File("test/test_data/EX2.DAT")
-backup = BackUp()
+#file = File("test/test_data/EX2.DAT")
+#backup = BackUp()
 
-backup.backup_file(file)
+#backup.backup_file(file)
 
 # backup.clear_backup_dir()
