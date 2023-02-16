@@ -46,7 +46,7 @@ class BackUp():
             os.remove(f)
     
     def get_backups(self, file:File):
-        backup_files = glob.glob(f"{backup.backup_dir}\\{file.file_id}*")
+        backup_files = glob.glob(f"{self.backup_dir}\\{file.file_id}*")
         backup_files.sort(reverse = True)
         return backup_files
 
@@ -59,7 +59,7 @@ class BackUp():
         if len(backups) == 0:
             copy(file.path, dest_file)
         # If the file doesn't match the last backup then do a back up
-        elif not(filecmp.cmp(file.path_str, backups[0])):
+        elif not(filecmp.cmp(file.path, backups[0])):
             copy(file.path, dest_file)
         else:
             # otherwise do nothing
