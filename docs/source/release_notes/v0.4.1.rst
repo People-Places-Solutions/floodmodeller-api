@@ -6,7 +6,10 @@ This page details the changes for version 0.4.1 of Flood Modeller Python API
 
 New features
 --------------
-
+- Add/remove units and reaches from 1D networks
+- Add/remove elements from 2D xml models
+- Simulate method added to XML2D
+- Automatic backups
 
 Updates
 --------------
@@ -43,6 +46,7 @@ Updates
 - INTERPOLATE Unit Class added
 - REPLICATE Unit Class added
 - OUTFALL Unit Class added
+- Improved test module
 
 Bug fixes
 --------------
