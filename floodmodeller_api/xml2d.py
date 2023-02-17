@@ -18,7 +18,7 @@ import os
 import time
 
 from pathlib import Path
-from subprocess import Popen
+from subprocess import Popen, DEVNULL
 from copy import deepcopy
 from typing import Union, Optional
 from lxml import etree
@@ -84,6 +84,7 @@ class XML2D(FMFile):
                     "Creating new XML2D files is currently not supported. "
                     "Please point to an existing xml 2d file"
                 )
+            self._log_path = self._filepath.with_suffix(".lf2")
         except Exception as e:
             self._handle_exception(e, when="read")
 
@@ -442,6 +443,7 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
+        console_output: Optional[str] = 'simple'
     ) -> Optional[Popen]:
 
         """Simulate the XML2D file directly as a subprocess.
@@ -460,7 +462,11 @@ class XML2D(FMFile):
             enginespath (str, optional): {''} | '/absolute/path/to/engine/executables'
                 Define where the engine executables are located. This replaces the default location (usual installation folder) if set to
                 anything other than ''.
-
+            console_output (str, optional): {'simple'} | 'standard' | 'detailed'
+                'simple' - A simple progress bar for the simulation is presented in the console
+                'standard' - The standard Flood Modeller 2D output is presented in the console
+                'detailed' - The most detailed Flood Modeller 2D output is presented in the console
+                Defaults to 'WAIT'.
 
 
         Raises:
@@ -471,6 +477,10 @@ class XML2D(FMFile):
 
         """
 
+        #TODO: 
+        # - Clean up the lf code?
+        # - Remove or sort out get results
+
         try:
             if self._filepath == None:
                 raise UserWarning(
@@ -478,18 +488,14 @@ class XML2D(FMFile):
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # defaults to single precision
-                for attr in dir(self):
-                    if (
-                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"
-                    ):  # Unless DP specified
-                        if getattr(self, attr) == "1":
-                            precision = "DOUBLE"
-                            break
-
+                for _, domain in self.domains.items():
+                    if domain['run_data'].get('double_precision') == 'required':
+                        precision = "DOUBLE"
+                        break
+                
             if enginespath == "":
-                _enginespath = (
-                    r"C:\Program Files\Flood Modeller\bin"  # Default location
-                )
+                # Default location
+                _enginespath = (r"C:\Program Files\Flood Modeller\bin")
             else:
                 _enginespath = enginespath
                 if not Path(_enginespath).exists:
@@ -500,8 +506,8 @@ class XML2D(FMFile):
             # checking if all schemes used are fast, if so will use FAST.exe
             # TODO: Add in option to choose to use or not to use if you can
             is_fast = True
-            for dom in xml2d._raw_data["domain"]:
-                if dom["run_data"]["scheme"] != "FAST":
+            for _, domain in self.domains.items():
+                if domain["run_data"]["scheme"] != "FAST":
                     is_fast = False
                     break
 
@@ -517,110 +523,61 @@ class XML2D(FMFile):
                     f"Flood Modeller engine not found! Expected location: {isis2d_fp}"
                 )
 
-            run_command = f'"{isis2d_fp}" -q "{self._filepath}"'
+            console_output = console_output.lower()
+            run_command = f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
+            stdout = DEVNULL if console_output == 'simple' else None
 
             if method.upper() == "WAIT":
                 # executing simulation
                 print("Executing simulation ... ")
                 process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
+                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
                 )  # execute
 
-                # No log file in 2D solver therefore no reference to log file
-                # or progress bar, instead we check the exit code, 100 is everything
-                # is fine, anything else is a code that means something has gone wrong!
-
                 # progress bar based on log files:
-                self._init_log_file()
-                self._update_progress_bar(process)
+                if console_output == 'simple':
+                    self._init_log_file()
+                    self._update_progress_bar(process)
 
                 while process.poll() is None:
                     # process is still running
                     time.sleep(1)
 
                 exitcode = process.returncode
-                self._interpret_exit_code(exitcode)
+                self._interpret_exit_code(exitcode, raise_on_failure)
 
-                ### Here we need something that will print/store the
-                ### exit code value so we know if it is working well or not.
 
             elif method.upper() == "RETURN_PROCESS":
                 # executing simulation
                 print("Executing simulation ...")
                 process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
+                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
                 )  # execute simulation
                 return process
 
         except Exception as e:
             self._handle_exception(e, when="simulate")
 
-    def _get_result_filepath(self, suffix):
-
-        if hasattr(self, "Results"):
-            path = Path(self.Results).with_suffix("." + suffix)
-            if not path.is_absolute():
-                # set cwd to xml2d location and resolve path
-                path = Path(self._filepath.parent, path).resolve()
-
-        else:
-            path = self._filepath.with_suffix("." + suffix)
-
-        return path
-
-    def get_results(self) -> ZZN:
-        """If results for the simulation exist, this function returns them as a ZZN class object.
-
-        Returns:
-            floodmodeller_api.ZZN class object
-        """
-
-        # Get zzn location
-        result_path = self._get_results_filepath(suffix="zzn")
-
-        if result_path.exists():
-            return ZZN(result_path)
-
-        else:
-            raise FileNotFoundError("Simulation results file (zzn) not found")
-
     def get_log(self):
-        """If log files for the simulation exist, this function returns them as a LF1 class object
+        """If log files for the simulation exist, this function returns them as a LF2 class object
 
         Returns:
             floodmodeller_api.LF2 class object
         """
-        suffix = "lf2"
-        # Get lf location
-        lf_path = self._get_result_filepath(suffix)
+        if not self._log_path.exists():
+            raise FileNotFoundError("Log file (LF2) not found")
 
-        if not lf_path.exists():
-            raise FileNotFoundError("Log file (" + suffix + ") not found")
-
-        return lf_factory(lf_path, suffix, False)
+        return lf_factory(self._log_path, "lf2", False)
 
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
-        suffix = "lf2"
-        # not needed in this case
-        # # ensure progress bar is supported for that type
-        # if not ( suffix == 'lf2' and (not steady)): #again does this need changing?? FLAG
-        #     #need a comment inserting here FLAG
-        #     self._lf = None
-        #     return
-
-        # find what log filepath should be
-        lf_filepath = self._get_result_filepath(suffix)
-
         # wait for log file to exist
         log_file_exists = False
         max_time = time.time() + 10
 
         while not log_file_exists:
-
             time.sleep(0.1)
-
-            log_file_exists = lf_filepath.is_file()
+            log_file_exists = self._log_path.is_file()
 
             # timeout
             if time.time() > max_time:
@@ -633,11 +590,10 @@ class XML2D(FMFile):
         max_time = time.time() + 10
 
         while old_log_file:
-
             time.sleep(0.1)
 
             # difference between now and when log file was last modified
-            last_modified_timestamp = lf_filepath.stat().st_mtime
+            last_modified_timestamp = self._log_path.stat().st_mtime
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
@@ -651,7 +607,7 @@ class XML2D(FMFile):
                 return
 
         # create LF instance
-        self._lf = lf_factory(lf_filepath, suffix, False)
+        self._lf = lf_factory(self._log_path, "lf2", False)
 
     def _no_log_file(self, reason):
         """Warning that there will be no progress bar"""
@@ -693,7 +649,7 @@ class XML2D(FMFile):
                 else:
                     break  # stopped for another reason
 
-    def _interpret_exit_code(self, exitcode):
+    def _interpret_exit_code(self, exitcode: int, raise_on_failure: bool):
         """This function will interpret the exit code and tell us if this is good or bad
 
         Args:
@@ -702,12 +658,14 @@ class XML2D(FMFile):
         Return:
             String that explains the exitcode - this might be too much!
         """
+        try:
+            msg = f"Exit with {exitcode}: {error_2D_dict[exitcode]}"
+        except:
+            msg = f"Exit with {exitcode}: Unknown error occurred!"
 
-        # TODO: Expand this to a dict that will tell us what the code means.
-        # Description = error_2D_dict.get(exitcode, None)
-
-        if exitcode is None:
-            print(f"Exit code not in dictionary, Error code: {exitcode}")
-
+        if raise_on_failure and exitcode != 100:
+            raise Exception(msg)
         else:
-            print(f"Exit with {exitcode}: {error_2D_dict[exitcode]}")
+            print(msg)
+
+        
