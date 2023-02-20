@@ -50,8 +50,7 @@ class FMFile:
             # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
             if not self._suffix == "zzn":
                 file = File(path=self._filepath)
-                backup = BackUp()
-                backup.backup(file)
+                file.backup()
 
     def __repr__(self):
         return f"<floodmodeller_api Class: {self._filetype}(filepath={self._filepath})>"
