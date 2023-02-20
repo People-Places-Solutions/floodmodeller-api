@@ -22,7 +22,7 @@ from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-
+from .backup import File, BackUp
 
 class FMFile:
     """Base class for all Flood Modeller File types"""
@@ -46,6 +46,12 @@ class FMFile:
                     f"filepath to create a new blank {self._filetype} or point the filepath of an existing {self._filetype} to use as a template, "
                     f"then use the .save() method to save to a new filepath"
                 )
+            # If the file is not a ZZN file, then perform a backup
+            # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
+            if not self._suffix == "zzn":
+                file = File(path=self._filepath)
+                backup = BackUp()
+                backup.backup(file)
 
     def __repr__(self):
         return f"<floodmodeller_api Class: {self._filetype}(filepath={self._filepath})>"
