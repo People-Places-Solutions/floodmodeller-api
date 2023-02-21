@@ -97,6 +97,8 @@ class DAT(FMFile):
         """
         self._diff(other, force_print=force_print)
 
+    #def _get_unit_from_connectivity(self, method) #use this as method prev and next 
+
     def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
         """_summary_
 
@@ -122,9 +124,9 @@ class DAT(FMFile):
         curent_unit = unit
         unit_name = unit.name
         unit_subtype = unit.subtype
-        structure = self._dat_struct 
-        next_unit = []        
-
+        structure = self._dat_struct
+        all_units = self._all_units
+        next_unit = []
         try:
             #case1: next unit is in ds-lable
             if hasattr(curent_unit, 'ds_label'):
@@ -140,6 +142,7 @@ class DAT(FMFile):
                 print(curent_unit.name,": There's a unit coming next! that unit is: ", next_unit)
             #case2b: if dist = 0 so unit names === names
             elif unit.dist_to_next == 0:
+                #find next in list 
                 print(curent_unit.name,": Dist to next is ZERO - End of reach.")
             else:
                 print(curent_unit.name,': no ds label or dist to next')
@@ -148,13 +151,17 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
                 
-        #if start of reach    
-        #if return none if last unit of 
-        #finding based on label and group they're in 
-        #return Unit
-        
+#helper self.nextfromstruture = pass the unit +1 from _all_units
+    def _next_in_dat_struct(self, curent_unit) -> Unit:
+        for idx, unit in enumerate(self._all_units):
+            if unit == curent_unit:
+                try:
+                    return self._all_units[idx+1]
+                except IndexErorr:
+                    print('end of dat')
 
 
+       
     def prev(self, unit: Unit) -> Union[Unit, list[Unit]]:
         """_summary_
 
@@ -385,6 +392,7 @@ class DAT(FMFile):
         self.conduits = {}
         self.losses = {}
         self._unsupported = {}
+        self._all_units = []
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
@@ -413,9 +421,9 @@ class DAT(FMFile):
                     #Changes done to account for unit types with spaces/dashes eg Flat-V Weir
                     unit_type = block["Type"].replace(" ","_").replace("-","_")
                     unit_group[unit_name] = eval(
-                        f'units.{unit_type}({unit_data}, {self._label_len})'
+                        f'units.{unit_type}({unit_data}, {self._label_len})' # append to our _all._units as well???
                     )
-            else:
+                    self._all_units.append(unit_group[unit_name])
                 unit_data = self._raw_data[block["start"] : block["end"] + 1]
 
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
@@ -431,6 +439,7 @@ class DAT(FMFile):
                     
                 self._unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
                                                           unit_type =block["Type"], subtype = subtype)
+                self._all_units.append(unit_group[unit_name])
                     
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
