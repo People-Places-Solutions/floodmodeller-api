@@ -128,22 +128,19 @@ class DAT(FMFile):
         all_units = self._all_units
         next_unit = []
         try:
-            #case1: next unit is in ds-lable
-            if hasattr(curent_unit, 'ds_label'):
-                next_unit = curent_unit.ds_label #ok but need to go back into dat class to get correct unit not just name
-                # something like _dat_struct
-                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit) 
-        #else:
-            #print(curent_unit.name,': no ds label')
-            #pass 
-            #case2a: if group is in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
-            elif unit.dist_to_next != 0:
-                next_unit = curent_unit.name #hmmmm how to go back into dat file to see next in dat file...
+            #case1a: if group is in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
+            if unit.dist_to_next != 0:
+                next_unit = self._next_in_dat_struct(unit)
                 print(curent_unit.name,": There's a unit coming next! that unit is: ", next_unit)
             #case2b: if dist = 0 so unit names === names
             elif unit.dist_to_next == 0:
                 #find next in list 
                 print(curent_unit.name,": Dist to next is ZERO - End of reach.")
+            #case1: next unit is in ds-lable
+            elif hasattr(curent_unit, 'ds_label'):
+                next_unit = curent_unit.ds_label #ok but need to go back into dat class to get correct unit not just name
+                # something like _dat_struct
+                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit) 
             else:
                 print(curent_unit.name,': no ds label or dist to next')
                 return None
@@ -157,11 +154,18 @@ class DAT(FMFile):
             if unit == curent_unit:
                 try:
                     return self._all_units[idx+1]
-                except IndexErorr:
-                    print('end of dat')
+                except IndexError: 
+                    print('index error')
+                    
+#helper self.prevfromstruture = pass the unit -1 from _all_units
+    def _prev_in_dat_struct(self, curent_unit) -> Unit:
+        for idx, unit in enumerate(self._all_units):
+            if unit == curent_unit:
+                try:
+                    return self._all_units[idx-1]
+                except IndexError: 
+                    print('index error')
 
-
-       
     def prev(self, unit: Unit) -> Union[Unit, list[Unit]]:
         """_summary_
 
@@ -171,7 +175,28 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit]]: _description_
         """
-        pass
+        curent_unit = unit
+        unit_name = unit.name
+        unit_subtype = unit.subtype
+        structure = self._dat_struct
+        all_units = self._all_units
+        prev_unit = []
+        try: 
+            _prev_in_dat =  self._prev_in_dat_struct(unit)      
+            if _prev_in_dat.dist_to_next != 0:
+                prev_unit = _prev_in_dat
+                #return prev_unit
+                print(curent_unit.name,": There's a unit previous! that unit is: ", prev_unit)
+            #case2b: if dist = 0 so unit names === names
+            elif _prev_in_dat.dist_to_next == 0:
+                #find previous not in list 
+                print(curent_unit.name,": Dist to next is ZERO - End of reach.")
+            else:
+                print(curent_unit.name,': no ds label or dist to next')
+                return None
+            
+        except Exception as e:
+            self._handle_exception(e, when="calculating next unit")        
 
     def add_units(self):
         """_summary_
