@@ -15,7 +15,7 @@ class BackUp():
     """Controls set up and clearing of file backups.
 
     Args:
-        N/A
+        backup_directory_name (str): The name of the directory to use for backups. Will be created as a directory in the temporary files.
 
     Output:
         Initiates 'BackUp' class object
@@ -23,10 +23,10 @@ class BackUp():
     Raises:
         N/A
     """
-    def __init__(self):
+    def __init__(self, backup_directory_name:str = "floodmodeller_api_backup"):
         # TODO: Make these protected properties so it is difficult for a user to overwrite them and then run clear_backup to clear the wrong directory
         self.temp_dir = tempfile.gettempdir()
-        self.backup_dirname = "floodmodeller_api_backup"
+        self.backup_dirname = backup_directory_name
         self.backup_dir = os.path.join(self.temp_dir, self.backup_dirname)
         self.backup_csv_path = f"{self.backup_dir}/file-backups.csv"
         self._init_backup()
@@ -145,12 +145,17 @@ class File(BackUp):
     
     def restore(self, to:str):
         """
-        Restore the file from a backup. This 
+        Restore the file from the last backup if one exists.
 
         Args:
             to (str): The path to where you want to restore the file.
         """
         backups = self._list_backups()
+        # TODO: Add some functionality here to retrieve a specific backup if requested. 
+        #       Need to expose the list of backups to the user in an intuitive way so that they can select one before making a backup.
+        #       Could return a (different) BackUp Class that lists backup info and has a method to restore them
+        #       e.g. file.list_backups # returns [Backup("xxxxx_2020-01-01-12-42-32"), Backup(...)]
+        #                                         backups[0].restore(to = "this/file.DAT")
         try: 
             copy(backups[0], to)
         # TODO: Implement something better than this if the file doesn't exist

@@ -1,6 +1,11 @@
 import unittest
 import sys
 import os
+import tempfile
+import shutil
+from datetime import datetime
+from filecmp import cmp
+from hashlib import sha1
 
 # sys.path.insert(0, os.getcwd())
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -8,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 from floodmodeller_api import IEF, IED, DAT, ZZN, INP, XML2D, LF1
 from floodmodeller_api.units import QTBDY
-
+from floodmodeller_api.backup import BackUp, File
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
 
 
@@ -243,5 +248,80 @@ class test_XML2D(unittest.TestCase):
             os.remove("__temp.xml")
 
 
+
+class TestBackUp(unittest.TestCase):
+    def setUp(self):
+        # Use a different directory for testing
+        self.backup = BackUp(backup_directory_name = "test_floodmodeller_backup")
+
+    def tearDown(self):
+        shutil.rmtree(self.backup.backup_dir)
+
+    def test_init_backup(self):
+        self.assertTrue(os.path.exists(self.backup.backup_dir))
+        self.assertTrue(os.path.exists(self.backup.backup_csv_path))
+
+    def test_clear_backup(self):
+        # create a temporary file in backup directory to test clearing
+        temp_file_path = os.path.join(self.backup.backup_dir, "temp.txt")
+        with open(temp_file_path, "w") as f:
+            f.write("test file")
+        self.assertTrue(os.path.exists(temp_file_path))
+
+        # clear backup directory and check it is empty
+        self.backup.clear_backup()
+        self.assertFalse(os.path.exists(temp_file_path))
+        self.assertEqual(os.listdir(self.backup.backup_dir), [])
+
+class TestFile(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.gettempdir()
+        self.test_file = "test/test_data/EX1.DAT"
+        self.file = File(self.test_file)
+
+    def tearDown(self):
+        shutil.rmtree(self.file.backup_dir)
+
+    def test_generate_file_id(self):
+        # Test that the file ID is the same for the same path input
+        file1 = File(self.test_file)
+        file2 = File(self.test_file)
+        self.assertEqual(file1.file_id, file2.file_id)
+
+    def test_make_backup(self):
+        # make backup and check if backup file exists
+        self.file._make_backup()
+        backup_file_path = os.path.join(self.file.backup_dir, self.file.backup_filename)
+        self.assertTrue(os.path.exists(backup_file_path))
+
+        # check if contents of backup file match the original file
+        self.assertTrue(cmp(backup_file_path, self.test_file))
+
+        # Check that the file isn't backed up again if it hasn't changed
+        the_same_file = File(self.test_file)
+        # Append something to the dttm string to ensure the filename is different to the previous backup
+        # If the two File objects are created in the same second then then will have identical file names
+        # The function should check for equivalence between file contents.
+        the_same_file.dttm_str = the_same_file.dttm_str + "_1"
+        # Generate a new file name
+        the_same_file._generate_file_name()
+        # Attempt a backup
+        the_same_file.backup()
+        # Check that the file hasn't been created
+        duplicate_backup_path = os.path.join(the_same_file.backup_dir, the_same_file.backup_filename)
+        self.assertFalse(os.path.exists(duplicate_backup_path))
+        # Check a row has been added to the csv for the file & version
+        backup_logs = pd.read_csv(self.file.backup_csv_path)
+        backup_count = backup_logs[(backup_logs.file_id == self.file.file_id) & (backup_logs.dttm == self.file.dttm_str)].shape[0]
+        self.assertEqual(backup_count, 1)
+
+    def test_list_backups(self):
+        # make a backup and check if it appears in the backup list
+        self.file._make_backup()
+        backups = self.file._list_backups()
+        expected_backup = os.path.join(self.file.backup_dir, self.file.backup_filename)
+        self.assertIn(expected_backup, backups)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
