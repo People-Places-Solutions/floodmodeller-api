@@ -106,10 +106,7 @@ class DAT(FMFile):
             unit (Unit): _description_
 
         Returns:
-            Union[Unit, list[Unit]]: _description_ #none added in 
-            
-        Raises:
-            Exception: Raised error if unit passed in doesn't exist in dat file 
+            Union[Unit, list[Unit], None]: _description_
         """
 
         current_unit = unit
@@ -118,7 +115,6 @@ class DAT(FMFile):
         structure = self._dat_struct
         all_units = self._all_units
         next_unit = []
-        _next_in_dat =  self._next_in_dat_struct(unit)
         
         try:
             #dist to next attribute is present
@@ -126,15 +122,15 @@ class DAT(FMFile):
                 
                 #case1a: if group is in sections/conduits then dist to next = +number  
                 if unit.dist_to_next != 0:
-                    next_unit = _next_in_dat
-                    print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit.name)
+                    next_unit = self._next_in_dat_struct(unit)
+                    print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit)
                     return next_unit
                 
                 #case1b: if dist = 0 so unit names === names
                 else:
-                    #if end of reach find next in list 
-                    print(current_unit.name,": Dist to next is ZERO, next in .dat structure: ", next_unit)
-                    return None
+                    next_unit = self._name_label_match(unit)
+                    print(unit.name, 'dist to next = 0 ', next_unit)
+                    return next_unit
                     
             #case2: next unit is in ds-lable
             elif hasattr(current_unit, 'ds_label'):
@@ -210,6 +206,21 @@ class DAT(FMFile):
                         else:
                             pass
                     return _ds_list
+                except IndexError:
+                    print('error')
+
+    def _name_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
+        for idx, unit in enumerate(self._all_units):
+            if unit == current_unit:     
+                try:
+                    _name = str(unit.name)
+                    _name_list = [] 
+                    for item in self._all_units:
+                        if item.name == _name and item != current_unit:
+                            _name_list.append(item)
+                        else:
+                            pass
+                    return _name_list
                 except IndexError:
                     print('error')
                                    
