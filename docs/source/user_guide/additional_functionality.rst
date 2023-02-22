@@ -40,3 +40,17 @@ Currently, the ``==`` and ``.diff()`` methods is supported for the following cla
 - INP
 - XML2D
 - All 1D River Unit classes 
+
+File Backups
+------------
+The API automatically backs up any data files you load via the DAT, IED, IEF, INP and XML2D classes. The files are backed up in your OS temporary directory (see `tempfile.gettempdir()`). 
+You can restore backups via the the `.file.restore()` method. Currently this restores the latest backup, but if you want to restore a specific backup then you list the backups and navigate to the file via the os file directory.
+
+.. code:: python
+    # Load the DAT
+    # Automatically backs up the file if it has changes since the last backup
+    dat = DAT("a_dat_file.DAT")
+    # Restore from the last backup to a specific file
+    dat.file.restore(to = "restore-file.DAT")
+    # List the available backups
+    dat.file.list_backups()

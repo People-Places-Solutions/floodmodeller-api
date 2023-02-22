@@ -318,7 +318,7 @@ class TestFile(unittest.TestCase):
     def test_list_backups(self):
         # make a backup and check if it appears in the backup list
         self.file._make_backup()
-        backups = self.file._list_backups()
+        backups = self.file.list_backups()
         expected_backup = os.path.join(self.file.backup_dir, self.file.backup_filename)
         self.assertIn(expected_backup, backups)
 

@@ -110,7 +110,7 @@ class File(BackupControl):
             Makes a backup of the file. This function copies the file to the backup directory with a unique filename.
             It also logs a row in the backup csv file to help find a particular backup when inspecting the file system.
         
-        _list_backups(self) -> List[str]:
+        list_backups(self) -> List[str]:
             Lists backed up versions of the File, ordered from newest to oldest.
 
     Note:
@@ -167,7 +167,7 @@ class File(BackupControl):
         with open(self.backup_csv_path, "a") as f:
                 f.write(log_str)
     
-    def _list_backups(self) -> list:
+    def list_backups(self) -> list:
         """
         List backed up versions of the File, ordered from newest to oldest.
         """
@@ -184,7 +184,7 @@ class File(BackupControl):
         Backups are saved in the users Temporary Files (see `tempfile.gettempdir()` or `File.backup_dir`).
         """
         # get the backups of that file
-        backups = self._list_backups()
+        backups = self.list_backups()
         # Generate the filepath for the backup file
         dest_file = os.path.join(self.backup_dir, self.backup_filename)
         # If there aren't any backups then backup the file
@@ -203,7 +203,7 @@ class File(BackupControl):
         Args:
             to (str): The path to where you want to restore the file.
         """
-        backups = self._list_backups()
+        backups = self.list_backups()
         # TODO: Add some functionality here to retrieve a specific backup if requested. 
         #       Need to expose the list of backups to the user in an intuitive way so that they can select one before making a backup.
         #       Could return a (different) BackUp Class that lists backup info and has a method to restore them
