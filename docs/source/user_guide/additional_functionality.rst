@@ -47,6 +47,7 @@ The API automatically backs up any data files you load via the DAT, IED, IEF, IN
 You can restore backups via the the `.file.restore()` method. Currently this restores the latest backup, but if you want to restore a specific backup then you list the backups and navigate to the file via the os file directory.
 
 .. code:: python
+
     # Load the DAT
     # Automatically backs up the file if it has changes since the last backup
     dat = DAT("a_dat_file.DAT")
@@ -57,4 +58,4 @@ You can restore backups via the the `.file.restore()` method. Currently this res
     # Restore an older backup
     backups[6].restore(to = "restore-file.DAT")
 
-...
+
