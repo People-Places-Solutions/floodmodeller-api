@@ -111,61 +111,60 @@ class DAT(FMFile):
         Raises:
             Exception: Raised error if unit passed in doesn't exist in dat file 
         """
-        #Read unit name for name + group + subtype
-
-        #Check dat.sections/dat.structure name exists > error raised 
-        #self._handle exception error captured and passed 
-#        except Exception as e:
-#            self._handle_exception(e, when="calculating next unit")
-        
         #if junction get list of labels and return all connections 
         
         #Read unit name for name + group + subtype
-        curent_unit = unit
+        current_unit = unit
         unit_name = unit.name
         unit_subtype = unit.subtype
         structure = self._dat_struct
         all_units = self._all_units
         next_unit = []
+        _next_in_dat =  self._next_in_dat_struct(unit)
+        
         try:
-            #case1a: if group is in sections/conduits then d/s label won't exist but dist to next = +number so next unit in .dat file Look in dat.structure 
-            if unit.dist_to_next != 0:
-                next_unit = self._next_in_dat_struct(unit)
-                print(curent_unit.name,": There's a unit coming next! that unit is: ", next_unit)
-            #case2b: if dist = 0 so unit names === names
-            elif unit.dist_to_next == 0:
-                #find next in list 
-                print(curent_unit.name,": Dist to next is ZERO - End of reach.")
-            #case1: next unit is in ds-lable
-            elif hasattr(curent_unit, 'ds_label'):
-                next_unit = curent_unit.ds_label #ok but need to go back into dat class to get correct unit not just name
+            #dist to next attribute is present
+            if hasattr(current_unit, 'dist_to_next'):
+                
+                #case1a: if group is in sections/conduits then dist to next = +number  
+                if unit.dist_to_next != 0:
+                    next_unit = _next_in_dat
+                    # = self._next_in_dat_struct(unit)
+                    print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit.name)
+                    return next_unit
+                
+                #case1b: if dist = 0 so unit names === names
+                else:
+                    #if end of reach find next in list 
+                    print(current_unit.name,": Dist to next is ZERO, next in .dat structure: ", next_unit)
+                    return None
+                    
+            #case2: next unit is in ds-lable
+            elif hasattr(current_unit, 'ds_label'):
+                _ds_label = current_unit.ds_label
+                try:
+                    #get all units which have same name as ds_label except itself
+                    print(current_unit.name,': has a ds label, units with name: ' , _ds_label, "is/are next")
+                    #count = self._all_units[name]
+                    #next = self._all_units
+                    print('these units are:' )
+
+                except:
+                    print('oh no') 
+
+                                  
+                #next_unit_name = unit.ds_label #ok but need to go back into dat class to get correct unit not just name
                 # something like _dat_struct
-                print(curent_unit.name, ": ds label available! ds unit is: ", next_unit) 
+                #print(current_unit.name, ": ds label available! ds unit is: ", next_unit_name)
+                
+            #update     
             else:
-                print(curent_unit.name,': no ds label or dist to next')
+                print(current_unit.name,': no ds label or dist to next')
                 return None
             
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
                 
-#helper self.nextfromstruture = pass the unit +1 from _all_units
-    def _next_in_dat_struct(self, curent_unit) -> Unit:
-        for idx, unit in enumerate(self._all_units):
-            if unit == curent_unit:
-                try:
-                    return self._all_units[idx+1]
-                except IndexError: 
-                    print('index error')
-                    
-#helper self.prevfromstruture = pass the unit -1 from _all_units
-    def _prev_in_dat_struct(self, curent_unit) -> Unit:
-        for idx, unit in enumerate(self._all_units):
-            if unit == curent_unit:
-                try:
-                    return self._all_units[idx-1]
-                except IndexError: 
-                    print('index error')
-
     def prev(self, unit: Unit) -> Union[Unit, list[Unit]]:
         """_summary_
 
@@ -175,28 +174,69 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit]]: _description_
         """
-        curent_unit = unit
+        current_unit = unit
         unit_name = unit.name
         unit_subtype = unit.subtype
         structure = self._dat_struct
         all_units = self._all_units
         prev_unit = []
-        try: 
-            _prev_in_dat =  self._prev_in_dat_struct(unit)      
-            if _prev_in_dat.dist_to_next != 0:
-                prev_unit = _prev_in_dat
-                #return prev_unit
-                print(curent_unit.name,": There's a unit previous! that unit is: ", prev_unit)
-            #case2b: if dist = 0 so unit names === names
-            elif _prev_in_dat.dist_to_next == 0:
-                #find previous not in list 
-                print(curent_unit.name,": Dist to next is ZERO - End of reach.")
-            else:
-                print(curent_unit.name,': no ds label or dist to next')
+        _prev_in_dat =  self._prev_in_dat_struct(unit) 
+        
+        try:      
+            #dist to next attribute is present
+            if hasattr(_prev_in_dat, 'dist_to_next'):
+                
+                #dist to next is positive
+                if _prev_in_dat.dist_to_next != 0:
+                    prev_unit = _prev_in_dat
+                    print(current_unit.name,": There's a unit previous! that unit is: ", prev_unit.name)
+                    return prev_unit
+                #dist to next is zero 
+                
+                else: 
+                    #find previous not in list 
+                    print(current_unit.name,": Dist to next is ZERO - End of reach.")
+                
+            elif hasattr(_prev_in_dat, 'ds_label'):
+                print(current_unit.name,': ')
                 return None
             
         except Exception as e:
-            self._handle_exception(e, when="calculating next unit")        
+                self._handle_exception(e, when="calculating next unit")        
+
+#helper self.nextfromstruture = pass the unit +1 from _all_units
+    def _next_in_dat_struct(self, current_unit) -> Unit:
+        for idx, unit in enumerate(self._all_units):
+            if unit == current_unit:
+                try:
+                    return self._all_units[idx+1]
+                except IndexError: 
+                    print('End of .dat file')
+                    
+#helper to pull out all units with same name as ds_label
+    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
+        for idx, unit in enumerate(self._all_units):
+            if unit == current_unit:     
+                try:
+                    _ds_label = str(unit.ds_label)
+                    _ds_list = [] 
+                    for item in self._all_units:
+                        if item.name == _ds_label:
+                            _ds_list.append(item)
+                        else:
+                            pass
+                    return _ds_list
+                except IndexError:
+                    print('error')
+                    
+#helper self.prevfromstruture = pass the unit -1 from _all_units
+    def _prev_in_dat_struct(self, current_unit) -> Unit:
+        for idx, unit in enumerate(self._all_units):
+            if unit == current_unit:
+                try:
+                    return self._all_units[idx-1]
+                except IndexError: 
+                    print('index error, beginning of .dat file')
 
     def add_units(self):
         """_summary_
