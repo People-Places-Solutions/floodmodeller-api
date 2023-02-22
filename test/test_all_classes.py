@@ -293,10 +293,8 @@ class TestFile(unittest.TestCase):
         self.file._make_backup()
         backup_file_path = os.path.join(self.file.backup_dir, self.file.backup_filename)
         self.assertTrue(os.path.exists(backup_file_path))
-
         # check if contents of backup file match the original file
         self.assertTrue(cmp(backup_file_path, self.test_file))
-
         # Check that the file isn't backed up again if it hasn't changed
         the_same_file = File(self.test_file)
         # Append something to the dttm string to ensure the filename is different to the previous backup
@@ -320,7 +318,7 @@ class TestFile(unittest.TestCase):
         self.file._make_backup()
         backups = self.file.list_backups()
         expected_backup = os.path.join(self.file.backup_dir, self.file.backup_filename)
-        self.assertIn(expected_backup, backups)
+        self.assertIn(expected_backup, [backup.path for backup in backups])
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

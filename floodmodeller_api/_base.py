@@ -22,7 +22,7 @@ from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-from .backup import File, BackUp
+from .backup import File
 
 class FMFile:
     """Base class for all Flood Modeller File types"""

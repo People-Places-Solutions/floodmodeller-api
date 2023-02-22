@@ -50,7 +50,9 @@ You can restore backups via the the `.file.restore()` method. Currently this res
     # Load the DAT
     # Automatically backs up the file if it has changes since the last backup
     dat = DAT("a_dat_file.DAT")
-    # Restore from the last backup to a specific file
-    dat.file.restore(to = "restore-file.DAT")
     # List the available backups
-    dat.file.list_backups()
+    backups = dat.file.list_backups()
+    # Restore the latest backup to a file
+    backups[0].restore(to = "restore-file.DAT")
+    # Restore an older backup
+    backups[6].restore(to = "restore-file.DAT")
