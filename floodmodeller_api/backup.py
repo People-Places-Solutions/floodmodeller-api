@@ -54,7 +54,7 @@ class BackupControl():
         self.temp_dir = tempfile.gettempdir()
         self.backup_dirname = backup_directory_name
         self.backup_dir = os.path.join(self.temp_dir, self.backup_dirname)
-        self.backup_csv_path = f"{self.backup_dir}/file-backups.csv"
+        self.backup_csv_path = os.path.join(self.backup_dir, "file-backups.csv")
         self._init_backup()
 
     def _init_backup(self):
@@ -64,6 +64,7 @@ class BackupControl():
         # Create the backup directory if it doesn't exist
         if not os.path.exists(self.backup_dir):
             os.mkdir(self.backup_dir)
+            print(f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}")
 
         # Create the backup CSV file if it doesn't exist
         if not os.path.exists(self.backup_csv_path):
@@ -76,7 +77,7 @@ class BackupControl():
         """
         files = glob.glob(f"{self.backup_dir}\\*")
         for f in files:
-            os.remove(f)
+            Path(f).unlink()
 
 
 def parse_backup_dttm(path):
