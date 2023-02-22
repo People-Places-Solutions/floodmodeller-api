@@ -51,6 +51,8 @@ class FMFile:
             if not self._filetype == "ZZN":
                 file = File(path=self._filepath)
                 file.backup()
+                # Add the file object as a property to expose the resore method
+                self.file = file
 
     def __repr__(self):
         return f"<floodmodeller_api Class: {self._filetype}(filepath={self._filepath})>"

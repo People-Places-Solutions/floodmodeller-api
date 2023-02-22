@@ -11,17 +11,15 @@ from datetime import datetime
 
 
 class BackUp():
-    # TODO: Finish docs here
     """Controls set up and clearing of file backups.
 
     Args:
-        backup_directory_name (str): The name of the directory to use for backups. Will be created as a directory in the temporary files.
+        backup_directory_name (str): The name of the directory to use for backups. Defaults to "floodmodeller_api_backup"
+            This will be created as a directory in the temporary files.
 
     Output:
         Initiates 'BackUp' class object
 
-    Raises:
-        N/A
     """
     def __init__(self, backup_directory_name:str = "floodmodeller_api_backup"):
         # TODO: Make these protected properties so it is difficult for a user to overwrite them and then run clear_backup to clear the wrong directory
@@ -71,9 +69,11 @@ class File(BackUp):
         Initiates a 'File' object
     """
     def __init__(self, path:str, **args):
-        # TODO: Check file exists
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
+        # Check  if the file exists
+        if not self.path.exists():
+            raise OSError("File not found!")
         self.ext = self.path.suffix
         self.dttm_str = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         self._generate_file_id()
@@ -161,3 +161,4 @@ class File(BackUp):
         # TODO: Implement something better than this if the file doesn't exist
         except IndexError:
             print("This file does not have a backup")
+
