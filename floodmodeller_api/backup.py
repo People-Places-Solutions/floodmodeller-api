@@ -8,9 +8,9 @@ from shutil import copy
 from datetime import datetime
 
 
-class BackUp():
+class BackupControl():
     """
-    The BackUp class provides functionality for creating and managing file backups.
+    The BackupControl class provides functionality for creating and managing file backups.
 
     Args:
         backup_directory_name (str): The name of the directory to use for backups. Defaults to "floodmodeller_api_backup"
@@ -76,7 +76,7 @@ class BackUp():
         for f in files:
             os.remove(f)
 
-class File(BackUp):
+class File(BackupControl):
     """
     Provides functionality to backup files and retrieve them.
 
@@ -214,4 +214,5 @@ class File(BackUp):
         # TODO: Implement something better than this if the file doesn't exist
         except IndexError:
             print("This file does not have a backup")
+
 

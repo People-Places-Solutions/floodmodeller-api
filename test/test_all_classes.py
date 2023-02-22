@@ -13,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 from floodmodeller_api import IEF, IED, DAT, ZZN, INP, XML2D, LF1
 from floodmodeller_api.units import QTBDY
-from floodmodeller_api.backup import BackUp, File
+from floodmodeller_api.backup import BackupControl, File
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
 
 
@@ -252,7 +252,7 @@ class test_XML2D(unittest.TestCase):
 class TestBackUp(unittest.TestCase):
     def setUp(self):
         # Use a different directory for testing
-        self.backup = BackUp(backup_directory_name = "test_floodmodeller_backup")
+        self.backup = BackupControl(backup_directory_name = "test_floodmodeller_backup")
 
     def tearDown(self):
         shutil.rmtree(self.backup.backup_dir)
