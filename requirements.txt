@@ -1,3 +1,4 @@
 pandas
 tqdm
 lxml
+msilib
