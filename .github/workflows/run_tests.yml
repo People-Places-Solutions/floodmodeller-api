@@ -2,8 +2,7 @@ name: Python Unit Tests
 
 on:
   push:
-    branches:
-      - [main, 15-improved-test-module]
+    branches: [ '*' ]
 
 jobs:
   test:
