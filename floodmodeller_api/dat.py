@@ -114,32 +114,43 @@ class DAT(FMFile):
         unit_subtype = unit.subtype
         structure = self._dat_struct
         all_units = self._all_units
-        #next_unit = []
+        _next_in_dat = self._next_in_dat_struct(unit)
+        _next_same_name = self._name_label_match(unit)
         
-        try:
+        
+        try: 
+           
             #dist to next attribute is present
             if hasattr(current_unit, 'dist_to_next'):
                 
                 #case1a: if group is in sections/conduits then dist to next = +number  
                 if unit.dist_to_next != 0:
-                    next_unit = self._next_in_dat_struct(unit)
-                    print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit)
+                    next_unit = _next_in_dat
+                    print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit.name)
                     return next_unit
                 
                 #case1b: if dist = 0 so unit names === names
                 else:
-                    next_unit = self._name_label_match(unit)
-                    print(unit.name, 'dist to next = 0, unit(s) with same name: ', next_unit, 'if empty list, end of .dat')
-                    return next_unit
+                    next_unit =_next_same_name
+                    if len(next_unit) == 1:
+                        print(unit.name, ': dist to next = 0, unit with same name: ', next_unit[0].name)
+                        return next_unit[0]
+                    elif len(next_unit)> 1: 
+                        print(unit.name, ': dist to next = 0, units with same name: ', next_unit)
+                        return next_unit
                     
-            #case2: next unit is in ds-lable
+            #case2: next unit is in ds_lable
             elif hasattr(current_unit, 'ds_label'):
                 next_unit = self._ds_label_match(unit)
-                print(current_unit.name, ': ds_label available, the unit(s) ds: ', next_unit)
-                return next_unit 
+                if len(next_unit) == 1:
+                    print(current_unit.name, ': ds_label available, the unit ds: ', next_unit[0].name)
+                    return next_unit[0]
+                else:
+                    print(current_unit.name, ': ds_label available, the units ds: ', next_unit)
+                    return next_unit 
     
             else:
-                print(current_unit.name,': no ds label or dist to next, possibly end of .dat file')
+                print(current_unit.name,': no ds label or dist to next and not end of .dat file')
                 return None
             
         except Exception as e:
@@ -159,47 +170,40 @@ class DAT(FMFile):
         unit_subtype = unit.subtype
         structure = self._dat_struct
         all_units = self._all_units
-        prev_unit = [] 
+        _prev_in_dat =  self._prev_in_dat_struct(unit)
+        _prev_same_name = self._name_label_match(unit)
         
         try:
-            _prev_in_dat =  self._prev_in_dat_struct(unit)
-            _prev_same_name = self._name_label_match(unit) 
-            #_prev_ds_label = self._ds_label_match(unit)     
-            
             #first unit if prev unit == last unit in all units
             if _prev_in_dat == all_units[-1]:
-                print(current_unit.name, 'is first unit in dat file, no previous unit')
+                print(current_unit.name, ': is first unit in dat file, no previous unit')
                 return None 
                 
             #dist to next attribute is present and positive in previous unit, therefore current unit and prev unit linked
             elif hasattr(_prev_in_dat, 'dist_to_next') and _prev_in_dat.dist_to_next != 0:
-                
-                #dist to next is positive
                 prev_unit = _prev_in_dat
-                print(current_unit.name,": There's a unit previous! that unit is: ", prev_unit)
+                print(current_unit.name,": There's a unit previous! that unit is: ", prev_unit.name)
                 return prev_unit
             
             #If dist to next is zero/not there, check for units with same name   
             elif len(_prev_same_name):
                 prev_unit = _prev_same_name
-                print(current_unit.name, 'dist to next = 0, unit(s) with same name: ', prev_unit)
-                return prev_unit
+                if len(prev_unit) == 1:
+                    print(current_unit.name, ': dist to next = 0, unit with same name: ', prev_unit[0].name)
+                    return prev_unit[0]
+                else:
+                    print(current_unit.name, ': dist to next = 0, units with same name: ', prev_unit)
+                    return prev_unit
             
-            elif (_prev_in_dat, 'ds_label') and _prev_in_dat.ds_label == current_unit.name:
+            #if prev unit has ds_label that matches current unit name 
+            elif hasattr(_prev_in_dat, 'ds_label') and _prev_in_dat.ds_label == current_unit.name:
                 prev_unit = _prev_in_dat
-                print(current_unit.name, 'is linked via ds_label to: ', prev_unit.name)
+                print(current_unit.name, ': is linked via ds_label to: ', prev_unit.name)
                 return prev_unit
             
             else:
-                pass
-            
-            #check for units which have ds-label matching current unit name
-            #elif current_unit.name == self._ds_label_match(unit).name:
-#            else: 
-#                prev_unit = self._reverse_ds_label_match(unit) ######
-#                print(current_unit.name, 'current unit has ds label matching,', prev_unit)
-#                return prev_unit
-                
+                print(current_unit.name, ': no prev unit found')
+                pass            
                 
         except Exception as e:
                 self._handle_exception(e, when="calculating next unit")        
