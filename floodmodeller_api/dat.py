@@ -148,10 +148,6 @@ class DAT(FMFile):
                 else:
                     print(current_unit.name, ': ds_label available, the units ds: ', next_unit)
                     return next_unit 
-    
-            else:
-                print(current_unit.name,': no ds label or dist to next and not end of .dat file')
-                return None
             
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
@@ -216,13 +212,20 @@ class DAT(FMFile):
                     return self._all_units[idx+1]
                 except IndexError: 
                     print(current_unit.name, 'is end of .dat file')
-                                 
-#helper to pull out all units with same name as ds_label
-    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
+
+#helper self.prevfromstruture = pass the unit -1 from _all_units
+    def _prev_in_dat_struct(self, current_unit) -> Unit:
         for idx, unit in enumerate(self._all_units):
-            if unit == current_unit:     
+            if unit == current_unit:
                 try:
-                    _ds_label = str(unit.ds_label)
+                    return self._all_units[idx-1]
+                except IndexError:
+                    print('index error, beginning of .dat file')
+                       
+#helper to pull out all units with same name as ds_label
+    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:     
+                try:
+                    _ds_label = str(current_unit.ds_label)
                     _ds_list = [] 
                     for item in self._all_units:
                         if item.name == _ds_label:
@@ -234,11 +237,9 @@ class DAT(FMFile):
                     print('error')
                     
 #helper to pull all units with same name as current unit (but not current unit)
-    def _name_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
-        for idx, unit in enumerate(self._all_units):
-            if unit == current_unit:     
+    def _name_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:   
                 try:
-                    _name = str(unit.name)
+                    _name = str(current_unit.name)
                     _name_list = [] 
                     for item in self._all_units:
                         if item.name == _name and item != current_unit:
@@ -249,15 +250,6 @@ class DAT(FMFile):
                 except IndexError:
                     print('error')
                                    
-#helper self.prevfromstruture = pass the unit -1 from _all_units
-    def _prev_in_dat_struct(self, current_unit) -> Unit:
-        for idx, unit in enumerate(self._all_units):
-            if unit == current_unit:
-                try:
-                    return self._all_units[idx-1]
-                except IndexError:
-                    print('index error, beginning of .dat file')
-
     def add_units(self):
         """_summary_
         """
