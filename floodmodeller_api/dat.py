@@ -185,6 +185,11 @@ class DAT(FMFile):
                 print(current_unit.name, 'dist to next = 0, unit(s) with same name: ', prev_unit)
                 return prev_unit
             
+            elif (_prev_in_dat, 'ds_label') and _prev_in_dat.ds_label == current_unit.name:
+                prev_unit = _prev_in_dat
+                print(current_unit.name, 'is linked via ds_label to: ', prev_unit.name)
+                return prev_unit
+            
             else:
                 pass
             
