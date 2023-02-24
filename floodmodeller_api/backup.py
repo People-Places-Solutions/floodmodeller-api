@@ -53,8 +53,8 @@ class BackupControl():
         """
         self.temp_dir = tempfile.gettempdir()
         self.backup_dirname = backup_directory_name
-        self.backup_dir = os.path.join(self.temp_dir, self.backup_dirname)
-        self.backup_csv_path = os.path.join(self.backup_dir, "file-backups.csv")
+        self.backup_dir = Path(self.temp_dir, self.backup_dirname)
+        self.backup_csv_path = Path(self.backup_dir, "file-backups.csv")
         self._init_backup()
 
     def _init_backup(self):
@@ -62,12 +62,12 @@ class BackupControl():
         Initialises the backup directory and creates a CSV file for logging backup information.
         """
         # Create the backup directory if it doesn't exist
-        if not os.path.exists(self.backup_dir):
-            os.mkdir(self.backup_dir)
+        if not self.backup_dir.exists():
+            self.backup_dir.mkdir()
             print(f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}")
 
         # Create the backup CSV file if it doesn't exist
-        if not os.path.exists(self.backup_csv_path):
+        if not self.backup_csv_path.exists():
             with open(self.backup_csv_path, "w") as f:
                 f.write("path,file_id,dttm\n")
 
@@ -75,7 +75,7 @@ class BackupControl():
         """
         Removes all backup files in the backup directory.
         """
-        files = glob.glob(f"{self.backup_dir}\\*")
+        files = self.backup_dir.glob("*")
         for f in files:
             Path(f).unlink()
 
@@ -105,7 +105,7 @@ class BackupFile:
     def __init__(self, file_id:str, path:str):
         self.file_id = file_id
         self.path = path
-        self.dttm  = parse_backup_dttm(path)
+        self.dttm  = parse_backup_dttm(str(path))
     
     def restore(self, to):
         """
@@ -203,19 +203,19 @@ class File(BackupControl):
         It also logs a row in the backup csv file to help find a particular backup when inspecting the file system.
         """
         # Construct the path and copy the file
-        backup_filepath = os.path.join(self.backup_dir, self.backup_filename)
+        backup_filepath = Path(self.backup_dir, self.backup_filename)
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
         # TODO: Only log file_id and poath, don't log duplicate lines. Needs to be fast so it doesn't slow FMFile down
         log_str = f"{self.path.__str__()},{self.file_id},{self.dttm_str}\n"
         with open(self.backup_csv_path, "a") as f:
-                f.write(log_str)
+            f.write(log_str)
     
     def list_backups(self) -> list:
         """
         List backed up versions of the File, ordered from newest to oldest.
         """
-        backup_files = glob.glob(f"{self.backup_dir}\\{self.file_id}*")
+        backup_files = list(self.backup_dir.glob(f"{self.file_id}*"))
         backup_files.sort(reverse = True)
         if len(backup_files) > 0:
             return [BackupFile(file_id=self.file_id, path = path) for path in backup_files]
