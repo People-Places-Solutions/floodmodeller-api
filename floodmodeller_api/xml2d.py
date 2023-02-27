@@ -443,7 +443,9 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-        console_output: Optional[str] = 'simple'
+        console_output: Optional[str] = 'simple',
+        range_function: Optional[callable] = trange,
+        range_settings: Optional[dict] = {},
     ) -> Optional[Popen]:
 
         """Simulate the XML2D file directly as a subprocess.
@@ -480,6 +482,9 @@ class XML2D(FMFile):
         #TODO: 
         # - Clean up the lf code?
         # - Remove or sort out get results
+
+        self.range_function = range_function
+        self.range_settings = range_settings    
 
         try:
             if self._filepath == None:
@@ -622,7 +627,7 @@ class XML2D(FMFile):
             return
 
         # tqdm progress bar
-        for i in trange(100):
+        for i in self.range_function(100, **self.range_settings):
 
             # Process still running
             while process.poll() is None:

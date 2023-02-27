@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
+
 from tqdm import trange
 
 import pandas as pd
@@ -366,6 +367,8 @@ class IEF(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
+        range_function: Optional[callable] = trange,
+        range_settings: Optional[dict] = {},
     ) -> Optional[subprocess.Popen]:
         """Simulate the IEF file directly as a subprocess
 
@@ -391,6 +394,8 @@ class IEF(FMFile):
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
         """
         try:
+            self.range_function = range_function
+            self.range_settings = range_settings           
             if self._filepath == None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
@@ -597,8 +602,8 @@ class IEF(FMFile):
             return
 
         # tqdm progress bar
-        for i in trange(100):
-
+        for i in self.range_function(100, **self.range_settings):
+        
             # Process still running
             while process.poll() is None:
 
