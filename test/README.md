@@ -1,6 +1,16 @@
 # Testing Guidelines
 ## Overview
-The Flood Modeller API uses the `pytest` framework for unit tests. 
+The Flood Modeller API uses the [`pytest` framework](https://docs.pytest.org/) for unit tests. 
+
+# Running Tests
+You can run tests from the terminal using 
+```bash 
+pytest test -v
+```
+## Automated Testing
+TODO: ...github actions...
+
+# Writing Tests 
 
 ## Directory Structure
 The structure of the test directory should mirror the filenames of the source directory `floodmodeller_api` with a test file for each source file. The file names of tests should be preceded with "test_" e.g. `test_dat.py`
@@ -24,5 +34,3 @@ test/
 ...
 ```
 
-## Automated Testing
-TODO: ...github actions...
