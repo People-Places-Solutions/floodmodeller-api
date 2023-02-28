@@ -277,7 +277,7 @@ class TestFile(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.gettempdir()
         self.test_file = "test/test_data/EX1.DAT"
-        self.file = File(self.test_file)
+        self.file = File(self.test_file, backup_directory_name = "test_floodmodeller_backup")
 
     def tearDown(self):
         shutil.rmtree(self.file.backup_dir)
@@ -296,7 +296,7 @@ class TestFile(unittest.TestCase):
         # check if contents of backup file match the original file
         self.assertTrue(cmp(backup_file_path, self.test_file))
         # Check that the file isn't backed up again if it hasn't changed
-        the_same_file = File(self.test_file)
+        the_same_file = File(self.test_file, backup_directory_name = "test_floodmodeller_backup")
         # Append something to the dttm string to ensure the filename is different to the previous backup
         # If the two File objects are created in the same second then then will have identical file names
         # The function should check for equivalence between file contents.
