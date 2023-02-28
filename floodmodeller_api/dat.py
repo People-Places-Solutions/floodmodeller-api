@@ -102,7 +102,7 @@ class DAT(FMFile):
     def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
         """Finds next unit in the reach. 
         
-        This can be: 
+        Next unit in reach can be infered by: 
             The next unit in the .dat file structure - such as when a river section has a positive distance to next
             The units with the exact same name - such as a junction unit 
             The next unit as described in the ds_label - such as with Bridge units 
@@ -160,7 +160,7 @@ class DAT(FMFile):
     def prev(self, unit: Unit) -> Union[Unit, list[Unit], None]:
         """Finds previous unit in the reach.
          
-        This can be: 
+        Previous unit in reach can be infered by: 
             The previous unit in the .dat file structure - such as when the previous river section has a positive distance to next.
             The units with the exact same name - such as a junction unit 
             The previous unit as linked through upstream and downstream labels - such as with Bridge units 
