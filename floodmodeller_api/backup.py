@@ -1,13 +1,11 @@
 import tempfile
-import os
 from hashlib import sha1
-import glob
 import filecmp
 from pathlib import Path
 from shutil import copy
 from datetime import datetime
 import re
-
+import pandas as pd
 # import configparser
 
 
@@ -71,11 +69,18 @@ class BackupControl:
             with open(self.backup_csv_path, "w") as f:
                 f.write("path,file_id,dttm\n")
 
-    def clear_backup(self):
+    def clear_backup(self, file_id = "*"):
         """
         Removes all backup files in the backup directory.
+        Args:
+            file_id (str): The ID of the file to clear, default value is "*" to clear all files
+                If this is called from the file class then the file Id of that file will be used 
         """
-        files = self.backup_dir.glob("*")
+        # If the user wants to clear a specific file, then suffix * to match it 
+        if file_id != "*":
+            file_id = f"{file_id}*"
+
+        files = self.backup_dir.glob(file_id)
         for f in files:
             Path(f).unlink()
 
@@ -243,3 +248,14 @@ class File(BackupControl):
         elif not (filecmp.cmp(self.path, backups[0].path)):
             self._make_backup()
         # TODO: Return the file path?
+
+    def clear_backup(self):
+        """
+        Clears all backups for the file and removes entries from the logs
+        """
+        # Clear the backup
+        super().clear_backup(file_id = self.file_id)
+        # Drop the files entries from the log
+        backup_logs = pd.read_csv(self.backup_csv_path)
+        backup_logs = backup_logs[backup_logs.file_id != self.file_id]
+        backup_logs.to_csv(self.backup_csv_path)
