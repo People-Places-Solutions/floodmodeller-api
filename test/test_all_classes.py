@@ -252,16 +252,18 @@ class test_XML2D(unittest.TestCase):
 class TestBackUp(unittest.TestCase):
     def setUp(self):
         # Use a different directory for testing
-        self.backup = BackupControl(backup_directory_name = "test_floodmodeller_backup")
+        self.backup = BackupControl()
 
     def tearDown(self):
         shutil.rmtree(self.backup.backup_dir)
 
     def test_init_backup(self):
+        """Has the backup been initialised correctly?"""
         self.assertTrue(self.backup.backup_dir.exists())
         self.assertTrue(self.backup.backup_csv_path.exists())
 
     def test_clear_backup(self):
+        """Does clearing it work properly?"""
         # create a temporary file in backup directory to test clearing
         temp_file_path = Path(self.backup.backup_dir, "temp.txt")
         with open(temp_file_path, "w") as f:
@@ -277,18 +279,25 @@ class TestFile(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.gettempdir()
         self.test_file = "test/test_data/EX1.DAT"
-        self.file = File(self.test_file, backup_directory_name = "test_floodmodeller_backup")
+        self.file = File(self.test_file)
 
     def tearDown(self):
         shutil.rmtree(self.file.backup_dir)
 
     def test_generate_file_id(self):
+        """Does this generate a consistent file ID for the same file on disk?"""
         # Test that the file ID is the same for the same path input
         file1 = File(self.test_file)
         file2 = File(self.test_file)
         self.assertEqual(file1.file_id, file2.file_id)
 
     def test_make_backup(self):
+        """
+        Does the backup method work correctly?
+        - Does it make a backup in the right place?
+        - Does it only make a backup if the file has changed?
+        - Does it add an entry to the log file?
+        """
         # make backup and check if backup file exists
         self.file._make_backup()
         backup_file_path = Path(self.file.backup_dir, self.file.backup_filename)
@@ -296,7 +305,7 @@ class TestFile(unittest.TestCase):
         # check if contents of backup file match the original file
         self.assertTrue(cmp(backup_file_path, self.test_file))
         # Check that the file isn't backed up again if it hasn't changed
-        the_same_file = File(self.test_file, backup_directory_name = "test_floodmodeller_backup")
+        the_same_file = File(self.test_file)
         # Append something to the dttm string to ensure the filename is different to the previous backup
         # If the two File objects are created in the same second then then will have identical file names
         # The function should check for equivalence between file contents.
@@ -314,6 +323,7 @@ class TestFile(unittest.TestCase):
         self.assertEqual(backup_count, 1)
 
     def test_list_backups(self):
+        """Does the list backups method work correctly?"""
         # make a backup and check if it appears in the backup list
         self.file._make_backup()
         backups = self.file.list_backups()

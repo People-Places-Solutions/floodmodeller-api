@@ -8,14 +8,13 @@ from shutil import copy
 from datetime import datetime
 import re
 
+# import configparser
+
 
 class BackupControl:
     """
     The BackupControl class provides functionality for creating and managing file backups.
 
-    Args:
-        backup_directory_name (str): The name of the directory to use for backups. Defaults to "floodmodeller_api_backup"
-            This will be created as a directory in the temporary files.
 
     Attributes:
         temp_dir (str): The temporary directory used for backups.
@@ -43,7 +42,7 @@ class BackupControl:
         backup.clear_backup()
     """
 
-    def __init__(self, backup_directory_name: str = "floodmodeller_api_backup"):
+    def __init__(self):
         """
         Initialises a new BackUp object.
 
@@ -51,7 +50,7 @@ class BackupControl:
             backup_directory_name (str): The name of the backup directory. Defaults to "floodmodeller_api_backup".
         """
         self.temp_dir = tempfile.gettempdir()
-        self.backup_dirname = backup_directory_name
+        self.backup_dirname = "floodmodeller_api_backup"
         self.backup_dir = Path(self.temp_dir, self.backup_dirname)
         self.backup_csv_path = Path(self.backup_dir, "file-backups.csv")
         self._init_backup()
