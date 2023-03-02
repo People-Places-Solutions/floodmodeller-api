@@ -3,9 +3,6 @@ from pathlib import Path
 import os
 import pytest 
 
-@pytest.fixture
-def test_workspace():
-    return os.path.join(os.path.dirname(__file__), "test_data")
 
 @pytest.fixture
 def inp_fp(test_workspace):
@@ -16,12 +13,12 @@ def data_before(inp_fp):
     return INP(inp_fp)._write()
 
 
-def test_1(inp_fp, data_before):
+def test_inp_open_does_not_change_data(inp_fp, data_before):
     """INP: Test str representation equal to inp file with no changes"""
     inp = INP(inp_fp)
     assert inp._write() == data_before
 
-def test_2(inp_fp, data_before):
+def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     """INP: Test changing and reverting section name and snow catch factor makes no changes"""
     inp = INP(inp_fp)
     prev_name = inp.raingauges["1"].name
@@ -35,7 +32,7 @@ def test_2(inp_fp, data_before):
 
     assert inp._write() == data_before
 
-def test_4(test_workspace):
+def test_all_inp_files_in_folder_have_same_output(test_workspace):
     """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
     for inpfile in Path(test_workspace).glob("*.inp"):
         inp = INP(inpfile)

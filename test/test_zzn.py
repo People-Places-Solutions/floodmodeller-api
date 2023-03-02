@@ -3,9 +3,6 @@ from floodmodeller_api import ZZN
 import os
 import pandas as pd 
 
-@pytest.fixture
-def test_workspace():
-    return os.path.join(os.path.dirname(__file__), "test_data")
 
 @pytest.fixture
 def zzn_fp(test_workspace):
@@ -22,7 +19,7 @@ def tabCSV_output(test_workspace):
     return tabCSV_output
 
 
-def test_1(zzn_fp, tabCSV_output, test_workspace):
+def test_load_zzn_using_dll(zzn_fp, tabCSV_output, test_workspace):
     """ZZN: Check loading zzn okay using dll"""
     zzn = ZZN(zzn_fp)
     zzn.export_to_csv(

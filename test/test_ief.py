@@ -3,11 +3,6 @@ import os
 from floodmodeller_api import IEF
 
 @pytest.fixture
-def test_workspace():
-    return os.path.join(os.path.dirname(__file__), "test_data")
-
-
-@pytest.fixture
 def ief_fp(test_workspace):
     ief_fp = os.path.join(test_workspace, "network.ief")
     return ief_fp
@@ -19,7 +14,7 @@ def data_before(ief_fp):
         data_before = ief_file.read()
     return data_before
 
-def test_ief(ief_fp, data_before):
+def test_ief_open_does_not_change_data(ief_fp, data_before):
     """IEF: Test str representation equal to ief file with no changes"""
     ief = IEF(ief_fp)
     assert ief._write() == data_before

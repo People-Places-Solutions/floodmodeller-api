@@ -18,6 +18,20 @@ When writing unit tests, it's important to isolate a specific unit of functional
 
 To learn more about writing unit tests with pytest, refer to their [documentation](https://docs.pytest.org/en/6.2.x/contents.html).
 
+## Naming 
+
+Tests should be given names that clearly describe what is being tested. Use a consistent approach to naming and follow snake_case conventions. It is ok if this results in a slightly longer function name.
+
+
+## Sharing Fixtures Between Tests
+
+Many tests share data which are set up using fixtures. You should add any fixtures which are shared across multiple tests to `test/conftest.py`. You must specify the `scope = "session"` parameter:
+```python
+@pytest.fixture(scope = "session")
+def test_workspace():
+    return os.path.join(os.path.dirname(__file__), "test_data")
+```
+
 ## Test Data
 To ensure consistent and reliable testing, we use a variety of test data which is located in the `tests/test_data` folder. 
 

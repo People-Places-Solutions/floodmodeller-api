@@ -4,16 +4,13 @@ import os
 from pathlib import Path
 import pandas as pd 
 
-@pytest.fixture
-def test_workspace():
-    return os.path.join(os.path.dirname(__file__), "test_data")
 
 @pytest.fixture
 def lf1_fp(test_workspace):
     return  os.path.join(test_workspace, "ex3.lf1")
 
 
-def test_lf1_1(lf1_fp):
+def test_lf1_info_dict(lf1_fp):
     """LF1: Check info dictionary"""
     lf1 = LF1(lf1_fp)
     assert lf1.info["version"] ==  "5.0.0.7752"
@@ -21,12 +18,12 @@ def test_lf1_1(lf1_fp):
     assert lf1.info["mass_balance_error"] == -0.03
     assert lf1.info["progress"] == 100
 
-def test_lf1_2(lf1_fp):
+def test_lf1_report_progress(lf1_fp):
     """LF1: Check report_progress()"""
     lf1 = LF1(lf1_fp)
     assert lf1.report_progress() == 100
 
-def test_lf1_3(lf1_fp):
+def test_lf1_to_dataframe(lf1_fp):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
     df = lf1.to_dataframe()
@@ -34,7 +31,7 @@ def test_lf1_3(lf1_fp):
     assert df.iloc[-1,-1] == 21.06
     assert df.iloc[4,0] == -0.07
 
-def test_lf1_4(lf1_fp, test_workspace):
+def test_lf1_from_ief(lf1_fp, test_workspace):
     """LF1: Check IEF.get_lf1()"""
     lf1 = LF1(lf1_fp)
 
@@ -59,12 +56,12 @@ def data_before(xml_fp):
     return XML2D(xml_fp)._write()
 
 
-def test_xml2d_1(xml_fp, data_before):
+def test_xml2d_str_representation(xml_fp, data_before):
     """XML2D: Test str representation equal to xml file with no changes"""
     x2d = XML2D(xml_fp)
     assert x2d._write() == data_before
 
-def test_xml2d_2(xml_fp, data_before):
+def test_xml2d_link_dtm_changes(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
     x2d = XML2D(xml_fp)
     prev_link = x2d.link1d[0]["link"]
@@ -79,7 +76,7 @@ def test_xml2d_2(xml_fp, data_before):
     x2d.domains[domain]["topography"] = prev_dtm
     assert x2d._write() == data_before
 
-def test_xml2d_3(test_workspace):
+def test_xml2d_all_files(test_workspace):
     """XML2D: Check all '.xml' files in folder by reading the _write() output into a
     new XML2D instance and checking it stays the same."""
     for xmlfile in Path(test_workspace).glob("*.xml"):
