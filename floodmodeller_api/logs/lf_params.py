@@ -129,3 +129,25 @@ lf2_data_to_extract = {
     "EFT": {"class": TimeParser, "prefix": "!!Info2 EFT:", "data_type": "last", "code":"%H:%M:%S"},
     "ETR": {"class": TimeDeltaHMSParser, "prefix": "!!Info2 ETR:", "exclude": ["****:**:**", "****:00:**", "****:**:00"], "data_type": "last"},
 }
+
+error_2D_dict = {
+    # format: Error code, 42 : Comment, "This has worked" ,
+    100 : "Successful completion",
+    101 : "Error at preprocessing stage",
+    102 : "Model unstable",
+    103 : "Model mass balance exceeds tolerance threshold",
+    104 : "Water reached cells at the edge of the 2D domain",
+    105 : "General error",
+    106 : "Error occurred while writing a file",
+    107 : "Error occurred while opening/writing to the log file",
+    108 : "Error occurred while opening a file",
+    109 : "Tried to run model with 1d and fast domains (not currently supported)",
+    110 : "All domains required the FAST engine",
+    111 : "1D engine failed",
+    112 : "2D timestep failed to converge",
+    201 : "SMS dat I/O failed",
+    202 : "Ctrl-C abort request",
+    996 : "Failed to initialise licence module",
+    997 : "Licence not taken/lost",
+    998 : "Failed to validate licence module"
+}
