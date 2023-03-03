@@ -49,13 +49,15 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
         dat.boundaries[name].data = qt  # replace QT flow data with original
     assert dat._write() ==  data_before
 
-def test_dat_read_doesnt_change_data(dat_fp, data_before, test_workspace):
+def test_dat_read_doesnt_change_data(test_workspace):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
         dat = DAT(datfile)
         first_output = dat._write()
         dat.save("__temp.dat")
-        second_output = DAT("__temp.dat")._write()
+        second_dat = DAT("__temp.dat")
+        assert dat == second_dat # Checks equivalence on the class itself
+        second_output = second_dat._write()
         assert first_output == second_output
         os.remove("__temp.dat")
     try:
