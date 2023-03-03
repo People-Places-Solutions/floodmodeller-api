@@ -19,7 +19,8 @@ from typing import Optional, Union
 
 from . import units  # Import for using as package
 from ._base import FMFile
-from floodmodeller_api.units.helpers import _to_float
+from .units.helpers import _to_float
+from .validation.validation import _validate_unit
 
 
 class DAT(FMFile):
@@ -263,6 +264,9 @@ class DAT(FMFile):
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
+                #this is the check if insert unit flag  is there, if it is then add to raw data and do block shift 
+                #
+                
                 unit_data = self._raw_data[
                     block["start"] + block_shift : block["end"] + 1 + block_shift
                 ]
@@ -305,6 +309,7 @@ class DAT(FMFile):
         self.structures = {}
         self.conduits = {}
         self.losses = {}
+        self._all_units = []
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
@@ -335,6 +340,8 @@ class DAT(FMFile):
                     unit_group[unit_name] = eval(
                         f'units.{unit_type}({unit_data}, {self._label_len})'
                     )
+                    self._all_units.append(unit_group[unit_name])
+                unit_data = self._raw_data[block["start"] : block["end"] + 1]
 
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
@@ -426,16 +433,55 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
-    def insert_unit(unit, prev_block):
-        """Placeholder function for adding in new units to DAT"""
-        # Get block start/end of prev_block
+    def remove_unit(self, unit):
 
-        # Insert new unit directly into _raw_data
+        node_count = self.general_parameters['Node Count']
+        unit_module = str(unit.__module__).split('.')[-1]    #cowboy method...
+        all_units = self._all_units
+        
+        # _update_raw_data 
+        self._update_raw_data()
+        # update gen parameter node count   
+        self.general_parameters['Node Count'] -= 1
+        
+        pass
+    
+    def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
+        #catch errors for 1: if add before add before or add at then error 
+        ## 2: if they add unit where name is in group already then cant have two boundaries with same name
+        ### 3: check if unit is an instance of FM unit 
+        _validate_unit(unit)
+        # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT
+        position = []
+        node_count = self.general_parameters['Node Count']
+        unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
+        unit_group = getattr(self, unit_group_name)
+        
+        if add_at:
+            insert_index = add_at
 
-        # Add unit into relevant list (sections, structures, boundaries)
+        else:    
+            check_unit = add_before or add_after
+            for index, thing in enumerate(self._all_units):
+                if thing == check_unit:
+                    insert_index = index
+                    insert_index += 1 if add_after else 0    
+                    break                 
+        
+        self._all_units.insert(insert_index, unit) #fine with positional argument 
+        unit_group[unit.name] = unit
+        self._dat_struct.insert(insert_index+1, {'Type': unit_group_name, 'new_insert':unit}) #update the update raw data function to include new insert
 
-        # Update _dat_struct
+        #add into _dat_struct  #start and end lines                 
 
+        # update the gxy and GIS info and iic's tables (lower priority)
+    
+        self._update_raw_data()
+        # update gen parameter node count
+        self.general_parameters['Node Count'] += 1
+        #print(node_count)
+        print(self.general_parameters['Node Count'])
+        
         pass
 
     def _update_gisinfo_label(
