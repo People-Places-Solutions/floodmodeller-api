@@ -151,6 +151,8 @@ class FMFile:
                         "_xmltree",
                         "_xsd",
                         "_xsdschema",
+                        "file",
+                        "_log_path"
                     ):
                         continue
                     else:
