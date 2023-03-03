@@ -1,6 +1,11 @@
 import unittest
 import sys
 import os
+import tempfile
+import shutil
+from datetime import datetime
+from filecmp import cmp
+from hashlib import sha1
 
 # sys.path.insert(0, os.getcwd())
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -8,7 +13,7 @@ import pandas as pd
 from pathlib import Path
 from floodmodeller_api import IEF, IED, DAT, ZZN, INP, XML2D, LF1
 from floodmodeller_api.units import QTBDY
-
+from floodmodeller_api.backup import BackupControl, File
 test_workspace = os.path.join(os.path.dirname(__file__), "test_data")
 
 
@@ -243,5 +248,104 @@ class test_XML2D(unittest.TestCase):
             os.remove("__temp.xml")
 
 
+
+class TestBackUp(unittest.TestCase):
+    def setUp(self):
+        # Use a different directory for testing
+        self.backup = BackupControl()
+
+    def test_init_backup(self):
+        """Has the backup been initialised correctly?"""
+        self.assertTrue(self.backup.backup_dir.exists())
+        self.assertTrue(self.backup.backup_csv_path.exists())
+
+
+class TestFile(unittest.TestCase):
+    def setUp(self):
+        self.temp_dir = tempfile.gettempdir()
+        self.test_file = "test/test_data/EX1.DAT"
+        self.file = File(self.test_file)
+        # Make a backup to clear in test
+        self.file.backup()
+
+
+    def test_generate_file_id(self):
+        """Does this generate a consistent file ID for the same file on disk?"""
+        # Test that the file ID is the same for the same path input
+        file1 = File(self.test_file)
+        file2 = File(self.test_file)
+        self.assertEqual(file1.file_id, file2.file_id)
+    
+    def clear_backup(self):
+        """
+        Does the the clear_backup method work corrrectly
+        """
+        # Clearing backup -------------------
+        # Load a different file to check it isn't affected by the 
+        other_file = File("test/test_data/EX3.DAT")
+        # Assert there is a backup for the other file
+        other_file.backup()
+        # Clear the backups for the file to test backup functionality
+        self.file.clear_backup()
+        # Assert that clearing the backup has worked - there aren't any backups for the file
+        self.assertEqual(len(self.file.list_backups()), 0)
+        # And that clearing it hasn't affected backups for the other file
+        self.assertTrue(len(other_file.list_backups()) > 0)
+        
+    def test_backup_locations(self):
+        """
+        Does it make a backup in the right place?
+        """
+        # Making a backup --------------------
+        self.file.clear_backup()
+        # make a backup and check if file exists
+        self.file.backup()
+        backup_file_path = Path(self.file.backup_dir, self.file.backup_filename)
+        self.assertTrue(backup_file_path.exists())
+        # check if contents of backup file match the original file
+        self.assertTrue(cmp(backup_file_path, self.test_file))
+    def no_duplicate_backup(self):
+        """The backup method should only backup if the file has changed"""
+        # Don't Make Duplicate -------------------
+        # Check that the file isn't backed up again if it hasn't changed
+        the_same_file = File(self.test_file)
+        # Append something to the dttm string to ensure the filename is different to the previous backup
+        # If the two File objects are created in the same second then then will have identical file names
+        # The function should check for equivalence between file contents.
+        the_same_file.dttm_str = the_same_file.dttm_str + "_1"
+        # Generate a new file name
+        the_same_file._generate_file_name()
+        # Attempt a backup
+        the_same_file.backup()
+        # Check that the file hasn't been created
+        duplicate_backup_path = Path(the_same_file.backup_dir, the_same_file.backup_filename)
+        self.assertFalse(duplicate_backup_path.exists())
+    def backup_logs(self):
+        """Are backups being logged in the CSV?"""
+        # Clear the backup 
+        self.file.clear_backup()
+        # There shouldn't be any edits in the csv
+        backup_logs = pd.read_csv(self.file.backup_csv_path)
+        backup_count = backup_logs[(backup_logs.file_id == self.file.file_id)].shape[0]
+        self.assertEqual(backup_count, 0)
+        # Make a backup and assert it is in the CSV
+        self.file.backup()
+        # Check edits to the backup CSV
+        # Check a row has been added to the csv for the file & version
+        backup_logs = pd.read_csv(self.file.backup_csv_path)
+        backup_count = backup_logs[(backup_logs.file_id == self.file.file_id) & (backup_logs.dttm == self.file.dttm_str)].shape[0]
+        self.assertEqual(backup_count, 1)
+
+    def test_list_backups(self):
+        """Does the list backups method work correctly?"""
+        # First clear any backups that exist
+        self.clear_backup()
+        # make a backup and check if it appears in the backup list
+        self.file.backup()
+        backups = self.file.list_backups()
+        expected_backup = Path(self.file.backup_dir, self.file.backup_filename)
+        self.assertIn(expected_backup, [backup.path for backup in backups])
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
