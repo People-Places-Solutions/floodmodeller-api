@@ -113,47 +113,30 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit], None]: Flood modeller unit either on its own or in a list if more than one follows in reach.
         """
-
-        current_unit = unit
-        unit_name = unit.name
-        unit_subtype = unit.subtype
-        structure = self._dat_struct
-        all_units = self._all_units
-        _next_in_dat = self._next_in_dat_struct(unit)
-        _next_same_name = self._name_label_match(unit)
-        
-        
+        # Needs to handle same name match outside dist to next (e.g. inflow)
         try: 
-           
-            #dist to next attribute is present
-            if hasattr(current_unit, 'dist_to_next'):
-                
-                #case1a: if group is in sections/conduits then dist to next = +number  
+            if hasattr(unit, 'dist_to_next'):
+                # Case 1a - positive distance to next
                 if unit.dist_to_next != 0:
-                    next_unit = _next_in_dat
-                    #print(current_unit.name,": There's a unit coming next! that unit is: ", next_unit.name)
-                    return next_unit
+                    return self._next_in_dat_struct(unit)
                 
-                #case1b: if dist = 0 so unit names === names
+                # Case 1b - distance to next = 0
                 else:
-                    next_unit =_next_same_name
-                    if len(next_unit) == 1:
-                        #print(unit.name, ': dist to next = 0, unit with same name: ', next_unit[0].name)
-                        return next_unit[0]
-                    elif len(next_unit)> 1: 
-                        #print(unit.name, ': dist to next = 0, units with same name: ', next_unit)
-                        return next_unit
+                    return self._name_label_match(unit)
                     
-            #case2: next unit is in ds_lable
-            elif hasattr(current_unit, 'ds_label'):
-                next_unit = self._ds_label_match(unit)
-                if len(next_unit) == 1:
-                    #print(current_unit.name, ': ds_label available, the unit ds: ', next_unit[0].name)
-                    return next_unit[0]
-                else:
-                    #print(current_unit.name, ': ds_label available, the units ds: ', next_unit)
-                    return next_unit 
+            # Case 2: next unit is in ds_label
+            elif hasattr(unit, 'ds_label'):
+                return self._ds_label_match(unit)
             
+            elif unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+
+            elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
+                return None
+            
+            else:
+                return self._name_label_match(unit)
+       
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
                 
@@ -255,25 +238,39 @@ class DAT(FMFile):
                     _ds_list.append(item)
                 else:
                     pass
-            return _ds_list
+            
+            if len(_ds_list) == 0:
+                return None
+            elif len(_ds_list) == 1:
+                return _ds_list[0]
+            else:
+                return _ds_list
+
         except IndexError:
                     print('error')
                     
-    def _name_label_match(self, current_unit) -> Union[Unit, list[Unit], None]: 
+    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]: 
         """Pulls out all units with same name as the input unit. 
         
         Returns:
             Union[Unit, list[Unit], None]: Either a singular unit or list of units with matching names, if none exist returns none. Does not return itself
         """
         try:
-            _name = str(current_unit.name)
+            _name = name_override or str(current_unit.name)
             _name_list = [] 
             for item in self._all_units:
                 if item.name == _name and item != current_unit:
                     _name_list.append(item)
                 else:
                     pass
-            return _name_list
+
+            if len(_name_list) == 0:
+                return None
+            elif len(_name_list) == 1:
+                return _name_list[0]
+            else:
+                return _name_list
+
         except IndexError:
             print('error')
                                    
@@ -488,10 +485,8 @@ class DAT(FMFile):
         self._unsupported = {}
         self._all_units = []
         for block in self._dat_struct:
-            # Check for all supported boundary types
+            unit_data = self._raw_data[block["start"] : block["end"] + 1]
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[block["start"] : block["end"] + 1]
-
                 # Deal with initial conditions block
                 if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
@@ -518,12 +513,9 @@ class DAT(FMFile):
                         f'units.{unit_type}({unit_data}, {self._label_len})' # append to our _all._units as well???
                     )
                     self._all_units.append(unit_group[unit_name])
-                unit_data = self._raw_data[block["start"] : block["end"] + 1]
-
+            
+            elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                var1 = units.UNSUPPORTED_UNIT_TYPES.get(block['Type'], None)
-                if (var1 is None):
-                    continue
                 if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
                     subtype = True 
@@ -531,9 +523,19 @@ class DAT(FMFile):
                     unit_name = unit_data[1][: self._label_len].strip()
                     subtype = False
                     
-                self._unsupported[unit_name] = units.UNSUPPORTED(unit_data, self._label_len, unit_name = unit_name, 
-                                                          unit_type =block["Type"], subtype = subtype)
-                self._all_units.append(unit_group[unit_name])
+                self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
+                    unit_data, 
+                    self._label_len, 
+                    unit_name = unit_name, 
+                    unit_type =block["Type"], 
+                    subtype = subtype
+                )
+                self._all_units.append(
+                    self._unsupported[f"{unit_name} ({block['Type']})"]
+                )
+            
+            elif block["Type"] not in ('GENERAL', "GISINFO"):
+                raise Exception(f"Unexpected unit type encountered: {block['Type']}")
                     
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
