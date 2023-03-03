@@ -258,4 +258,4 @@ class File(BackupControl):
         # Drop the files entries from the log
         backup_logs = pd.read_csv(self.backup_csv_path)
         backup_logs = backup_logs[backup_logs.file_id != self.file_id]
-        backup_logs.to_csv(self.backup_csv_path)
+        backup_logs.to_csv(self.backup_csv_path, index=False)
