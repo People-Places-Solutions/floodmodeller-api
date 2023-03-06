@@ -22,7 +22,7 @@ from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-
+from .backup import File
 
 class FMFile:
     """Base class for all Flood Modeller File types"""
@@ -35,7 +35,7 @@ class FMFile:
             self._filepath = Path(self._filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
-
+            
             if not self._filepath.suffix.lower() == self._suffix:
                 raise TypeError(
                     f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file"
@@ -46,6 +46,13 @@ class FMFile:
                     f"filepath to create a new blank {self._filetype} or point the filepath of an existing {self._filetype} to use as a template, "
                     f"then use the .save() method to save to a new filepath"
                 )
+            # If the file is not a ZZN file, then perform a backup
+            # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
+            if not self._filetype == "ZZN":
+                file = File(path=self._filepath)
+                file.backup()
+                # Add the file object as a property to expose the resore method
+                self.file = file
 
     def __repr__(self):
         return f"<floodmodeller_api Class: {self._filetype}(filepath={self._filepath})>"
@@ -144,6 +151,8 @@ class FMFile:
                         "_xmltree",
                         "_xsd",
                         "_xsdschema",
+                        "file",
+                        "_log_path"
                     ):
                         continue
                     else:

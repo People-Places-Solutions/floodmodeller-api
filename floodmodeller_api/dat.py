@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from . import units  # Import for using as package
+from .units._base import Unit 
 from ._base import FMFile
 from .units.helpers import _to_float
 from .validation.validation import _validate_unit
@@ -39,7 +40,7 @@ class DAT(FMFile):
 
     _filetype: str = "DAT"
     _suffix: str = ".dat"
-
+    
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = dat_filepath
@@ -85,7 +86,7 @@ class DAT(FMFile):
         deemed equivalent if all of their attributes are equal except for the filepath and
         raw data. For example, two DAT files from different filepaths that had the same
         data except maybe some differences in decimal places and some default parameters
-        ommitted, would be classed as equaivalent as they would produce the same DAT instance
+        ommitted, would be classed as equivalent as they would produce the same DAT instance
         and write the exact same data.
 
         The result is printed to the console. If you need to access the returned data, use
@@ -98,6 +99,188 @@ class DAT(FMFile):
         """
         self._diff(other, force_print=force_print)
 
+    #def _get_unit_from_connectivity(self, method) #use this as method prev and next 
+
+    def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+        """Finds next unit in the reach. 
+        
+        Next unit in reach can be infered by: 
+            The next unit in the .dat file structure - such as when a river section has a positive distance to next
+            The units with the exact same name - such as a junction unit 
+            The next unit as described in the ds_label - such as with Bridge units 
+
+        Args:
+            unit (Unit): flood modeller unit input. 
+
+        Returns:
+            Union[Unit, list[Unit], None]: Flood modeller unit either on its own or in a list if more than one follows in reach.
+        """
+        # Needs to handle same name match outside dist to next (e.g. inflow)
+        try: 
+            if hasattr(unit, 'dist_to_next'):
+                # Case 1a - positive distance to next
+                if unit.dist_to_next != 0:
+                    return self._next_in_dat_struct(unit)
+                
+                # Case 1b - distance to next = 0
+                else:
+                    return self._name_label_match(unit)
+                    
+            # Case 2: next unit is in ds_label
+            elif hasattr(unit, 'ds_label'):
+                return self._name_label_match(unit, name_override=unit.ds_label)
+            
+            elif unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+
+            elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
+                return None
+            
+            else:
+                return self._name_label_match(unit)
+       
+        except Exception as e:
+            self._handle_exception(e, when="calculating next unit")
+                
+    def prev(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+        """Finds previous unit in the reach.
+         
+        Previous unit in reach can be infered by: 
+            The previous unit in the .dat file structure - such as when the previous river section has a positive distance to next.
+            The units with the exact same name - such as a junction unit 
+            The previous unit as linked through upstream and downstream labels - such as with Bridge units 
+            
+        Args:
+            unit (Unit): flood modeller unit input.
+
+        Returns:
+            Union[Unit, list[Unit], None]: Flood modeller unit either on its own or in a list if more than one follows in reach.
+        """
+    
+        try:
+            # Case 1: Unit is input boundary condition
+            if unit._unit in (
+                "QTBDY",
+                "HTBDY",
+                "REFHBDY",
+                "FEHBDY",
+                "FRQSIM",
+                "FSRBDY",
+                "FSSR16BDY",
+                "GERRBDY",
+                "REBDY",
+                "REFH2BDY",
+                "SCSBDY"
+            ):
+                return None 
+                
+            elif unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+
+            prev_units = []
+            _prev_in_dat =  self._prev_in_dat_struct(unit)   
+            _name_match = self._name_label_match(unit)
+            _ds_label_match = self._ds_label_match(unit)
+            _junction_match = [junction for junction in self._all_units if junction._unit == "JUNCTION" and unit.name in junction.labels]           
+            
+            # Case 2: Previous unit has positive distance to next
+            if hasattr(_prev_in_dat, 'dist_to_next') and _prev_in_dat.dist_to_next != 0:
+                prev_units.append(_prev_in_dat)
+                _name_match = None # Name match does apply if upstream section exists
+            
+            # All other matches added (matching name, matching name to ds_label and junciton)
+            for match in [_name_match, _ds_label_match, _junction_match]:
+                if isinstance(match, list):
+                    prev_units.extend(match)
+                else:
+                    prev_units.append(match)
+
+            # Filter out 'None' matches
+            prev_units = [_unit for _unit in prev_units if _unit is not None]
+
+            if len(prev_units) == 0:
+                return None
+            elif len(prev_units) == 1:
+                return prev_units[0]
+            else:
+                return prev_units
+                   
+        except Exception as e:
+            self._handle_exception(e, when="calculating next unit")        
+
+    def _next_in_dat_struct(self, current_unit) -> Unit:
+        """Finds next unit in the dat file using the index position. 
+            
+            Returns:
+                Unit with all associated data
+        """
+        
+        for idx, unit in enumerate(self._all_units):
+            # Names checked first to speed up comparison
+            if unit.name == current_unit.name and unit == current_unit:
+                try:
+                    return self._all_units[idx+1]
+                except IndexError: 
+                    return None
+
+    def _prev_in_dat_struct(self, current_unit) -> Unit:
+        """Finds previous unit in the dat file using the index position. 
+            
+            Returns:
+                Unit with all associated data
+        """
+        for idx, unit in enumerate(self._all_units):
+            # Names checked first to speed up comparison
+            if unit.name == current_unit.name and unit == current_unit:
+                if idx == 0:
+                    return None
+                else:
+                    return self._all_units[idx-1]
+                       
+    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:    
+        """Pulls out all units with ds label that matches the input unit.
+
+        Returns:
+            Union[Unit, list[Unit], None]: Either a singular unit or list of units with ds_label matching, if none exist returns none.
+        """
+
+        _ds_list = [] 
+        for item in self._all_units:
+            try:
+                if item.ds_label == current_unit.name:
+                    _ds_list.append(item)
+            except AttributeError:
+                continue
+        
+        if len(_ds_list) == 0:
+            return None
+        elif len(_ds_list) == 1:
+            return _ds_list[0]
+        else:
+            return _ds_list
+                    
+    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]: 
+        """Pulls out all units with same name as the input unit. 
+        
+        Returns:
+            Union[Unit, list[Unit], None]: Either a singular unit or list of units with matching names, if none exist returns none. Does not return itself
+        """
+  
+        _name = name_override or str(current_unit.name)
+        _name_list = [] 
+        for item in self._all_units:
+            if item.name == _name and item != current_unit:
+                _name_list.append(item)
+            else:
+                pass
+
+        if len(_name_list) == 0:
+            return None
+        elif len(_name_list) == 1:
+            return _name_list[0]
+        else:
+            return _name_list
+                                   
     def _read(self):
         # Read DAT data
         with open(self._filepath, "r") as dat_file:
@@ -309,12 +492,11 @@ class DAT(FMFile):
         self.structures = {}
         self.conduits = {}
         self.losses = {}
+        self._unsupported = {}
         self._all_units = []
         for block in self._dat_struct:
-            # Check for all supported boundary types
+            unit_data = self._raw_data[block["start"] : block["end"] + 1]
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[block["start"] : block["end"] + 1]
-
                 # Deal with initial conditions block
                 if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
@@ -338,11 +520,33 @@ class DAT(FMFile):
                     #Changes done to account for unit types with spaces/dashes eg Flat-V Weir
                     unit_type = block["Type"].replace(" ","_").replace("-","_")
                     unit_group[unit_name] = eval(
-                        f'units.{unit_type}({unit_data}, {self._label_len})'
+                        f'units.{unit_type}({unit_data}, {self._label_len})' # append to our _all._units as well???
                     )
                     self._all_units.append(unit_group[unit_name])
-                unit_data = self._raw_data[block["start"] : block["end"] + 1]
-
+            
+            elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
+                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+                if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                    unit_name = unit_data[2][: self._label_len].strip()
+                    subtype = True 
+                else:
+                    unit_name = unit_data[1][: self._label_len].strip()
+                    subtype = False
+                    
+                self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
+                    unit_data, 
+                    self._label_len, 
+                    unit_name = unit_name, 
+                    unit_type =block["Type"], 
+                    subtype = subtype
+                )
+                self._all_units.append(
+                    self._unsupported[f"{unit_name} ({block['Type']})"]
+                )
+            
+            elif block["Type"] not in ('GENERAL', "GISINFO"):
+                raise Exception(f"Unexpected unit type encountered: {block['Type']}")
+                    
     def _update_dat_struct(self):
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
@@ -537,3 +741,4 @@ class DAT(FMFile):
             new = f"{unit_type}_{unit_subtype}_{new_lbl}"
 
             self._gxy_data = self._gxy_data.replace(old, new)
+

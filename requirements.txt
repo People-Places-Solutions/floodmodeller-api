@@ -1,0 +1,5 @@
+pandas
+tqdm
+lxml
+pytest
+pytest-cov
