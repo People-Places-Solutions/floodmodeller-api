@@ -126,7 +126,7 @@ class DAT(FMFile):
                     
             # Case 2: next unit is in ds_label
             elif hasattr(unit, 'ds_label'):
-                return self._ds_label_match(unit)
+                return self._name_label_match(unit, name_override=unit.ds_label)
             
             elif unit._unit == "JUNCTION":
                 return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
@@ -154,48 +154,54 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit], None]: Flood modeller unit either on its own or in a list if more than one follows in reach.
         """
-        current_unit = unit
-        unit_name = unit.name
-        unit_subtype = unit.subtype
-        structure = self._dat_struct
-        all_units = self._all_units
-        _prev_in_dat =  self._prev_in_dat_struct(unit)
-        _prev_same_name = self._name_label_match(unit)
-        
+    
         try:
-            #first unit if prev unit == last unit in all units
-            if _prev_in_dat == all_units[-1]:
-                #print(current_unit.name, ': is first unit in dat file, no previous unit')
-                return None
-                
-            #dist to next attribute is present and positive in previous unit, therefore current unit and prev unit linked
-            elif hasattr(_prev_in_dat, 'dist_to_next') and _prev_in_dat.dist_to_next != 0:
-                prev_unit = _prev_in_dat
-                #print(current_unit.name,": There's a unit previous! that unit is: ", prev_unit.name)
-                return prev_unit
+            # Case 1: Unit is input boundary condition
+            if unit._unit in (
+                "QTBDY",
+                "HTBDY",
+                "REFHBDY",
+                "FEHBDY",
+                "FRQSIM",
+                "FSRBDY",
+                "FSSR16BDY",
+                "GERRBDY",
+                "REBDY",
+                "REFH2BDY",
+                "SCSBDY"
+            ):
+                return None 
+
+            prev_units = []
+            _prev_in_dat =  self._prev_in_dat_struct(unit)   
+            _name_match = self._name_label_match(unit)
+            _ds_label_match = self._ds_label_match(unit)
+            _junction_match = [junction for junction in self._all_units if junction._unit == "JUNCTION" and unit.name in junction.labels]           
             
-            #If dist to next is zero/not there, check for units with same name   
-            elif len(_prev_same_name):
-                prev_unit = _prev_same_name
-                if len(prev_unit) == 1:
-                    #print(current_unit.name, ': dist to next = 0, unit with same name: ', prev_unit[0].name)
-                    return prev_unit[0]
+            # Case 2: Previous unit has positive distance to next
+            if hasattr(_prev_in_dat, 'dist_to_next') and _prev_in_dat.dist_to_next != 0:
+                prev_units.append(_prev_in_dat)
+                _name_match = None # Name match does apply if upstream section exists
+            
+            # All other matches added (matching name, matching name to ds_label and junciton)
+            for match in [_name_match, _ds_label_match, _junction_match]:
+                if isinstance(match, list):
+                    prev_units.extend(match)
                 else:
-                    #print(current_unit.name, ': dist to next = 0, units with same name: ', prev_unit)
-                    return prev_unit
-            
-            #if prev unit has ds_label that matches current unit name 
-            elif hasattr(_prev_in_dat, 'ds_label') and _prev_in_dat.ds_label == current_unit.name:
-                prev_unit = _prev_in_dat
-                #print(current_unit.name, ': is linked via ds_label to: ', prev_unit.name)
-                return prev_unit
-            
-            #else:
-                #print(current_unit.name, ': no prev unit found')
-                            
-                
+                    prev_units.append(match)
+
+            # Filter out 'None' matches
+            prev_units = [_unit for _unit in prev_units if _unit is not None]
+
+            if len(prev_units) == 0:
+                return None
+            elif len(prev_units) == 1:
+                return prev_units[0]
+            else:
+                return prev_units
+                   
         except Exception as e:
-                self._handle_exception(e, when="calculating next unit")        
+            self._handle_exception(e, when="calculating next unit")        
 
     def _next_in_dat_struct(self, current_unit) -> Unit:
         """Finds next unit in the dat file using the index position. 
@@ -205,11 +211,12 @@ class DAT(FMFile):
         """
         
         for idx, unit in enumerate(self._all_units):
-            if unit == current_unit:
+            # Names checked first to speed up comparison
+            if unit.name == current_unit.name and unit == current_unit:
                 try:
                     return self._all_units[idx+1]
                 except IndexError: 
-                    print('Index error, possibly end of .dat file')
+                    return None
 
     def _prev_in_dat_struct(self, current_unit) -> Unit:
         """Finds previous unit in the dat file using the index position. 
@@ -218,11 +225,12 @@ class DAT(FMFile):
                 Unit with all associated data
         """
         for idx, unit in enumerate(self._all_units):
-            if unit == current_unit:
-                try:
+            # Names checked first to speed up comparison
+            if unit.name == current_unit.name and unit == current_unit:
+                if idx == 0:
+                    return None
+                else:
                     return self._all_units[idx-1]
-                except IndexError:
-                    print('index error, possibly beginning of .dat file')
                        
     def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:    
         """Pulls out all units with ds label that matches the input unit.
@@ -230,24 +238,21 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit], None]: Either a singular unit or list of units with ds_label matching, if none exist returns none.
         """
-        try:
-            _ds_label = str(current_unit.ds_label)
-            _ds_list = [] 
-            for item in self._all_units:
-                if item.name == _ds_label:
-                    _ds_list.append(item)
-                else:
-                    pass
-            
-            if len(_ds_list) == 0:
-                return None
-            elif len(_ds_list) == 1:
-                return _ds_list[0]
-            else:
-                return _ds_list
 
-        except IndexError:
-                    print('error')
+        _ds_list = [] 
+        for item in self._all_units:
+            try:
+                if item.ds_label == current_unit.name:
+                    _ds_list.append(item)
+            except AttributeError:
+                continue
+        
+        if len(_ds_list) == 0:
+            return None
+        elif len(_ds_list) == 1:
+            return _ds_list[0]
+        else:
+            return _ds_list
                     
     def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]: 
         """Pulls out all units with same name as the input unit. 
@@ -255,24 +260,21 @@ class DAT(FMFile):
         Returns:
             Union[Unit, list[Unit], None]: Either a singular unit or list of units with matching names, if none exist returns none. Does not return itself
         """
-        try:
-            _name = name_override or str(current_unit.name)
-            _name_list = [] 
-            for item in self._all_units:
-                if item.name == _name and item != current_unit:
-                    _name_list.append(item)
-                else:
-                    pass
-
-            if len(_name_list) == 0:
-                return None
-            elif len(_name_list) == 1:
-                return _name_list[0]
+  
+        _name = name_override or str(current_unit.name)
+        _name_list = [] 
+        for item in self._all_units:
+            if item.name == _name and item != current_unit:
+                _name_list.append(item)
             else:
-                return _name_list
+                pass
 
-        except IndexError:
-            print('error')
+        if len(_name_list) == 0:
+            return None
+        elif len(_name_list) == 1:
+            return _name_list[0]
+        else:
+            return _name_list
                                    
     def _read(self):
         # Read DAT data
