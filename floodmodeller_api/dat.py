@@ -436,7 +436,7 @@ class DAT(FMFile):
     def remove_unit(self, unit):
 
         node_count = self.general_parameters['Node Count']
-        unit_module = str(unit.__module__).split('.')[-1]    #cowboy method...
+        unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
         all_units = self._all_units
         
         # _update_raw_data 
@@ -447,16 +447,29 @@ class DAT(FMFile):
         pass
     
     def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
+        
         #catch errors for 1: if add before add before or add at then error 
-        ## 2: if they add unit where name is in group already then cant have two boundaries with same name
-        ### 3: check if unit is an instance of FM unit 
+        if all(arg is None for arg in(add_before, add_after, add_at)):
+            raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
+        else:
+            pass
+        
         _validate_unit(unit)
-        # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT
-        position = []
+
         node_count = self.general_parameters['Node Count']
         unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
         unit_group = getattr(self, unit_group_name)
         
+        # 2: if they add unit where name is in group already then cant have two boundaries with same name
+        if unit.name in unit_group:
+            print('Name already appears in unit group. Cannot have two units with same name in same group')
+        else:
+            pass
+        
+        ### 3: check if unit is an instance of FM unit 
+
+
+        # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT        
         if add_at:
             insert_index = add_at
 
@@ -468,11 +481,9 @@ class DAT(FMFile):
                     insert_index += 1 if add_after else 0    
                     break                 
         
-        self._all_units.insert(insert_index, unit) #fine with positional argument 
+        self._all_units.insert(insert_index, unit) 
         unit_group[unit.name] = unit
         self._dat_struct.insert(insert_index+1, {'Type': unit_group_name, 'new_insert':unit}) #update the update raw data function to include new insert
-
-        #add into _dat_struct  #start and end lines                 
 
         # update the gxy and GIS info and iic's tables (lower priority)
     
