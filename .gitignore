@@ -3,7 +3,9 @@ _future/
 demo.py
 code_testing.py
 *.bmp
+*_internal.DAT
 *_internal.dat
+*_internal.inp
 __temp.*
 
 # general

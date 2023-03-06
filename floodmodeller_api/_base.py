@@ -35,7 +35,7 @@ class FMFile:
             self._filepath = Path(self._filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
-
+            
             if not self._filepath.suffix.lower() == self._suffix:
                 raise TypeError(
                     f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file"
@@ -151,6 +151,8 @@ class FMFile:
                         "_xmltree",
                         "_xsd",
                         "_xsdschema",
+                        "file",
+                        "_log_path"
                     ):
                         continue
                     else:

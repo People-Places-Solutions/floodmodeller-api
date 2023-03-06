@@ -162,7 +162,7 @@ class CONDUIT(Unit):
                 self.top_slot_depth,
             )
             friction_params = (
-                f"{self.friction_below_axis:>10.4f}{self.friction_below_axis:>10.4f}"
+                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
             )
             c_block.extend(
                 [

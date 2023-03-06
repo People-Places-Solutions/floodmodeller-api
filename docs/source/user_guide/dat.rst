@@ -75,6 +75,12 @@ All other associated data can be accessed and edited for a ``RIVER`` unit class 
 
     dat.sections['S5'].dist_to_next = 150.0 # Update the distance to next section to 150m
 
+It is possible to call the ``.next`` and ``.prev`` function on a unit of any class to find the next or previous units in the reach:
+
+.. code:: python
+    print(dat.next(dat.sections['S5']))
+    >>> <floodmodeller_api Unit Class: RIVER(name=S6, type=SECTION)>
+
 Although it is possible to rename units by passing a new name into the ``.name`` attribute, it is recommended to avoid this as it may cause label issues within the network. 
 Currently the DAT class only allows for editing existing units, however functionality to add/remove sections will be included in a future release. For full documentation on 
 the available unit classes, please refer to the :doc:`Individual Unit Classes <units>` section.
@@ -115,6 +121,10 @@ Reference
    .. automethod:: save
 
    .. automethod:: diff
+
+   .. automethod:: next
+
+   .. automethod:: prev        
 
 Examples
 -----------
