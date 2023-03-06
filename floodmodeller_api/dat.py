@@ -23,7 +23,6 @@ from ._base import FMFile
 from .units.helpers import _to_float
 from .validation.validation import _validate_unit
 
-
 class DAT(FMFile):
     """Reads and write Flood Modeller datafile format '.dat'
 
@@ -448,12 +447,18 @@ class DAT(FMFile):
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
                 #this is the check if insert unit flag  is there, if it is then add to raw data and do block shift 
-                #
-                
-                unit_data = self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ]
-                prev_block_len = len(unit_data)
+                if block['new_insert']:
+                    print(block)
+                    unit_data = block['new_insert']
+                    block_shift = unit_data.nrows
+                    #add in data to raw data
+                    #block shift by #lines in unit
+
+                else:
+                    unit_data = self._raw_data[
+                        block["start"] + block_shift : block["end"] + 1 + block_shift
+                    ]
+                    prev_block_len = len(unit_data)
 
                 if block["Type"] == "INITIAL CONDITIONS":
                     new_unit_data = self.initial_conditions._write()
@@ -655,14 +660,14 @@ class DAT(FMFile):
         #catch errors for 1: if add before add before or add at then error 
         if all(arg is None for arg in(add_before, add_after, add_at)):
             raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
-        else:
-            pass
         
         _validate_unit(unit)
 
         node_count = self.general_parameters['Node Count']
         unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
         unit_group = getattr(self, unit_group_name)
+        unit_class = unit._unit
+
         
         # 2: if they add unit where name is in group already then cant have two boundaries with same name
         if unit.name in unit_group:
@@ -671,12 +676,14 @@ class DAT(FMFile):
             pass
         
         ### 3: check if unit is an instance of FM unit 
-
+        if not isinstance(unit, Unit):
+            print("unit isn't a unit")
 
         # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT        
-        if add_at:
+        if add_at == 0 :    #not sure why, but without specifying case with 0 it doesn't recognise it 
+            insert_index = 0
+        elif add_at:    
             insert_index = add_at
-
         else:    
             check_unit = add_before or add_after
             for index, thing in enumerate(self._all_units):
@@ -687,15 +694,14 @@ class DAT(FMFile):
         
         self._all_units.insert(insert_index, unit) 
         unit_group[unit.name] = unit
-        self._dat_struct.insert(insert_index+1, {'Type': unit_group_name, 'new_insert':unit}) #update the update raw data function to include new insert
+        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit}) #update the update raw data function to include new insert
 
         # update the gxy and GIS info and iic's tables (lower priority)
-    
-        self._update_raw_data()
+        
         # update gen parameter node count
         self.general_parameters['Node Count'] += 1
-        #print(node_count)
-        print(self.general_parameters['Node Count'])
+        
+        self._update_raw_data()
         
         pass
 
