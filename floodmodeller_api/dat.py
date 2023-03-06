@@ -171,6 +171,9 @@ class DAT(FMFile):
                 "SCSBDY"
             ):
                 return None 
+                
+            elif unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
 
             prev_units = []
             _prev_in_dat =  self._prev_in_dat_struct(unit)   

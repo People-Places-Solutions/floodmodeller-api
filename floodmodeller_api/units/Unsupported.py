@@ -20,7 +20,7 @@ class UNSUPPORTED(Unit):
                 self.labels = split_n_char(block[2], self._label_len)
             self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
         
-        if self.labels[1] != "":
+        if self.labels[1] != "" and self._unit != "JUNCTION":
             self.ds_label = self.labels[1]
             
     def _write(self):
