@@ -447,12 +447,17 @@ class DAT(FMFile):
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
                 #this is the check if insert unit flag  is there, if it is then add to raw data and do block shift 
-                if block['new_insert']:
-                    print(block)
-                    unit_data = block['new_insert']
-                    block_shift = unit_data.nrows
+                if 'new_insert' in block.keys():
+                    
+                    block['start'] = prev_block['end']+1
+                    prev_block_len = len(block['new_insert'])    
+                    block['end'] = block['start'] + prev_block_len
+
+                    self._raw_data[block['start']: block['start']]= block['new_insert']
+                    del block['new_insert']
                     #add in data to raw data
                     #block shift by #lines in unit
+                    pass
 
                 else:
                     unit_data = self._raw_data[
@@ -489,6 +494,7 @@ class DAT(FMFile):
                 ] = new_unit_data
                 # adjust block shift for change in number of lines in bdy block
                 block_shift += new_block_len - prev_block_len
+                prev_block = block # add in to keep a record of the last block read in 
 
     def _get_unit_definitions(self):
         # Get unit definitions
@@ -661,6 +667,7 @@ class DAT(FMFile):
         if all(arg is None for arg in(add_before, add_after, add_at)):
             raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
         
+        #validate unit
         _validate_unit(unit)
 
         node_count = self.general_parameters['Node Count']
@@ -668,19 +675,16 @@ class DAT(FMFile):
         unit_group = getattr(self, unit_group_name)
         unit_class = unit._unit
 
-        
         # 2: if they add unit where name is in group already then cant have two boundaries with same name
         if unit.name in unit_group:
-            print('Name already appears in unit group. Cannot have two units with same name in same group')
-        else:
-            pass
-        
+            raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
+
         ### 3: check if unit is an instance of FM unit 
         if not isinstance(unit, Unit):
-            print("unit isn't a unit")
+            raise TypeError("unit isn't a unit")
 
         # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT        
-        if add_at == 0 :    #not sure why, but without specifying case with 0 it doesn't recognise it 
+        if add_at == 0 :    
             insert_index = 0
         elif add_at:    
             insert_index = add_at
@@ -692,9 +696,10 @@ class DAT(FMFile):
                     insert_index += 1 if add_after else 0    
                     break                 
         
-        self._all_units.insert(insert_index, unit) 
+        unit_data = unit._write()
+        self._all_units.insert(insert_index, unit) #ok
         unit_group[unit.name] = unit
-        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit}) #update the update raw data function to include new insert
+        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) #update the update raw data function to include new insert
 
         # update the gxy and GIS info and iic's tables (lower priority)
         
