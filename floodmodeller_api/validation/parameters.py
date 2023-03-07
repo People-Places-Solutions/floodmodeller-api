@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
-
+# fmt: off
 parameter_options = {
     "name": {
         "type": "string-length",
@@ -611,3 +611,4 @@ parameter_options = {
         "options": (float, int)
     },
 }
+# fmt: on
