@@ -17,10 +17,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 ### UNIT CLASSES ###
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
-from .sections import RIVER
-from .structures import BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR
+from .sections import RIVER, INTERPOLATE, REPLICATE
+from .structures import (
+    BRIDGE, SLUICE, ORIFICE, SPILL, RNWEIR, CRUMP, FLAT_V_WEIR, OUTFALL
+)
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
+from .unsupported import UNSUPPORTED
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {
@@ -38,59 +41,64 @@ SUPPORTED_UNIT_TYPES = {
     "BLOCKAGE": {"group": "losses", "has_subtype": False},
     "CULVERT": {"group": "losses", "has_subtype": True},
     "RNWEIR": {"group":"structures","has_subtype": False},
+    "CRUMP": {"group":"structures","has_subtype": False},
+    "FLAT-V WEIR": {"group":"structures","has_subtype": False},
+    #"RESERVOIR": {"group":"structures", "has_subtype": False}, # Needs further testing
+    "INTERPOLATE": {"group":"sections", "has_subtype": False},
+    "REPLICATE": {"group":"sections", "has_subtype": False},
+    "OUTFALL": {"group": "structures", "has_subtype": True},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
-    "2DCELL",
-    "ABSTRACTION",
-    "AIR VESSEL",
-    "BERNOULLI",
-    "BREACH",
-    "CHECK VALVE",
-    "COMMENT",
-    "CONPUMP",
-    "CONVALVE",
-    "CRUMP",
-    "FEHBDY",
-    "FLAT-V WEIR",
-    "FLOOD RELIEF",
-    "FLOODPLAIN",
-    "FLOW CONTROL",
-    "FRQSIM",
-    "FSRBDY",
-    "FSSR16BDY",
-    "GATED WEIR",
-    "GAUGE",
-    "GERRBDY",
-    "HBDY",
-    "INTERPOLATE",
-    "INVERTED SYPHON",
-    "JUNCTION",
-    "LABYRINTH WEIR",
-    "LATERAL",
-    "LDPUMP",
-    "LOSS",
-    "MANHOLE",
-    "NCBDY",
-    "NCDBDY",
-    "NOTWEIR",
-    "NOZZLE",
-    "OCPUMP",
-    "OUTFALL",
-    "PIPE",
-    "POND",
-    "QH CONTROL",
-    "QRATING",
-    "REBDY",
-    "REFH2BDY",
-    "REPLICATE",
-    "RESERVOIR",
-    "SCSBDY",
-    "SCWEIR",
-    "SYPHON",
-    "TIDAL",
-    "TIDBDY",
-    "WEIR",
+    #"ASYMMETRIC" : CONDUIT
+    "ABSTRACTION": {"has_subtype": False},
+    #"BEND": CULVERT
+    "BERNOULLI": {"has_subtype": False},
+    "BREACH": {"has_subtype": False}, #breach
+    #"CES": RIVER
+    "COMMENT": {"group": 'other' ,"has_subtype": False},
+    #"CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used 
+    #"CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used 
+    "FEHBDY": {"group": "boundaries" ,"has_subtype": False}, # RAINFALL RUNOFF METHOD boundary
+    "FLOOD RELIEF": {"has_subtype": True}, # found in dat file 
+    "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True}, #found in FM help
+    "FLOODPLAIN": {"has_subtype": True}, # floodplain section culvert
+    "FRQSIM": {"group": 'boundaries',"has_subtype": False }, #flood FReQuency SIMulation
+    "FSRBDY": {"group": 'boundaries',"has_subtype": False}, #FEH Method (FEH Rainfall Runoff Method)
+    "FSSR16BDY": {"group": 'boundaries',"has_subtype": False}, #FSSR16 Method
+    #"FULLARCH": CONDUIT
+    "GATED WEIR": {"group": 'structures' ,"has_subtype": False}, #gated weir
+    "GAUGE": {"has_subtype": False}, # Gauge
+    "GERRBDY": {"group": 'boundaries',"has_subtype": False}, #gen rainfall runoff
+    "INVERTED SYPHON": {"group": "structures" ,"has_subtype": True}, #invert syphon 
+    "JUNCTION": {"has_subtype": True}, #[connector]
+    "LABYRINTH WEIR": {"group": 'structures',"has_subtype": False}, #labyrinth weir
+    "LATERAL": {"has_subtype": False}, #[connector]
+    #"LDPUMP": {"group": ,"has_subtype": }, #can still be read - v similar to OCPUMP
+    "LOSS": {"has_subtype": False}, # found in .dat
+    "LOSSID": {"has_subtype": False}, # found in .dat
+    "MANHOLE": {"has_subtype": False}, #Manhole [connector]
+    #"MUSKINGUM": RIVER
+    #"MUSK-RSEC": RIVER
+    #"MUSK-VPMC": RIVER
+    #"MUSK-XSEC": RIVER
+    "NCDBDY": {"group": 'boundaries' ,"has_subtype": False}, #Normal/Critical Depth Boundary
+    "NOTWEIR": {"group":'structures' ,"has_subtype": False}, #Notional Weir
+    "OCPUMP": {"has_subtype": False}, #pump [junctions]
+    "POND": {"has_subtype":True}, #Pond units, online pond etc [connector]
+    "QH CONTROL": {"group": 'structures',"has_subtype": False}, #Flow-head control weir
+    "QRATING": {"group": 'boundaries' ,"has_subtype": False}, #Rating Curves
+    "REBDY": {"group": 'boundaries',"has_subtype": False}, #Rainfall/Evaporation Boundary
+    "REFH2BDY": {"group": 'boundaries' ,"has_subtype": False}, #ReFH2 Method
+    "RESERVOIR": {"has_subtype": False}, #reservoir unit [connector]
+    #"SECTION": CONDUIT
+    "SCSBDY": {"group": 'boundaries',"has_subtype": False }, # US SCS Method now SS for rainfall/runoff
+    "SCWEIR": {"group" : "structures" ,"has_subtype": False}, #sharp crested weir
+    #"SPRUNG": CONDUIT
+    "SYPHON": {"group": "structures","has_subtype": False}, #syphon unit 
+    #"TIDAL": {"has_subtype": }, #can still be read - similar to TIDBY 
+    "TIDBDY": {"group": "boundaries","has_subtype": False}, #tidal 
+    "WEIR":{"group": "structures","has_subtype": False}, #general weir 
 }
 
 ALL_UNIT_TYPES = set(SUPPORTED_UNIT_TYPES.keys()).union(UNSUPPORTED_UNIT_TYPES)

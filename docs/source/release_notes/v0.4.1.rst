@@ -1,0 +1,62 @@
+**************************************
+What's new in 0.4.1 (XXXX 202x)
+**************************************
+
+This page details the changes for version 0.4.1 of Flood Modeller Python API
+
+New features
+--------------
+- Add/remove units and reaches from 1D networks
+- Add/remove elements from 2D xml models
+- Simulate method added to XML2D
+- Automatic backups
+
+Updates
+--------------
+- Event Data attributes in IEF files are now treated as a dictionary object as opposed to 
+  a list. This allows for each event data to have an associated title which is defined in
+  the IEF file as a comment before the event data attribute. The dictionary keys represent
+  the titles, and the values represent the event data paths. An example would look like
+  this::
+
+    ief = IEF("path/to/file.ief")
+    ief.eventdata = {
+        'MainInflow' : 'Q100.IED',
+        'TribInflow' : 'Q100_trib.IED',
+        'TidalBoundary' : 'T100_DSBDY.IED'
+    }
+
+  This would then write out the following lines in the IEF file::
+
+    ;MainInflow
+    EventData=Q100.IED
+    ;TribInflow
+    EventData=Q100_trib.IED
+    ;TidalBoundary
+    EventData=T100_DSBDY.IED
+
+
+  .. warning::
+    Please note, this introduces a change which is incompatible with previous versions of
+    the API in how event data in IEF files is handled. Any existing code that treats eventdata
+    as a list will need to be updated in order to run this version. 
+
+- CRUMP Unit Class added
+- FLAT_V_WEIR Unit Class added
+- INTERPOLATE Unit Class added
+- REPLICATE Unit Class added
+- OUTFALL Unit Class added
+- UNSUPPORTED Unit Class added
+- Find and return the next unit in reach with ``.next()`` function::
+    dat = DAT('some_network.dat')
+    some_unit = dat.sections['some_unit_name']
+    dat.next(some_unit)
+- Find previous unit in reach with ``.prev()`` function::
+    dat = DAT('some_network.dat')
+    dat.prev(dat.strucutre['structure_name'])
+- Improved test module
+
+Bug fixes
+--------------
+- Addressed 'FutureWarning' raised by lf_helpers module
+

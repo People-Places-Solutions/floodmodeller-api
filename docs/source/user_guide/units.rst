@@ -42,6 +42,16 @@ Section units
 
 .. autoclass:: floodmodeller_api.units.RIVER
 
+``INTERPOLATE()``
+~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.INTERPOLATE
+
+``REPLICATE()``
+~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.REPLICATE
+
 .. _conduit_units:
 
 Conduit units
@@ -79,6 +89,26 @@ Structure units
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.SPILL
+
+``RNWEIR()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.RNWEIR
+
+``CRUMP()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.CRUMP
+
+``FLAT_V_WEIR()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.FLAT_V_WEIR
+
+``OUTFALL()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.OUTFALL
 
 .. _loss_units:
 

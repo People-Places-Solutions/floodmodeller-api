@@ -20,6 +20,7 @@ import time
 from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
+
 from tqdm import trange
 
 import pandas as pd
@@ -67,30 +68,43 @@ class IEF(FMFile):
             raw_data = [line.rstrip("\n") for line in ief_file.readlines()]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
+        prev_comment = None
         self._ief_properties = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
                 self._ief_properties.append(line)  # Add comment in raw state
+                prev_comment = line.strip(";")
 
             elif "=" in line:
                 # Using strip() method to remove any leading/trailing whitespace
                 prop, value = [itm.strip() for itm in line.split("=", 1)]
                 # Handle 'EventData' properties so that multiple can be set
                 if prop.upper() == "EVENTDATA":
+                    if prev_comment is None:
+                        try:
+                            event_data_title = Path(value).stem
+                        except:
+                            event_data_title = value
+                    else:
+                        event_data_title = prev_comment
                     if hasattr(self, "EventData"):
                         # Append event data to list so multiple can be specified
-                        self.EventData.append(value)
+                        self.EventData[event_data_title] = value
                     else:
-                        self.EventData = [value]
+                        
+                        self.EventData = {event_data_title: value}
                     self._ief_properties.append("EventData")
+                    
                 else:
                     # Sets the property and value as class properties so they can be edited.
                     setattr(self, prop, value)
                     self._ief_properties.append(prop)
+                prev_comment = None
             else:
                 # This should add the [] bound headers
                 self._ief_properties.append(line)
+                prev_comment = None
         del raw_data
 
     def _write(self) -> str:
@@ -105,14 +119,21 @@ class IEF(FMFile):
 
             ief_string = ""
             event = 0  # Used as a counter for multiple eventdata files
-            for prop in self._ief_properties:
-                if prop.startswith("[") or prop.lstrip().startswith(";"):
-                    # writes the [] bound headers to ief string or any comment lines
+            for idx, prop in enumerate(self._ief_properties):
+                if prop.startswith("["): 
+                    # writes the [] bound headers to ief string
                     ief_string += prop + "\n"
+                elif prop.lstrip().startswith(";"):
+                    if not self._ief_properties[idx+1] == "EventData":
+                        # Only write comment if not preceding event data
+                        ief_string += prop + "\n" 
                 elif prop == "EventData":
                     event_data = getattr(self, prop)
                     # Add multiple EventData if present
-                    ief_string += f"{prop}={str(event_data[event])}\n"
+                    for event_idx, key in enumerate(event_data):
+                        if event_idx == event:
+                            ief_string += f";{key}\n{prop}={str(event_data[key])}\n"
+                            break
                     event += 1
 
                 else:
@@ -214,9 +235,12 @@ class IEF(FMFile):
             self._update_eventdata_info()
 
     def _update_eventdata_info(self):
-        if not isinstance(self.EventData, list):
-            # If attribute not a list, adds the value as a single entry in list
-            self.EventData = [self.EventData]
+        if not isinstance(self.EventData, dict):
+            # If attribute not a dict, adds the value as a single entry in list
+            raise AttributeError(
+                "The 'EventData' attribute should be a dictionary with keys defining the event"\
+                + " names and values referencing the IED files"
+            )
 
         # Number of 'EventData' flags in ief
         event_properties = self._ief_properties.count("EventData")
@@ -243,7 +267,10 @@ class IEF(FMFile):
             num_props = len(self._ief_properties)
             for idx, itm in enumerate(reversed(self._ief_properties)):
                 if itm == "EventData":
-                    del self._ief_properties[num_props - 1 - idx]
+                    del self._ief_properties[num_props-1-idx]
+                    # Also remove event data title comment if present
+                    if self._ief_properties[num_props-2-idx].lstrip().startswith(";"):
+                        del self._ief_properties[num_props-2-idx]
                     removed += 1
                     if removed == to_remove:
                         break
@@ -340,6 +367,8 @@ class IEF(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
+        range_function: Optional[callable] = trange,
+        range_settings: Optional[dict] = {},
     ) -> Optional[subprocess.Popen]:
         """Simulate the IEF file directly as a subprocess
 
@@ -365,6 +394,8 @@ class IEF(FMFile):
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
         """
         try:
+            self.range_function = range_function
+            self.range_settings = range_settings           
             if self._filepath == None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
@@ -571,8 +602,8 @@ class IEF(FMFile):
             return
 
         # tqdm progress bar
-        for i in trange(100):
-
+        for i in self.range_function(100, **self.range_settings):
+        
             # Process still running
             while process.poll() is None:
 

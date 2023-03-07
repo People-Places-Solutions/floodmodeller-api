@@ -14,25 +14,21 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import datetime as dt
 import os
+import io
 import time
-
-from pathlib import Path
-from subprocess import Popen, DEVNULL
 from copy import deepcopy
-from typing import Union, Optional
+from pathlib import Path
+from subprocess import DEVNULL, Popen
+from typing import Optional, Union
+
 from lxml import etree
-from floodmodeller_api._base import FMFile
 from tqdm import trange
 
-# import xml as xml
-
-import datetime as dt
-
-
-from .zzn import ZZN
-from .logs import lf_factory, error_2D_dict
-
+from floodmodeller_api._base import FMFile
+from .xml2d_template import xml2d_template
+from .logs import error_2D_dict, lf_factory
 
 def value_from_string(value: Union[str, list[str]]):
     try:
@@ -69,7 +65,7 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    _xsd_loc: str = "http://schema.floodmodeller.com/5.1/2d.xsd"
+    _xsd_loc: str = "http://schema.floodmodeller.com/6.1/2d.xsd"
     # _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
     def __init__(self, xml_filepath: Union[str, Path] = None):
@@ -78,21 +74,21 @@ class XML2D(FMFile):
             if self._filepath != None:
                 FMFile.__init__(self)
                 self._read()
-
+                self._log_path = self._filepath.with_suffix(".lf2")
             else:
-                raise NotImplementedError(
-                    "Creating new XML2D files is currently not supported. "
-                    "Please point to an existing xml 2d file"
-                )
-            self._log_path = self._filepath.with_suffix(".lf2")
+                self._read(from_blank=True)
+            
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def _read(self):
+    def _read(self, from_blank=False):
         # Read xml data
         self._ns = "{https://www.floodmodeller.com}"
         # etree.register_namespace('', 'https://www.floodmodeller.com')
-        self._xmltree = etree.parse(self._filepath)
+        if from_blank:
+            self._xmltree = etree.parse(io.StringIO(xml2d_template))
+        else:
+            self._xmltree = etree.parse(self._filepath)
         self._xsd = etree.parse(self._xsd_loc)
         self._xsdschema = etree.XMLSchema(self._xsd)
         self._get_multi_value_keys()
@@ -116,7 +112,7 @@ class XML2D(FMFile):
             "description",
         ]:
             if attr not in self.__dict__:
-                setattr(self, attr, None)
+                setattr(self, attr, None)        
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -161,7 +157,11 @@ class XML2D(FMFile):
                 self._recursive_elements_to_dict(child_dict, child)
 
             else:
-                xml_dict[child_key] = value_from_string(value)
+                if child_key in self._multi_value_keys:
+                    xml_dict[child_key] = xml_dict[child_key][:-1] # remove unused dict
+                    xml_dict[child_key].append(value_from_string(value))
+                else:
+                    xml_dict[child_key] = value_from_string(value)
 
         return xml_dict
 
@@ -233,7 +233,7 @@ class XML2D(FMFile):
 
             elif type(item) == dict:
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
-            elif type(item) == list and key != "variables":
+            elif type(item) == list and type(item[0]) == dict:
                 for i, _item in enumerate(item):
                     if type(_item) == dict:
                         try:
@@ -256,12 +256,27 @@ class XML2D(FMFile):
                             parent.text = str(item)
                         else:
                             # Attribute has been updated
-                            elem = parent.find(f"{self._ns}{key}")
-                            if elem is not None:
+                            elems = parent.findall(f"{self._ns}{key}")
+                            if len(elems) == 1:
+                                elem = elems[0]
                                 if type(item) == list:
                                     elem.text = "\n".join(item)
                                 else:
                                     elem.text = str(item)
+                            elif len(elems) > 1:
+                                # Handle multiple similar elements
+                                if len(elems) < len(item):
+                                    while len(elems) < len(item):
+                                        elems.append(
+                                            etree.SubElement(parent, f"{self._ns}{key}")
+                                        )
+                                elif len(elems) > len(item):
+                                    while len(elems) > len(item):
+                                        parent.remove(elems.pop())
+                                        
+                                for i in range(len(elems)):
+                                    elems[i].text = item[i]
+
                             else:
                                 parent.set(key, str(item))
                 except KeyError:
@@ -436,6 +451,7 @@ class XML2D(FMFile):
 
         # Update XML dict and tree
         self._read()
+        self._log_path = self._filepath.with_suffix(".lf2")
 
     def simulate(
         self,
@@ -443,7 +459,9 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-        console_output: Optional[str] = 'simple'
+        console_output: Optional[str] = 'simple',
+        range_function: Optional[callable] = trange,
+        range_settings: Optional[dict] = {},
     ) -> Optional[Popen]:
 
         """Simulate the XML2D file directly as a subprocess.
@@ -480,6 +498,9 @@ class XML2D(FMFile):
         #TODO: 
         # - Clean up the lf code?
         # - Remove or sort out get results
+
+        self.range_function = range_function
+        self.range_settings = range_settings    
 
         try:
             if self._filepath == None:
@@ -622,7 +643,7 @@ class XML2D(FMFile):
             return
 
         # tqdm progress bar
-        for i in trange(100):
+        for i in self.range_function(100, **self.range_settings):
 
             # Process still running
             while process.poll() is None:

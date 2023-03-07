@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project name="defaultUnits" type="FloodModeller">
+  <projectinfo>
+    <name>defaultUnits</name>
+    <description />
+    <date_created>07/09/2022 14:15:05</date_created>
+    <fmversion>4.0</fmversion>
+    <author>JEGINTL\CHRISTA4</author>
+    <last_modified>13/09/2022 15:12:24</last_modified>
+    <last_user>JEGINTL\CHRISTA4</last_user>
+    <location>Location</location>
+    <connection>
+      <address>127.0.0.1</address>
+      <port>8080</port>
+      <name>Sample connection</name>
+    </connection>
+    <network_settings>
+      <links shape_visible="True" label_visible="False" direction_visible="False" line_colour="0" line_width="1" line_style="Solid" direction_arrow_size="6">
+        <link_styles>
+          <link_style type="General" line_colour="0" line_width="1" line_style="Solid" />
+          <link_style type="Lateral" line_colour="16711680" line_width="1" line_style="Dot" />
+          <link_style type="Spill" line_colour="8421504" line_width="1" line_style="Dot" />
+        </link_styles>
+      </links>
+      <nodes shape_visible="True" label_visible="False" />
+      <collisions allow_shape_collision="True" allow_label_collision="True" />
+      <urban urban_nodes_visible="True" urban_links_visible="True" urban_icons_visible="True" />
+    </network_settings>
+    <geoprojection type="Proj4" name="OSGB 1936 / British National Grid" epsg="27700" description="">+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.06,0.15,0.247,0.842,-20.489 +units=m +no_defs </geoprojection>
+  </projectinfo>
+  <networks>
+    <model1D name="defaultUnits" file="C:\Users\CHRISTA4\OneDrive - Jacobs\Documents\FM API 2\floodmodeller-api\test\test_data\defaultUnits.dat" description="defaultUnits" isActive="true" />
+  </networks>
+  <urban1d_data />
+  <event_data />
+  <initial_conditions />
+  <spatial_data />
+  <associated_data />
+  <simulations />
+  <views>
+    <map_view>
+      <FileVersion>4.0</FileVersion>
+      <Map>
+        <Extent>
+          <Xmin>-119638.923468761</Xmin>
+          <Xmax>518353.908072557</Xmax>
+          <Ymin>84624.7759299605</Ymin>
+          <Ymax>484624.775930023</Ymax>
+          <Zmin>0</Zmin>
+          <Zmax>0</Zmax>
+        </Extent>
+        <Annotations />
+        <Bookmarks />
+      </Map>
+      <Groups />
+    </map_view>
+    <schematic_view />
+  </views>
+</project>
