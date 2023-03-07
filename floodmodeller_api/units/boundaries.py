@@ -342,7 +342,7 @@ class REFHBDY(Unit):
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
-        b = refhbdy_block[0].replace("BLOCKAGE #revision#", "").strip()
+        b = refhbdy_block[0].replace("REFHBDY #revision#", "").strip()
         self._revision = _to_int(b[0], 1)
         self.comment = b[1:].strip()
         self.name = refhbdy_block[1][: self._label_len].strip()
@@ -425,7 +425,7 @@ class REFHBDY(Unit):
     def _write(self):
         """Function to write a valid REFHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = "REFHBDY #revision#{self._revision} {self.comment}"
+        header = f"REFHBDY #revision#{self._revision} {self.comment}"
         name = self.name[: self._label_len]
 
         refhbdy_block = [header, name]

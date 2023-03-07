@@ -436,6 +436,7 @@ class XML2D(FMFile):
 
         # Update XML dict and tree
         self._read()
+        self._log_path = self._filepath.with_suffix(".lf2")
 
     def simulate(
         self,
