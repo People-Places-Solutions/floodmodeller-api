@@ -10,7 +10,7 @@
             "installJupyterlab":true
         },
         // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "pip3 install --user -r get-started-requirements.txt",
+    "postCreateCommand": "pip3 install --user -r get-started-requirements.txt"
     },
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
