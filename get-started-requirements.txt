@@ -1,0 +1,6 @@
+pandas
+ipykernel
+tqdm
+lxml
+pytest
+pytest-cov
