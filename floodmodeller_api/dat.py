@@ -435,6 +435,7 @@ class DAT(FMFile):
 
     def _update_raw_data(self):
         block_shift = 0
+        prev_block_end = self._dat_struct[0]['end']
         existing_units = {
             "boundaries": [],
             "structures": [],
@@ -442,59 +443,58 @@ class DAT(FMFile):
             "conduits": [],
             "losses": [],
         }
-
+ 
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                #this is the check if insert unit flag  is there, if it is then add to raw data and do block shift 
+                #clause for when unit has been inserted into the dat file 
                 if 'new_insert' in block.keys():
-                    
-                    block['start'] = prev_block['end']+1
-                    prev_block_len = len(block['new_insert'])    
-                    block['end'] = block['start'] + prev_block_len
-
+                    #start position in .dat
+                    block['start'] = prev_block_end +1
+                    #end position in .dat
+                    block['end'] = block['start'] + len(block['new_insert']) -1
+                    #update raw data with new data
                     self._raw_data[block['start']: block['start']]= block['new_insert']
+                    block_shift += len(block['new_insert'])
+                    prev_block_end = block['end']
                     del block['new_insert']
-                    #add in data to raw data
-                    #block shift by #lines in unit
-                    pass
-
+                  
                 else:
                     unit_data = self._raw_data[
                         block["start"] + block_shift : block["end"] + 1 + block_shift
                     ]
                     prev_block_len = len(unit_data)
 
-                if block["Type"] == "INITIAL CONDITIONS":
-                    new_unit_data = self.initial_conditions._write()
+                    if block["Type"] == "INITIAL CONDITIONS":
+                        new_unit_data = self.initial_conditions._write()
 
-                else:
-                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                        unit_name = unit_data[2][: self._label_len].strip()
                     else:
-                        unit_name = unit_data[1][: self._label_len].strip()
+                        if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                            unit_name = unit_data[2][: self._label_len].strip()
+                        else:
+                            unit_name = unit_data[1][: self._label_len].strip()
 
-                    # Get unit object
-                    unit_group = getattr(
-                        self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                    )
-                    if unit_name in unit_group:
-                        # block still exists
-                        new_unit_data = unit_group[unit_name]._write()
-                        existing_units[
-                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                        ].append(unit_name)
-                    else:
-                        # Bdy block has been deleted
-                        new_unit_data = []
+                        # Get unit object
+                        unit_group = getattr(
+                            self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                        )
+                        if unit_name in unit_group:
+                            # block still exists
+                            new_unit_data = unit_group[unit_name]._write()
+                            existing_units[
+                                units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                            ].append(unit_name)
+                        else:
+                            # Bdy block has been deleted
+                            new_unit_data = []
 
-                new_block_len = len(new_unit_data)
-                self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ] = new_unit_data
-                # adjust block shift for change in number of lines in bdy block
-                block_shift += new_block_len - prev_block_len
-                prev_block = block # add in to keep a record of the last block read in 
+                    new_block_len = len(new_unit_data)
+                    self._raw_data[
+                        block["start"] + block_shift : block["end"] + 1 + block_shift
+                    ] = new_unit_data
+                    # adjust block shift for change in number of lines in bdy block
+                    block_shift += new_block_len - prev_block_len
+                    prev_block_end = block['end']+ block_shift # add in to keep a record of the last block read in 
 
     def _get_unit_definitions(self):
         # Get unit definitions
@@ -667,10 +667,14 @@ class DAT(FMFile):
         if all(arg is None for arg in(add_before, add_after, add_at)):
             raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
         
+        # check if unit is an instance of FM unit 
+        if not isinstance(unit, Unit):
+            raise TypeError("unit isn't a unit")
+        
         #validate unit
         _validate_unit(unit)
 
-        node_count = self.general_parameters['Node Count']
+        #node_count = self.general_parameters['Node Count']
         unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
         unit_group = getattr(self, unit_group_name)
         unit_class = unit._unit
@@ -679,14 +683,8 @@ class DAT(FMFile):
         if unit.name in unit_group:
             raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
 
-        ### 3: check if unit is an instance of FM unit 
-        if not isinstance(unit, Unit):
-            raise TypeError("unit isn't a unit")
-
         # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT        
-        if add_at == 0 :    
-            insert_index = 0
-        elif add_at:    
+        if add_at is not None :    
             insert_index = add_at
         else:    
             check_unit = add_before or add_after
@@ -701,12 +699,19 @@ class DAT(FMFile):
         unit_group[unit.name] = unit
         self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) #update the update raw data function to include new insert
 
-        # update the gxy and GIS info and iic's tables (lower priority)
+        # update the iic's tables (lower priority)
+        iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
+        self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data #add in new row to table 
         
+        # insert GIS data into raw data (can this be put as a helper?)
+        #start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO")
+        
+        #gisinfo_block = self._raw_data[start : end + 1]
         # update gen parameter node count
         self.general_parameters['Node Count'] += 1
         
         self._update_raw_data()
+        self._update_dat_struct()
         
         pass
 
