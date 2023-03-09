@@ -25,7 +25,13 @@
       "extensions": [
         "ms-toolsai.jupyter",
         "ms-python.python"
-      ]
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "jupyter.notebookFileRoot": "/workspace",
+        "jupyter.notebookApp.openBrowser": true
+      }
     }
   }
+  // Jupyter config https://github.com/github/codespaces-jupyter/blob/main/.devcontainer/devcontainer.json
 }
