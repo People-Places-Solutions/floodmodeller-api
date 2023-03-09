@@ -1,17 +1,17 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-    "name": "Python 3",
+    "name": "Get Started Notebook",
     // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
     "image": "mcr.microsoft.com/devcontainers/python:0-3.11-bullseye",
     // Features to add to the dev container. More info: https://containers.dev/features.
     "features": {
         "ghcr.io/devcontainers/features/python:1": {
             "installJupyterlab":true
-        },
+        }
+      },
         // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "pip3 install --user -r get-started-requirements.txt"
-    },
+    "postCreateCommand": "pip3 install --user -r get-started-requirements.txt",
     // Configure tool-specific properties.
     "customizations": {
         "codespaces": {
