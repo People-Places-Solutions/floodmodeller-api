@@ -135,9 +135,9 @@ class QTBDY(Unit):
         )
 
         if self.timeunit == "DATES":
-            qtbdy_data = [join_10_char(q) + t for t, q in self.data.iteritems()]
+            qtbdy_data = [join_10_char(q) + t for t, q in self.data.items()]
         else:
-            qtbdy_data = [join_10_char(q, t) for t, q in self.data.iteritems()]
+            qtbdy_data = [join_10_char(q, t) for t, q in self.data.items()]
         qtbdy_block = [header, name, qtbdy_params]
         qtbdy_block.extend(qtbdy_data)
 
@@ -223,9 +223,9 @@ class HTBDY(Unit):
             self.interpmethod,
         )
         if self.timeunit == "DATES":
-            htbdy_data = [join_10_char(h) + t for t, h in self.data.iteritems()]
+            htbdy_data = [join_10_char(h) + t for t, h in self.data.items()]
         else:
-            htbdy_data = [join_10_char(h, t) for t, h in self.data.iteritems()]
+            htbdy_data = [join_10_char(h, t) for t, h in self.data.items()]
         htbdy_block = [header, name, htbdy_params]
         htbdy_block.extend(htbdy_data)
 
@@ -286,7 +286,7 @@ class QHBDY(Unit):
         self.nrows = len(self.data)
 
         qhbdy_params = join_10_char(self.nrows, 0.000, self.interpmethod)
-        qhbdy_data = [f"{q:>10.3f}{h:>10.3f}" for h, q in self.data.iteritems()]
+        qhbdy_data = [f"{q:>10.3f}{h:>10.3f}" for h, q in self.data.items()]
         qhbdy_block = [header, name, qhbdy_params]
         qhbdy_block.extend(qhbdy_data)
 
