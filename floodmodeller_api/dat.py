@@ -449,11 +449,8 @@ class DAT(FMFile):
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
                 #clause for when unit has been inserted into the dat file 
                 if 'new_insert' in block.keys():
-                    #start position in .dat
                     block['start'] = prev_block_end +1
-                    #end position in .dat
                     block['end'] = block['start'] + len(block['new_insert']) -1
-                    #update raw data with new data
                     self._raw_data[block['start']: block['start']]= block['new_insert']
                     block_shift += len(block['new_insert'])
                     prev_block_end = block['end']
@@ -663,27 +660,19 @@ class DAT(FMFile):
     
     def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
         
-        #catch errors for 1: if add before add before or add at then error 
+        #catch errors
         if all(arg is None for arg in(add_before, add_after, add_at)):
             raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
-        
-        # check if unit is an instance of FM unit 
         if not isinstance(unit, Unit):
             raise TypeError("unit isn't a unit")
-        
-        #validate unit
         _validate_unit(unit)
-
-        #node_count = self.general_parameters['Node Count']
         unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
         unit_group = getattr(self, unit_group_name)
         unit_class = unit._unit
-
-        # 2: if they add unit where name is in group already then cant have two boundaries with same name
         if unit.name in unit_group:
             raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
 
-        # Adding before the given unit # Adding after the given unit # Adding at position n in the DAT        
+        # positional argument       
         if add_at is not None :    
             insert_index = add_at
         else:    
@@ -695,25 +684,25 @@ class DAT(FMFile):
                     break                 
         
         unit_data = unit._write()
-        self._all_units.insert(insert_index, unit) #ok
+        self._all_units.insert(insert_index, unit) #
         unit_group[unit.name] = unit
-        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) #update the update raw data function to include new insert
+        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) 
 
-        # update the iic's tables (lower priority)
+        # update the iic's tables
         iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
         self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data #add in new row to table 
         
-        # insert GIS data into raw data (can this be put as a helper?)
-        #start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO")
+        # update the GIS info
+        start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO") 
+        gisinfo_block = self._raw_data[start: end] 
+        new_gisinfo_block = [unit_class, unit.subtype, unit.name,0,0,0,0,0] 
+        new_gisinfo_block = ' '.join(str(i) for i in new_gisinfo_block) 
+        self._raw_data.insert(end,new_gisinfo_block)
         
-        #gisinfo_block = self._raw_data[start : end + 1]
-        # update gen parameter node count
+        # update all 
         self.general_parameters['Node Count'] += 1
-        
         self._update_raw_data()
         self._update_dat_struct()
-        
-        pass
 
     def _update_gisinfo_label(
         self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
