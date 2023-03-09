@@ -1,5 +1,6 @@
 pandas
 ipykernel
+jupyter
 tqdm
 lxml
 pytest
