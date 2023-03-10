@@ -84,6 +84,14 @@ to find the next or previous units in the reach:
     print(dat.next(dat.sections['S5']))
     >>> <floodmodeller_api Unit Class: RIVER(name=S6, type=SECTION)>
 
+In this version of the API, ``dat.insert_unit()`` and ``dat.remove_unit()`` have been added, 
+allowing to insert or remove one unit at a time from the dat file.
+
+.. code:: python
+    unit_S6 = dat.sections['S6']
+    dat.remove_unit(unit_S6) #remove unit S6 from dat file
+    dat.insert_unit(unit_S6, add_after = dat.sections['S5']) #add unit back into dat file
+
 Although it is possible to rename units by passing a new name into the ``.name`` attribute, 
 it is recommended to avoid this as it may cause label issues within the network. 
 

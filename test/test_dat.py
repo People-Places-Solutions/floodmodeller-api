@@ -64,3 +64,25 @@ def test_dat_read_doesnt_change_data(test_workspace):
         os.remove("__temp.gxy")
     except FileNotFoundError:
         pass
+
+def test_insert_unit(test_workspace):
+    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
+    dat_b = DAT(Path(Path(test_workspace, "EX6.DAT")))
+    unit = dat_a.sections['20']
+    dat_b.insert_unit(unit, add_before=dat_b.sections['P4000'])
+    # Check unit is added to sections
+    assert "20" in dat_b.sections
+    # Check unit in correct position in all units
+    assert dat_b._all_units[8:10] == [unit, dat_b.sections['P4000']]
+
+def test_remove_unit(test_workspace):
+    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
+    unit = dat_a.sections['20']
+    prev_dat_struct_len = len(dat_a._dat_struct)
+    dat_a.remove_unit(unit)
+    assert "20" not in dat_a.sections
+    assert unit not in dat_a._all_units
+    assert [u for u in dat_a._dat_struct]
+    assert (prev_dat_struct_len - len(dat_a._dat_struct)) == 1
+    
+     

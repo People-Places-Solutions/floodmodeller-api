@@ -21,6 +21,7 @@ from . import units  # Import for using as package
 from .units._base import Unit 
 from ._base import FMFile
 from .units.helpers import _to_float
+from .validation.validation import _validate_unit
 
 class DAT(FMFile):
     """Reads and write Flood Modeller datafile format '.dat'
@@ -434,6 +435,7 @@ class DAT(FMFile):
 
     def _update_raw_data(self):
         block_shift = 0
+        prev_block_end = self._dat_struct[0]['end']
         existing_units = {
             "boundaries": [],
             "structures": [],
@@ -441,44 +443,55 @@ class DAT(FMFile):
             "conduits": [],
             "losses": [],
         }
-
+ 
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ]
-                prev_block_len = len(unit_data)
-
-                if block["Type"] == "INITIAL CONDITIONS":
-                    new_unit_data = self.initial_conditions._write()
-
+                #clause for when unit has been inserted into the dat file 
+                if 'new_insert' in block.keys():
+                    block['start'] = prev_block_end +1
+                    block['end'] = block['start'] + len(block['new_insert']) -1
+                    self._raw_data[block['start']: block['start']]= block['new_insert']
+                    block_shift += len(block['new_insert'])
+                    prev_block_end = block['end']
+                    del block['new_insert']
+                  
                 else:
-                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                        unit_name = unit_data[2][: self._label_len].strip()
-                    else:
-                        unit_name = unit_data[1][: self._label_len].strip()
+                    unit_data = self._raw_data[
+                        block["start"] + block_shift : block["end"] + 1 + block_shift
+                    ]
+                    prev_block_len = len(unit_data)
 
-                    # Get unit object
-                    unit_group = getattr(
-                        self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                    )
-                    if unit_name in unit_group:
-                        # block still exists
-                        new_unit_data = unit_group[unit_name]._write()
-                        existing_units[
-                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                        ].append(unit_name)
-                    else:
-                        # Bdy block has been deleted
-                        new_unit_data = []
+                    if block["Type"] == "INITIAL CONDITIONS":
+                        new_unit_data = self.initial_conditions._write()
 
-                new_block_len = len(new_unit_data)
-                self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ] = new_unit_data
-                # adjust block shift for change in number of lines in bdy block
-                block_shift += new_block_len - prev_block_len
+                    else:
+                        if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                            unit_name = unit_data[2][: self._label_len].strip()
+                        else:
+                            unit_name = unit_data[1][: self._label_len].strip()
+
+                        # Get unit object
+                        unit_group = getattr(
+                            self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                        )
+                        if unit_name in unit_group:
+                            # block still exists
+                            new_unit_data = unit_group[unit_name]._write()
+                            existing_units[
+                                units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                            ].append(unit_name)
+                        else:
+                            # Bdy block has been deleted
+                            new_unit_data = []
+
+                    new_block_len = len(new_unit_data)
+                    self._raw_data[
+                        block["start"] + block_shift : block["end"] + 1 + block_shift
+                    ] = new_unit_data
+                    # adjust block shift for change in number of lines in bdy block
+                    block_shift += new_block_len - prev_block_len
+                    prev_block_end = block['end']+ block_shift # add in to keep a record of the last block read in 
 
     def _get_unit_definitions(self):
         # Get unit definitions
@@ -632,29 +645,107 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
-    def remove_unit(unit, prev_block):
-        """Placeholder function for removing units in DAT"""
-        # Get block start/end of prev_block - GET LOCATION IN .DAT and insert here?
+    def remove_unit(self, unit):
+        '''Remove a unit from the dat file. 
+        
+        Args: 
+            unit (Unit): flood modeller unit input.
+        
+        Raises: 
+            TypeError: Raised if given unit isn't an instance of FloodModeller Unit.
+        '''
+        
+        try:
+            #catch if not valid unit
+            if not isinstance(unit, Unit):
+                raise TypeError("unit isn't a unit")
+            
+            # remove from all units
+            index = self._all_units.index(unit)
+            del self._all_units[index] 
+            # remove from dat_struct
+            dat_struct_unit = self._dat_struct[index+1]
+            del self._dat_struct[index+1] 
+            # remove from raw data
+            del self._raw_data[dat_struct_unit['start']:dat_struct_unit['end']+1] 
+            # remove from unit group
+            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
+            unit_group = getattr(self, unit_group_name)
+            del unit_group[unit.name]
+            # remove from ICs
+            self.initial_conditions.data = self.initial_conditions.data.loc[
+                self.initial_conditions.data['label'] != unit.name
+            ]
+            
+            self._update_dat_struct() 
+            self.general_parameters['Node Count']-= 1
 
-        # Remove unit directly into _raw_data
+        except Exception as e:
+            self._handle_exception(e, when="remove unit")
+        
+    def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
+        '''Inserts a unit into the dat file. 
+        
+        Args: 
+            unit (Unit): FloodModeller unit input.
+            add_before (Unit): FloodModeller unit to add before.
+            add_after (Unit): FloodModeller unit to add after.
+            add_at (interger): Positional argument of where to add in the dat file.
+        
+        Raises: 
+            SyntaxError: Raised if no positional argument is given.
+            TypeError: Raised if given unit isn't an instance of FloodModeller Unit.
+            NameError: Raised if unit name already appears in unit group.
+        '''
+        try:
+            #catch errors
+            if all(arg is None for arg in(add_before, add_after, add_at)):
+                raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
+            if not isinstance(unit, Unit):
+                raise TypeError("unit isn't a unit")
+            if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
+                raise TypeError("add_before or add_after argument must be a Flood Modeller Unit type")
 
-        # Remove unit into relevant list (sections, structures, boundaries)
+            _validate_unit(unit)
+            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
+            unit_group = getattr(self, unit_group_name)
+            unit_class = unit._unit
+            if unit.name in unit_group:
+                raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
 
-        # Update _dat_struct
+            # positional argument       
+            if add_at is not None :    
+                insert_index = add_at
+                if insert_index < 0:
+                    insert_index += len(self._all_units) + 1
+                    if insert_index < 0:
+                        raise Exception (f"invalid add_at index: {add_at}")
+            else:  
+                check_unit = add_before or add_after
+                for index, thing in enumerate(self._all_units):
+                    if thing == check_unit:
+                        insert_index = index
+                        insert_index += 1 if add_after else 0    
+                        break
+                else:
+                    raise Exception(f"{check_unit} not found in dat network, so cannot be used to add before/after")           
+            
+            unit_data = unit._write()
+            self._all_units.insert(insert_index, unit) 
+            unit_group[unit.name] = unit
+            self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) 
 
-        pass
+            # update the iic's tables
+            iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
+            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data 
+            
+            # update all 
+            self.general_parameters['Node Count'] += 1
+            self._update_raw_data()
+            self._update_dat_struct()
 
-    def insert_unit(unit, prev_block):
-        """Placeholder function for adding in new units to DAT"""
-        # Get block start/end of prev_block
-
-        # Insert new unit directly into _raw_data
-
-        # Add unit into relevant list (sections, structures, boundaries)
-
-        # Update _dat_struct
-
-        pass
+        except Exception as e:
+            self._handle_exception(e, when="insert unit")
 
     def _update_gisinfo_label(
         self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
