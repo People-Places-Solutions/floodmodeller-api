@@ -9,9 +9,11 @@ The class is initiated with the full filepath of an xml file to load an existing
    
    The API functionality for 2D XML files is currently in development and should be 
    treated as experimental.
-     
-   The API currently only supports reading/editing 2D model components and does not yet 
-   support adding/deleting elements.
+
+.. admonition:: *New in version 0.4.1*
+
+   2D elements can now be added and removed from an XML2D instance by simply adding/removing
+   them from the relevant section
 
 .. code:: python
 

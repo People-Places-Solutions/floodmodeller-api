@@ -690,7 +690,8 @@ class DAT(FMFile):
             unit (Unit): FloodModeller unit input.
             add_before (Unit): FloodModeller unit to add before.
             add_after (Unit): FloodModeller unit to add after.
-            add_at (interger): Positional argument of where to add in the dat file.
+            add_at (interger): Positional argument (starting at 0) of where to add in 
+                the dat file. To add at the end of the network you can use -1.
         
         Raises: 
             SyntaxError: Raised if no positional argument is given.
