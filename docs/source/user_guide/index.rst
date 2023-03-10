@@ -8,12 +8,12 @@ can be used, code reference and examples.
 .. toctree::
    :maxdepth: 2
    
+   dat
+   xml2d
    ief
    zzn
    ied
-   dat
    inp
-   xml2d
    lf
    units
    urban1d_units
