@@ -646,70 +646,75 @@ class DAT(FMFile):
         return unit_block, in_block
 
     def remove_unit(self, unit):
-        #catch if not valid unit
-        if not isinstance(unit, Unit):
-            raise TypeError("unit isn't a unit")
-        _validate_unit(unit)
-        
-        #find index, remove from iic, gxy, node count, all units
-        index = self._all_units.index(unit)
-        self.general_parameters['Node Count']-= 1
-        self.initial_conditions.data = self.initial_conditions.data.drop(index)
-        start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO")
-        self._raw_data.pop(start+index+1) 
-        self._all_units.remove(unit) 
-        
-        dat_unit = self._dat_struct[index+1]
-        del self._dat_struct[index+1] 
-        del self._raw_data[dat_unit['start']:dat_unit['end']+1] 
-        
-        self._update_dat_struct() 
+        try:
+            #catch if not valid unit
+            if not isinstance(unit, Unit):
+                raise TypeError("unit isn't a unit")
+            
+            # remove from all units
+            index = self._all_units.index(unit)
+            del self._all_units[index] 
+            # remove from dat_struct
+            dat_struct_unit = self._dat_struct[index+1]
+            del self._dat_struct[index+1] 
+            # remove from raw data
+            del self._raw_data[dat_struct_unit['start']:dat_struct_unit['end']+1] 
+            # remove from unit group
+            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
+            unit_group = getattr(self, unit_group_name)
+            del unit_group[unit.name]
+            # remove from ICs
+            self.initial_conditions.data = self.initial_conditions.data.loc[
+                self.initial_conditions.data['label'] != unit.name
+            ]
+            
+            self._update_dat_struct() 
+            self.general_parameters['Node Count']-= 1
+
+        except Exception as e:
+            self._handle_exception(e, when="remove unit")
         
     def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
-        
-        #catch errors
-        if all(arg is None for arg in(add_before, add_after, add_at)):
-            raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
-        if not isinstance(unit, Unit):
-            raise TypeError("unit isn't a unit")
-        _validate_unit(unit)
-        unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
-        unit_group = getattr(self, unit_group_name)
-        unit_class = unit._unit
-        if unit.name in unit_group:
-            raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
+        try:
+            #catch errors
+            if all(arg is None for arg in(add_before, add_after, add_at)):
+                raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
+            if not isinstance(unit, Unit):
+                raise TypeError("unit isn't a unit")
+            _validate_unit(unit)
+            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
+            unit_group = getattr(self, unit_group_name)
+            unit_class = unit._unit
+            if unit.name in unit_group:
+                raise NameError ('Name already appears in unit group. Cannot have two units with same name in same group')
 
-        # positional argument       
-        if add_at is not None :    
-            insert_index = add_at
-        else:    
-            check_unit = add_before or add_after
-            for index, thing in enumerate(self._all_units):
-                if thing == check_unit:
-                    insert_index = index
-                    insert_index += 1 if add_after else 0    
-                    break                 
-        
-        unit_data = unit._write()
-        self._all_units.insert(insert_index, unit) 
-        unit_group[unit.name] = unit
-        self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) 
+            # positional argument       
+            if add_at is not None :    
+                insert_index = add_at
+            else:    
+                check_unit = add_before or add_after
+                for index, thing in enumerate(self._all_units):
+                    if thing == check_unit:
+                        insert_index = index
+                        insert_index += 1 if add_after else 0    
+                        break                 
+            
+            unit_data = unit._write()
+            self._all_units.insert(insert_index, unit) 
+            unit_group[unit.name] = unit
+            self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) 
 
-        # update the iic's tables
-        iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
-        self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data 
-        
-        # update the GIS info
-        start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO") 
-        gisinfo_block = self._raw_data[start: end] 
-        new_gisinfo_block = [unit_class, unit.subtype, unit.name,0,0,0,0,0] 
-        new_gisinfo_block = ' '.join(str(i) for i in new_gisinfo_block) 
-        self._raw_data.insert(end,new_gisinfo_block)
-        
-        # update all 
-        self.general_parameters['Node Count'] += 1
-        self._update_raw_data()
-        self._update_dat_struct()
+            # update the iic's tables
+            iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
+            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data 
+            
+            # update all 
+            self.general_parameters['Node Count'] += 1
+            self._update_raw_data()
+            self._update_dat_struct()
+
+        except Exception as e:
+            self._handle_exception(e, when="insert unit")
 
     def _update_gisinfo_label(
         self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
