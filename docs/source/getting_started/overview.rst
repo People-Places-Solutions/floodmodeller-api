@@ -11,8 +11,8 @@ with the basic concepts of Python as a programming language, particularly workin
 class objects. It is not necessary to be very experienced with Python, but having a grasp
 of the fundamentals will allow you to get the most out of the API. 
 
-The API is based around four main classes, which represent key Flood Modeller file formats: 
-**DAT, IEF, IED** and **ZZN**. Each of these classes allow you to interact with the respective 
+The API is based around several main classes, which represent key Flood Modeller file formats: 
+**DAT, IEF, IED, XML2D, INP** and **ZZN**. Each of these classes allow you to interact with the respective 
 Flood Modeller file formats, by simply constructing a new class object pointing to the 
 filepath of the file. For example, to create a new instance of a DAT class based on an 
 existing dat file, you would call:
@@ -25,7 +25,9 @@ This would then store a new object in the variable ``dat``, based on the ``DAT()
 From here, you can then work with the data using the class attributes and methods.
 
 In addition to the main classes, there are also :doc:`individual unit classes <../user_guide/units>` 
-which are used to work with key Flood Modeller unit types (e.g. QTBDY, River Sections etc.)
+which are used to work with key Flood Modeller unit types (e.g. QTBDY, River Sections etc.).
+There is also a range of :doc:`additional functionality <../user_guide/additional_functionality>`
+in the API such as difference and equivalence methods and automatic file backups.
 
 This documentation provides information on the main API classes, including basic examples 
 for each, plus the attributes associated with each supported unit class.
