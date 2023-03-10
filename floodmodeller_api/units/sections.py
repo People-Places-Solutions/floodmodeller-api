@@ -355,7 +355,7 @@ class REPLICATE(Unit):
 
         params1 = join_10_char(
             self.dist_to_next,
-            f"{self.bed_level_drop:>10.4f}", # allowing 4dp 
+            f"{self.bed_level_drop:>10.4f}",  # allowing 4dp
             self.easting,
             self.northing,
         )

@@ -17,9 +17,18 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int,
-                      _to_data_list)
+from .helpers import (
+    join_10_char,
+    join_12_char_ljust,
+    join_n_char_ljust,
+    split_10_char,
+    split_12_char,
+    split_n_char,
+    _to_str,
+    _to_float,
+    _to_int,
+    _to_data_list,
+)
 from floodmodeller_api.validation import _validate_unit
 
 

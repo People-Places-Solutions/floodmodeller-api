@@ -22,6 +22,7 @@ from floodmodeller_api.units.helpers import (
 )
 from floodmodeller_api.validation import _validate_unit
 
+
 class CONDUIT(UrbanUnit):
     """Class to hold and process CONDUIT unit type
 
@@ -39,12 +40,12 @@ class CONDUIT(UrbanUnit):
     Returns:
         CONDUIT: Flood Modeller CONDUIT Unit class object
     """
+
     _unit = "CONDUIT"
 
     def _read(self, line):
         """Function to read a given CONDUIT line and store data as class attributes"""
-        
-        
+
         # TODO: add functionality to read comments
         # TODO: considering raising an exception if any of the required parameters are missing
 
@@ -54,40 +55,37 @@ class CONDUIT(UrbanUnit):
         while len(unit_data) < 9:
             unit_data.append("")
 
-
-        # TODO: Update defaults.  Presently atrbitary defaults added to allow API to work. 
+        # TODO: Update defaults.  Presently atrbitary defaults added to allow API to work.
         # TODO: Consider re-naming variables to more intuitive names.  Currently as as per SWMM manual
 
-        self.name = _to_str(unit_data[0],"") 
-        self.node1 = _to_str(unit_data[1],"") 
-        self.node2 = _to_str(unit_data[2], "") 
+        self.name = _to_str(unit_data[0], "")
+        self.node1 = _to_str(unit_data[1], "")
+        self.node2 = _to_str(unit_data[2], "")
         self.length = _to_float(unit_data[3], 0.0)
-        self.n = _to_float(unit_data[4], 0.0) 
-        self.z1 = _to_float(unit_data[5], 0.0) 
-        self.z2 = _to_float(unit_data[6], 0.0) 
-        self.q0 = _to_float(unit_data[7], 0.0) # Default as per FM
-        self.qmax = _to_float(unit_data[8], 999999) #No limit
+        self.n = _to_float(unit_data[4], 0.0)
+        self.z1 = _to_float(unit_data[5], 0.0)
+        self.z2 = _to_float(unit_data[6], 0.0)
+        self.q0 = _to_float(unit_data[7], 0.0)  # Default as per FM
+        self.qmax = _to_float(unit_data[8], 999999)  # No limit
 
-        #TODO: Consider linkage with other associated subsections i.e. [XSECTIONS] and [LOSSES]
+        # TODO: Consider linkage with other associated subsections i.e. [XSECTIONS] and [LOSSES]
 
     def _write(self):
         """Function to write a valid CONDUIT line"""
 
-        _validate_unit(self, urban = True)
+        _validate_unit(self, urban=True)
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        return (
-            join_n_char_ljust(17, self.name, self.node1, self.node2) 
-            + join_n_char_ljust(15, self.length, self.n, self.z1, self.z2, self.q0, self.qmax)
+        return join_n_char_ljust(
+            17, self.name, self.node1, self.node2
+        ) + join_n_char_ljust(
+            15, self.length, self.n, self.z1, self.z2, self.q0, self.qmax
         )
 
-        
+
 class CONDUITS(UrbanSubsection):
     """Class to read/write the table of conduits"""
 
     _urban_unit_class = CONDUIT
     _attribute = "conduits"
-
-
-

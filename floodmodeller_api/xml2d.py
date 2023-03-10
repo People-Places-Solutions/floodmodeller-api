@@ -30,6 +30,7 @@ from floodmodeller_api._base import FMFile
 from .xml2d_template import xml2d_template
 from .logs import error_2D_dict, lf_factory
 
+
 def value_from_string(value: Union[str, list[str]]):
     try:
         val = float(value)
@@ -77,7 +78,7 @@ class XML2D(FMFile):
                 self._log_path = self._filepath.with_suffix(".lf2")
             else:
                 self._read(from_blank=True)
-            
+
         except Exception as e:
             self._handle_exception(e, when="read")
 
@@ -112,7 +113,7 @@ class XML2D(FMFile):
             "description",
         ]:
             if attr not in self.__dict__:
-                setattr(self, attr, None)        
+                setattr(self, attr, None)
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -158,7 +159,7 @@ class XML2D(FMFile):
 
             else:
                 if child_key in self._multi_value_keys:
-                    xml_dict[child_key] = xml_dict[child_key][:-1] # remove unused dict
+                    xml_dict[child_key] = xml_dict[child_key][:-1]  # remove unused dict
                     xml_dict[child_key].append(value_from_string(value))
                 else:
                     xml_dict[child_key] = value_from_string(value)
@@ -168,9 +169,7 @@ class XML2D(FMFile):
     def _recursive_reorder_xml(self, parent="ROOT"):
         if parent == "ROOT":
             parent = self._xmltree.getroot()
-        parent[:] = self._sort_from_schema(
-            parent
-        ) 
+        parent[:] = self._sort_from_schema(parent)
 
         for child in parent:
             if not type(child) == etree._Comment:
@@ -273,7 +272,7 @@ class XML2D(FMFile):
                                 elif len(elems) > len(item):
                                     while len(elems) > len(item):
                                         parent.remove(elems.pop())
-                                        
+
                                 for i in range(len(elems)):
                                     elems[i].text = item[i]
 
@@ -284,7 +283,7 @@ class XML2D(FMFile):
                     self._recursive_add_element(
                         parent=parent, add_item=item, add_key=key
                     )
- 
+
     def _recursive_add_element(self, parent, add_item, add_key):
         if type(add_item) == dict:
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
@@ -339,12 +338,12 @@ class XML2D(FMFile):
         # This method will recursively work through the original dictionary and remove any
         # items that are not in the new_dictionary and need to be removed.
         list_idx = 0
-        list_idx_key = ''
-        for elem in parent: 
+        list_idx_key = ""
+        for elem in parent:
             if isinstance(elem, etree._Comment):
                 continue  # Skips comments in xml
             # Check each element is in the new_dict somewhere, delete if not
-            elem_key = elem.tag.replace(self._ns, '')
+            elem_key = elem.tag.replace(self._ns, "")
             if elem_key in self._multi_value_keys:
                 if not list_idx_key == elem_key:
                     list_idx_key = elem_key
@@ -459,7 +458,7 @@ class XML2D(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-        console_output: Optional[str] = 'simple',
+        console_output: Optional[str] = "simple",
         range_function: Optional[callable] = trange,
         range_settings: Optional[dict] = {},
     ) -> Optional[Popen]:
@@ -495,12 +494,12 @@ class XML2D(FMFile):
 
         """
 
-        #TODO: 
+        # TODO:
         # - Clean up the lf code?
         # - Remove or sort out get results
 
         self.range_function = range_function
-        self.range_settings = range_settings    
+        self.range_settings = range_settings
 
         try:
             if self._filepath == None:
@@ -510,13 +509,13 @@ class XML2D(FMFile):
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # defaults to single precision
                 for _, domain in self.domains.items():
-                    if domain['run_data'].get('double_precision') == 'required':
+                    if domain["run_data"].get("double_precision") == "required":
                         precision = "DOUBLE"
                         break
-                
+
             if enginespath == "":
                 # Default location
-                _enginespath = (r"C:\Program Files\Flood Modeller\bin")
+                _enginespath = r"C:\Program Files\Flood Modeller\bin"
             else:
                 _enginespath = enginespath
                 if not Path(_enginespath).exists:
@@ -546,7 +545,7 @@ class XML2D(FMFile):
 
             console_output = console_output.lower()
             run_command = f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
-            stdout = DEVNULL if console_output == 'simple' else None
+            stdout = DEVNULL if console_output == "simple" else None
 
             if method.upper() == "WAIT":
                 # executing simulation
@@ -556,7 +555,7 @@ class XML2D(FMFile):
                 )  # execute
 
                 # progress bar based on log files:
-                if console_output == 'simple':
+                if console_output == "simple":
                     self._init_log_file()
                     self._update_progress_bar(process)
 
@@ -566,7 +565,6 @@ class XML2D(FMFile):
 
                 exitcode = process.returncode
                 self._interpret_exit_code(exitcode, raise_on_failure)
-
 
             elif method.upper() == "RETURN_PROCESS":
                 # executing simulation
@@ -688,5 +686,3 @@ class XML2D(FMFile):
             raise Exception(msg)
         else:
             print(msg)
-
-        

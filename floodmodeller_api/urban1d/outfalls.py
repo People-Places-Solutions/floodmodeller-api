@@ -23,6 +23,7 @@ from floodmodeller_api.units.helpers import (
 )
 from floodmodeller_api.validation import _validate_unit
 
+
 class OUTFALL(UrbanUnit):
     """Class to hold and process OUTFALL unit type
 
@@ -34,13 +35,13 @@ class OUTFALL(UrbanUnit):
         tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
         tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
         gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO") TODO: is this required, or can it be missing
-        routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge) 
-        
+        routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge)
+
     Returns:
         OUTFALL: Flood Modeller OUTFALL Unit class object TODO: add urban 1d in to all instances within urban 1d API
     """
 
-    _unit = 'OUTFALL'
+    _unit = "OUTFALL"
 
     def _read(self, line):
 
@@ -50,37 +51,35 @@ class OUTFALL(UrbanUnit):
         # TODO: considering raising an exception if any of the required parameters are missing
 
         self.name = str(unit_data[0])
-        self.elevation = _to_float(unit_data[1], 0.0) 
+        self.elevation = _to_float(unit_data[1], 0.0)
         self.type = str(unit_data[2])
 
         if self.type == "FREE" or self.type == "NORMAL":
 
             # Extend length of unit_data to account for missing optional arguments.
-            while (len(unit_data) < 5):  
+            while len(unit_data) < 5:
                 unit_data.append("")
 
             self.gated = _to_str(unit_data[3], "NO")
             self.routeto = _to_str(unit_data[4], "")
-    
+
         elif self.type == "FIXED" or self.type == "NORMAL" or self.type == "TIMESERIES":
-                
+
             # Extend length of unit_data to account for missing optional arguments.
-            while (len(unit_data) < 6):  
+            while len(unit_data) < 6:
                 unit_data.append("")
-           
-            if self.type =="FIXED":
-                self.stage = _to_float(unit_data[3],0.0)
-                
+
+            if self.type == "FIXED":
+                self.stage = _to_float(unit_data[3], 0.0)
+
             elif self.type == "NORMAL":
-                self.tcurve = _to_str(unit_data[3],"")
+                self.tcurve = _to_str(unit_data[3], "")
 
             elif self.type == "TIMESERIES":
-                self.tseries = _to_str(unit_data[3],"") 
+                self.tseries = _to_str(unit_data[3], "")
 
             self.gated = _to_str(unit_data[4], "NO")
             self.routeto = _to_str(unit_data[5], "")
-            
-           
 
     def _write(self):
         """Function to write a valid OUTFALL line"""
@@ -89,17 +88,16 @@ class OUTFALL(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        params1 = (
-            join_n_char_ljust(17, self.name) 
-            + join_n_char_ljust(15, self.elevation, self.type)
+        params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
+            15, self.elevation, self.type
         )
 
         if self.type == "FREE" or self.type == "NORMAL":
             params2 = join_n_char_ljust(15, "", self.gated, self.routeto)
 
-        elif self.type =="FIXED":
+        elif self.type == "FIXED":
             params2 = join_n_char_ljust(15, self.stage, self.gated, self.routeto)
-            
+
         elif self.type == "NORMAL":
             params2 = join_n_char_ljust(15, self.tcurve, self.gated, self.routeto)
 
@@ -108,9 +106,9 @@ class OUTFALL(UrbanUnit):
 
         return params1 + params2
 
+
 class OUTFALLS(UrbanSubsection):
     """Class to read/write the table of outfalls"""
 
     _urban_unit_class = OUTFALL
     _attribute = "outfalls"
-

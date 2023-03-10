@@ -267,9 +267,7 @@ class BLOCKAGE(Unit):
         blockage_block = [header, labels, params, params1]
 
         if self.timeunit == "DATES":
-            blockage_data = [
-                f"{t:<20}{join_10_char(b)}" for t, b in self.data.items()
-            ]
+            blockage_data = [f"{t:<20}{join_10_char(b)}" for t, b in self.data.items()]
         else:
             blockage_data = [join_10_char(t, b) for t, b in self.data.items()]
 

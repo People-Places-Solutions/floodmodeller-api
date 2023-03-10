@@ -135,6 +135,3 @@ def _to_data_list(
             row.append(var)
         data_list.append(row)
     return data_list
-
-
-

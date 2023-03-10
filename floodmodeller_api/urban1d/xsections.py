@@ -24,6 +24,7 @@ from floodmodeller_api.units.helpers import (
 )
 from floodmodeller_api.validation import _validate_unit
 
+
 class XSECTION(UrbanUnit):
     """Class to hold and process XSECTION unit type
 
@@ -44,46 +45,45 @@ class XSECTION(UrbanUnit):
         XSECTION: Flood Modeller XSECTION Unit class object TODO: add urban 1d in to all instances within urban 1d API
     """
 
-    _unit = 'XSECTION'
+    _unit = "XSECTION"
 
     def _read(self, line):
 
         unit_data = line.split()
 
         # TODO: add functionality to read comments
-        #TODO: consider appropriate defaults
+        # TODO: consider appropriate defaults
         self.name = str(unit_data[0])
 
         if unit_data[1] in _shape_options:
 
             # Extend length of unit_data to account for missing optional arguments.
 
-            while (len(unit_data) < 8):  
+            while len(unit_data) < 8:
                 unit_data.append("")
-            
+
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], 0.0) 
-            self.geom2 = _to_float(unit_data[3], 0.0) 
-            self.geom3 = _to_float(unit_data[4], 0.0) 
-            self.geom4 = _to_float(unit_data[5], 0.0) 
+            self.geom1 = _to_float(unit_data[2], 0.0)
+            self.geom2 = _to_float(unit_data[3], 0.0)
+            self.geom3 = _to_float(unit_data[4], 0.0)
+            self.geom4 = _to_float(unit_data[5], 0.0)
             self.barrels = _to_int(unit_data[6], 1)
             self.culvert = _to_int(unit_data[7], "")
 
         elif unit_data[1] == "CUSTOM":
-            while (len(unit_data) < 5):  
-                unit_data.append("")     
-            
+            while len(unit_data) < 5:
+                unit_data.append("")
+
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], "") 
+            self.geom1 = _to_float(unit_data[2], "")
             self.barrels = _to_int(unit_data[6], 1)
 
         elif unit_data[1] == "IRREGULAR":
-            while (len(unit_data) < 3):  
-                unit_data.append("")    
-            
-            self.shape = str(unit_data[1])
-            self.tsect = str(unit_data[2]) 
+            while len(unit_data) < 3:
+                unit_data.append("")
 
+            self.shape = str(unit_data[1])
+            self.tsect = str(unit_data[2])
 
     def _write(self):
         """Function to write a valid OUTFALL line"""
@@ -95,14 +95,23 @@ class XSECTION(UrbanUnit):
         params1 = join_n_char_ljust(17, self.name)
 
         if self.shape in _shape_options:
-            params2 = join_n_char_ljust(15, self.shape, self.geom1, self.geom2, self.geom3, self.geom4, self.barrels, self.culvert)
-            
+            params2 = join_n_char_ljust(
+                15,
+                self.shape,
+                self.geom1,
+                self.geom2,
+                self.geom3,
+                self.geom4,
+                self.barrels,
+                self.culvert,
+            )
+
         elif self.shape == "CUSTOM":
             params2 = join_n_char_ljust(15, self.shape, self.geom1, self.barrels)
 
         elif self.shape == "IRREGULAR":
             params2 = join_n_char_ljust(15, self.shape, self.tsect)
-        
+
         return params1 + params2
 
 
@@ -135,6 +144,5 @@ _shape_options = [
     "CATENARY",
     "SEMIELLIPTICAL",
     "BASKETHANDLE",
-    "SEMICIRCULAR"
+    "SEMICIRCULAR",
 ]
-

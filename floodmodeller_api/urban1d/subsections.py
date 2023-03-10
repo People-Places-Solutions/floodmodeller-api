@@ -29,7 +29,7 @@ SUPPORTED_SUBSECTIONS = {
     #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
     "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
-    '[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS},
+    "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
     "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
     "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES},
