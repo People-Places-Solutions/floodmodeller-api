@@ -7,6 +7,13 @@
       "openFiles": [
         "demo/README.md"
       ]
+    },
+    "settings": {
+      //"markdown.preview.autoShowPreviewToSide": true,
+      //"markdown.preview.scrollEditorWithPreview": true,
+      "workbench.editor.enablePreview": false,
+      "markdown.preview.autoReveal": true,
+      "markdown.preview.openMarkdownPreview": "openOnSide"
     }
   }
 }
