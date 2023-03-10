@@ -43,12 +43,12 @@ Section units
 .. autoclass:: floodmodeller_api.units.RIVER
 
 ``INTERPOLATE()``
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.INTERPOLATE
 
 ``REPLICATE()``
-~~~~~~~~~~~
+~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.REPLICATE
 
@@ -101,7 +101,7 @@ Structure units
 .. autoclass:: floodmodeller_api.units.CRUMP
 
 ``FLAT_V_WEIR()``
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.FLAT_V_WEIR
 

@@ -78,6 +78,7 @@ All other associated data can be accessed and edited for a ``RIVER`` unit class 
 It is possible to call the ``.next`` and ``.prev`` function on a unit of any class to find the next or previous units in the reach:
 
 .. code:: python
+    
     print(dat.next(dat.sections['S5']))
     >>> <floodmodeller_api Unit Class: RIVER(name=S6, type=SECTION)>
 

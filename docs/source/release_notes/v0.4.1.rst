@@ -1,5 +1,5 @@
 **************************************
-What's new in 0.4.1 (XXXX 202x)
+What's new in 0.4.1 (March 2023)
 **************************************
 
 This page details the changes for version 0.4.1 of Flood Modeller Python API
@@ -7,7 +7,7 @@ This page details the changes for version 0.4.1 of Flood Modeller Python API
 New features
 --------------
 - Add/remove units and reaches from 1D networks
-- Add/remove elements from 2D xml models
+- Add/remove elements from 2D models
 - Simulate method added to XML2D
 - Automatic backups
 
@@ -41,20 +41,25 @@ Updates
     the API in how event data in IEF files is handled. Any existing code that treats eventdata
     as a list will need to be updated in order to run this version. 
 
+
+- Find and return the next unit in reach with ``.next()`` function::
+
+    dat = DAT('some_network.dat')
+    some_unit = dat.sections['some_unit_name']
+    dat.next(some_unit)
+
+- Find previous unit in reach with ``.prev()`` function::
+
+    dat = DAT('some_network.dat')
+    dat.prev(dat.strucutre['structure_name'])
+
+- Improved test module
 - CRUMP Unit Class added
 - FLAT_V_WEIR Unit Class added
 - INTERPOLATE Unit Class added
 - REPLICATE Unit Class added
 - OUTFALL Unit Class added
 - UNSUPPORTED Unit Class added
-- Find and return the next unit in reach with ``.next()`` function::
-    dat = DAT('some_network.dat')
-    some_unit = dat.sections['some_unit_name']
-    dat.next(some_unit)
-- Find previous unit in reach with ``.prev()`` function::
-    dat = DAT('some_network.dat')
-    dat.prev(dat.strucutre['structure_name'])
-- Improved test module
 
 Bug fixes
 --------------
