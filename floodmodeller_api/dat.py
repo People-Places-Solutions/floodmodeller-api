@@ -646,18 +646,25 @@ class DAT(FMFile):
         return unit_block, in_block
 
     def remove_unit(self, unit):
-
-        node_count = self.general_parameters['Node Count']
-        unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
-        all_units = self._all_units
+        #catch if not valid unit
+        if not isinstance(unit, Unit):
+            raise TypeError("unit isn't a unit")
+        _validate_unit(unit)
         
-        # _update_raw_data 
-        self._update_raw_data()
-        # update gen parameter node count   
-        self.general_parameters['Node Count'] -= 1
+        #find index, remove from iic, gxy, node count, all units
+        index = self._all_units.index(unit)
+        self.general_parameters['Node Count']-= 1
+        self.initial_conditions.data = self.initial_conditions.data.drop(index)
+        start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO")
+        self._raw_data.pop(start+index+1) 
+        self._all_units.remove(unit) 
         
-        pass
-    
+        dat_unit = self._dat_struct[index+1]
+        del self._dat_struct[index+1] 
+        del self._raw_data[dat_unit['start']:dat_unit['end']+1] 
+        
+        self._update_dat_struct() 
+        
     def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
         
         #catch errors
@@ -684,13 +691,13 @@ class DAT(FMFile):
                     break                 
         
         unit_data = unit._write()
-        self._all_units.insert(insert_index, unit) #
+        self._all_units.insert(insert_index, unit) 
         unit_group[unit.name] = unit
         self._dat_struct.insert(insert_index+1, {'Type': unit_class, 'new_insert':unit_data}) 
 
         # update the iic's tables
         iic_data = [unit.name,'y',00.0,0.0,0.0,0.0,0.0,0.0,0.0]
-        self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data #add in new row to table 
+        self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data 
         
         # update the GIS info
         start, end = next((block["start"], block["end"]) for block in self._dat_struct if block["Type"] == "GISINFO") 
