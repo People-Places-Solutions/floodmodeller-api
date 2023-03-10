@@ -680,10 +680,10 @@ class DAT(FMFile):
         '''Inserts a unit into the dat file. 
         
         Args: 
-            unit (Unit): flood modeller unit input.
-            add_before (Unit)
-            add_after (Unit)
-            add_at (interger) 
+            unit (Unit): FloodModeller unit input.
+            add_before (Unit): Positional argument of FloodModeller unit to add before.
+            add_after (Unit): Positional argument of FloodModeller unit to add after.
+            add_at (interger): Positional argument of where to add in the dat file.
         
         Raises: 
             SyntaxError: Raised if no positional argument is given.
