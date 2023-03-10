@@ -1,3 +1,12 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
-{"image":"mcr.microsoft.com/devcontainers/universal:2"}
+// This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
+{
+  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "name": "Get Started!",
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "demo/README.md"
+      ]
+    }
+  }
+}
