@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-import os  
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -92,10 +92,10 @@ class IEF(FMFile):
                         # Append event data to list so multiple can be specified
                         self.EventData[event_data_title] = value
                     else:
-                        
+
                         self.EventData = {event_data_title: value}
                     self._ief_properties.append("EventData")
-                    
+
                 else:
                     # Sets the property and value as class properties so they can be edited.
                     setattr(self, prop, value)
@@ -120,13 +120,13 @@ class IEF(FMFile):
             ief_string = ""
             event = 0  # Used as a counter for multiple eventdata files
             for idx, prop in enumerate(self._ief_properties):
-                if prop.startswith("["): 
+                if prop.startswith("["):
                     # writes the [] bound headers to ief string
                     ief_string += prop + "\n"
                 elif prop.lstrip().startswith(";"):
-                    if not self._ief_properties[idx+1] == "EventData":
+                    if not self._ief_properties[idx + 1] == "EventData":
                         # Only write comment if not preceding event data
-                        ief_string += prop + "\n" 
+                        ief_string += prop + "\n"
                 elif prop == "EventData":
                     event_data = getattr(self, prop)
                     # Add multiple EventData if present
@@ -238,7 +238,7 @@ class IEF(FMFile):
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
-                "The 'EventData' attribute should be a dictionary with keys defining the event"\
+                "The 'EventData' attribute should be a dictionary with keys defining the event"
                 + " names and values referencing the IED files"
             )
 
@@ -267,10 +267,14 @@ class IEF(FMFile):
             num_props = len(self._ief_properties)
             for idx, itm in enumerate(reversed(self._ief_properties)):
                 if itm == "EventData":
-                    del self._ief_properties[num_props-1-idx]
+                    del self._ief_properties[num_props - 1 - idx]
                     # Also remove event data title comment if present
-                    if self._ief_properties[num_props-2-idx].lstrip().startswith(";"):
-                        del self._ief_properties[num_props-2-idx]
+                    if (
+                        self._ief_properties[num_props - 2 - idx]
+                        .lstrip()
+                        .startswith(";")
+                    ):
+                        del self._ief_properties[num_props - 2 - idx]
                     removed += 1
                     if removed == to_remove:
                         break
@@ -395,7 +399,7 @@ class IEF(FMFile):
         """
         try:
             self.range_function = range_function
-            self.range_settings = range_settings           
+            self.range_settings = range_settings
             if self._filepath == None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
@@ -603,7 +607,7 @@ class IEF(FMFile):
 
         # tqdm progress bar
         for i in self.range_function(100, **self.range_settings):
-        
+
             # Process still running
             while process.poll() is None:
 

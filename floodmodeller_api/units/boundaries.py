@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,9 +17,18 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (join_10_char, join_12_char_ljust, join_n_char_ljust,
-                      split_10_char, split_12_char, split_n_char, _to_str, _to_float, _to_int,
-                      _to_data_list)
+from .helpers import (
+    join_10_char,
+    join_12_char_ljust,
+    join_n_char_ljust,
+    split_10_char,
+    split_12_char,
+    split_n_char,
+    _to_str,
+    _to_float,
+    _to_int,
+    _to_data_list,
+)
 from floodmodeller_api.validation import _validate_unit
 
 
@@ -135,9 +144,9 @@ class QTBDY(Unit):
         )
 
         if self.timeunit == "DATES":
-            qtbdy_data = [join_10_char(q) + t for t, q in self.data.iteritems()]
+            qtbdy_data = [join_10_char(q) + t for t, q in self.data.items()]
         else:
-            qtbdy_data = [join_10_char(q, t) for t, q in self.data.iteritems()]
+            qtbdy_data = [join_10_char(q, t) for t, q in self.data.items()]
         qtbdy_block = [header, name, qtbdy_params]
         qtbdy_block.extend(qtbdy_data)
 
@@ -223,9 +232,9 @@ class HTBDY(Unit):
             self.interpmethod,
         )
         if self.timeunit == "DATES":
-            htbdy_data = [join_10_char(h) + t for t, h in self.data.iteritems()]
+            htbdy_data = [join_10_char(h) + t for t, h in self.data.items()]
         else:
-            htbdy_data = [join_10_char(h, t) for t, h in self.data.iteritems()]
+            htbdy_data = [join_10_char(h, t) for t, h in self.data.items()]
         htbdy_block = [header, name, htbdy_params]
         htbdy_block.extend(htbdy_data)
 
@@ -286,7 +295,7 @@ class QHBDY(Unit):
         self.nrows = len(self.data)
 
         qhbdy_params = join_10_char(self.nrows, 0.000, self.interpmethod)
-        qhbdy_data = [f"{q:>10.3f}{h:>10.3f}" for h, q in self.data.iteritems()]
+        qhbdy_data = [f"{q:>10.3f}{h:>10.3f}" for h, q in self.data.items()]
         qhbdy_block = [header, name, qhbdy_params]
         qhbdy_block.extend(qhbdy_data)
 

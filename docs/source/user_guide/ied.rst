@@ -105,7 +105,7 @@ The following example demonstrates how the ``IED`` class could be used to edit t
         hydrograph = qtbdy_unit.data # Get hydrograph from qtbdy unit
         peak_flow = hydrograph.max() # Get peak flow value
         peak_flow_idx = hydrograph.loc[hydrograph == peak_flow].index # Get index of peak flow
-        for time, flow in hydrograph.iteritems(): # Iterate through hydrograph series
+        for time, flow in hydrograph.items(): # Iterate through hydrograph series
             if time > peak_flow_idx: # For only flows after peak flow i.e. falling limb
                 if flow < peak_flow * 0.3: # If the flow is less than 30% of the peak
                     hydrograph.loc[time] = peak_flow * 0.3 # Maintain minimum flow of 30% of peak for remainder of hydrograph

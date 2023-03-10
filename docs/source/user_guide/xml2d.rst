@@ -9,9 +9,11 @@ The class is initiated with the full filepath of an xml file to load an existing
    
    The API functionality for 2D XML files is currently in development and should be 
    treated as experimental.
-     
-   The API currently only supports reading/editing 2D model components and does not yet 
-   support adding/deleting elements.
+
+.. admonition:: *New in version 0.4.1*
+
+   2D elements can now be added and removed from an XML2D instance by simply adding/removing
+   them from the relevant section
 
 .. code:: python
 
@@ -66,7 +68,7 @@ A typical example of the available options for a single 2D domain is shown below
                 "active_area": "GIS\\Active_Area1.shp",
                 "rotation": 0
             },
-            "topography": "GIS\\5M_DTM_1.asc",
+            "topography": ["GIS\\5M_DTM_1.asc"],
             "time": {
                 "start_time": "00:00:00",
                 "start_date": "1/1/2000",
@@ -139,6 +141,8 @@ Reference
 
    .. automethod:: diff
 
+   .. automethod:: simulate
+
 Examples
 -----------
 **Example 1 - Updating DTM file** 
@@ -158,7 +162,7 @@ This is a simple example showing how you would update the dtm referenced in the 
 
     # Iterate through all 2D domains
     for _, domain in model.domains.items():
-        domain["topography"] = new_dtm  # update the dtm file
+        domain["topography"][0] = new_dtm  # update the dtm file
 
     model.save("path/to/2d_model_v2.xml") # Save to new location
 

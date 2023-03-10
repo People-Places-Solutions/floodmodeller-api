@@ -1,6 +1,7 @@
 include license.txt
 include code-of-conduct.md
-exclude test/*
+include requirements.txt
+include floodmodeller_api/test/test_data/*
 recursive-include floodmodeller_api *.dll
 exclude sample_scripts/*
 

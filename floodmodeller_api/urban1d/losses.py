@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -22,6 +22,7 @@ from floodmodeller_api.units.helpers import (
 )
 from floodmodeller_api.validation import _validate_unit
 
+
 class LOSS(UrbanUnit):
     """Class to hold and process LOSS unit type
 
@@ -32,17 +33,17 @@ class LOSS(UrbanUnit):
         kavg (float): Average minor head loss coefficient across lenght of culvert. (required) # TODO: FM name - Avg. Loss Coeff.
         flap (str): YES/NO.  If conduit has a flat valve that prevents back flow. (optional, default NO ) # TODO: FM name - Flap Gate.
         seepage (float): Rate of seepage loss into surrounding soil (in/hr or mm/hr). (optional, default is 0) # TODO: FM name - Seepage Loss Rate
-        
+
 
     Returns:
         LOSS: Flood Modeller LOSS Unit class object
     """
+
     _unit = "LOSS"
 
     def _read(self, line):
         """Function to read a given LOSS line and store data as class attributes"""
-        
-        
+
         # TODO: add functionality to read comments
 
         unit_data = line.split()  # Get unit parameters
@@ -51,30 +52,27 @@ class LOSS(UrbanUnit):
         while len(unit_data) < 6:
             unit_data.append("")
 
-        self.name = _to_str(unit_data[0],"")
+        self.name = _to_str(unit_data[0], "")
         self.kentry = _to_float(unit_data[1], 0)
         self.kexit = _to_float(unit_data[2], 0)
         self.kavg = _to_float(unit_data[3], 0)
         self.flap = _to_str(unit_data[4], "NO")
         self.seepage = _to_float(unit_data[5], 0)
-        
+
     def _write(self):
         """Function to write a valid LOSS line"""
 
-        _validate_unit(self, urban = True)
+        _validate_unit(self, urban=True)
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        return (
-            join_n_char_ljust(17, self.name)
-            + join_n_char_ljust(15, self.kentry, self.kexit, self.kavg, self.flap, self.seepage)
+        return join_n_char_ljust(17, self.name) + join_n_char_ljust(
+            15, self.kentry, self.kexit, self.kavg, self.flap, self.seepage
         )
+
 
 class LOSSES(UrbanSubsection):
     """Class to read/write the table of losses"""
 
     _urban_unit_class = LOSS
     _attribute = "losses"
-
-
-

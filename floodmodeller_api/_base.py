@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -24,6 +24,7 @@ from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .backup import File
 
+
 class FMFile:
     """Base class for all Flood Modeller File types"""
 
@@ -35,7 +36,7 @@ class FMFile:
             self._filepath = Path(self._filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
-            
+
             if not self._filepath.suffix.lower() == self._suffix:
                 raise TypeError(
                     f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file"
@@ -152,7 +153,7 @@ class FMFile:
                         "_xsd",
                         "_xsdschema",
                         "file",
-                        "_log_path"
+                        "_log_path",
                     ):
                         continue
                     else:

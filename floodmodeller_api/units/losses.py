@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -267,11 +267,9 @@ class BLOCKAGE(Unit):
         blockage_block = [header, labels, params, params1]
 
         if self.timeunit == "DATES":
-            blockage_data = [
-                f"{t:<20}{join_10_char(b)}" for t, b in self.data.iteritems()
-            ]
+            blockage_data = [f"{t:<20}{join_10_char(b)}" for t, b in self.data.items()]
         else:
-            blockage_data = [join_10_char(t, b) for t, b in self.data.iteritems()]
+            blockage_data = [join_10_char(t, b) for t, b in self.data.items()]
 
         blockage_block.extend(blockage_data)
 
