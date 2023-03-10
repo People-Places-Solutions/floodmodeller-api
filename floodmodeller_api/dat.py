@@ -646,6 +646,17 @@ class DAT(FMFile):
         return unit_block, in_block
 
     def remove_unit(self, unit):
+        '''Remove a unit from the dat file. 
+        
+        Args: 
+            unit (Unit): flood modeller unit input.
+        
+        Raises: 
+            TypeError: Raised if given unit isn't an instance of FloodModeller Unit.
+            
+        Returns:
+            dat file with unit removed
+        '''
         #catch if not valid unit
         if not isinstance(unit, Unit):
             raise TypeError("unit isn't a unit")
@@ -666,7 +677,22 @@ class DAT(FMFile):
         self._update_dat_struct() 
         
     def insert_unit(self, unit, add_before = None, add_after = None, add_at = None):
+        '''Inserts a unit into the dat file. 
         
+        Args: 
+            unit (Unit): flood modeller unit input.
+            add_before (Unit)
+            add_after (Unit)
+            add_at (interger) 
+        
+        Raises: 
+            SyntaxError: Raised if no positional argument is given.
+            TypeError: Raised if given unit isn't an instance of FloodModeller Unit.
+            NameError: Raised if unit name already appears in unit group.
+            
+        Returns:
+            dat file with added unit in correct position.
+        '''
         #catch errors
         if all(arg is None for arg in(add_before, add_after, add_at)):
             raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
