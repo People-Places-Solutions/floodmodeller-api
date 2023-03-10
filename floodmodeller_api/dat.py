@@ -703,6 +703,9 @@ class DAT(FMFile):
                 raise SyntaxError('No possitional argument given. Please provide either add_before, add_at or add_after')
             if not isinstance(unit, Unit):
                 raise TypeError("unit isn't a unit")
+            if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
+                raise TypeError("add_before or add_after argument must be a Flood Modeller Unit type")
+
             _validate_unit(unit)
             unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]['group']
             unit_group = getattr(self, unit_group_name)
@@ -713,13 +716,19 @@ class DAT(FMFile):
             # positional argument       
             if add_at is not None :    
                 insert_index = add_at
-            else:    
+                if insert_index < 0:
+                    insert_index += len(self._all_units) + 1
+                    if insert_index < 0:
+                        raise Exception (f"invalid add_at index: {add_at}")
+            else:  
                 check_unit = add_before or add_after
                 for index, thing in enumerate(self._all_units):
                     if thing == check_unit:
                         insert_index = index
                         insert_index += 1 if add_after else 0    
-                        break                 
+                        break
+                else:
+                    raise Exception(f"{check_unit} not found in dat network, so cannot be used to add before/after")           
             
             unit_data = unit._write()
             self._all_units.insert(insert_index, unit) 
