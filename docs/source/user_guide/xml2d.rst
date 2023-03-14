@@ -138,7 +138,44 @@ Imagine that we start with an almost blank xml file that passes the validation b
 
     model = XML2D()
 
-First we can change the variable that already exists. 
+First we can change the variable that already exists. For instance we can change the value of 
+the topography
+
+.. code:: python
+    model.domains[domain_name]["topography"] = 'path/to/my_topography.asc'
+
+We can edit any value that is already in the xml tree in the same way by overwritting it, another 
+example is we can change the end time of the computation,
+
+.. code:: python
+    model.domains[domain_name]["time"]["total"] = 1.00
+
+We can also add information to a key that does not exist yet, such as roughness. We first begin 
+by defining an empty list and then populate it with a dictionary, we can keep appending so we have 
+as many dictionaries in a list as we want,
+
+.. code:: python
+    model.domains[domain_name]["roughness"] = [] # created an empty list we can append dictionaries to
+    model.domains[domain_name]["roughness"].append(
+        {'type': 'file', 'law': 'manning', 'value': 'path/to/my_roughness_file.shp'}
+    )
+    # adding second roughness file.
+    model.domains[domain_name]["roughness"].append(
+        {'type': 'file', 'law': 'manning', 'value': 'path/to/my_second_roughness_file.shp'}
+    )
+
+If we wanted to edit one of the roughness values then we would need to use the list indexing, to 
+change the file for the first roughness,
+
+.. code:: python
+    model.domains[domain_name]["roughness"][0]["value"] = 'path/to/my_new_roughness_file.shp'
+
+We can remove the all information relating to the key roughness,
+
+.. code:: python
+    del model.domains[domain_name]["roughness"]
+
+No we have no roughness.
 
 Reference
 --------------
