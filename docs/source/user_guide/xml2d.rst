@@ -134,14 +134,14 @@ supported by the API using the ``.update()`` and ``.save()`` methods respectivel
 Add and remove functionality
 --------------------------------
 We can update the xml file directly from the API by adding and removing various properties. 
-Imagine that we start with an almost blank xml file that passes the validation by 
+Imagine that we start with an almost blank xml file that passes the validation, 
 
 .. code:: python
 
     model = XML2D()
 
-First we can change the variable that already exists. For instance we can change the value of 
-the topography
+First we can change a variable that already exists. For instance we can change the value of 
+the topography,
 
 .. code:: python
 
@@ -176,13 +176,20 @@ change the file for the first roughness,
 
     model.domains[domain_name]["roughness"][0]["value"] = 'path/to/my_new_roughness_file.shp'
 
-We can remove the all information relating to the key roughness,
+To remove values or keys from the xml file we can use ``del ...`` followed by the part you want to 
+remove. If we want to remove the second roughness entry for instance then,
+
+.. code:: python
+
+    del model.domains[domain_name]["roughness"][1]
+
+Further, we can remove all information relating to the key roughness,
 
 .. code:: python
 
     del model.domains[domain_name]["roughness"]
 
-Now we have no roughness.
+
 
 Reference
 --------------
