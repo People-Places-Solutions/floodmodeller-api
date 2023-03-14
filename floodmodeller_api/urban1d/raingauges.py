@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -85,15 +85,12 @@ class RAINGAUGE(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        params1 = (
-            join_n_char_ljust(17, self.name)
-            + join_n_char_ljust(
-                15,
-                self.format,
-                self.interval,
-                self.snow_catch_factor,
-                self.data_option,
-            )
+        params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
+            15,
+            self.format,
+            self.interval,
+            self.snow_catch_factor,
+            self.data_option,
         )  # First group of parameters
 
         # Second group of parameters

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,6 +18,7 @@ import pandas as pd
 
 from .helpers import join_10_char, split_10_char
 from ..diff import check_item_with_dataframe_equal
+
 ### Initial Conditions Class ###
 
 
@@ -90,14 +91,11 @@ class IIC:
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
-    
+
     def __eq__(self, other, return_diff=False):
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, 
-            other.__dict__, 
-            name=f"Initial Conditions",
-            diff=diff
+            self.__dict__, other.__dict__, name=f"Initial Conditions", diff=diff
         )
         return (result, diff) if return_diff else result

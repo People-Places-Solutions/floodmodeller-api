@@ -6,7 +6,7 @@ Before using the Flood Modeller Python API, it is important to familiarise yours
 .. code:: text
     
     Flood Modeller Python API
-    Copyright (C) 2022 Jacobs U.K. Limited
+    Copyright (C) 2023 Jacobs U.K. Limited
 
     This program is free software: you can redistribute it and/or modify it under the terms of the 
     GNU General Public License as published by the Free Software Foundation, either version 3 of the 

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -29,7 +29,7 @@ SUPPORTED_SUBSECTIONS = {
     #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
     "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
-    '[OUTFALLS]': {'group': 'units', 'attribute': '_outfalls', 'class': OUTFALLS},
+    "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
     "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
     "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES},

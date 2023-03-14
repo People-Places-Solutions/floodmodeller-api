@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2022 Jacobs U.K. Limited
+Copyright (C) 2023 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -355,7 +355,7 @@ class REPLICATE(Unit):
 
         params1 = join_10_char(
             self.dist_to_next,
-            f"{self.bed_level_drop:>10.4f}", # allowing 4dp 
+            f"{self.bed_level_drop:>10.4f}",  # allowing 4dp
             self.easting,
             self.northing,
         )
