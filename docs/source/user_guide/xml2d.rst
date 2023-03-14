@@ -131,6 +131,8 @@ valid.
 An XML2D instance can be updated in place and saved in the same way as for all other files
 supported by the API using the ``.update()`` and ``.save()`` methods respectively.
 
+Add and remove functionality
+--------------------------------
 We can update the xml file directly from the API by adding and removing various properties. 
 Imagine that we start with an almost blank xml file that passes the validation by 
 
