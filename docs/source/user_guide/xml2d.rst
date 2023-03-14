@@ -133,7 +133,9 @@ supported by the API using the ``.update()`` and ``.save()`` methods respectivel
 
 We can update the xml file directly from the API by adding and removing various properties. 
 Imagine that we start with an almost blank xml file that passes the validation by 
+
 .. code:: python
+
     model = XML2D()
 
 First we can change the variable that already exists. 
