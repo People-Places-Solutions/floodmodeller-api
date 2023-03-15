@@ -15,5 +15,6 @@
       "markdown.preview.autoReveal": true,
       "markdown.preview.openMarkdownPreview": "openOnSide"
     }
-  }
+  },
+  "postCreateCommand": "python setup.py develop"
 }
