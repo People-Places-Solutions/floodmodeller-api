@@ -4,18 +4,24 @@
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-      "openFiles": ["demo/01-get-started.ipynb"]
+      "openFiles": ["demo/README.md"]
     },
      "vscode": {
-      // Add the IDs of extensions you want installed when the container is created.
+      // Add the IDs of extensions you want installed when the container is created.  
       "extensions": ["ms-python.python"]
     },
     "settings": {
+      //"markdown.preview.autoShowPreviewToSide": true,
+      //"markdown.preview.scrollEditorWithPreview": true,
+      "workbench.editor.enablePreview": false,
+      "markdown.preview.autoReveal": true,
+      "markdown.preview.openMarkdownPreview": "openOnSide",
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
       "workbench.editorAssociations": {
         "*.md": "vscode.markdown.preview.editor"
       }
     }
   },
-  "onCreateCommand": ["code demo/README.md && python setup.py develop"]
+  "postCreateCommand": "python setup.py develop",
+  "postStartCommand": "code demo/README.md"
 }
