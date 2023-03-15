@@ -22,5 +22,5 @@
       }
     }
   },
-  "onCreateCommand": ["code demo/README.md", "python setup.py develop"]
+  "onCreateCommand": ["code demo/README.md && python setup.py develop"]
 }
