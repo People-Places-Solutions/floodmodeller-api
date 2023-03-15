@@ -4,7 +4,7 @@
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-      "openFiles": ["demo/README.md"]
+      "openFiles": []// ["demo/README.md"]
     },
      "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
@@ -22,6 +22,5 @@
       }
     }
   },
-  "postCreateCommand": "python setup.py develop",
-  "postStartCommand": "code demo/README.md"
+  "onCreateCommand": ["code demo/README.md", "python setup.py develop"]
 }
