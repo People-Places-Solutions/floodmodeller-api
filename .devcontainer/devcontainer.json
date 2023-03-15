@@ -13,11 +13,11 @@
       //"markdown.preview.scrollEditorWithPreview": true,
       "workbench.editor.enablePreview": false,
       "markdown.preview.autoReveal": true,
-      "markdown.preview.openMarkdownPreview": "openOnSide",
+      "markdown.preview.openMarkdownPreview": "openOnSide"//,
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
-      "workbench.editorAssociations": {   
-          "*.md": "vscode.markdown.preview.editor"
-    }
+//      "workbench.editorAssociations": {   
+//          "*.md": "vscode.markdown.preview.editor"
+//    }
   },
   "postCreateCommand": "python setup.py develop",
   "postStartCommand": "code demo/README.md"
