@@ -18,5 +18,5 @@
     }
   },
   "postCreateCommand": "python setup.py develop",
-  "postStartCommand": "code demo/README.md"
+  "postStartCommand": "code demo/01-get-started.ipynb"
 }
