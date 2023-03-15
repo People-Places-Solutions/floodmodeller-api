@@ -4,7 +4,7 @@
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-      "openFiles": []// ["demo/README.md"]
+      "openFiles": ["demo/01-get-started.ipynb"]
     },
      "vscode": {
       // Add the IDs of extensions you want installed when the container is created.
