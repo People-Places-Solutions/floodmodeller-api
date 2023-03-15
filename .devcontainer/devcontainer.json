@@ -19,5 +19,6 @@
           "*.md": "vscode.markdown.preview.editor"
     }
   },
-  "postCreateCommand": "python setup.py develop"
+  "postCreateCommand": "python setup.py develop",
+  "postStartCommand": "code demo/README.md"
 }
