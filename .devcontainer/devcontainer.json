@@ -6,6 +6,10 @@
     "codespaces": {
       "openFiles": ["demo/README.md"]
     },
+     "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": ["ms-python.python"]
+    },
     "settings": {
       //"markdown.preview.autoShowPreviewToSide": true,
       //"markdown.preview.scrollEditorWithPreview": true,
