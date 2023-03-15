@@ -1,7 +1,7 @@
-import pytest
-from floodmodeller_api import XML2D
-import os
+import pytest, sys, os, copy
 from pathlib import Path
+
+from floodmodeller_api import XML2D
 
 @pytest.fixture 
 def xml_fp(test_workspace):
@@ -44,3 +44,102 @@ def test_xml2d_all_files(test_workspace):
         second_output = second_x2d._write()
         assert first_output == second_output
         os.remove("__temp.xml")
+
+# New tests being added for the add/remove functionalility
+def test_xml2d_change_revert_elem_topography():
+    """XML2D: Check that when we change an existing element
+    that it is actually adding it and that it is being reverted."""
+    x2d = XML2D()
+    domain = list(x2d.domains)[0]
+    orig_topography = []
+    for item in x2d.domains[domain]["topography"]:
+        orig_topography.append(str(item))
+    orig_xml = x2d._write()
+    x2d.domains[domain]["topography"][0] = "my/new/topography"
+
+    assert x2d._write() != orig_xml
+    assert "my/new/topography" in x2d._write()
+    x2d.domains[domain]["topography"] = orig_topography
+    assert x2d._write() == orig_xml
+    assert "my/new/topography" not in x2d._write()
+
+def test_xml2d_add_remove_branch_roughness():
+    """XML2D: Check that we can actually add a branch and that 
+    it is being added and passes validation (i.e write)"""
+    x2d = XML2D()
+    domain = list(x2d.domains)[0]
+    orig_xml = x2d._write()
+    x2d.domains[domain]["roughness"] = []
+    x2d.domains[domain]["roughness"].append(
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+    )
+    assert x2d._write() != orig_xml
+    assert "my/roughness/file.shp" in x2d._write()
+    del x2d.domains[domain]["roughness"] 
+    assert x2d._write() == orig_xml
+    assert "my/roughness/file.shp" not in x2d._write()
+
+def test_xml2d_append_remove_branch_roughness():
+    """XML2D: Check that we can append an extra branch to preexisting branch
+    so that it passes validation"""
+    x2d = XML2D()
+    domain = list(x2d.domains)[0]
+    x2d.domains[domain]["roughness"] = []
+    x2d.domains[domain]["roughness"].append(
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+    )
+    xml_1_roughness = x2d._write()
+    x2d.domains[domain]["roughness"].append(
+        {"type": "file", "law": "manning", "value": "new/roughness/file.shp"}
+    )
+
+    assert x2d._write() != xml_1_roughness
+    assert "new/roughness/file.shp" in x2d._write()
+
+    del x2d.domains[domain]["roughness"][1]
+
+    assert "new/roughness/file.shp" not in x2d._write()
+
+# validation/reordering tests
+
+def test_xml2d_reorder_elem_computational_area_wrong_position():
+    """XML2D: Check that if we add ??? in the wrong position does it reorder"""
+    x2d = XML2D()
+    domain = list(x2d.domains)[0]
+    x2d.domains[domain]["computational_area"] = {
+            "yll": ...,
+            "xll": ...,
+            "dx": ...,
+            "active_area": ...,
+            "ncols": ...,
+            "nrows": ...,
+            "rotation": ...
+    }
+    x2d.domains[domain]["computational_area"]["yll"] = float(1.1)
+    x2d.domains[domain]["computational_area"]["xll"] = float(2.6)
+    x2d.domains[domain]["computational_area"]["dx"] = float(2)
+    x2d.domains[domain]["computational_area"]["active_area"] = 'path/to/asc/file.asc'
+    x2d.domains[domain]["computational_area"]["ncols"] = int(12)
+    x2d.domains[domain]["computational_area"]["nrows"] = int(42)
+    x2d.domains[domain]["computational_area"]["rotation"] = float(3.14159)
+
+    x2d.domains[domain]["run_data"]["upwind"] =  "upwind value"
+    x2d.domains[domain]["run_data"]["wall"] = "Humpty Dumpty"
+
+    # TODO: Add check that this should fail validation if in the wrong order
+    # # how do I check that something fails?
+    # with pytest.raises(Exception) as e_info:
+    #     x2d._validate()
+
+    # assert "XML Validation Error for" in e_info 
+
+    assert x2d._write()
+
+
+# # debugging function
+# if __name__== '__main__':
+#     # test_xml2d_reorder_elem_computational_area_wrong_position()
+#     # test_xml2d_force_fail_incorrect_run_data_variable()
+#     # test_xml2d_append_remove_branch_roughness()
+#     # test_xml2d_add_remove_branch_roughness()
+
