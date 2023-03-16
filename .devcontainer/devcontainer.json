@@ -14,8 +14,8 @@
     "settings": {
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
       "workbench.editorAssociations": {
-        "*.md": "vscode.markdown.preview.editor"
-    //    "*.ipynb": "jupyter-notebook"
+        "*.md": "vscode.markdown.preview.editor",
+        "*.ipynb": "jupyter-notebook"
       }
     }
   }},
