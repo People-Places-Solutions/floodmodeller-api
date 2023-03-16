@@ -1,22 +1,23 @@
+// devontainer json schema https://containers.dev/implementors/json_reference/
+// customisations: https://containers.dev/supporting
 // This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
 {
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-      "openFiles": ["demo/README.md"]
+       "openFiles": ["demo/README.md"]
     },
      "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
-      "extensions": ["ms-python.python"]
-    },
+      "extensions": ["ms-python.python"],
     "settings": {
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
       "workbench.editorAssociations": {
         "*.md": "vscode.markdown.preview.editor"
       }
     }
-  },
+  }},
   "postCreateCommand": "python setup.py develop",
   "postStartCommand": "code demo/01-get-started.ipynb"
 }
