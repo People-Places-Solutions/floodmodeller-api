@@ -6,7 +6,7 @@
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-       "openFiles": ["demo/README.md"]
+       "openFiles": ["demo/01-get-started.ipynb"]
     },
      "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
@@ -15,9 +15,10 @@
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
       "workbench.editorAssociations": {
         "*.md": "vscode.markdown.preview.editor"
+    //    "*.ipynb": "jupyter-notebook"
       }
     }
   }},
-  "postCreateCommand": "python setup.py develop",
-  "postStartCommand": "code demo/01-get-started.ipynb"
+  "postCreateCommand": "python setup.py develop"
+  //"postStartCommand": "code demo/01-get-started.ipynb"
 }
