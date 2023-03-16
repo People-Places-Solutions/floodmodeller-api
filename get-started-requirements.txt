@@ -1,7 +1,0 @@
-pandas
-ipykernel
-jupyter
-tqdm
-lxml
-pytest
-pytest-cov
