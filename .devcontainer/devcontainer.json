@@ -10,7 +10,7 @@
     },
      "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
-      "extensions": ["ms-python.python"],
+      "extensions": ["ms-python.python","ms-toolsai.jupyter"],
     "settings": {
       // Allows you to run code *.md and open a preview of a markdown file instead of the raw text
       "workbench.editorAssociations": {
