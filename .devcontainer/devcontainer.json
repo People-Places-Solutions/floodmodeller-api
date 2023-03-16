@@ -6,23 +6,22 @@
   "name": "Get Started!",
   "customizations": {
     "codespaces": {
-       "openFiles": ["demo/01-get-started.ipynb"]
+      "openFiles": [
+        "README.md"
+      ]
     },
-     "vscode": {
+    "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
       // Python and jupyter
-      "extensions": ["ms-python.python","ms-toolsai.jupyter"],
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ],
       // VS Code settings
-    "settings": {
-      // Allows you to run `code *.md` and open a preview of a markdown file instead of the raw text
-      "workbench.editorAssociations": {
-        "*.md": "vscode.markdown.preview.editor",
-        "*.ipynb": "jupyter-notebook"
-      }
+      "settings": {}
     }
-  }},
+  },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  "postCreateCommand": "python setup.py develop && code demo/README.md"
-  //"postStartCommand": "code demo/01-get-started.ipynb"
+  "postCreateCommand": "python setup.py develop"
 }
