@@ -1,9 +1,7 @@
 import argparse
 from dataclasses import dataclass
 import argparse
-import tkinter as tk
-from tkinter import filedialog
-
+from floodmodeller_api.gui import generate_gui
 
 
 @dataclass()
@@ -19,6 +17,10 @@ class Parameter:
 
     def __hash__(self):
         return hash(self.name)
+    
+    def __repr__(self):
+        return f"Parameter({self.name})"
+
 
 
 class FMTool:
@@ -60,48 +62,12 @@ class FMTool:
         print("Completed")
 
     def run_gui(self):
-        root = tk.Tk()
-        root.title(self.name)
-
-        inputs_frame = tk.Frame(root)
-        inputs_frame.pack(side='top', padx=5, pady=5)
-
-        for input_param in self.parameters:
-            label = tk.Label(inputs_frame, text=input_param.name)
-            label.pack(side='left')
-
-            if input_param.get('type', False):
-                def choose_file():
-                    file_path = filedialog.askopenfilename()
-                    entry.delete(0, tk.END)
-                    entry.insert(0, file_path)
-
-                entry = tk.Entry(inputs_frame)
-                entry.pack(side='left')
-
-                button = tk.Button(inputs_frame, text='Choose file', command=choose_file)
-                button.pack(side='left')
-            else:
-                entry = tk.Entry(inputs_frame)
-                entry.pack(side='left')
-
-            label.config(text=input_param.name + ' *')
-            entry.config(validate='focusout', validatecommand=(entry.register(self.validate_required_entry), '%P'))
-
-        run_button = tk.Button(root, text='Run', command=self.run_gui_callback)
-        run_button.pack(side='bottom')
-
-        root.mainloop()
+        parameters = [(param.name, param.dtype) for param in self.parameters]
+        generate_gui(parameters, run_function = self.run_gui_callback)
 
     def run_gui_callback(self):
         input_kwargs = {}
         for input_param in self.parameters:
-            input_kwargs[input_param.name] = input_param['entry'].get()
-
+            input_kwargs[input_param.name] = input_param.entry.get()
+        
         self.run(**input_kwargs)
-
-    def validate_required_entry(self, text):
-        if not text:
-            return False
-        return True
-
