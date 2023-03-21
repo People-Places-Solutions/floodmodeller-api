@@ -1,7 +1,9 @@
 from floodmodeller_api import XML2D
 
-from typing import TypeVar, Type
-from shapely.geometry import LineString, Polygon
+from typing import TypeVar, Type, Union
+from pathlib import Path
+
+import geopandas as gpd
 
 import math
 
@@ -23,7 +25,7 @@ class DomainConverter2D(ComponentConverter):
         dx: float,
         nrows: int,
         ncols: int,
-        # active_area: Polygon,
+        # active_area: str,
         rotation: float,
     ) -> None:
         self._xml = xml
@@ -53,15 +55,16 @@ class DomainConverter2D(ComponentConverter):
         cls: Type[T],
         xml: XML2D,
         domain_name: str,
-        loc_line: LineString,
+        loc_line_path: Union[str, Path],
         dx: float,
         nx: int,
         ny: int,
     ) -> T:
+        loc_line = gpd.read_file(loc_line_path).geometry[0]
 
         x1, y1 = loc_line.coords[0]
         x2, y2 = loc_line.coords[1]
-
+        
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
             theta_rad += 2 * math.pi
