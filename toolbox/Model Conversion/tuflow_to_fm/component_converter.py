@@ -3,7 +3,6 @@ from floodmodeller_api import XML2D
 from pathlib import Path
 from typing import Union
 from shapely.geometry import LineString
-import geopandas as gpd
 import math
 
 
@@ -56,7 +55,7 @@ class LocLineConverter(Domain2DConverter):
         self._ny = ny
         self._active_area = active_area
 
-    def _transform_settings(self):
+    def _transform_settings(self) -> None:
         x1, y1 = self._loc_line.coords[0]
         x2, y2 = self._loc_line.coords[1]
         self._xll = x1

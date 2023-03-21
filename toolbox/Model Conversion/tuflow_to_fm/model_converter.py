@@ -16,7 +16,7 @@ class ModelConverter:
             try:
                 v.convert()
             except Exception as e:
-                print("Failure")
+                print(f"Failure ({e})")
 
 
 class ModelConverter2D(ModelConverter):
@@ -42,12 +42,13 @@ class TuflowModelConverter2D(ModelConverter2D):
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
+        nx,ny = self._tgc.get_tuple("Grid Size (X,Y)", int)
         self._component_converters["domain"] = LocLineConverter(
             xml=self._xml,
             domain_name="Domain 1",
             loc_line=self._tgc.get_geometry("Read GIS Location"),
             dx=self._tgc.get_value("Cell Size", float),
-            nx=self._tgc.get_tuple("Grid Size (X,Y)", int)[0],
-            ny=self._tgc.get_tuple("Grid Size (X,Y)", int)[1],
+            nx=nx,
+            ny=ny,
             active_area=self._tgc.get_path("Read GIS Code"),
         )

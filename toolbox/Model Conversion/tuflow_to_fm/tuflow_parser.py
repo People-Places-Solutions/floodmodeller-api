@@ -6,10 +6,6 @@ import geopandas as gpd
 
 class TuflowParser:
 
-    COMMENT_SYMBOL = "!"
-    ASSIGNMENT_SYMBOL = "=="
-    LIST_SYMBOL = "|"
-
     def __init__(self, file: Union[str, Path]) -> None:
 
         self._folder = Path(file).parents[0]
@@ -20,33 +16,35 @@ class TuflowParser:
 
             for line in f:
 
-                line = line.partition(self.COMMENT_SYMBOL)[0]
+                line = line.partition("!")[0]
 
                 if line.isspace() or not line:
                     continue
 
-                k, v = line.split(self.ASSIGNMENT_SYMBOL)
+                k, v = line.split("==")
 
                 k = k.strip()
                 v = v.strip()
-                # v = [x.strip() for x in v.split(self.LIST_SYMBOL)]
 
                 self._contents_dict[k] = v
 
-    def _get_raw_value(self, k: str) -> str:
-        return self._contents_dict[k]
+    def _get_raw_value(self, value_name: str) -> str:
+        return self._contents_dict[value_name]
 
-    def get_path(self, k: str) -> Path:
-        return Path.joinpath(self._folder, self._contents_dict[k]).resolve()
+    def get_value(self, value_name: str, value_type: type = str) -> object:
+        return value_type(self._get_raw_value(value_name))
 
-    def get_geodataframe(self, k: str) -> gpd.GeoDataFrame:
-        return gpd.read_file(self.get_path(k))
+    def get_list(self, value_name: str, value_type: type = str, delimiter: str = "|") -> list:
+        return [value_type(x.strip()) for x in self._get_raw_value(value_name).split(delimiter)]
 
-    def get_geometry(self, k: str) -> BaseGeometry:
-        return self.get_geodataframe(k).geometry[0]
+    def get_tuple(self, value_name: str, value_type: type = str, delimiter: str = ",") -> tuple:
+        return tuple(self.get_list(value_name, value_type, delimiter))
 
-    def get_value(self, k: str, value_type: type = str) -> object:
-        return value_type(self._get_raw_value(k))
+    def get_path(self, value_name: str) -> Path:
+        return Path.joinpath(self._folder, self._contents_dict[value_name]).resolve()
 
-    def get_tuple(self, k: str, tuple_type: type) -> tuple:
-        return tuple([tuple_type(x) for x in self._get_raw_value(k).split(",")])
+    def get_geodataframe(self, value_name: str) -> gpd.GeoDataFrame:
+        return gpd.read_file(self.get_path(value_name))
+
+    def get_geometry(self, value_name: str) -> BaseGeometry:
+        return self.get_geodataframe(value_name).geometry[0]
