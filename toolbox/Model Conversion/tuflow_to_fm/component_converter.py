@@ -26,18 +26,27 @@ class DomainConverter2D(ComponentConverter):
         # active_area: Polygon,
         rotation: float,
     ) -> None:
-        xml.domains[domain_name]["computational_area"] = {
-            "xll": xll,
-            "yll": yll,
-            "dx": dx,
-            "nrows": nrows,
-            "ncols": ncols,
-            # "active_area": active_area,
-            "rotation": rotation,
-        }
+        self._xml = xml
+        self._domain_name = domain_name
+        self._xll = xll
+        self._yll = yll
+        self._dx = dx
+        self._nrows = nrows
+        self._ncols = ncols
+        # self._active_area = active_area
+        self._rotation = rotation
 
     def convert(self) -> None:
-        pass
+        self._xml.domains[self._domain_name]["computational_area"] = {
+            "xll": self._xll,
+            "yll": self._yll,
+            "dx": self._dx,
+            "nrows": self._nrows,
+            "ncols": self._ncols,
+            # "active_area": self._active_area,
+            "rotation": self._rotation,
+        }
+        self._xml.update()
 
     @classmethod
     def from_loc_line(
@@ -56,7 +65,6 @@ class DomainConverter2D(ComponentConverter):
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
             theta_rad += 2 * math.pi
-        theta_deg = math.degrees(theta_rad)
 
         return cls(
             xml=xml,
@@ -66,5 +74,5 @@ class DomainConverter2D(ComponentConverter):
             dx=dx,
             nrows=int(nx / dx),
             ncols=int(ny / dx),
-            rotation=theta_deg,
+            rotation=math.degrees(theta_rad),
         )
