@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import Union
 from shapely.geometry.base import BaseGeometry
-
 import geopandas as gpd
 
 
@@ -37,14 +36,17 @@ class TuflowParser:
     def _get_raw_value(self, k: str) -> str:
         return self._contents_dict[k]
 
-    def get_full_path(self, k: str) -> Path:
+    def get_path(self, k: str) -> Path:
         return Path.joinpath(self._folder, self._contents_dict[k]).resolve()
 
-    def get_single_geometry(self, k: str) -> BaseGeometry:
-        return gpd.read_file(self.get_full_path(k)).geometry[0]
+    def get_geodataframe(self, k: str) -> gpd.GeoDataFrame:
+        return gpd.read_file(self.get_path(k))
 
-    def get_float(self, k: str) -> float:
-        return float(self._get_raw_value(k))
+    def get_geometry(self, k: str) -> BaseGeometry:
+        return self.get_geodataframe(k).geometry[0]
 
-    def get_int_tuple(self, k: str) -> tuple:
-        return tuple([int(x) for x in self._get_raw_value(k).split(",")])
+    def get_value(self, k: str, value_type: type = str) -> object:
+        return value_type(self._get_raw_value(k))
+
+    def get_tuple(self, k: str, tuple_type: type) -> tuple:
+        return tuple([tuple_type(x) for x in self._get_raw_value(k).split(",")])
