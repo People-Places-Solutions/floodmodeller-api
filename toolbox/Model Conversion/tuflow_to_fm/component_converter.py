@@ -7,6 +7,10 @@ import math
 
 
 class ComponentConverter:
+    def __init__(self, inputs_folder: Path) -> None:
+        self._inputs_folder = inputs_folder
+        self._inputs_folder.mkdir(parents=True, exist_ok=True)
+
     def convert(self):
         self._transform_settings()
         self._update_file()
@@ -18,8 +22,9 @@ class ComponentConverter:
         raise NotImplementedError()
 
 
-class Domain2DConverter(ComponentConverter):
-    def __init__(self, xml: XML2D, domain_name: str) -> None:
+class ComputationalArea2DConverter(ComponentConverter):
+    def __init__(self, xml: XML2D, inputs_folder: Path, domain_name: str) -> None:
+        super().__init__(inputs_folder)
         self._xml = xml
         self._domain_name = domain_name
 
@@ -36,10 +41,11 @@ class Domain2DConverter(ComponentConverter):
         self._xml.update()
 
 
-class LocLineConverter(Domain2DConverter):
+class LocLineConverter(ComputationalArea2DConverter):
     def __init__(
         self,
         xml: XML2D,
+        inputs_folder: Path,
         domain_name: str,
         loc_line: LineString,
         dx: float,
@@ -47,7 +53,7 @@ class LocLineConverter(Domain2DConverter):
         ny: int,
         active_area: Union[str, Path],
     ) -> None:
-        super().__init__(xml, domain_name)
+        super().__init__(xml, inputs_folder, domain_name)
 
         self._loc_line = loc_line
         self._dx = dx

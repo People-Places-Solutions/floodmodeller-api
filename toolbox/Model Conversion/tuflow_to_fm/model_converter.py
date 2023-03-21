@@ -23,6 +23,7 @@ class ModelConverter2D(ModelConverter):
     def __init__(self, xml_path: Union[str, Path]) -> None:
         super().__init__()
         self._xml = XML2D()
+        self._xml_folder = Path(xml_path).parents[0]
         self._xml.save(xml_path)
 
 
@@ -42,13 +43,13 @@ class TuflowModelConverter2D(ModelConverter2D):
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
-        nx,ny = self._tgc.get_tuple("Grid Size (X,Y)", int)
-        self._component_converters["domain"] = LocLineConverter(
+        self._component_converters["computational_area"] = LocLineConverter(
             xml=self._xml,
+            inputs_folder=Path.joinpath(self._xml_folder, "processed_inputs"),
             domain_name="Domain 1",
             loc_line=self._tgc.get_geometry("Read GIS Location"),
             dx=self._tgc.get_value("Cell Size", float),
-            nx=nx,
-            ny=ny,
+            nx=self._tgc.get_tuple("Grid Size (X,Y)", ",", int)[0],
+            ny=self._tgc.get_tuple("Grid Size (X,Y)", ",", int)[1],
             active_area=self._tgc.get_path("Read GIS Code"),
         )

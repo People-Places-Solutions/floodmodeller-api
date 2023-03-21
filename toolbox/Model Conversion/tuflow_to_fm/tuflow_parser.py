@@ -34,11 +34,11 @@ class TuflowParser:
     def get_value(self, value_name: str, value_type: type = str) -> object:
         return value_type(self._get_raw_value(value_name))
 
-    def get_list(self, value_name: str, value_type: type = str, delimiter: str = "|") -> list:
+    def get_list(self, value_name: str, delimiter: str, value_type: type = str) -> list:
         return [value_type(x.strip()) for x in self._get_raw_value(value_name).split(delimiter)]
 
-    def get_tuple(self, value_name: str, value_type: type = str, delimiter: str = ",") -> tuple:
-        return tuple(self.get_list(value_name, value_type, delimiter))
+    def get_tuple(self, value_name: str, delimiter: str, value_type: type = str) -> tuple:
+        return tuple(self.get_list(value_name, delimiter, value_type))
 
     def get_path(self, value_name: str) -> Path:
         return Path.joinpath(self._folder, self._contents_dict[value_name]).resolve()
