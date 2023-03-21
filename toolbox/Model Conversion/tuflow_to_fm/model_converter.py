@@ -1,6 +1,6 @@
 from floodmodeller_api import XML2D
 from tuflow_parser import TuflowParser
-from component_converter import DomainConverter2D
+from component_converter import LocLineConverter
 
 from pathlib import Path
 from typing import Union
@@ -42,11 +42,11 @@ class TuflowModelConverter2D(ModelConverter2D):
             path = self._tcf.get_full_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
-        self._component_converters["domain"] = DomainConverter2D.from_loc_line(
+        self._component_converters["domain"] = LocLineConverter(
             xml=self._xml,
             domain_name="Domain 1",
-            loc_line_path=self._tgc.get_full_path("Read GIS Location"),
-            dx=float(self._tgc.get_raw_value("Cell Size")),
-            nx=int(self._tgc.get_raw_value("Grid Size (X,Y)").split(",")[0]),
-            ny=int(self._tgc.get_raw_value("Grid Size (X,Y)").split(",")[1]),
+            loc_line=self._tgc.get_single_geometry("Read GIS Location"),
+            dx=self._tgc.get_float("Cell Size"),
+            nx=self._tgc.get_int_tuple("Grid Size (X,Y)")[0],
+            ny=self._tgc.get_int_tuple("Grid Size (X,Y)")[1],
         )
