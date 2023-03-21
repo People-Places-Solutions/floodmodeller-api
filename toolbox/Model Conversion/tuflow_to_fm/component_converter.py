@@ -1,15 +1,12 @@
 from floodmodeller_api import XML2D
 
 from pathlib import Path
-from typing import Union
 from shapely.geometry import LineString
+import geopandas as gpd
 import math
 
 
 class ComponentConverter:
-    def __init__(self, inputs_folder: Path) -> None:
-        self._inputs_folder = inputs_folder
-        self._inputs_folder.mkdir(parents=True, exist_ok=True)
 
     def convert(self):
         self._transform_settings()
@@ -22,10 +19,10 @@ class ComponentConverter:
         raise NotImplementedError()
 
 
-class ComputationalArea2DConverter(ComponentConverter):
+class ComputationalAreaConverter(ComponentConverter):
     def __init__(self, xml: XML2D, inputs_folder: Path, domain_name: str) -> None:
-        super().__init__(inputs_folder)
         self._xml = xml
+        self._inputs_folder = inputs_folder
         self._domain_name = domain_name
 
     def _update_file(self) -> None:
@@ -41,7 +38,7 @@ class ComputationalArea2DConverter(ComponentConverter):
         self._xml.update()
 
 
-class LocLineConverter(ComputationalArea2DConverter):
+class LocLineConverter(ComputationalAreaConverter):
     def __init__(
         self,
         xml: XML2D,
@@ -51,7 +48,7 @@ class LocLineConverter(ComputationalArea2DConverter):
         dx: float,
         nx: int,
         ny: int,
-        active_area: Union[str, Path],
+        active_area: gpd.GeoDataFrame,
     ) -> None:
         super().__init__(xml, inputs_folder, domain_name)
 
@@ -59,7 +56,8 @@ class LocLineConverter(ComputationalArea2DConverter):
         self._dx = dx
         self._nx = nx
         self._ny = ny
-        self._active_area = active_area
+        self._active_area = Path.joinpath(inputs_folder, "active_area.shp")
+        active_area.to_file(self._active_area)
 
     def _transform_settings(self) -> None:
         x1, y1 = self._loc_line.coords[0]
