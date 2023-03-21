@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Union
 
+
 class TuflowParser:
 
     COMMENT_SYMBOL = "!"
