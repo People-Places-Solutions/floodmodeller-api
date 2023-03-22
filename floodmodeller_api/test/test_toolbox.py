@@ -1,6 +1,7 @@
 from floodmodeller_api.toolbox import FMTool, Parameter, Gui
 import pytest
 from unittest.mock import patch, MagicMock
+import tkinter as tk
 
 
 # ------ Define function ----- #
@@ -37,7 +38,9 @@ class SumTool(FMTool):
 def tool():
     return SumTool()
 
+
 # FMTool ---------
+
 
 def test_check_parameters():
     # Test that the check_parameters method raises an exception when two parameters have the same name
@@ -76,7 +79,7 @@ def test_run():
 
 
 def test_run_tool_from_class(tool):
-    assert tool.run(a = 1, b = 2) == 3
+    assert tool.run(a=1, b=2) == 3
 
 
 def test_run_from_command_line():
@@ -92,7 +95,14 @@ def test_run_from_command_line():
             assert param2 == "value2"
 
     with patch(
-        "sys.argv", ["floodmodeller_api/test/test_tools.py", "--param1", "value1", "--param2", "value2"]
+        "sys.argv",
+        [
+            "floodmodeller_api/test/test_tools.py",
+            "--param1",
+            "value1",
+            "--param2",
+            "value2",
+        ],
     ):
         MyTool().run_from_command_line()
 
@@ -100,11 +110,43 @@ def test_run_from_command_line():
 # def GUI ----------------
 def test_gui_input_widgets(tool):
     tool.generate_gui()
-    assert [param.name for param in tool.parameters] == [name for name in tool.app.root_entries.keys()]
+    assert [param.name for param in tool.parameters] == [
+        name for name in tool.app.root_entries.keys()
+    ]
 
 
 def test_gui_run_callback(tool):
     tool.generate_gui()
-    tool.app.root_entries["a"].get = MagicMock(return_value = 2)
-    tool.app.root_entries["b"].get = MagicMock(return_value = 5)
+    tool.app.root_entries["a"].get = MagicMock(return_value=2)
+    tool.app.root_entries["b"].get = MagicMock(return_value=5)
     assert tool.app.run_gui_callback() == 7
+
+
+def test_gui_without_FMTool():
+    parameters = [
+        Parameter(
+            name="a",
+            dtype=float,
+            description="the first number",
+            help_text="",
+            required=True,
+        ),
+        Parameter(
+            name="b",
+            dtype=float,
+            description="the second number",
+            help_text="",
+            required=True,
+        ),
+    ]
+    my_gui = Gui(
+        master=tk.Tk(),
+        title="My App",
+        description="My Description",
+        parameters=parameters,
+        run_function=my_sum,
+    )
+    my_gui.root_entries["a"].get = MagicMock(return_value=2)
+    my_gui.root_entries["b"].get = MagicMock(return_value=5)
+
+    assert my_gui.run_gui_callback() == 7
