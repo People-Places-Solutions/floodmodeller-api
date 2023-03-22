@@ -131,6 +131,66 @@ valid.
 An XML2D instance can be updated in place and saved in the same way as for all other files
 supported by the API using the ``.update()`` and ``.save()`` methods respectively.
 
+Add and remove functionality
+--------------------------------
+We can update the xml file directly from the API by adding and removing properties. 
+Imagine that we start with an almost blank xml file that passes the validation, 
+
+.. code:: python
+
+    model = XML2D()
+
+First we can change a variable that already exists. For instance we can change the value of 
+the topography,
+
+.. code:: python
+
+    model.domains[domain_name]["topography"] = 'path/to/my_topography.asc'
+
+We can edit any value that is already in the xml tree in the same way by overwritting it, another 
+example is we can change the end time of the computation,
+
+.. code:: python
+
+    model.domains[domain_name]["time"]["total"] = 1.00
+
+We can also add information to a key that does not exist yet, such as roughness. We first begin 
+by defining an empty list and then populate it with a dictionary, we can keep appending so we have 
+as many dictionaries in a list as we want,
+
+.. code:: python
+    
+    model.domains[domain_name]["roughness"] = [] # created an empty list we can append dictionaries to
+    model.domains[domain_name]["roughness"].append(
+        {'type': 'file', 'law': 'manning', 'value': 'path/to/my_roughness_file.shp'}
+    )
+    # adding second roughness file.
+    model.domains[domain_name]["roughness"].append(
+        {'type': 'file', 'law': 'manning', 'value': 'path/to/my_second_roughness_file.shp'}
+    )
+
+If we wanted to edit one of the roughness values then we would need to use the list indexing, to 
+change the file for the first roughness,
+
+.. code:: python
+
+    model.domains[domain_name]["roughness"][0]["value"] = 'path/to/my_new_roughness_file.shp'
+
+To remove values or keys from the xml file we can use ``del ...`` followed by the part you want to 
+remove. If we want to remove the second roughness entry for instance then,
+
+.. code:: python
+
+    del model.domains[domain_name]["roughness"][1]
+
+Further, we can remove all information relating to the key roughness,
+
+.. code:: python
+
+    del model.domains[domain_name]["roughness"]
+
+
+
 Reference
 --------------
 .. autoclass:: floodmodeller_api.XML2D
