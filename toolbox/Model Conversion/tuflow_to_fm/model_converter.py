@@ -4,19 +4,30 @@ from component_converter import LocLineConverter
 
 from pathlib import Path
 from typing import Union
+import logging
 
 
 class ModelConverter:
     def __init__(self) -> None:
+        logging.basicConfig(
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.INFO,
+        )
+        self._logger = logging.getLogger("model_converter")
+        
         self._component_converters = {}
 
     def convert(self):
         for k, v in self._component_converters.items():
-            print(f"Converting {k}...")
+            self._logger.info(f"converting [{k}]...")
             try:
                 v.convert()
-            except Exception as e:
-                print(f"Failure ({e})")
+                self._logger.info("success")
+            except Exception:
+                self._logger.error("failure")
+                self._logger.debug("", exc_info=True)
+                # self._logger.exception("failure")
 
 
 class ModelConverter2D(ModelConverter):
@@ -56,8 +67,8 @@ class TuflowModelConverter2D(ModelConverter2D):
         loc_line = self._tgc.get_single_geometry("Read GIS Location")
         dx = self._tgc.get_value("Cell Size", float)
         nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
-        
-        all_areas = self._tgc.get_all_geodataframes("Read GIS Code", lower_case = True)
+
+        all_areas = self._tgc.get_all_geodataframes("Read GIS Code", lower_case=True)
         active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
         deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
 
