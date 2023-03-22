@@ -5,7 +5,7 @@
 import sys
 import os
 from pathlib import Path
-import plotly.graph_objects as go
+import plotly.graph_objects as go   
 from  floodmodeller_api import ZZN
 
 
@@ -53,9 +53,19 @@ def flow_graph(zzn_file:Path):
                 name = 'Node'
             )])
             
-    return fig
+    # Save chart to HTML file
+    fig.write_html(Path(zzn_file.parent, f'{zzn_file.stem}_interactive_flow.html'))
 
-from floodmodeller_api.tools import FMTool, Parameter
+from floodmodeller_api.toolbox import FMTool, Parameter
 
 class InteractiveFlow(FMTool):
-    pass
+    name = "Visualise Flow Graph"
+    description = "This tool reads a zzn_file and visualises the flow graph"
+    parameters = [
+        Parameter("zzn_file", str)
+    ]
+    tool_function = flow_graph
+
+
+tool = InteractiveFlow()
+tool.run_gui()

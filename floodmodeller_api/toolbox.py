@@ -3,6 +3,41 @@ from dataclasses import dataclass
 import argparse
 import tkinter as tk
 
+
+@dataclass()
+class Parameter:
+    """Class to represent an FM Tool parameter.
+    There should be one parameter for each argument of the tool_function function
+
+    Attributes:
+        name (str): The name of the parameter.
+        dtype (type): The expected data type of the parameter.
+        description (str): A description of the parameter.
+        help_text (str): The help text to be displayed for the parameter.
+        required (bool): A flag indicating whether the parameter is required or optional. Default is True.
+
+    Methods:
+        __eq__: Compare two parameters by their name attribute.
+        __hash__: Return the hash value of the parameter name.
+        __repr__: Return a string representation of the parameter.
+
+    """
+    name:str
+    dtype:type
+    description:str = None
+    help_text:str = None
+    required:bool = True
+
+    def __eq__(self, other: object) -> bool:
+        self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
+    
+    def __repr__(self):
+        return f"Parameter({self.name})"
+
+
 def validate_int(value):
     """Function to validate integer input.
 
@@ -37,38 +72,79 @@ def validate_float(value):
         else:
             return False
 
-@dataclass()
-class Parameter:
-    """Class to represent an FM Tool parameter.
-    There should be one parameter for each argument of the tool_function function
 
-    Attributes:
-        name (str): The name of the parameter.
-        dtype (type): The expected data type of the parameter.
-        description (str): A description of the parameter.
-        help_text (str): The help text to be displayed for the parameter.
-        required (bool): A flag indicating whether the parameter is required or optional. Default is True.
 
-    Methods:
-        __eq__: Compare two parameters by their name attribute.
-        __hash__: Return the hash value of the parameter name.
-        __repr__: Return a string representation of the parameter.
+class Gui:
+    """
+    Method to generate a Tkinter graphical user interface (GUI).
+    This method generates a GUI based upon a function, its parameters, as well as descriptive properties  allowing any tool  to be 
+    run from a GUI rather than as python code. 
+
+    Args:
+        master (tkinter.Tk): a tkinter root object. Contains app methods and attributes
+        title (str): The Apps title
+        description (str): A description of the application
+        parameters (list[Parameter]): a list of parameters. This is used to generate the input boxes and pass kwargs to the run function
+        run_function (function): a function that should be run by the app
 
     """
-    name:str
-    dtype:type
-    description:str = None
-    help_text:str = None
-    required:bool = True
+    def __init__(self, master:tk.Tk, title:str, description:str, parameters:list[Parameter], run_function):
+        self.master = master
+        self.master.title(title)
+        #self.master.resizable(False, False)
+        self.master.geometry("400x300")
+        self.master.configure(bg='#f5f5f5')
+        self.parameters = parameters
+        self.run_function = run_function
+        self.create_widgets(description)
 
-    def __eq__(self, other: object) -> bool:
-        self.name == other.name
-
-    def __hash__(self):
-        return hash(self.name)
+    def create_widgets(self, description):
+        # Create and place the description label
+        desc_label = tk.Label(self.master, text=description, font=("Arial", 14), bg='#f5f5f5')
+        desc_label.pack(pady=(20, 10))
+        # Run the method to add inputs based upon parameters
+        self.add_inputs()
+        # Create and place the button
+        self.button = tk.Button(self.master, text="Run", font=("Arial", 14), command=self.run_function)
+        self.button.pack(pady=10)
+        # Add other widgets to the app
+        ### 
     
-    def __repr__(self):
-        return f"Parameter({self.name})"
+    def add_inputs(self):
+        """
+        Method to add inputs widgets to the app based upon parameters.
+
+        This method adds an input widget to the app for each parameter.
+        """
+        # Extract the parameters to a list to iterate through
+        parameters = [(param.name, param.dtype) for param in self.parameters]
+
+        # Create a label and entry box for each parameter
+        # Adding the input boxes as a class attribute dictionary 
+        # this enables us to easily get the values of in each input box and pass them to 
+        # the run function. It also makes it easier to debug since you can create an instance, generate the GUI
+        # and then inspect the attributes.
+        self.root_entries = {}
+        for name, data_type in parameters:
+            label = tk.Label(self.master, text=name, anchor="w")
+            label.pack()
+            # Conditional stuff to add validation for different data types.
+            # This ensures that you can't enter text if the input should be a number, etc.
+            if data_type == str:
+                entry = tk.Entry(self.master)
+            elif data_type == int:
+                entry = tk.Entry(self.master, validate="key")
+                entry.config(validatecommand=(entry.register(validate_int), "%P"))
+            elif data_type == float:
+                entry = tk.Entry(self.master, validate="key")
+                entry.config(validatecommand=(entry.register(validate_float), "%P"))
+            else:
+                raise ValueError("Invalid data type")
+            entry.pack()
+            self.root_entries[name] = entry
+        
+        # TODO: Add a progress bar if appropriate
+        # TODO: Present some useful information: either tool outputs or logs
 
 
 
@@ -186,64 +262,22 @@ class FMTool:
         self.run(**input_kwargs)
         print("Completed")
         # Return nothing
-        
+
     def generate_gui(self):
-        # This function generates the GUI based on the provided list of parameter names and their data types
         """
-        Method to generate a Tkinter graphical user interface (GUI) for the tool.
-
-        This method generates a GUI based upon the function parameters, allowing any tool  to be 
-        run from a GUI rather than as python code. The method adds the GUI root as a class attribute
+        Method to build the GUI
         """
-        # Create the main window
-        self.root = tk.Tk()
-        self.root.title("Input Parameters")
-
-        # Extract the parameters to a list to iterate through
-        parameters = [(param.name, param.dtype) for param in self.parameters]
-
-        # Create a label and entry box for each parameter
-        # Adding the input boxes as a class attribute dictionary 
-        # this enables us to easily get the values of in each input box and pass them to 
-        # the run function. It also makes it easier to debug since you can create an instance, generate the GUI
-        # and then inspect the attributes.
-        self.root_entries = {}
-        for name, data_type in parameters:
-            label = tk.Label(self.root, text=name)
-            label.pack()
-            # Conditional stuff to add validation for different data types.
-            # This ensures that you can't enter text if the input should be a number, etc.
-            if data_type == str:
-                entry = tk.Entry(self.root)
-            elif data_type == int:
-                entry = tk.Entry(self.root, validate="key")
-                entry.config(validatecommand=(entry.register(validate_int), "%P"))
-            elif data_type == float:
-                entry = tk.Entry(self.root, validate="key")
-                entry.config(validatecommand=(entry.register(validate_float), "%P"))
-            else:
-                raise ValueError("Invalid data type")
-            entry.pack()
-            self.root_entries[name] = entry
-        
-        # TODO: Add some formatting to improve GUI
-        # TODO: Add tool name, description etc
-        # TODO: Add a progress bar if appropriate
-        # TODO: Present some useful information: either tool outputs or logs
-
-        # Create the "Run" button
-        run_button = tk.Button(self.root, text="Run", command=self.run_gui_callback)
-        run_button.pack()
-
-
+        root = tk.Tk()
+        self.app = Gui(root, title = self.name, description = self.description, parameters=self.parameters, run_function=self.run_gui_callback)
+    
     def run_gui(self):
         """
         Method to run the GUI
         """
         self.generate_gui()
-        # Start the main loop to display the GUI
-        self.root.mainloop()
+        self.app.master.mainloop()
 
+    # TODO: move this to the gui class
     def run_gui_callback(self):
         """
         Method to run the gui callback function. 
@@ -254,7 +288,7 @@ class FMTool:
         input_kwargs = {}
         for input_param in self.parameters:
             # Get the parameter value but subsetting the dictionary of GUI entry points (text boxes)
-            input_var = self.root_entries[input_param.name].get()
+            input_var = self.app.root_entries[input_param.name].get()
             # Assert that the value (which is initially a string) is the right type
             # insert the value to the input_kwargs dictionary to pass to the run function
             input_kwargs[input_param.name] = input_param.dtype(input_var)

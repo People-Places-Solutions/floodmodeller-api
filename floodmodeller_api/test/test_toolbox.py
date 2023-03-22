@@ -1,4 +1,4 @@
-from floodmodeller_api.tools import FMTool, Parameter
+from floodmodeller_api.toolbox import FMTool, Parameter
 import pytest
 from unittest.mock import patch
 
@@ -42,11 +42,6 @@ def test_function_works(tool):
     assert tool.run(a=1, b=2) == 3
 
 
-def test_tool_functions(tool):
-    tool.generate_gui()
-    [param.name for param in tool.parameters] == [
-        name for name in tool.root_entries.keys()
-    ]
 
 
 def test_check_parameters():
@@ -100,40 +95,11 @@ def test_run_from_command_line():
         MyTool().run_from_command_line()
 
 
-
-def test_generate_gui():
-    # Test that the generate_gui method creates the correct widgets
-    class MyTool(FMTool):
-        parameters = [
-            Parameter(
-                name="param1",
-                dtype=str,
-                description="Description 1",
-                help_text="Help text 1",
-            ),
-            Parameter(
-                name="param2",
-                dtype=int,
-                description="Description 2",
-                help_text="Help text 2",
-            ),
-        ]
-
-    tool = MyTool()
-    tool.generate_gui()
-
-    # Check that the window title is correct
-    assert tool.root.title() == "Input Parameters"
-
-    # Check that there is a label and an entry box for each parameter
-    assert len(tool.root_entries) == 2
-    assert tool.root_entries["param1"].winfo_class() == "Entry"
-    assert tool.root_entries["param2"].winfo_class() == "Entry"
-
-
 def test_run_gui_callback():
     # Test that the run_gui_callback method reads the input values from the GUI correctly
     class MyTool(FMTool):
+        name = "My Tool"
+        description = "A really cool tool!"
         parameters = [
             Parameter(
                 name="param1",
@@ -156,10 +122,9 @@ def test_run_gui_callback():
 
     tool = MyTool()
     tool.generate_gui()
-
     # Set the values of the input widgets
-    tool.root_entries["param1"].insert(0, "value1")
-    tool.root_entries["param2"].insert(0, "42")
+    tool.app.root_entries["param1"].insert(0, "value1")
+    tool.app.root_entries["param2"].insert(0, "42")
 
     # Call the callback function and check that the tool_function method is called with the correct arguments
     with patch.object(tool, "run") as mock_run:
