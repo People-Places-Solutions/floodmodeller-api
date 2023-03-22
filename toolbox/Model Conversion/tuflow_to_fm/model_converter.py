@@ -25,9 +25,9 @@ class ModelConverter:
                 v.convert()
                 self._logger.info("success")
             except Exception:
-                self._logger.error("failure")
-                self._logger.debug("", exc_info=True)
-                # self._logger.exception("failure")
+                # self._logger.error("failure")
+                # self._logger.debug("", exc_info=True)
+                self._logger.exception("failure")
 
 
 class ModelConverter2D(ModelConverter):

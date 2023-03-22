@@ -7,7 +7,6 @@ import math
 
 
 class ComponentConverter:
-
     def convert(self):
         self._process_settings()
         self._update_file()
@@ -20,6 +19,16 @@ class ComponentConverter:
 
 
 class ComputationalAreaConverter(ComponentConverter):
+
+    _xll: float
+    _yll: float
+    _dx: float
+    _nrows: int
+    _ncols: int
+    _active_area: Path
+    _deactive_area: Path
+    _rotation: int
+
     def __init__(self, xml: XML2D, inputs_folder: Path, domain_name: str) -> None:
         self._xml = xml
         self._inputs_folder = inputs_folder
