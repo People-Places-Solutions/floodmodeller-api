@@ -44,18 +44,31 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         self._tcf = TuflowParser(tcf_path)
         for k, v in self.TCF_FILE_NAMES.items():
-            path = self._tcf.get_final_path(v)
+            path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
-        print(self._tgc.get_final_geodataframe_tuple("Read GIS Z Shape"))
+        self._init_computational_area()
+
+    def _init_computational_area(self):
+        xml = self._xml
+        inputs_folder = self._inputs_folder
+        domain_name = "Domain 1"
+        loc_line = self._tgc.get_single_geometry("Read GIS Location")
+        dx = self._tgc.get_value("Cell Size", float)
+        nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
+        
+        all_areas = self._tgc.combine_all_geodataframes("Read GIS Code", lower_case = True)
+        active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
+        deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
 
         self._component_converters["computational_area"] = LocLineConverter(
-            xml=self._xml,
-            inputs_folder=self._inputs_folder,
-            domain_name="Domain 1",
-            loc_line=self._tgc.get_final_single_geometry("Read GIS Location"),
-            dx=self._tgc.get_final_value("Cell Size", float),
-            nx=self._tgc.get_final_tuple("Grid Size (X,Y)", ",", int)[0],
-            ny=self._tgc.get_final_tuple("Grid Size (X,Y)", ",", int)[1],
-            active_area=self._tgc.get_final_geodataframe("Read GIS Code"),
+            xml=xml,
+            inputs_folder=inputs_folder,
+            domain_name=domain_name,
+            loc_line=loc_line,
+            dx=dx,
+            nx=nx,
+            ny=ny,
+            active_area=active_area,
+            deactive_area=deactive_area,
         )

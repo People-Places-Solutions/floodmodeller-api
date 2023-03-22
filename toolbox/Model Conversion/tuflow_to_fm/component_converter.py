@@ -33,6 +33,7 @@ class ComputationalAreaConverter(ComponentConverter):
             "nrows": self._nrows,
             "ncols": self._ncols,
             "active_area": self._active_area,
+            "deactive_area": self._deactive_area,
             "rotation": self._rotation,
         }
         self._xml.update()
@@ -49,6 +50,7 @@ class LocLineConverter(ComputationalAreaConverter):
         nx: int,
         ny: int,
         active_area: gpd.GeoDataFrame,
+        deactive_area: gpd.GeoDataFrame,
     ) -> None:
         super().__init__(xml, inputs_folder, domain_name)
 
@@ -57,7 +59,9 @@ class LocLineConverter(ComputationalAreaConverter):
         self._nx = nx
         self._ny = ny
         self._active_area = Path.joinpath(inputs_folder, "active_area.shp")
+        self._deactive_area = Path.joinpath(inputs_folder, "deactive_area.shp")
         active_area.to_file(self._active_area)
+        deactive_area.to_file(self._deactive_area)
 
     def _transform_settings(self) -> None:
         x1, y1 = self._loc_line.coords[0]
