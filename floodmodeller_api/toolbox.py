@@ -105,7 +105,7 @@ class Gui:
         # Run the method to add inputs based upon parameters
         self.add_inputs()
         # Create and place the button
-        self.button = tk.Button(self.master, text="Run", font=("Arial", 14), command=self.run_function)
+        self.button = tk.Button(self.master, text="Run", font=("Arial", 14), command=self.run_gui_callback)
         self.button.pack(pady=10)
         # Add other widgets to the app
         ### 
@@ -145,6 +145,23 @@ class Gui:
         
         # TODO: Add a progress bar if appropriate
         # TODO: Present some useful information: either tool outputs or logs
+    
+    def run_gui_callback(self):
+        """
+        Method to run the gui callback function. 
+
+        This extracts the parameter values from the GUI and passes them to the run function. It is triggered using
+        the run button in the GUI.
+        """
+        input_kwargs = {}
+        for input_param in self.parameters:
+            # Get the parameter value but subsetting the dictionary of GUI entry points (text boxes)
+            input_var = self.root_entries[input_param.name].get()
+            # Assert that the value (which is initially a string) is the right type
+            # insert the value to the input_kwargs dictionary to pass to the run function
+            input_kwargs[input_param.name] = input_param.dtype(input_var)
+        # Run the callback function
+        return self.run_function(**input_kwargs)
 
 
 
@@ -268,7 +285,7 @@ class FMTool:
         Method to build the GUI
         """
         root = tk.Tk()
-        self.app = Gui(root, title = self.name, description = self.description, parameters=self.parameters, run_function=self.run_gui_callback)
+        self.app = Gui(root, title = self.name, description = self.description, parameters=self.parameters, run_function=self.run)
     
     def run_gui(self):
         """
@@ -276,22 +293,4 @@ class FMTool:
         """
         self.generate_gui()
         self.app.master.mainloop()
-
-    # TODO: move this to the gui class
-    def run_gui_callback(self):
-        """
-        Method to run the gui callback function. 
-
-        This extracts the parameter values from the GUI and passes them to the run function. It is triggered using
-        the run button in the GUI.
-        """
-        input_kwargs = {}
-        for input_param in self.parameters:
-            # Get the parameter value but subsetting the dictionary of GUI entry points (text boxes)
-            input_var = self.app.root_entries[input_param.name].get()
-            # Assert that the value (which is initially a string) is the right type
-            # insert the value to the input_kwargs dictionary to pass to the run function
-            input_kwargs[input_param.name] = input_param.dtype(input_var)
-        # Run the callback function
-        return self.run(**input_kwargs)
 
