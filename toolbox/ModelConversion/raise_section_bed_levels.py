@@ -26,10 +26,10 @@ class RaiseBedLevelsTool(FMTool):
         Parameter(name="dat_output", dtype=str, description="Path to output  DAT file", help_text="Not helpful text", required=True),
         Parameter(name="min_level_m", dtype=float,  description="Minimum bed level to raise to (in meters)", help_text="Not helpful text", required=True)
     ]
-    entry_point = raise_section_bed_levels
+    tool_function = raise_section_bed_levels
 
-#tool = RaiseBedLevelsTool()
-#tool.run_gui()
+tool = RaiseBedLevelsTool()
+tool.run_gui()
 
 if __name__ == "__main__":
     tool = RaiseBedLevelsTool()

@@ -4,9 +4,9 @@ This toolbox served as a place to store and maintain production-ready tools that
 Tools will sit under the following categories:
 |Category | Description |
 |---------|-------------|
-|[Results Analysis](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/Results%20Analysis)| Details
-|[Model Build](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/Model%20Build)| Details
-|[Model Conversion](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/Model%20Conversion)| Details
+|[Results Analysis](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ResultsAnalysis)| Details
+|[Model Build](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ModelBuild)| Details
+|[Model Conversion](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ModelConversion)| Details
 |[Visualisation](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/Visualisation)| Details
 
 These tools act as standalone scripts. To run them, please read the available documentation for each tool. 
@@ -17,3 +17,12 @@ There are several reasons why these tools are kept separate from the main Flood 
 2. Reason two
 3. ...
 
+# Developing Custom Tools
+You can develop your own tools to integrate with the Flood Modeller Python API!
+
+There are a few conventions you need to follow to do this.
+- Add a python file to one of the directories in the toolbox
+- Within the file, define the tool as single function
+- Within the same file, create a child class of FMTool, passing in the tool name and description, funciton to be run and the function parameters
+
+See the [example_tool.py](example_tool.py) script for an example of how to do this.
