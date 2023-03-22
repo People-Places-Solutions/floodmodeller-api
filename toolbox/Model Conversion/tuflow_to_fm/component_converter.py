@@ -9,10 +9,10 @@ import math
 class ComponentConverter:
 
     def convert(self):
-        self._transform_settings()
+        self._process_settings()
         self._update_file()
 
-    def _transform_settings(self):
+    def _process_settings(self):
         raise NotImplementedError()
 
     def _update_file(self):
@@ -63,7 +63,7 @@ class LocLineConverter(ComputationalAreaConverter):
         active_area.to_file(self._active_area)
         deactive_area.to_file(self._deactive_area)
 
-    def _transform_settings(self) -> None:
+    def _process_settings(self) -> None:
         x1, y1 = self._loc_line.coords[0]
         x2, y2 = self._loc_line.coords[1]
         self._xll = x1
@@ -74,4 +74,4 @@ class LocLineConverter(ComputationalAreaConverter):
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
             theta_rad += 2 * math.pi
-        self._rotation = math.degrees(theta_rad)
+        self._rotation = round(math.degrees(theta_rad))

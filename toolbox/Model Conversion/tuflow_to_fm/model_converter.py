@@ -57,7 +57,7 @@ class TuflowModelConverter2D(ModelConverter2D):
         dx = self._tgc.get_value("Cell Size", float)
         nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
         
-        all_areas = self._tgc.combine_all_geodataframes("Read GIS Code", lower_case = True)
+        all_areas = self._tgc.get_all_geodataframes("Read GIS Code", lower_case = True)
         active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
         deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
 
