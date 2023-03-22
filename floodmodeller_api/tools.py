@@ -3,10 +3,6 @@ from dataclasses import dataclass
 import argparse
 import tkinter as tk
 
-
-
-
-
 def validate_int(value):
     # This function is used to validate integer input
     if value.isdigit():
@@ -31,8 +27,8 @@ def validate_float(value):
 class Parameter:
     name:str
     dtype:type
-    description:str
-    help_text:str
+    description:str = None
+    help_text:str = None
     required:bool = True
 
     def __eq__(self, other: object) -> bool:
@@ -69,7 +65,7 @@ class FMTool:
     # TODO: Explain why using a class method
     @classmethod
     def run(cls, **kwargs):
-        cls.entry_point(**kwargs)
+        return cls.entry_point(**kwargs)
 
     def run_from_command_line(self):
         parser = argparse.ArgumentParser(description=self.description)
@@ -131,5 +127,5 @@ class FMTool:
             input_var_typed = input_param.dtype(input_var)
             input_kwargs[input_param.name] = input_var_typed
         
-        self.run(**input_kwargs)
+        return self.run(**input_kwargs)
 

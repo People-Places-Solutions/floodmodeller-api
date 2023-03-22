@@ -1,2 +1,0 @@
-
-python toolbox/ModelConversion/raise_section_bed_levels.py --dat_input "sample_scripts/sample_data/EX3.DAT" --dat_output "sample_scripts/sample_data/EX3_2.DAT" --min_level 0.3
