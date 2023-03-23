@@ -8,14 +8,16 @@ import logging
 
 
 class ModelConverter:
-    def __init__(self) -> None:
+    def __init__(self, log_file: Union[str, Path]) -> None:
+
         logging.basicConfig(
+            filename=log_file,
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
             level=logging.INFO,
         )
         self._logger = logging.getLogger("model_converter")
-        
+
         self._component_converters = {}
 
     def convert(self):
@@ -31,8 +33,8 @@ class ModelConverter:
 
 
 class ModelConverter2D(ModelConverter):
-    def __init__(self, xml_path: Union[str, Path]) -> None:
-        super().__init__()
+    def __init__(self, xml_path: Union[str, Path], log_file: Union[str, Path]) -> None:
+        super().__init__(log_file)
 
         self._xml = XML2D()
         self._xml.save(xml_path)
@@ -50,8 +52,13 @@ class TuflowModelConverter2D(ModelConverter2D):
         "ecf": "ESTRY Control File",
     }
 
-    def __init__(self, tcf_path: Union[str, Path], xml_path: Union[str, Path]) -> None:
-        super().__init__(xml_path)
+    def __init__(
+        self,
+        tcf_path: Union[str, Path],
+        xml_path: Union[str, Path],
+        log_file: Union[str, Path],
+    ) -> None:
+        super().__init__(xml_path, log_file)
 
         self._tcf = TuflowParser(tcf_path)
         for k, v in self.TCF_FILE_NAMES.items():

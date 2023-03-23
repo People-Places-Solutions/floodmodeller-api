@@ -65,6 +65,10 @@ class TuflowParser:
 
     def get_all_geodataframes(self, val_name: str, lower_case: bool = False) -> gpd.GeoDataFrame:
         gpd_path_list_len = len(self._contents_dict[val_name])
-        gpd_list = [self._concat_geodataframe_tuple(self.get_tuple(val_name, "|", index=i), lower_case) for i in range(gpd_path_list_len)]
+        gpd_list = [
+            self._concat_geodataframe_tuple(
+                self.get_tuple(val_name, "|", index=i), lower_case
+            ) for i in range(gpd_path_list_len)
+        ]
         gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_list, ignore_index=True))
         return gpd_concat

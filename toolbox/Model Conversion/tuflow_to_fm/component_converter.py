@@ -8,10 +8,10 @@ import math
 
 class ComponentConverter:
     def convert(self):
-        self._process_settings()
+        self._preprocess_settings()
         self._update_file()
 
-    def _process_settings(self):
+    def _preprocess_settings(self):
         raise NotImplementedError()
 
     def _update_file(self):
@@ -72,7 +72,7 @@ class LocLineConverter(ComputationalAreaConverter):
         active_area.to_file(self._active_area)
         deactive_area.to_file(self._deactive_area)
 
-    def _process_settings(self) -> None:
+    def _preprocess_settings(self) -> None:
         x1, y1 = self._loc_line.coords[0]
         x2, y2 = self._loc_line.coords[1]
         self._xll = x1
