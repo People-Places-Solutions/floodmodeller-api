@@ -8,6 +8,9 @@ import logging
 
 
 class ModelConverter:
+
+    _cc_dict: dict
+
     def __init__(self, log_file: Union[str, Path]) -> None:
 
         logging.basicConfig(
@@ -19,44 +22,9 @@ class ModelConverter:
         )
         self._logger = logging.getLogger("model_converter")
 
-
-class ModelConverter2D(ModelConverter):
-    def __init__(self, xml_path: Union[str, Path], log_file: Union[str, Path]) -> None:
-        super().__init__(log_file)
-
-        self._xml = XML2D()
-        self._xml.save(xml_path)
-
-        xml_folder = Path(xml_path).parents[0]
-        self._inputs_folder = Path.joinpath(xml_folder, "processed_inputs")
-        self._inputs_folder.mkdir(parents=True, exist_ok=True)
-
-
-class TuflowModelConverter2D(ModelConverter2D):
-
-    TCF_FILE_NAMES = {
-        "tgc": "Geometry Control File",
-        "tbc": "BC Control File",
-        "ecf": "ESTRY Control File",
-    }
-
-    def __init__(
-        self,
-        tcf_path: Union[str, Path],
-        xml_path: Union[str, Path],
-        log_file: Union[str, Path],
-    ) -> None:
-        super().__init__(xml_path, log_file)
-
-        self._tcf = TuflowParser(tcf_path)
-        for k, v in self.TCF_FILE_NAMES.items():
-            path = self._tcf.get_path(v)
-            setattr(self, f"_{k}", TuflowParser(path))
-
-        self._convert_one_component(
-            "computational area",
-            {"loc line": self._create_loc_line_cc},
-        )
+    def convert_model(self):
+        for k, v in self._cc_dict.items():
+            self._convert_one_component(k, v)
 
     def _convert_one_component(
         self,
@@ -65,9 +33,9 @@ class TuflowModelConverter2D(ModelConverter2D):
     ):
         self._logger.info(f"start converting {cc_class}")
 
-        for cc_subtype, cc_factory in cc_subclasses.items():
+        for cc_subclass, cc_factory in cc_subclasses.items():
 
-            self._logger.info(f"trying {cc_subtype}")
+            self._logger.info(f"trying {cc_subclass}")
 
             try:
                 cc = cc_factory()
@@ -92,6 +60,47 @@ class TuflowModelConverter2D(ModelConverter2D):
             return
 
         self._logger.info(f"failure converting {cc_class}")
+
+
+class ModelConverter2D(ModelConverter):
+    def __init__(self, xml_path: Union[str, Path], log_file: Union[str, Path]) -> None:
+
+        super().__init__(log_file)
+
+        self._xml = XML2D()
+        self._xml.save(xml_path)
+
+        xml_folder = Path(xml_path).parents[0]
+        self._inputs_folder = Path.joinpath(xml_folder, "processed_inputs")
+        self._inputs_folder.mkdir(parents=True, exist_ok=True)
+
+
+class TuflowModelConverter2D(ModelConverter2D):
+
+    TCF_FILE_NAMES = {
+        "tgc": "Geometry Control File",
+        "tbc": "BC Control File",
+        "ecf": "ESTRY Control File",
+    }
+
+    def __init__(
+        self,
+        tcf_path: Union[str, Path],
+        xml_path: Union[str, Path],
+        log_file: Union[str, Path],
+    ) -> None:
+
+        super().__init__(xml_path, log_file)
+
+        self._tcf = TuflowParser(tcf_path)
+        for k, v in self.TCF_FILE_NAMES.items():
+            path = self._tcf.get_path(v)
+            setattr(self, f"_{k}", TuflowParser(path))
+
+        self._cc_dict = {
+            "computational area": {"loc line": self._create_loc_line_cc},
+            "COMPUTATIONAL AREA": {"LOC LINE": self._create_loc_line_cc},
+        }
 
     def _create_loc_line_cc(self):
 
