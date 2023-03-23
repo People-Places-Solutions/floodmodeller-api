@@ -1,6 +1,6 @@
 from floodmodeller_api import XML2D
 from tuflow_parser import TuflowParser
-from component_converter import LocLineConverter
+from component_converter import LocLineConverter, PointsConverter
 
 from pathlib import Path
 from typing import Union
@@ -99,7 +99,7 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         self._cc_dict = {
             "computational area": {"loc line": self._create_loc_line_cc},
-            "COMPUTATIONAL AREA": {"LOC LINE": self._create_loc_line_cc},
+            "topography": {"points": self._create_points_cc},
         }
 
     def _create_loc_line_cc(self):
@@ -127,6 +127,22 @@ class TuflowModelConverter2D(ModelConverter2D):
             ny=ny,
             active_area=active_area,
             deactive_area=deactive_area,
+        )
+
+        return cc
+
+    def _create_points_cc(self):
+
+        xml = self._xml
+        inputs_folder = self._inputs_folder
+        domain_name = "Domain 1"
+        raster = self._tgc.get_path("Read GRID Zpts")
+
+        cc = PointsConverter(
+            xml=xml,
+            inputs_folder=inputs_folder,
+            domain_name=domain_name,
+            raster=raster
         )
 
         return cc

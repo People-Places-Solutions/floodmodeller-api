@@ -18,7 +18,14 @@ class ComponentConverter:
         raise NotImplementedError()
 
 
-class ComputationalAreaConverter(ComponentConverter):
+class ComponentConverter2D(ComponentConverter):
+    def __init__(self, xml: XML2D, inputs_folder: Path, domain_name: str) -> None:
+        self._xml = xml
+        self._inputs_folder = inputs_folder
+        self._domain_name = domain_name
+
+
+class ComputationalAreaConverter(ComponentConverter2D):
 
     _xll: float
     _yll: float
@@ -28,11 +35,6 @@ class ComputationalAreaConverter(ComponentConverter):
     _active_area: Path
     _deactive_area: Path
     _rotation: int
-
-    def __init__(self, xml: XML2D, inputs_folder: Path, domain_name: str) -> None:
-        self._xml = xml
-        self._inputs_folder = inputs_folder
-        self._domain_name = domain_name
 
     def _update_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
@@ -84,3 +86,27 @@ class LocLineConverter(ComputationalAreaConverter):
         if theta_rad < 0:
             theta_rad += 2 * math.pi
         self._rotation = round(math.degrees(theta_rad))
+
+
+class TopographyConverter(ComponentConverter2D):
+
+    _topo_path: Path
+
+    def _update_file(self) -> None:
+        self._xml.domains[self._domain_name]["topography"] = self._topo_path
+        self._xml.update()
+
+
+class PointsConverter(TopographyConverter):
+    def __init__(
+        self,
+        xml: XML2D,
+        inputs_folder: Path,
+        domain_name: str,
+        raster: Path
+    ) -> None:
+        super().__init__(xml, inputs_folder, domain_name)
+        self._raster = raster
+
+    def _preprocess_settings(self) -> None:
+        self._topo_path = str(self._raster)
