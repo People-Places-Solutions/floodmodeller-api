@@ -35,9 +35,9 @@ class TuflowParser:
     def _resolve_path(self, relative_path: Path) -> Path:
         return Path.joinpath(self._folder, relative_path).resolve()
 
-    def _concat_geodataframe_tuple(self, gdb_paths: tuple, lower_case: bool) -> gpd.GeoDataFrame:
+    def _concat_geodataframe_tuple(self, gdb_paths: tuple, case_insensitive: bool) -> gpd.GeoDataFrame:
         gpd_tuple = (gpd.read_file(self._resolve_path(x)) for x in gdb_paths)
-        if lower_case:
+        if case_insensitive:
             gpd_tuple = (x.rename(columns=str.lower) for x in gpd_tuple)
         gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_tuple, ignore_index=True))
         return gpd_concat
@@ -60,14 +60,14 @@ class TuflowParser:
     def get_single_geometry(self, val_name: str, shp_index: int = 0, list_index: int = -1) -> BaseGeometry:
         return self.get_geodataframe(val_name, list_index).geometry[shp_index]
 
-    def get_geodataframe_tuple(self, val_name: str, index: int = -1, lower_case: bool = False) -> gpd.GeoDataFrame:
-        return self._concat_geodataframe_tuple(self.get_tuple(val_name, "|", index=index), lower_case)
+    def get_geodataframe_tuple(self, val_name: str, index: int = -1, case_insensitive: bool = False) -> gpd.GeoDataFrame:
+        return self._concat_geodataframe_tuple(self.get_tuple(val_name, "|", index=index), case_insensitive)
 
-    def get_all_geodataframes(self, val_name: str, lower_case: bool = False) -> gpd.GeoDataFrame:
+    def get_all_geodataframes(self, val_name: str, case_insensitive: bool = False) -> gpd.GeoDataFrame:
         gpd_path_list_len = len(self._contents_dict[val_name])
         gpd_list = [
             self._concat_geodataframe_tuple(
-                self.get_tuple(val_name, "|", index=i), lower_case
+                self.get_tuple(val_name, "|", index=i), case_insensitive
             ) for i in range(gpd_path_list_len)
         ]
         gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_list, ignore_index=True))

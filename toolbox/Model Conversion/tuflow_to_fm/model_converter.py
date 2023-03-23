@@ -18,19 +18,22 @@ class ModelConverter:
             level=logging.INFO,
         )
         self._logger = logging.getLogger("model_converter")
+        self._logger.info("initialising conversion process")
 
         self._component_converters = {}
 
     def convert(self):
+        self._logger.info("starting conversion process")
+
         for k, v in self._component_converters.items():
-            self._logger.info(f"converting [{k}]")
+            self._logger.info(f"converting {k}")
             try:
                 v.convert()
                 self._logger.info("success")
             except Exception:
-                # self._logger.error("failure")
-                # self._logger.debug("", exc_info=True)
-                self._logger.exception("failure")
+                self._logger.error("failure")
+                self._logger.debug("", exc_info=True)
+                # self._logger.exception("failure")
 
 
 class ModelConverter2D(ModelConverter):
@@ -53,7 +56,7 @@ class TuflowModelConverter2D(ModelConverter2D):
         "ecf": "ESTRY Control File",
     }
 
-    LOC_LINE_KEYS = {
+    LOC_LINE_NAMES = {
         "loc_line": "Read GIS Location",
         "dx": "Cell Size",
         "nx, ny": "Grid Size (X,Y)",
@@ -73,34 +76,55 @@ class TuflowModelConverter2D(ModelConverter2D):
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
-        self._init_computational_area()
+        self._stage_log_name = "computational area"
+        self._stage_complete = False
+        stage_callables = [self._init_loc_line_converter]
 
-    def _init_computational_area(self):
+        self._logger.info(f"initialising {self._stage_log_name}")
+        for f in stage_callables:
+            if not self._stage_complete:
+                f()
 
-        if not self._tgc.check_names(self.LOC_LINE_KEYS.values()):
+    def _init_loc_line_converter(self):
+
+        self._logger.info("checking for loc line settings")
+
+        if not self._tgc.check_names(self.LOC_LINE_NAMES.values()):
+            self._logger.info("loc line settings not detected")
             return
 
         self._logger.info("loc line settings detected")
 
-        xml = self._xml
-        inputs_folder = self._inputs_folder
-        domain_name = "Domain 1"
-        loc_line = self._tgc.get_single_geometry(self.LOC_LINE_KEYS["loc_line"])
-        dx = self._tgc.get_value(self.LOC_LINE_KEYS["dx"], float)
-        nx, ny = self._tgc.get_tuple(self.LOC_LINE_KEYS["nx, ny"], ",", int)
+        try:
+            xml = self._xml
+            inputs_folder = self._inputs_folder
+            domain_name = "Domain 1"
+            loc_line = self._tgc.get_single_geometry(self.LOC_LINE_NAMES["loc_line"])
+            dx = self._tgc.get_value(self.LOC_LINE_NAMES["dx"], float)
+            nx, ny = self._tgc.get_tuple(self.LOC_LINE_NAMES["nx, ny"], ",", int)
+            
+            all_areas = self._tgc.get_all_geodataframes(
+                self.LOC_LINE_NAMES["all_areas"], case_insensitive=True
+            )
+            active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
+            deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
 
-        all_areas = self._tgc.get_all_geodataframes(self.LOC_LINE_KEYS["all_areas"], lower_case=True)
-        active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
-        deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
+            self._component_converters[self._stage_log_name] = LocLineConverter(
+                xml=xml,
+                inputs_folder=inputs_folder,
+                domain_name=domain_name,
+                loc_line=loc_line,
+                dx=dx,
+                nx=nx,
+                ny=ny,
+                active_area=active_area,
+                deactive_area=deactive_area,
+            )
+        except:
+            self._logger.error("loc line settings not valid")
+            self._logger.debug("", exc_info=True)
+            # self._logger.exception("loc line settings not valid")
+            return
 
-        self._component_converters["computational_area"] = LocLineConverter(
-            xml=xml,
-            inputs_folder=inputs_folder,
-            domain_name=domain_name,
-            loc_line=loc_line,
-            dx=dx,
-            nx=nx,
-            ny=ny,
-            active_area=active_area,
-            deactive_area=deactive_area,
-        )
+        self._logger.info("loc line settings valid")
+        self._stage_complete = True
