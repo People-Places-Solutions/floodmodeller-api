@@ -12,6 +12,7 @@ class ModelConverter:
 
         logging.basicConfig(
             filename=log_file,
+            filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
             level=logging.INFO,
@@ -22,7 +23,7 @@ class ModelConverter:
 
     def convert(self):
         for k, v in self._component_converters.items():
-            self._logger.info(f"converting [{k}]...")
+            self._logger.info(f"converting [{k}]")
             try:
                 v.convert()
                 self._logger.info("success")
@@ -52,6 +53,13 @@ class TuflowModelConverter2D(ModelConverter2D):
         "ecf": "ESTRY Control File",
     }
 
+    LOC_LINE_KEYS = {
+        "loc_line": "Read GIS Location",
+        "dx": "Cell Size",
+        "nx, ny": "Grid Size (X,Y)",
+        "all_areas": "Read GIS Code",
+    }
+
     def __init__(
         self,
         tcf_path: Union[str, Path],
@@ -68,14 +76,20 @@ class TuflowModelConverter2D(ModelConverter2D):
         self._init_computational_area()
 
     def _init_computational_area(self):
+
+        if not self._tgc.check_names(self.LOC_LINE_KEYS.values()):
+            return
+
+        self._logger.info("loc line settings detected")
+
         xml = self._xml
         inputs_folder = self._inputs_folder
         domain_name = "Domain 1"
-        loc_line = self._tgc.get_single_geometry("Read GIS Location")
-        dx = self._tgc.get_value("Cell Size", float)
-        nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
+        loc_line = self._tgc.get_single_geometry(self.LOC_LINE_KEYS["loc_line"])
+        dx = self._tgc.get_value(self.LOC_LINE_KEYS["dx"], float)
+        nx, ny = self._tgc.get_tuple(self.LOC_LINE_KEYS["nx, ny"], ",", int)
 
-        all_areas = self._tgc.get_all_geodataframes("Read GIS Code", lower_case=True)
+        all_areas = self._tgc.get_all_geodataframes(self.LOC_LINE_KEYS["all_areas"], lower_case=True)
         active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
         deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
 
