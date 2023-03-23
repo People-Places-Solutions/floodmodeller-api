@@ -31,9 +31,9 @@ class ModelConverter:
                 v.convert()
                 self._logger.info("success")
             except Exception:
-                self._logger.error("failure")
-                self._logger.debug("", exc_info=True)
-                # self._logger.exception("failure")
+                # self._logger.error("failure")
+                # self._logger.debug("", exc_info=True)
+                self._logger.exception("failure")
 
 
 class ModelConverter2D(ModelConverter):
@@ -76,55 +76,68 @@ class TuflowModelConverter2D(ModelConverter2D):
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
-        self._stage_log_name = "computational area"
-        self._stage_complete = False
-        stage_callables = [self._init_loc_line_converter]
+        self._stage_type = "computational area"
+        self._init_one_component_converter(
+            [self._init_loc_line_converter],
+            ["loc_line"],
+            [self.LOC_LINE_NAMES],
+            [self._tgc],
+        )
 
-        self._logger.info(f"initialising {self._stage_log_name}")
-        for f in stage_callables:
-            if not self._stage_complete:
-                f()
+    def _init_one_component_converter(
+        self,
+        cc_inits: list[callable],
+        cc_names: list[str],
+        cc_dicts: list[dict],
+        cc_parsers: list[TuflowParser],
+    ):
+        self._logger.info(f"initialising {self._stage_type}")
 
-    def _init_loc_line_converter(self):
+        for cc_init, cc_name, cc_dict, cc_parser in zip(
+            cc_inits, cc_names, cc_dicts, cc_parsers
+        ):
+            self._logger.info(f"checking for {cc_name} settings")
 
-        self._logger.info("checking for loc line settings")
+            if not cc_parser.check_names(cc_dict.values()):
+                self._logger.info(f"{cc_name} settings not detected")
+                continue
 
-        if not self._tgc.check_names(self.LOC_LINE_NAMES.values()):
-            self._logger.info("loc line settings not detected")
-            return
+            self._logger.info(f"{cc_name} settings detected")
 
-        self._logger.info("loc line settings detected")
+            try:
+                cc_init(cc_dict, cc_parser)
+            except:
+                # self._logger.error("{cc_name} settings not valid")
+                # self._logger.debug("", exc_info=True)
+                self._logger.exception(f"{cc_name} settings not valid")
+                continue
 
-        try:
-            xml = self._xml
-            inputs_folder = self._inputs_folder
-            domain_name = "Domain 1"
-            loc_line = self._tgc.get_single_geometry(self.LOC_LINE_NAMES["loc_line"])
-            dx = self._tgc.get_value(self.LOC_LINE_NAMES["dx"], float)
-            nx, ny = self._tgc.get_tuple(self.LOC_LINE_NAMES["nx, ny"], ",", int)
-            
-            all_areas = self._tgc.get_all_geodataframes(
-                self.LOC_LINE_NAMES["all_areas"], case_insensitive=True
-            )
-            active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
-            deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
+            self._logger.info(f"{cc_name} settings valid")
+            break
 
-            self._component_converters[self._stage_log_name] = LocLineConverter(
-                xml=xml,
-                inputs_folder=inputs_folder,
-                domain_name=domain_name,
-                loc_line=loc_line,
-                dx=dx,
-                nx=nx,
-                ny=ny,
-                active_area=active_area,
-                deactive_area=deactive_area,
-            )
-        except:
-            self._logger.error("loc line settings not valid")
-            self._logger.debug("", exc_info=True)
-            # self._logger.exception("loc line settings not valid")
-            return
+    def _init_loc_line_converter(self, cc_dict: dict, cc_parser: TuflowParser):
 
-        self._logger.info("loc line settings valid")
-        self._stage_complete = True
+        xml = self._xml
+        inputs_folder = self._inputs_folder
+        domain_name = "Domain 1"
+        loc_line = cc_parser.get_single_geometry(cc_dict["loc_line"])
+        dx = cc_parser.get_value(cc_dict["dx"], float)
+        nx, ny = cc_parser.get_tuple(cc_dict["nx, ny"], ",", int)
+
+        all_areas = cc_parser.get_all_geodataframes(
+            cc_dict["all_areas"], case_insensitive=True
+        )
+        active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
+        deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
+
+        self._component_converters[self._stage_type] = LocLineConverter(
+            xml=xml,
+            inputs_folder=inputs_folder,
+            domain_name=domain_name,
+            loc_line=loc_line,
+            dx=dx,
+            nx=nx,
+            ny=ny,
+            active_area=active_area,
+            deactive_area=deactive_area,
+        )
