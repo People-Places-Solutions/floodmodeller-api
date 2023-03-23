@@ -28,14 +28,14 @@ class ModelConverter:
 
     def _convert_one_component(
         self,
-        cc_class: str,
+        cc_class_display_name: str,
         cc_subclasses: dict,
     ):
-        self._logger.info(f"start converting {cc_class}")
+        self._logger.info(f"start converting {cc_class_display_name}")
 
-        for cc_subclass, cc_factory in cc_subclasses.items():
+        for cc_subclass_display_name, cc_factory in cc_subclasses.items():
 
-            self._logger.info(f"trying {cc_subclass}")
+            self._logger.info(f"trying {cc_subclass_display_name}")
 
             try:
                 cc = cc_factory()
@@ -56,10 +56,10 @@ class ModelConverter:
                 break
 
             self._logger.info("conversion success")
-            self._logger.info(f"end converting {cc_class}")
+            self._logger.info(f"end converting {cc_class_display_name}")
             return
 
-        self._logger.info(f"failure converting {cc_class}")
+        self._logger.info(f"failure converting {cc_class_display_name}")
 
 
 class ModelConverter2D(ModelConverter):
@@ -77,7 +77,7 @@ class ModelConverter2D(ModelConverter):
 
 class TuflowModelConverter2D(ModelConverter2D):
 
-    TCF_FILE_NAMES = {
+    _TCF_FILE_NAMES = {
         "tgc": "Geometry Control File",
         "tbc": "BC Control File",
         "ecf": "ESTRY Control File",
@@ -93,7 +93,7 @@ class TuflowModelConverter2D(ModelConverter2D):
         super().__init__(xml_path, log_file)
 
         self._tcf = TuflowParser(tcf_path)
-        for k, v in self.TCF_FILE_NAMES.items():
+        for k, v in self._TCF_FILE_NAMES.items():
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
 
