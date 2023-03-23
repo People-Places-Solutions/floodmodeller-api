@@ -18,7 +18,6 @@ class ModelConverter:
             level=logging.INFO,
         )
         self._logger = logging.getLogger("model_converter")
-        self._logger.info("starting conversion")
 
 
 class ModelConverter2D(ModelConverter):
@@ -41,13 +40,6 @@ class TuflowModelConverter2D(ModelConverter2D):
         "ecf": "ESTRY Control File",
     }
 
-    LOC_LINE_NAMES = {
-        "loc_line": "Read GIS Location",
-        "dx": "Cell Size",
-        "nx, ny": "Grid Size (X,Y)",
-        "all_areas": "Read GIS Code",
-    }
-
     def __init__(
         self,
         tcf_path: Union[str, Path],
@@ -63,67 +55,55 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         self._convert_one_component(
             "computational area",
-            ["loc line"],
-            [self._create_loc_line_converter],
-            [self.LOC_LINE_NAMES],
-            [self._tgc],
+            {"loc line": self._create_loc_line_cc},
         )
 
     def _convert_one_component(
         self,
-        cc_type: str,
-        cc_subtypes: list[str],
-        cc_inits: list[callable],
-        cc_dicts: list[dict],
-        cc_parsers: list[TuflowParser],
+        cc_class: str,
+        cc_subclasses: dict,
     ):
-        self._logger.info(f"converting {cc_type}")
+        self._logger.info(f"start converting {cc_class}")
 
-        for cc_init, cc_subtype, cc_dict, cc_parser in zip(
-            cc_inits, cc_subtypes, cc_dicts, cc_parsers
-        ):
-            self._logger.info(f"checking for {cc_subtype} settings")
+        for cc_subtype, cc_factory in cc_subclasses.items():
 
-            if not cc_parser.check_names(cc_dict.values()):
-                self._logger.info(f"{cc_subtype} settings not detected")
-                continue
-
-            self._logger.info(f"{cc_subtype} settings detected")
+            self._logger.info(f"trying {cc_subtype}")
 
             try:
-                cc = cc_init(cc_dict, cc_parser)
+                cc = cc_factory()
             except:
-                # self._logger.error("{cc_subtype} settings not valid")
+                # self._logger.error("settings not valid")
                 # self._logger.debug("", exc_info=True)
-                self._logger.exception(f"{cc_subtype} settings not valid")
+                self._logger.exception("settings not valid")
                 continue
 
-            self._logger.info(f"{cc_subtype} settings valid")
-
-            self._logger.info(f"converting {cc_subtype}")
+            self._logger.info("settings valid")
 
             try:
                 cc.convert()
-                self._logger.info("success")
-            except Exception:
-                # self._logger.error("failure")
+            except:
+                # self._logger.error("conversion failure")
                 # self._logger.debug("", exc_info=True)
-                self._logger.exception("failure")
-                continue
+                self._logger.exception("conversion failure")
+                break
 
-            break
+            self._logger.info("conversion success")
+            self._logger.info(f"end converting {cc_class}")
+            return
 
-    def _create_loc_line_converter(self, cc_dict: dict, cc_parser: TuflowParser):
+        self._logger.info(f"failure converting {cc_class}")
+
+    def _create_loc_line_cc(self):
 
         xml = self._xml
         inputs_folder = self._inputs_folder
         domain_name = "Domain 1"
-        loc_line = cc_parser.get_single_geometry(cc_dict["loc_line"])
-        dx = cc_parser.get_value(cc_dict["dx"], float)
-        nx, ny = cc_parser.get_tuple(cc_dict["nx, ny"], ",", int)
+        loc_line = self._tgc.get_single_geometry("Read GIS Location")
+        dx = self._tgc.get_value("Cell Size", float)
+        nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
 
-        all_areas = cc_parser.get_all_geodataframes(
-            cc_dict["all_areas"], case_insensitive=True
+        all_areas = self._tgc.get_all_geodataframes(
+            "Read GIS Code", case_insensitive=True
         )
         active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
         deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")

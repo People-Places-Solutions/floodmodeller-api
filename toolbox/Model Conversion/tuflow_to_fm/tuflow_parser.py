@@ -72,9 +72,3 @@ class TuflowParser:
         ]
         gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_list, ignore_index=True))
         return gpd_concat
-
-    def check_names(self, val_name_list: list) -> bool:
-        for x in val_name_list:
-            if x not in self._contents_dict.keys():
-                return False
-        return True
