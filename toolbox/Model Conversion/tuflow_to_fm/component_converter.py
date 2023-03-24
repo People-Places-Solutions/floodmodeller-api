@@ -3,6 +3,7 @@ from floodmodeller_api import XML2D
 from pathlib import Path
 from shapely.geometry import LineString
 import geopandas as gpd
+import pandas as pd
 import math
 
 
@@ -99,28 +100,39 @@ class TopographyConverter(ComponentConverter2D):
         self, xml: XML2D, folder: Path, domain_name: str, raster: Path
     ) -> None:
         super().__init__(xml, folder, domain_name)
-        self._topo_path = str(raster)
+        self._path = str(raster)
 
     def update_file(self) -> None:
-        self._xml.domains[self._domain_name]["topography"] = self._topo_path
+        self._xml.domains[self._domain_name]["topography"] = self._path
         self._xml.update()
 
 
-# class RoughnessConverter(ComponentConverter2D):
+class RoughnessConverter(ComponentConverter2D):
+    def __init__(
+        self,
+        xml: XML2D,
+        folder: Path,
+        domain_name: str,
+        roughness_type: str,
+        law: str,
+        material: gpd.GeoDataFrame,
+        mapping: pd.DataFrame
+    ) -> None:
+        super().__init__(xml, folder, domain_name)
+        self._type = roughness_type
+        self._law = law
+        self._value = Path.joinpath(folder, "roughness.shp")
+        
+        (
+            material
+            .merge(mapping, left_on="material", right_on="Material ID")[["Manning's n", "geometry"]]
+            .to_file(self._value)
+        )
 
-#     def __init__(
-#         self, xml: XML2D, folder: Path, domain_name: str, raster: Path
-#     ) -> None:
-#         super().__init__(xml, folder, domain_name)
-#         self._raster = raster
-#         self._type
-#         self._law
-#         self._value
-
-#     def update_file(self) -> None:
-#         self._xml.domains[self._domain_name]["roughness"] = {
-#             "type": self._type,
-#             "law": self._law,
-#             "value": self._value,
-#         }
-#         self._xml.update()
+    def update_file(self) -> None:
+        self._xml.domains[self._domain_name]["roughness"] = [{
+            "type": self._type,
+            "law": self._law,
+            "value": self._value,
+        }]
+        self._xml.update()

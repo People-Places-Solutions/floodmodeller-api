@@ -1,6 +1,10 @@
 from floodmodeller_api import XML2D
 from tuflow_parser import TuflowParser
-from component_converter import LocLineConverter, TopographyConverter
+from component_converter import (
+    LocLineConverter,
+    TopographyConverter,
+    RoughnessConverter,
+)
 
 from pathlib import Path
 from typing import Union, Dict
@@ -50,12 +54,12 @@ class ModelConverter:
             try:
                 cc.update_file()
             except:
-                # self._logger.error("conversion failure")
+                # self._logger.error("updating file failure")
                 # self._logger.debug("", exc_info=True)
-                self._logger.exception("conversion failed")
+                self._logger.exception("updating file failed")
                 break
 
-            self._logger.info("conversion succeeded")
+            self._logger.info("updating file succeeded")
             self._logger.info(f"end converting {cc_class_display_name}")
             return
 
@@ -99,7 +103,8 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         self._cc_dict = {
             "computational area": {"loc line": self._create_loc_line_cc},
-            "topography": {"raster": self._create_raster_cc},
+            "topography": {"raster": self._create_topography_cc},
+            "roughness": {"shapefile": self._create_roughness_cc},
         }
 
     def _create_loc_line_cc(self):
@@ -116,11 +121,25 @@ class TuflowModelConverter2D(ModelConverter2D):
             loc_line=self._tgc.get_single_geometry("Read GIS Location"),
         )
 
-    def _create_raster_cc(self):
+    def _create_topography_cc(self):
 
         return TopographyConverter(
             xml=self._xml,
             folder=self._folder,
             domain_name="Domain 1",
             raster=self._tgc.get_path("Read GRID Zpts"),
+        )
+
+    def _create_roughness_cc(self):
+
+        return RoughnessConverter(
+            xml=self._xml,
+            folder=self._folder,
+            domain_name="Domain 1",
+            roughness_type="file",
+            law="manning",
+            material=self._tgc.get_all_geodataframes(
+                "Read GIS Mat", case_insensitive=True
+            ),
+            mapping=self._tcf.get_dataframe("Read Materials File"),
         )

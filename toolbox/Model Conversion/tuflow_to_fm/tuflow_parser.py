@@ -57,6 +57,9 @@ class TuflowParser:
     def get_geodataframe(self, val_name: str, index: int = -1) -> gpd.GeoDataFrame:
         return gpd.read_file(self.get_path(val_name, index))
 
+    def get_dataframe(self, val_name: str, index: int = -1) -> pd.DataFrame:
+        return pd.read_csv(self.get_path(val_name, index))
+
     def get_single_geometry(self, val_name: str, shp_index: int = 0, list_index: int = -1) -> BaseGeometry:
         return self.get_geodataframe(val_name, list_index).geometry[shp_index]
 
