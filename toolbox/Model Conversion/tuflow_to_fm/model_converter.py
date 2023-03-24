@@ -1,9 +1,9 @@
 from floodmodeller_api import XML2D
 from tuflow_parser import TuflowParser
-from component_converter import LocLineConverter, PointsConverter
+from component_converter import LocLineConverter, TopographyConverter
 
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict
 import logging
 
 
@@ -29,7 +29,7 @@ class ModelConverter:
     def _convert_one_component(
         self,
         cc_class_display_name: str,
-        cc_subclasses: dict,
+        cc_subclasses: Dict[str, callable],
     ):
         self._logger.info(f"start converting {cc_class_display_name}")
 
@@ -42,20 +42,20 @@ class ModelConverter:
             except:
                 # self._logger.error("settings not valid")
                 # self._logger.debug("", exc_info=True)
-                self._logger.exception("settings not valid")
+                self._logger.exception("settings are not valid")
                 continue
 
-            self._logger.info("settings valid")
+            self._logger.info("settings are valid")
 
             try:
                 cc.convert()
             except:
                 # self._logger.error("conversion failure")
                 # self._logger.debug("", exc_info=True)
-                self._logger.exception("conversion failure")
+                self._logger.exception("conversion failed")
                 break
 
-            self._logger.info("conversion success")
+            self._logger.info("conversion succeeded")
             self._logger.info(f"end converting {cc_class_display_name}")
             return
 
@@ -71,8 +71,8 @@ class ModelConverter2D(ModelConverter):
         self._xml.save(xml_path)
 
         xml_folder = Path(xml_path).parents[0]
-        self._inputs_folder = Path.joinpath(xml_folder, "processed_inputs")
-        self._inputs_folder.mkdir(parents=True, exist_ok=True)
+        self._folder = Path.joinpath(xml_folder, "processed_inputs")
+        self._folder.mkdir(parents=True, exist_ok=True)
 
 
 class TuflowModelConverter2D(ModelConverter2D):
@@ -99,50 +99,28 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         self._cc_dict = {
             "computational area": {"loc line": self._create_loc_line_cc},
-            "topography": {"points": self._create_points_cc},
+            "topography": {"raster": self._create_raster_cc},
         }
 
     def _create_loc_line_cc(self):
 
-        xml = self._xml
-        inputs_folder = self._inputs_folder
-        domain_name = "Domain 1"
-        loc_line = self._tgc.get_single_geometry("Read GIS Location")
-        dx = self._tgc.get_value("Cell Size", float)
-        nx, ny = self._tgc.get_tuple("Grid Size (X,Y)", ",", int)
-
-        all_areas = self._tgc.get_all_geodataframes(
-            "Read GIS Code", case_insensitive=True
-        )
-        active_area = all_areas[all_areas["code"] == 1].drop(columns="code")
-        deactive_area = all_areas[all_areas["code"] == 0].drop(columns="code")
-
-        cc = LocLineConverter(
-            xml=xml,
-            inputs_folder=inputs_folder,
-            domain_name=domain_name,
-            loc_line=loc_line,
-            dx=dx,
-            nx=nx,
-            ny=ny,
-            active_area=active_area,
-            deactive_area=deactive_area,
+        return LocLineConverter(
+            xml=self._xml,
+            folder=self._folder,
+            domain_name="Domain 1",
+            loc_line=self._tgc.get_single_geometry("Read GIS Location"),
+            dx=self._tgc.get_value("Cell Size", float),
+            nx_ny=self._tgc.get_tuple("Grid Size (X,Y)", ",", int),
+            all_areas=self._tgc.get_all_geodataframes(
+                "Read GIS Code", case_insensitive=True
+            ),
         )
 
-        return cc
+    def _create_raster_cc(self):
 
-    def _create_points_cc(self):
-
-        xml = self._xml
-        inputs_folder = self._inputs_folder
-        domain_name = "Domain 1"
-        raster = self._tgc.get_path("Read GRID Zpts")
-
-        cc = PointsConverter(
-            xml=xml,
-            inputs_folder=inputs_folder,
-            domain_name=domain_name,
-            raster=raster
+        return TopographyConverter(
+            xml=self._xml,
+            folder=self._folder,
+            domain_name="Domain 1",
+            raster=self._tgc.get_path("Read GRID Zpts"),
         )
-
-        return cc
