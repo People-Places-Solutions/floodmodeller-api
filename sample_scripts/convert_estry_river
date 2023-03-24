@@ -1,0 +1,125 @@
+import sys
+import os
+from glob import glob
+from pathlib import Path
+import pandas as pd
+import geopandas as gpd 
+import fiona 
+from shapely.geometry import LineString, Point
+
+try:
+    from floodmodeller_api import DAT 
+    from floodmodeller_api.units import RIVER
+except ImportError:
+    print('Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment')
+    sys.exit()
+    
+#### ______________________Read in data______________________ ####    
+##### example dat file to help build
+dat = DAT(r"C:\Users\LAMBERD3\Documents\Python\Flood_modeller_git\floodmodeller-api\sample_scripts\sample_data\river_only.dat")
+data_example = dat.sections['RIV00'].data
+headings = data_example.columns.values    
+
+#read in xs shapefile containing source .csv files
+model_path = r"C:\Users\LAMBERD3\Documents\Python\Data\Tuflow_data\TUFLOW\model" #input location of model
+xs_path = r"\gis\1d_xs_RIVER_L.shp" #input relative location of shapefile
+xs_attributes = gpd.read_file(model_path+xs_path)
+xs_attributes.dropna(how='all', axis=1, inplace=True)
+xs_attributes.rename(columns = {'geometry':'xs_geometry'}, inplace = True)
+
+#read in nwk shapefile containing source .csv files
+nwk_path = r"\gis\1d_nwk_RIVER_L.shp"
+nwk_attributes = gpd.read_file(model_path+nwk_path)
+nwk_attributes.dropna(how='all', axis=1, inplace=True)
+nwk_attributes['length'] = nwk_attributes.length
+nwk_attributes.rename(columns = {'geometry':'nwk_geometry'}, inplace = True)
+
+
+#### ______________________Used to link the 1d_xs and 1d_nwk together______________________ ####
+
+# Create an empty dataframe to hold the results
+all_df = gpd.GeoDataFrame(columns=['xs_id', 'nwk_id', 'intersection'])
+# Loop through all rows in xs_df and nwk_df and match the channel with anything but end point data 
+for xs_idx, xs_row in xs_attributes.iterrows():
+    for nwk_idx, nwk_row in nwk_attributes.iterrows():
+        intersection = xs_row['xs_geometry'].intersection(nwk_row['nwk_geometry'])
+        # Check if the lines intersect and not at end point
+        if xs_row['xs_geometry'].intersects(nwk_row['nwk_geometry']):
+            all_df = all_df.append({
+                'xs_id': xs_idx,
+                'nwk_id': nwk_idx,
+                'intersection': intersection 
+            }, ignore_index=True)
+            #check if not the end point of the channel
+            
+##### ______________________Add in the correct dist to nextfor the intersecting points______________________ #####
+
+def update_location(row):
+    intersection = Point(row['intersection'])
+    nwk_geometry = LineString(row['nwk_geometry'])
+    start_point = nwk_geometry.coords[0]
+    end_point = nwk_geometry.coords[-1]
+    
+    if intersection.coords[0] == start_point:
+        row['location'] = 'start'
+        row['dist_to_next'] = row['length']
+    elif intersection.coords[0] == end_point:
+        row['location'] = 'end'
+        row['dist_to_next'] = 0
+    else:
+        row['location'] = 'other'
+        row['dist_to_next'] = row['length']
+    
+    return row
+
+#### ______________________split the easting and northing for the location______________________ #####
+def get_coordinates(point):
+    return point.x, point.y
+
+##### ______________________Put all that infoprmation together______________________ ######
+all_df = all_df.merge(xs_attributes, left_on='xs_id', right_index=True)
+all_df = all_df.merge(nwk_attributes, left_on='nwk_id', right_index=True)
+all_df = all_df.apply(update_location, axis=1)
+
+# keep only one row for each xs_id with the highest dist_to_next
+all_df = all_df.loc[all_df.groupby('xs_id')['dist_to_next'].idxmax()]
+# extract the easting and northing values from the intersection column
+geoseries = gpd.GeoSeries(all_df['intersection'])
+easting, northing = geoseries.apply(get_coordinates).str
+all_df['easting'] = easting
+all_df['northing'] = northing
+all_df['name'] = all_df['Source']
+all_df['name'] = all_df['name'].replace("..\csv\1d_xs_", "")
+
+all_df.to_csv(r'C:\Users\LAMBERD3\Documents\Python\Data\RiverDF.csv')
+ 
+##### ______________________Add in units & data______________________ ###### 
+dat = DAT()
+#read all river types 
+for index, row in all_df.iterrows():
+        unit_csv_name = str(row['Source']) #'..\\csv\\1d_xs_M14_C99.csv' pulled out 
+        ### Needs improving - just for river sections      
+        unit_csv = pd.read_csv(model_path + unit_csv_name.lstrip(".."),skiprows=[0])
+        # save the data as a new CSV file
+        unit_csv.columns = ['X', 'Z']
+        unit_name = unit_csv_name.replace("..\\csv\\1d_xs_", "")[:-4] #named unit 'M14_C99'
+
+        #for each csv file append data 
+        unit_data = pd.DataFrame(columns = headings)
+        unit_data['X'] = unit_csv['X']
+        unit_data['Y'] = unit_csv['Z']
+        unit_data['Mannings n'] = row['n_nF_Cd']
+        #unit_data['Mannings n'].fillna(0.0, inplace=True)
+        unit_data['Panel'].fillna(False, inplace=True)
+        unit_data['RPL'].fillna(1.0, inplace=True)
+        unit_data['Marker'].fillna(False, inplace = True)
+        unit_data['Easting'] = row['easting']
+        unit_data['Northing']= row['northing']
+        unit_data['SP. Marker'].fillna(0, inplace=True)
+    
+        unit = RIVER(name= unit_name, data = unit_data, density= 1000.0, dist_to_next=row['dist_to_next'],slope = 0.0001) 
+        dat.insert_unit(unit, add_at=-1)
+
+dat.save(r"C:\Users\LAMBERD3\Documents\Python\Data\FM_data\empty.dat")
+
+
