@@ -48,7 +48,7 @@ class ModelConverter:
             self._logger.info("settings are valid")
 
             try:
-                cc.convert()
+                cc.update_file()
             except:
                 # self._logger.error("conversion failure")
                 # self._logger.debug("", exc_info=True)
@@ -108,12 +108,12 @@ class TuflowModelConverter2D(ModelConverter2D):
             xml=self._xml,
             folder=self._folder,
             domain_name="Domain 1",
-            loc_line=self._tgc.get_single_geometry("Read GIS Location"),
             dx=self._tgc.get_value("Cell Size", float),
             lx_ly=self._tgc.get_tuple("Grid Size (X,Y)", ",", int),
             all_areas=self._tgc.get_all_geodataframes(
                 "Read GIS Code", case_insensitive=True
             ),
+            loc_line=self._tgc.get_single_geometry("Read GIS Location"),
         )
 
     def _create_raster_cc(self):

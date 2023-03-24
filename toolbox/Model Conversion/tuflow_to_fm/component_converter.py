@@ -10,14 +10,7 @@ class ComponentConverter:
     def __init__(self, folder: Path) -> None:
         self._folder = folder
 
-    def convert(self):
-        self._preprocess_settings()
-        self._update_file()
-
-    def _preprocess_settings(self):
-        raise NotImplementedError()
-
-    def _update_file(self):
+    def update_file(self):
         raise NotImplementedError()
 
 
@@ -52,23 +45,18 @@ class ComputationalAreaConverter(ComponentConverter2D):
         self._active_area = Path.joinpath(folder, "active_area.shp")
         self._deactive_area = Path.joinpath(folder, "deactive_area.shp")
 
-        self._all_areas = all_areas
-
-    def _preprocess_settings(self) -> None:
-
         (
-            self._all_areas[self._all_areas["code"] == 1]
+            all_areas[all_areas["code"] == 1]
             .drop(columns="code")
             .to_file(self._active_area)
         )
-
         (
-            self._all_areas[self._all_areas["code"] == 0]
+            all_areas[all_areas["code"] == 0]
             .drop(columns="code")
             .to_file(self._deactive_area)
         )
 
-    def _update_file(self) -> None:
+    def update_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
             "xll": self._xll,
             "yll": self._yll,
@@ -88,20 +76,15 @@ class LocLineConverter(ComputationalAreaConverter):
         xml: XML2D,
         folder: Path,
         domain_name: str,
-        loc_line: LineString,
         dx: float,
         lx_ly: tuple,
         all_areas: gpd.GeoDataFrame,
+        loc_line: LineString,
     ) -> None:
         super().__init__(xml, folder, domain_name, dx, lx_ly, all_areas)
-        self._loc_line = loc_line
 
-    def _preprocess_settings(self) -> None:
-
-        super()._preprocess_settings()
-
-        x1, y1 = self._loc_line.coords[0]
-        x2, y2 = self._loc_line.coords[1]
+        x1, y1 = loc_line.coords[0]
+        x2, y2 = loc_line.coords[1]
         self._xll = x1
         self._yll = y1
 
@@ -116,12 +99,9 @@ class TopographyConverter(ComponentConverter2D):
         self, xml: XML2D, folder: Path, domain_name: str, raster: Path
     ) -> None:
         super().__init__(xml, folder, domain_name)
-        self._raster = raster
+        self._topo_path = str(raster)
 
-    def _preprocess_settings(self) -> None:
-        self._topo_path = str(self._raster)
-
-    def _update_file(self) -> None:
+    def update_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = self._topo_path
         self._xml.update()
 
@@ -133,13 +113,11 @@ class TopographyConverter(ComponentConverter2D):
 #     ) -> None:
 #         super().__init__(xml, folder, domain_name)
 #         self._raster = raster
-
-#     def _preprocess_settings(self) -> None:
 #         self._type
 #         self._law
 #         self._value
 
-#     def _update_file(self) -> None:
+#     def update_file(self) -> None:
 #         self._xml.domains[self._domain_name]["roughness"] = {
 #             "type": self._type,
 #             "law": self._law,
