@@ -115,24 +115,37 @@ class RoughnessConverter(ComponentConverter2D):
         domain_name: str,
         roughness_type: str,
         law: str,
-        material: gpd.GeoDataFrame,
-        mapping: pd.DataFrame
+        global_material: int,
+        file_material: gpd.GeoDataFrame,
+        mapping: pd.DataFrame,
     ) -> None:
         super().__init__(xml, folder, domain_name)
         self._type = roughness_type
         self._law = law
-        self._value = Path.joinpath(folder, "roughness.shp")
-        
+        self._global_value = mapping.loc[
+            mapping["Material ID"] == global_material, "Manning's n"
+        ][0]
+
+        self._file_value = Path.joinpath(folder, "roughness.shp")
         (
-            material
-            .merge(mapping, left_on="material", right_on="Material ID")[["Manning's n", "geometry"]]
-            .to_file(self._value)
+            file_material.merge(mapping, left_on="material", right_on="Material ID")[
+                ["Manning's n", "geometry"]
+            ]
+            .rename(columns={"Manning's n": "value"})
+            .to_file(self._file_value)
         )
 
     def update_file(self) -> None:
-        self._xml.domains[self._domain_name]["roughness"] = [{
-            "type": self._type,
-            "law": self._law,
-            "value": self._value,
-        }]
+        self._xml.domains[self._domain_name]["roughness"] = [
+            {
+                "type": "global",
+                "law": self._law,
+                "value": self._global_value,
+            },
+            {
+                "type": self._type,
+                "law": self._law,
+                "value": self._file_value,
+            },
+        ]
         self._xml.update()

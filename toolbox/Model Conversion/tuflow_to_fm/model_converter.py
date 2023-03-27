@@ -138,7 +138,8 @@ class TuflowModelConverter2D(ModelConverter2D):
             domain_name="Domain 1",
             roughness_type="file",
             law="manning",
-            material=self._tgc.get_all_geodataframes(
+            global_material=self._tgc.get_value("Set Mat", int),
+            file_material=self._tgc.get_all_geodataframes(
                 "Read GIS Mat", case_insensitive=True
             ),
             mapping=self._tcf.get_dataframe("Read Materials File"),
