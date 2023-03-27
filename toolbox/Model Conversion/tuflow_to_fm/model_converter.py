@@ -4,6 +4,7 @@ from component_converter import (
     LocLineConverter,
     TopographyConverter,
     RoughnessConverter,
+    SchemeConverter,
 )
 
 from pathlib import Path
@@ -105,6 +106,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             "computational area": {"loc line": self._create_loc_line_cc},
             "topography": {"raster": self._create_topography_cc},
             "roughness": {"shapefile": self._create_roughness_cc},
+            "scheme": {"scheme": self._create_scheme_cc},
         }
 
     def _create_loc_line_cc(self):
@@ -143,4 +145,17 @@ class TuflowModelConverter2D(ModelConverter2D):
                 "Read GIS Mat", case_insensitive=True
             ),
             mapping=self._tcf.get_dataframe("Read Materials File"),
+        )
+
+    def _create_scheme_cc(self):
+
+        return SchemeConverter(
+            xml=self._xml,
+            folder=self._folder,
+            domain_name="Domain 1",
+            time_step=self._tcf.get_value("Timestep", float),
+            start_offset=self._tcf.get_value("Start Time", float),
+            total=self._tcf.get_value("End Time", float),
+            scheme=self._tcf.get_value("Solution Scheme"),
+            hardware=self._tcf.get_value("Hardware"),
         )

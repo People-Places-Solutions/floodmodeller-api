@@ -149,3 +149,37 @@ class RoughnessConverter(ComponentConverter2D):
             },
         ]
         self._xml.update()
+
+
+class SchemeConverter(ComponentConverter2D):
+    def __init__(
+        self,
+        xml: XML2D,
+        folder: Path,
+        domain_name: str,
+        time_step: float,
+        start_offset: float,
+        total: float,
+        scheme: str,
+        hardware: str,
+    ) -> None:
+        super().__init__(xml, folder, domain_name)
+        self._time_step = time_step
+        self._start_offset = start_offset
+        self._total = total
+
+        use_tvd_gpu = scheme == "HPC" and hardware == "GPU"
+        self._scheme = "TVD" if use_tvd_gpu else "ADI"
+        self._processor = "GPU" if use_tvd_gpu else "CPU"
+
+    def update_file(self) -> None:
+        self._xml.domains[self._domain_name]["time"] = {
+            "start_offset": self._start_offset,
+            "total": self._total,
+        }
+        self._xml.domains[self._domain_name]["run_data"] = {
+            "time_step": self._time_step,
+            "scheme": self._scheme,
+        }
+        self._xml.processor = {"type": self._processor}
+        self._xml.update()
