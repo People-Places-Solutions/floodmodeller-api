@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Union
 from shapely.geometry.base import BaseGeometry
+from shapely.ops import split
 import geopandas as gpd
 import pandas as pd
 
@@ -35,11 +36,22 @@ class TuflowParser:
     def _resolve_path(self, relative_path: Path) -> Path:
         return Path.joinpath(self._folder, relative_path).resolve()
 
-    def _concat_geodataframe_tuple(self, gdb_paths: tuple, case_insensitive: bool) -> gpd.GeoDataFrame:
-        gpd_tuple = (gpd.read_file(self._resolve_path(x)) for x in gdb_paths)
+    def _combine_geodataframe_tuple(self, gdb_paths: tuple, case_insensitive: bool) -> gpd.GeoDataFrame:
+        
+        gpd_list = [gpd.read_file(self._resolve_path(x)) for x in gdb_paths]
         if case_insensitive:
-            gpd_tuple = (x.rename(columns=str.lower) for x in gpd_tuple)
-        gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_tuple, ignore_index=True))
+            gpd_list = [x.rename(columns=str.lower) for x in gpd_list]
+
+        if len(gpd_list) == 1:
+            return gpd_list[0]
+
+        gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_list, ignore_index=True))
+
+        # lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"].geometry.unary_union
+        # points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"].geometry.unary_union
+        # gdf_segments = gpd.GeoDataFrame(split(lines, points))
+        # print(gdf_segments)
+
         return gpd_concat
 
     def get_value(self, val_name: str, val_type: type = str, index: int = -1) -> object:
@@ -64,12 +76,12 @@ class TuflowParser:
         return self.get_geodataframe(val_name, list_index).geometry[shp_index]
 
     def get_geodataframe_tuple(self, val_name: str, index: int = -1, case_insensitive: bool = False) -> gpd.GeoDataFrame:
-        return self._concat_geodataframe_tuple(self.get_tuple(val_name, "|", index=index), case_insensitive)
+        return self._combine_geodataframe_tuple(self.get_tuple(val_name, "|", index=index), case_insensitive)
 
     def get_all_geodataframes(self, val_name: str, case_insensitive: bool = False) -> gpd.GeoDataFrame:
         gpd_path_list_len = len(self._contents_dict[val_name])
         gpd_list = [
-            self._concat_geodataframe_tuple(
+            self._combine_geodataframe_tuple(
                 self.get_tuple(val_name, "|", index=i), case_insensitive
             ) for i in range(gpd_path_list_len)
         ]

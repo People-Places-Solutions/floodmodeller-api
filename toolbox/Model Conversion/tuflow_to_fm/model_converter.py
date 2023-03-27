@@ -8,7 +8,7 @@ from component_converter import (
 )
 
 from pathlib import Path
-from typing import Union, Dict
+from typing import Union
 import logging
 
 
@@ -34,37 +34,29 @@ class ModelConverter:
     def _convert_one_component(
         self,
         cc_class_display_name: str,
-        cc_subclasses: Dict[str, callable],
+        cc_factory: callable,
     ):
-        self._logger.info(f"start converting {cc_class_display_name}")
+        self._logger.info(f"converting {cc_class_display_name}...")
 
-        for cc_subclass_display_name, cc_factory in cc_subclasses.items():
-
-            self._logger.info(f"trying {cc_subclass_display_name}")
-
-            try:
-                cc = cc_factory()
-            except:
-                # self._logger.error("settings not valid")
-                # self._logger.debug("", exc_info=True)
-                self._logger.exception("settings are not valid")
-                continue
-
-            self._logger.info("settings are valid")
-
-            try:
-                cc.update_file()
-            except:
-                # self._logger.error("updating file failure")
-                # self._logger.debug("", exc_info=True)
-                self._logger.exception("updating file failed")
-                break
-
-            self._logger.info("updating file succeeded")
-            self._logger.info(f"end converting {cc_class_display_name}")
+        try:
+            cc_object = cc_factory()
+        except:
+            # self._logger.error("settings not valid")
+            # self._logger.debug("", exc_info=True)
+            self._logger.exception("settings are not valid")
             return
 
-        self._logger.info(f"failure converting {cc_class_display_name}")
+        self._logger.info("settings are valid")
+
+        try:
+            cc_object.update_file()
+        except:
+            # self._logger.error("updating file failure")
+            # self._logger.debug("", exc_info=True)
+            self._logger.exception("updating file failed")
+            return
+
+        self._logger.info("updating file succeeded")
 
 
 class ModelConverter2D(ModelConverter):
@@ -103,13 +95,13 @@ class TuflowModelConverter2D(ModelConverter2D):
             setattr(self, f"_{k}", TuflowParser(path))
 
         self._cc_dict = {
-            "computational area": {"loc line": self._create_loc_line_cc},
-            "topography": {"raster": self._create_topography_cc},
-            "roughness": {"shapefile": self._create_roughness_cc},
-            "scheme": {"scheme": self._create_scheme_cc},
+            "computational area": self._create_computational_area_cc,
+            "topography": self._create_topography_cc,
+            "roughness": self._create_roughness_cc,
+            "scheme": self._create_scheme_cc,
         }
 
-    def _create_loc_line_cc(self):
+    def _create_computational_area_cc(self):
 
         return LocLineConverter(
             xml=self._xml,
@@ -130,6 +122,9 @@ class TuflowModelConverter2D(ModelConverter2D):
             folder=self._folder,
             domain_name="Domain 1",
             raster=self._tgc.get_path("Read GRID Zpts"),
+            shapes=self._tgc.get_all_geodataframes(
+                "Read GIS Z Shape", case_insensitive=True
+            ),
         )
 
     def _create_roughness_cc(self):

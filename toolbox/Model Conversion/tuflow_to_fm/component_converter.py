@@ -97,7 +97,7 @@ class LocLineConverter(ComputationalAreaConverter):
 
 class TopographyConverter(ComponentConverter2D):
     def __init__(
-        self, xml: XML2D, folder: Path, domain_name: str, raster: Path
+        self, xml: XML2D, folder: Path, domain_name: str, raster: Path, shapes: gpd.GeoDataFrame
     ) -> None:
         super().__init__(xml, folder, domain_name)
         self._path = str(raster)
