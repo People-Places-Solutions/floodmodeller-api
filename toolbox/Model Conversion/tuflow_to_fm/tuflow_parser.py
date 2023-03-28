@@ -46,9 +46,9 @@ class TuflowParser:
             return gpd_list[0]
 
         gpd_concat = gpd.GeoDataFrame(pd.concat(gpd_list, ignore_index=True))
-
         lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"]
         points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"]
+
         gdf_segments = gpd.GeoDataFrame(
             split(lines.geometry.unary_union, points.geometry.unary_union),
             crs=gpd_concat.crs,
@@ -71,7 +71,8 @@ class TuflowParser:
                 points.rename(columns={"z": "height2", "geometry": "geom2"}),
                 left_on="end_pt",
                 right_on="geom2",
-            )[["height1", "height2", "geometry"]]
+            )
+            [["height1", "height2", "geometry"]]
         )
 
         print(gdf_segments)

@@ -52,7 +52,7 @@ class FMFile:
             if not self._filetype == "ZZN":
                 file = File(path=self._filepath)
                 file.backup()
-                # Add the file object as a property to expose the resore method
+                # Add the file object as a property to expose the restore method
                 self.file = file
 
     def __repr__(self):
