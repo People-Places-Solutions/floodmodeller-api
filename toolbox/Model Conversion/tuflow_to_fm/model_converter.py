@@ -117,9 +117,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             domain_name="Domain 1",
             dx=self._tgc.get_value("Cell Size", float),
             lx_ly=self._tgc.get_tuple("Grid Size (X,Y)", ",", int),
-            all_areas=self._tgc.get_all_geodataframes(
-                "Read GIS Code", case_insensitive=True
-            ),
+            all_areas=self._tgc.get_all_geodataframes("Read GIS Code"),
             loc_line=self._tgc.get_single_geometry("Read GIS Location"),
         )
 
@@ -130,9 +128,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             folder=self._folder,
             domain_name="Domain 1",
             raster=self._tgc.get_path("Read GRID Zpts"),
-            shapes=self._tgc.get_all_geodataframes(
-                "Read GIS Z Shape", case_insensitive=True, remove_prefixes=True
-            ),
+            shapes=self._tgc.get_all_geodataframes("Read GIS Z Shape"),
         )
 
     def _create_roughness_cc(self):
@@ -144,9 +140,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             roughness_type="file",
             law="manning",
             global_material=self._tgc.get_value("Set Mat", int),
-            file_material=self._tgc.get_all_geodataframes(
-                "Read GIS Mat", case_insensitive=True
-            ),
+            file_material=self._tgc.get_all_geodataframes("Read GIS Mat"),
             mapping=self._tcf.get_dataframe("Read Materials File"),
         )
 
