@@ -131,7 +131,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             domain_name="Domain 1",
             raster=self._tgc.get_path("Read GRID Zpts"),
             shapes=self._tgc.get_all_geodataframes(
-                "Read GIS Z Shape", case_insensitive=True
+                "Read GIS Z Shape", case_insensitive=True, remove_prefixes=True
             ),
         )
 
