@@ -97,13 +97,23 @@ class LocLineConverter(ComputationalAreaConverter):
 
 class TopographyConverter(ComponentConverter2D):
     def __init__(
-        self, xml: XML2D, folder: Path, domain_name: str, raster: Path, shapes: gpd.GeoDataFrame
+        self,
+        xml: XML2D,
+        folder: Path,
+        domain_name: str,
+        raster: Path,
+        shapes: gpd.GeoDataFrame,
     ) -> None:
         super().__init__(xml, folder, domain_name)
         self._path = str(raster)
+        self._shapes = str(Path.joinpath(folder, "shapes.shp"))
+        shapes.to_file(self._shapes)
 
     def update_file(self) -> None:
-        self._xml.domains[self._domain_name]["topography"] = self._path
+        self._xml.domains[self._domain_name]["topography"] = [
+            self._path,
+            self._shapes,
+        ]
         self._xml.update()
 
 
