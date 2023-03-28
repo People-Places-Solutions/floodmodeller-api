@@ -96,7 +96,7 @@ class LocLineConverter(ComputationalAreaConverter):
         domain_name: str,
         dx: float,
         lx_ly: tuple,
-        all_areas: gpd.GeoDataFrame,
+        all_areas: List[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
         super().__init__(xml, folder, domain_name, dx, lx_ly, all_areas)
@@ -139,12 +139,12 @@ class TopographyConverter(ComponentConverter2D):
 
         gpd_concat = concat_geodataframes(
             layers,
-            mapper={"shape_widt": "width", "shape_opti": "options"},
+            mapper={"shape_widt": "thick", "shape_opti": "options"},
             lower_case=True,
         )
 
         lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"]
-        # line_widths = lines[["width", "geometry"]]
+        line_widths = lines.rename({"width": "thick"})[["thick", "geometry"]]
 
         points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"]
         point1 = points.rename(columns={"z": "height1", "geometry": "point1"})[
@@ -172,8 +172,14 @@ class TopographyConverter(ComponentConverter2D):
             .drop(columns="point2")
         )
 
-        # print(gdf_segments)
-        # print(gdf_segments.columns)
+        gdf_segments = (
+            line_widths.sjoin(gdf_segments, how="inner", predicate="covers")
+            .set_index("index_right")
+            .sort_index()
+        )
+        gdf_segments.index.name = None
+
+        print(gdf_segments)
 
         return gdf_segments
 
@@ -184,14 +190,12 @@ class RoughnessConverter(ComponentConverter2D):
         xml: XML2D,
         folder: Path,
         domain_name: str,
-        roughness_type: str,
         law: str,
         global_material: int,
         file_material: List[gpd.GeoDataFrame],
         mapping: pd.DataFrame,
     ) -> None:
         super().__init__(xml, folder, domain_name)
-        self._type = roughness_type
         self._law = law
         self._global_value = mapping.loc[
             mapping["Material ID"] == global_material, "Manning's n"
@@ -216,7 +220,7 @@ class RoughnessConverter(ComponentConverter2D):
                 "value": self._global_value,
             },
             {
-                "type": self._type,
+                "type": "file",
                 "law": self._law,
                 "value": self._file_material_path,
             },
