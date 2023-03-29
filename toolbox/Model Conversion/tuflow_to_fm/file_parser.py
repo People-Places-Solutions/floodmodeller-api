@@ -46,6 +46,9 @@ class FileParser:
     ) -> BaseGeometry:
         return self.get_geodataframe(name, index).geometry[geom_index]
 
+    def get_all_paths(self, name: str) -> List[Path]:
+        return [self._resolve_path(x) for x in self._dict[name]]
+
     def get_all_geodataframes(
         self, name: str
     ) -> List[Tuple[gpd.GeoDataFrame] | gpd.GeoDataFrame]:

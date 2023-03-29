@@ -27,7 +27,7 @@ class ModelConverter:
         )
         self._logger = logging.getLogger("model_converter")
 
-    def update_file(self):
+    def save_file(self):
         raise NotImplementedError()
 
     def rollback_file(self):
@@ -55,8 +55,8 @@ class ModelConverter:
         self._logger.info("settings are valid")
 
         try:
-            cc_object.update_file()
-            self.update_file()
+            cc_object.edit_file()
+            self.save_file()
         except:
             # self._logger.error("updating file failure")
             # self._logger.debug("", exc_info=True)
@@ -80,7 +80,7 @@ class ModelConverter2D(ModelConverter):
         self._folder = Path.joinpath(xml_folder, "processed_inputs")
         self._folder.mkdir(parents=True, exist_ok=True)
 
-    def update_file(self):
+    def save_file(self):
         self._xml.update()
 
     def rollback_file(self):
@@ -133,8 +133,8 @@ class TuflowModelConverter2D(ModelConverter2D):
             xml=self._xml,
             folder=self._folder,
             domain_name="Domain 1",
-            raster=self._tgc.get_path("Read GRID Zpts"),
-            shapes=self._tgc.get_all_geodataframes("Read GIS Z Shape"),
+            rasters=self._tgc.get_all_paths("Read GRID Zpts"),
+            vectors=self._tgc.get_all_geodataframes("Read GIS Z Shape"),
         )
 
     def _create_roughness_cc(self):
