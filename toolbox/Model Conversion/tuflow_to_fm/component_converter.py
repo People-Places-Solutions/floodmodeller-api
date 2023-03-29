@@ -109,16 +109,16 @@ class TopographyConverter(ComponentConverter2D):
         shapes: List[Tuple[gpd.GeoDataFrame]],
     ) -> None:
         super().__init__(xml, folder, domain_name)
-        self._path = str(raster)
-        self._shapes = str(Path.joinpath(folder, "shapes.shp"))
-
-        shapes_concat = concat_geodataframes([combine_z_layers(x) for x in shapes])
-        shapes_concat.to_file(self._shapes)
+        self._raster_path = str(raster)
+        self._z_shape_path = str(Path.joinpath(folder, "z_shape.shp"))
+        concat_geodataframes([combine_z_layers(x) for x in shapes]).to_file(
+            self._z_shape_path
+        )
 
     def update_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = [
-            self._path,
-            self._shapes,
+            self._raster_path,
+            self._z_shape_path,
         ]
         self._xml.update()
 

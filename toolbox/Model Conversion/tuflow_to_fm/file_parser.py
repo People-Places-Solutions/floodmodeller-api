@@ -98,28 +98,33 @@ def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
 
 def combine_z_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
-    gpd_concat = concat_geodataframes(
+    # separate into lines & points
+    lines_and_points = concat_geodataframes(
         layers,
         mapper={"shape_widt": "width", "shape_opti": "options"},
         lower_case=True,
     )
-    lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"]
-    points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"]
+    lines = lines_and_points[lines_and_points.geometry.geometry.type == "LineString"]
+    points = lines_and_points[lines_and_points.geometry.geometry.type == "Point"]
 
-    gdf_segments = gpd.GeoDataFrame(
+    # split lines according to points
+    segments = gpd.GeoDataFrame(
         split(lines.geometry.unary_union, points.geometry.unary_union),
-        crs=gpd_concat.crs,
+        crs=lines_and_points.crs,
         columns=["geometry"],
     )
-    gdf_segments["point1"] = gdf_segments.apply(
+
+    # get line endpoints
+    segments["point1"] = segments.apply(
         lambda x: x.geometry.boundary.geoms[0], axis=1
     )
-    gdf_segments["point2"] = gdf_segments.apply(
+    segments["point2"] = segments.apply(
         lambda x: x.geometry.boundary.geoms[1], axis=1
     )
 
-    gdf_segments = (
-        gdf_segments.merge(
+    # get endpoint heights & line thickness
+    segments = (
+        segments.merge(
             rename_and_select(points, {"z": "height1", "geometry": "point1"}),
             on="point1",
         )
@@ -138,4 +143,4 @@ def combine_z_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
         .astype({"height1": float, "height2": float, "thick": float})
     )
 
-    return gdf_segments
+    return segments
