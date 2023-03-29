@@ -110,15 +110,16 @@ class TopographyConverter(ComponentConverter2D):
     ) -> None:
         super().__init__(xml, folder, domain_name)
         self._raster_path = str(raster)
-        self._z_shape_path = str(Path.joinpath(folder, "z_shape.shp"))
-        concat_geodataframes([combine_z_layers(x) for x in shapes]).to_file(
-            self._z_shape_path
-        )
+        self._z_shape_paths = []
+        for i, value in enumerate(shapes):
+            z_shape_path = str(Path.joinpath(folder, f"z_shape_{i}.shp"))
+            self._z_shape_paths.append(z_shape_path)
+            combine_z_layers(value).to_file(z_shape_path)
 
     def update_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = [
             self._raster_path,
-            self._z_shape_path,
+            *self._z_shape_paths,
         ]
         self._xml.update()
 
