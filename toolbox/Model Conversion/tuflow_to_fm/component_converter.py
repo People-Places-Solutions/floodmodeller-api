@@ -30,7 +30,7 @@ class ComponentConverter:
     def __init__(self, folder: Path) -> None:
         self._folder = folder
 
-    def edit_file(self):
+    def edit_file(self) -> None:
         raise NotImplementedError()
 
 

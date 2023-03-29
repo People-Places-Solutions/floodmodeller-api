@@ -27,13 +27,13 @@ class ModelConverter:
         )
         self._logger = logging.getLogger("model_converter")
 
-    def save_file(self):
+    def save_file(self) -> None:
         raise NotImplementedError()
 
-    def rollback_file(self):
+    def rollback_file(self) -> None:
         raise NotImplementedError()
 
-    def convert_model(self):
+    def convert_model(self) -> None:
         for k, v in self._cc_dict.items():
             self._convert_one_component(k, v)
 
@@ -41,30 +41,24 @@ class ModelConverter:
         self,
         cc_class_display_name: str,
         cc_factory: callable,
-    ):
+    ) -> None:
         self._logger.info(f"converting {cc_class_display_name}...")
 
         try:
             cc_object = cc_factory()
         except:
-            # self._logger.error("settings not valid")
-            # self._logger.debug("", exc_info=True)
-            self._logger.exception("settings are not valid")
+            self._logger.exception("failure")
             return
-
-        self._logger.info("settings are valid")
 
         try:
             cc_object.edit_file()
             self.save_file()
         except:
-            # self._logger.error("updating file failure")
-            # self._logger.debug("", exc_info=True)
-            self._logger.exception("updating file failed")
+            self._logger.exception("failure")
             self.rollback_file()
             return
 
-        self._logger.info("updating file succeeded")
+        self._logger.info("success")
 
 
 class ModelConverter2D(ModelConverter):
@@ -86,14 +80,8 @@ class ModelConverter2D(ModelConverter):
     def rollback_file(self):
         self._xml = XML2D(self._xml_path)
 
+
 class TuflowModelConverter2D(ModelConverter2D):
-
-    _TCF_FILE_NAMES = {
-        "tgc": "Geometry Control File",
-        "tbc": "BC Control File",
-        "ecf": "ESTRY Control File",
-    }
-
     def __init__(
         self,
         tcf_path: Union[str, Path],
@@ -103,10 +91,19 @@ class TuflowModelConverter2D(ModelConverter2D):
 
         super().__init__(xml_path, log_file)
 
+        self._logger.info("reading files...")
+
         self._tcf = TuflowParser(tcf_path)
-        for k, v in self._TCF_FILE_NAMES.items():
+        self._logger.info("tcf done")
+
+        for k, v in {
+            "tgc": "Geometry Control File",
+            "tbc": "BC Control File",
+            "ecf": "ESTRY Control File",
+        }.items():
             path = self._tcf.get_path(v)
             setattr(self, f"_{k}", TuflowParser(path))
+            self._logger.info(f"{k} done")
 
         self._cc_dict = {
             "computational area": self._create_computational_area_cc,
