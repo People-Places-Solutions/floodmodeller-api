@@ -92,24 +92,19 @@ def concat_geodataframes(
     return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
 
 
+def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
+    return df.rename(columns=mapper)[mapper.values()]
+
+
 def combine_z_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
     gpd_concat = concat_geodataframes(
         layers,
-        mapper={"shape_widt": "thick", "shape_opti": "options"},
+        mapper={"shape_widt": "width", "shape_opti": "options"},
         lower_case=True,
     )
-
     lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"]
-    line_widths = lines.rename({"width": "thick"})[["thick", "geometry"]]
-
     points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"]
-    point1 = points.rename(columns={"z": "height1", "geometry": "point1"})[
-        ["height1", "point1"]
-    ]
-    point2 = points.rename(columns={"z": "height2", "geometry": "point2"})[
-        ["height2", "point2"]
-    ]
 
     gdf_segments = gpd.GeoDataFrame(
         split(lines.geometry.unary_union, points.geometry.unary_union),
@@ -122,20 +117,25 @@ def combine_z_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     gdf_segments["point2"] = gdf_segments.apply(
         lambda x: x.geometry.boundary.geoms[1], axis=1
     )
+
     gdf_segments = (
-        gdf_segments.merge(point1, on="point1")
+        gdf_segments.merge(
+            rename_and_select(points, {"z": "height1", "geometry": "point1"}),
+            on="point1",
+        )
         .drop(columns="point1")
-        .merge(point2, on="point2")
+        .merge(
+            rename_and_select(points, {"z": "height2", "geometry": "point2"}),
+            on="point2",
+        )
         .drop(columns="point2")
+        .sjoin(
+            rename_and_select(lines, {"width": "thick", "geometry": "geometry"}),
+            how="inner",
+            predicate="within",
+        )
+        .drop(columns="index_right")
+        .astype({"height1": float, "height2": float, "thick": float})
     )
-
-    gdf_segments = (
-        line_widths.sjoin(gdf_segments, how="inner", predicate="covers")
-        .set_index("index_right")
-        .sort_index()
-    )
-    gdf_segments.index.name = None
-
-    print(gdf_segments)
 
     return gdf_segments

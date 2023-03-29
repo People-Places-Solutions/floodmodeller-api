@@ -1,5 +1,5 @@
 from floodmodeller_api import XML2D
-from tuflow_parser import TuflowParser
+from file_parser import TuflowParser
 from component_converter import (
     LocLineConverter,
     TopographyConverter,
