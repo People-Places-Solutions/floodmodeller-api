@@ -1,5 +1,5 @@
 from floodmodeller_api import XML2D
-from file_parser import concat_geodataframes, combine_z_layers
+from helpers import concat_geodataframes, combine_z_layers
 
 from pathlib import Path
 from shapely.geometry import LineString
