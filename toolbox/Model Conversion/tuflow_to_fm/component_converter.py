@@ -1,25 +1,12 @@
 from floodmodeller_api import XML2D
+from tuflow_parser import concat_geodataframes, combine_z_layers
 
 from pathlib import Path
 from shapely.geometry import LineString
-from shapely.ops import split
 from typing import List, Tuple
 import geopandas as gpd
 import pandas as pd
 import math
-
-
-def concat_geodataframes(
-    gdf_list: List[gpd.GeoDataFrame], mapper: dict = None, lower_case: bool = False
-) -> gpd.GeoDataFrame:
-
-    if lower_case:
-        gdf_list = [x.rename(columns=str.lower) for x in gdf_list]
-
-    if mapper:
-        gdf_list = [x.rename(columns=mapper) for x in gdf_list]
-
-    return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
 
 
 class ComponentConverter:
@@ -125,7 +112,7 @@ class TopographyConverter(ComponentConverter2D):
         self._path = str(raster)
         self._shapes = str(Path.joinpath(folder, "shapes.shp"))
 
-        shapes_concat = concat_geodataframes([self._combine_layers(x) for x in shapes])
+        shapes_concat = concat_geodataframes([combine_z_layers(x) for x in shapes])
         shapes_concat.to_file(self._shapes)
 
     def update_file(self) -> None:
@@ -134,54 +121,6 @@ class TopographyConverter(ComponentConverter2D):
             self._shapes,
         ]
         self._xml.update()
-
-    def _combine_layers(self, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
-
-        gpd_concat = concat_geodataframes(
-            layers,
-            mapper={"shape_widt": "thick", "shape_opti": "options"},
-            lower_case=True,
-        )
-
-        lines = gpd_concat[gpd_concat.geometry.geometry.type == "LineString"]
-        line_widths = lines.rename({"width": "thick"})[["thick", "geometry"]]
-
-        points = gpd_concat[gpd_concat.geometry.geometry.type == "Point"]
-        point1 = points.rename(columns={"z": "height1", "geometry": "point1"})[
-            ["height1", "point1"]
-        ]
-        point2 = points.rename(columns={"z": "height2", "geometry": "point2"})[
-            ["height2", "point2"]
-        ]
-
-        gdf_segments = gpd.GeoDataFrame(
-            split(lines.geometry.unary_union, points.geometry.unary_union),
-            crs=gpd_concat.crs,
-            columns=["geometry"],
-        )
-        gdf_segments["point1"] = gdf_segments.apply(
-            lambda x: x.geometry.boundary.geoms[0], axis=1
-        )
-        gdf_segments["point2"] = gdf_segments.apply(
-            lambda x: x.geometry.boundary.geoms[1], axis=1
-        )
-        gdf_segments = (
-            gdf_segments.merge(point1, on="point1")
-            .drop(columns="point1")
-            .merge(point2, on="point2")
-            .drop(columns="point2")
-        )
-
-        gdf_segments = (
-            line_widths.sjoin(gdf_segments, how="inner", predicate="covers")
-            .set_index("index_right")
-            .sort_index()
-        )
-        gdf_segments.index.name = None
-
-        print(gdf_segments)
-
-        return gdf_segments
 
 
 class RoughnessConverter(ComponentConverter2D):
