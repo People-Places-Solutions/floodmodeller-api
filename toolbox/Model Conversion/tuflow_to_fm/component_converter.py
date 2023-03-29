@@ -72,7 +72,6 @@ class ComputationalAreaConverter(ComponentConverter2D):
             "deactive_area": self._deactive_area_path,
             "rotation": self._rotation,
         }
-        self._xml.update()
 
 
 class LocLineConverter(ComputationalAreaConverter):
@@ -117,11 +116,9 @@ class TopographyConverter(ComponentConverter2D):
             combine_z_layers(value).to_file(z_shape_path)
 
     def update_file(self) -> None:
-        self._xml.domains[self._domain_name]["topography"] = [
-            self._raster_path,
-            *self._z_shape_paths,
-        ]
-        self._xml.update()
+        self._xml.domains[self._domain_name]["topography"] = []
+        self._xml.domains[self._domain_name]["topography"].append(self._raster_path)
+        self._xml.domains[self._domain_name]["topography"] += self._z_shape_paths
 
 
 class RoughnessConverter(ComponentConverter2D):
@@ -165,7 +162,6 @@ class RoughnessConverter(ComponentConverter2D):
                 "value": self._file_material_path,
             },
         ]
-        self._xml.update()
 
 
 class SchemeConverter(ComponentConverter2D):
@@ -199,4 +195,3 @@ class SchemeConverter(ComponentConverter2D):
             "scheme": self._scheme,
         }
         self._xml.processor = {"type": self._processor}
-        self._xml.update()

@@ -27,6 +27,9 @@ class ModelConverter:
         )
         self._logger = logging.getLogger("model_converter")
 
+    def update_file(self):
+        raise NotImplementedError()
+
     def rollback_file(self):
         raise NotImplementedError()
 
@@ -53,6 +56,7 @@ class ModelConverter:
 
         try:
             cc_object.update_file()
+            self.update_file()
         except:
             # self._logger.error("updating file failure")
             # self._logger.debug("", exc_info=True)
@@ -76,9 +80,11 @@ class ModelConverter2D(ModelConverter):
         self._folder = Path.joinpath(xml_folder, "processed_inputs")
         self._folder.mkdir(parents=True, exist_ok=True)
 
+    def update_file(self):
+        self._xml.update()
+
     def rollback_file(self):
         self._xml = XML2D(self._xml_path)
-
 
 class TuflowModelConverter2D(ModelConverter2D):
 
