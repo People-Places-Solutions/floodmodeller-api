@@ -265,3 +265,19 @@ class SchemeConverter(ComponentConverter2D):
             "scheme": self._scheme,
         }
         self._xml.processor = {"type": self._processor}
+
+
+class BoundaryConverter(ComponentConverter2D):
+    def __init__(
+        self,
+        xml: XML2D,
+        folder: Path,
+        domain_name: str,
+        vectors: List[gpd.GeoDataFrame],
+    ) -> None:
+        super().__init__(xml, folder, domain_name)
+        self._vectors = vectors
+
+    def edit_file(self) -> None:
+        self._xml.link1d = {"link": self._vectors[0]}
+        # placeholder for now

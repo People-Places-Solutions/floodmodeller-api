@@ -5,6 +5,7 @@ from component_converter import (
     TopographyConverter,
     RoughnessConverter,
     SchemeConverter,
+    BoundaryConverter,
 )
 
 from pathlib import Path
@@ -110,6 +111,7 @@ class TuflowModelConverter2D(ModelConverter2D):
             "topography": self._create_topography_cc,
             "roughness": self._create_roughness_cc,
             "scheme": self._create_scheme_cc,
+            "boundary": self._create_boundary_cc,
         }
 
     def _create_computational_area_cc(self):
@@ -157,4 +159,13 @@ class TuflowModelConverter2D(ModelConverter2D):
             total=self._tcf.get_value("End Time", float),
             scheme=self._tcf.get_value("Solution Scheme"),
             hardware=self._tcf.get_value("Hardware"),
+        )
+
+    def _create_boundary_cc(self):
+
+        return BoundaryConverter(
+            xml=self._xml,
+            folder=self._folder,
+            domain_name="Domain 1",
+            vectors=self._tbc.get_all_geodataframes("Read GIS BC"),
         )
