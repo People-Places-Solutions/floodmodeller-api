@@ -352,6 +352,8 @@ class XML2D(FMFile):
                     self._recursive_remove_data_xml(new_dict[elem_key][list_idx], elem)
                     list_idx += 1
                 except (IndexError, KeyError):
+                    # FIXME: needs some sort of warning here
+                    # (you might not know it's a multi_value_key)
                     parent.remove(elem)
 
             elif elem_key in new_dict:
