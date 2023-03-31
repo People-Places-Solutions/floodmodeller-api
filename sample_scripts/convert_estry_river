@@ -6,6 +6,7 @@ import pandas as pd
 import geopandas as gpd 
 import fiona 
 from shapely.geometry import LineString, Point
+from shapely.geometry.base import BaseGeometry
 
 try:
     from floodmodeller_api import DAT 
@@ -13,6 +14,7 @@ try:
 except ImportError:
     print('Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment')
     sys.exit()
+    
     
 #### ______________________Read in data______________________ ####    
 ##### example dat file to help build
@@ -25,18 +27,43 @@ model_path = r"C:\Users\LAMBERD3\Documents\Python\Data\Tuflow_data\TUFLOW\model"
 xs_path = r"\gis\1d_xs_RIVER_L.shp" #input relative location of shapefile
 xs_attributes = gpd.read_file(model_path+xs_path)
 xs_attributes.dropna(how='all', axis=1, inplace=True)
+xs_attributes = xs_attributes.dropna(subset=['geometry'])
 xs_attributes.rename(columns = {'geometry':'xs_geometry'}, inplace = True)
 
 #read in nwk shapefile containing source .csv files
 nwk_path = r"\gis\1d_nwk_RIVER_L.shp"
 nwk_attributes = gpd.read_file(model_path+nwk_path)
 nwk_attributes.dropna(how='all', axis=1, inplace=True)
+nwk_attributes = nwk_attributes.dropna(subset=['geometry'])
 nwk_attributes['length'] = nwk_attributes.length
-nwk_attributes.rename(columns = {'geometry':'nwk_geometry'}, inplace = True)
 
+#### ______________________Next and prev in the nwk line______________________ ####
+nwk_attributes['next'] = None
+nwk_attributes['previous'] = None
+for i, row in nwk_attributes.iterrows():
+    start_point = row.geometry.coords[0]
+    end_point = row.geometry.coords[-1]
+    if not isinstance(start_point, Point):
+        start_point = Point(start_point)
+    if not isinstance(end_point, Point):
+        end_point = Point(end_point)
+    # Get all features that intersect the start and end points
+    start_features = nwk_attributes[nwk_attributes.geometry.intersects(start_point)]
+    end_features = nwk_attributes[nwk_attributes.geometry.intersects(end_point)]
+    # Exclude the current feature from the connected features
+    start_features = start_features[start_features.index != i]
+    end_features = end_features[end_features.index != i]
+    if len(start_features) > 0:
+        # Get the IDs of all connected features at the start point
+        previous_ids = start_features['ID'].tolist()
+        nwk_attributes.at[i, 'previous'] = previous_ids
+    if len(end_features) > 0:
+        # Get the IDs of all connected features at the end point
+        next_ids = end_features['ID'].tolist()
+        nwk_attributes.at[i, 'next'] = next_ids
+nwk_attributes.rename(columns={'geometry': 'nwk_geometry'}, inplace=True)
 
 #### ______________________Used to link the 1d_xs and 1d_nwk together______________________ ####
-
 # Create an empty dataframe to hold the results
 all_df = gpd.GeoDataFrame(columns=['xs_id', 'nwk_id', 'intersection'])
 # Loop through all rows in xs_df and nwk_df and match the channel with anything but end point data 
@@ -52,8 +79,7 @@ for xs_idx, xs_row in xs_attributes.iterrows():
             }, ignore_index=True)
             #check if not the end point of the channel
             
-##### ______________________Add in the correct dist to nextfor the intersecting points______________________ #####
-
+##### ______________________Add in the correct dist to next for the intersecting points______________________ #####
 def update_location(row):
     intersection = Point(row['intersection'])
     nwk_geometry = LineString(row['nwk_geometry'])
@@ -76,7 +102,7 @@ def update_location(row):
 def get_coordinates(point):
     return point.x, point.y
 
-##### ______________________Put all that infoprmation together______________________ ######
+##### ______________________Put all that information together______________________ ######
 all_df = all_df.merge(xs_attributes, left_on='xs_id', right_index=True)
 all_df = all_df.merge(nwk_attributes, left_on='nwk_id', right_index=True)
 all_df = all_df.apply(update_location, axis=1)
