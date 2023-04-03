@@ -58,6 +58,60 @@ class RIVER(Unit):
 
     _unit = "RIVER"
 
+    def _create_from_blank(
+        self,
+        name="new_section",
+        comment="",
+        spill1 ="",
+        spill2 ="",
+        lat1 ="",
+        lat2 ="",
+        lat3 ="",
+        lat4 ="",
+        dist_to_next = 0,
+        slope=0.0001,
+        density=1000.0,
+        data=None
+    ):
+
+        # Initiate new SECTION (currently hardcoding this as default)
+        self._subtype = 'SECTION'
+
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "spill1": spill1,
+            "spill2": spill2,
+            "lat1": lat1,
+            "lat2": lat2,
+            "lat3": lat3,
+            "lat4": lat4,
+            "dist_to_next": dist_to_next,
+            "slope": slope,
+            "density": density,
+            "data": data
+        }.items():
+            setattr(self, param, val)
+
+        self.data = (
+            data
+            if isinstance(data, pd.DataFrame)
+            else pd.DataFrame(
+                [],
+                columns=[
+                    "X",
+                    "Y",
+                    "Mannings n",
+                    "Panel",
+                    "RPL",
+                    "Marker",
+                    "Easting",
+                    "Northing",
+                    "Deactivation",
+                    "SP. Marker",
+                ],)
+        )
+
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
 
