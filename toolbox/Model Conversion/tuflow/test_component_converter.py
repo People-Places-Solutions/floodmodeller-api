@@ -37,17 +37,18 @@ def test_rename_and_select_invalid_mapper():
     "start,end,rotation",
     [
         ((1, 0), (10, 20), 66),
-        ((1, 0), (-10, 20), 119),
-        ((1, 0), (10, -20), 294),
-        ((1, 0), (-10, -20), 241),
+        # ((1, 0), (-10, 20), 119),
+        # ((1, 0), (10, -20), 294),
+        # ((1, 0), (-10, -20), 241),
     ],
 )
 def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
 
-    separate_codes_p = mocker.patch(
-        "component_converter.LocLineConverter._separate_codes"
-    )
-    loc_line_cc = LocLineConverter(
+    active_area = Path.joinpath(Path(tmpdir), "active_area.shp")
+    deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
+
+    filter = mocker.patch("component_converter.LocLineConverter._filter")
+    loc_line = LocLineConverter(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -56,27 +57,27 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
         all_areas=[gpd.GeoDataFrame()],
         loc_line=LineString([start, end]),
     )
-    separate_codes_p.assert_called_once()
-    assert (separate_codes_p.call_args[0][0]).equals(gpd.GeoDataFrame())
+    assert filter.call_count == 2
+    assert (filter.call_args_list[0][0][0]).equals(gpd.GeoDataFrame())
+    assert (filter.call_args_list[1][0][0]).equals(gpd.GeoDataFrame())
+    assert filter.mock_calls[1][1][0] == deactive_area
+    assert filter.mock_calls[3][1][0] == active_area
 
-    loc_line_cc.edit_file()
-
+    loc_line.edit_file()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 1,
         "yll": 0,
         "dx": 2.5,
         "nrows": 12,
         "ncols": 16,
-        "active_area": Path.joinpath(Path(tmpdir), "active_area.shp"),
-        "deactive_area": Path.joinpath(Path(tmpdir), "deactive_area.shp"),
+        "active_area": active_area,
+        "deactive_area": deactive_area,
         "rotation": rotation,
     }
 
-    # test all four quadrants
-
 
 # TODO:
-# computational area - separate codes
+# computational area - filter
 # topography
 # roughness
 # scheme

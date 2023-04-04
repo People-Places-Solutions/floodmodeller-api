@@ -23,7 +23,7 @@ def concat_geodataframes(
 
 
 def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
-    mapper_subset = {k:v for k, v in mapper.items() if k in df.columns}
+    mapper_subset = {k: v for k, v in mapper.items() if k in df.columns}
     return df.rename(columns=mapper_subset)[mapper_subset.values()]
 
 
@@ -67,19 +67,13 @@ class ComputationalAreaConverter(ComponentConverter2D):
         self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
         all_areas_concat = concat_geodataframes(all_areas, lower_case=True)
-        self._separate_codes(all_areas_concat)
+        self._filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
+        self._filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
 
-    def _separate_codes(self, all_areas_concat: gpd.GeoDataFrame) -> None:
-        (
-            all_areas_concat[all_areas_concat["code"] == 1]
-            .drop(columns="code")
-            .to_file(self._active_area_path)
-        )
-        (
-            all_areas_concat[all_areas_concat["code"] == 0]
-            .drop(columns="code")
-            .to_file(self._deactive_area_path)
-        )
+    def _filter(
+        self, gdf: gpd.GeoDataFrame, column: str, value: int
+    ) -> gpd.GeoDataFrame:
+        return gdf[gdf[column] == value].drop(columns=column)
 
     def edit_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
