@@ -31,5 +31,5 @@ setup(
     long_description=readme_txt,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    install_requires=["pandas", "geopandas", "lxml", "tqdm", "pytest"],
+    install_requires=["pandas", "geopandas", "lxml", "tqdm", "pytest", "pytest-mock"],
 )

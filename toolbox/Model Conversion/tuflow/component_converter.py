@@ -23,7 +23,8 @@ def concat_geodataframes(
 
 
 def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
-    return df.rename(columns=mapper)[mapper.values()]
+    mapper_subset = {k:v for k, v in mapper.items() if k in df.columns}
+    return df.rename(columns=mapper_subset)[mapper_subset.values()]
 
 
 class ComponentConverter:
@@ -53,7 +54,7 @@ class ComputationalAreaConverter(ComponentConverter2D):
         folder: Path,
         domain_name: str,
         dx: float,
-        lx_ly: tuple,
+        lx_ly: Tuple[float],
         all_areas: List[gpd.GeoDataFrame],
     ) -> None:
 
@@ -66,7 +67,9 @@ class ComputationalAreaConverter(ComponentConverter2D):
         self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
         all_areas_concat = concat_geodataframes(all_areas, lower_case=True)
+        self._separate_codes(all_areas_concat)
 
+    def _separate_codes(self, all_areas_concat: gpd.GeoDataFrame) -> None:
         (
             all_areas_concat[all_areas_concat["code"] == 1]
             .drop(columns="code")
