@@ -289,5 +289,6 @@ class BoundaryConverter(ComponentConverter2D):
                 "weirml": 0.9,
                 "link": self._vector_path,
                 "ief": "ief_placeholder",
+                "mb": "mb_placeholder",
             }
         ]
