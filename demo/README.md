@@ -12,8 +12,4 @@ There are a few demo notebooks which contain some code you can run. You can also
 ## 1. Start here!
 If you're new to python or jupyter notebooks, start here!
 
-[Get Started Notebook!](demo/01-get-started.ipynb)
-
-## 2. Using the API to Raise Section Bed Levels
-
-[Raise Section Bed Levels](demo/02-raise-section-bed-levels.ipynb)
+[Get Started Notebook!](01-get-started.ipynb)

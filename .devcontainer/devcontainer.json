@@ -7,7 +7,7 @@
   "customizations": {
     "codespaces": {
       "openFiles": [
-        "README.md"
+        "demo/README.md"
       ]
     },
     "vscode": {
@@ -18,7 +18,12 @@
         "ms-toolsai.jupyter"
       ],
       // VS Code settings
-      "settings": {}
+      "settings": {
+        "workbench.editorAssociations": {
+          "*.md": "vscode.markdown.preview.editor",
+          "*.ipynb": "jupyter-notebook"
+        }
+      }
     }
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
