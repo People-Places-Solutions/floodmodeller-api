@@ -28,5 +28,5 @@
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  "onCreateCommand": "python setup.py develop"
+  "postCreateCommand": "code -r demo/readme.md && python setup.py develop"
 }
