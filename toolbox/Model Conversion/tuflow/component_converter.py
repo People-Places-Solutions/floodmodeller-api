@@ -135,7 +135,8 @@ class TopographyConverter(ComponentConverter2D):
             self._raster_paths + self._vector_paths
         )
 
-    def _combine_layers(self, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+    @staticmethod
+    def _combine_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
         # separate into lines & points
         lines_and_points = concat(

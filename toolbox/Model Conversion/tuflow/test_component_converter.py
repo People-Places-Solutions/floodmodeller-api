@@ -43,27 +43,7 @@ def point2():
     return Point(1, 0)
 
 
-def test_rename_and_select():
-    df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
-
-    df1 = rename_and_select(df, {"aa": "A", "b": "B"})
-    assert df1.equals(pd.DataFrame({"B": [4, 5, 6]}))
-
-    df2 = rename_and_select(df, {"a": "A", "b": "B"})
-    assert df2.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
-
-
-def test_filter(polygon1, polygon2):
-    gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
-
-    deactive = filter(gdf, column="code", value=0)
-    assert deactive.equals(gpd.GeoDataFrame({"geometry": [polygon1]}, index=[0]))
-
-    active = filter(gdf, column="code", value=1)
-    assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
-
-
-def test_concat():
+def test_concat(polygon1, polygon2, point1, point2):
     gdf_list = [
         gpd.GeoDataFrame({"x": [0, 1], "geometry": [polygon1, polygon2]}),
         gpd.GeoDataFrame({"X": [2], "geometry": [point1]}),
@@ -115,6 +95,26 @@ def test_concat():
     )
 
 
+def test_rename_and_select():
+    df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
+
+    df1 = rename_and_select(df, {"aa": "A", "b": "B"})
+    assert df1.equals(pd.DataFrame({"B": [4, 5, 6]}))
+
+    df2 = rename_and_select(df, {"a": "A", "b": "B"})
+    assert df2.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+
+
+def test_filter(polygon1, polygon2):
+    gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
+
+    deactive = filter(gdf, column="code", value=0)
+    assert deactive.equals(gpd.GeoDataFrame({"geometry": [polygon1]}, index=[0]))
+
+    active = filter(gdf, column="code", value=1)
+    assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
+
+
 @pytest.mark.parametrize(
     "start,end,rotation",
     [
@@ -158,13 +158,25 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
     }
 
 
-# TODO:
-# topography
-# roughness
-# scheme
-# boundary
-# general: model & one component
-# 2D: save & rollback
+def test_combine_layers():
+    assert True
+
+
+def test_topography_converter():
+    assert True
+
+
+def test_roughness_converter():
+    assert True
+
+
+def test_scheme_converter():
+    assert True
+
+
+def test_boundary_converter():
+    assert True
+
 
 if __name__ == "__main__":
     test_concat()
