@@ -37,9 +37,9 @@ def test_rename_and_select_invalid_mapper():
     "start,end,rotation",
     [
         ((1, 0), (10, 20), 66),
-        # ((1, 0), (-10, 20), 119),
-        # ((1, 0), (10, -20), 294),
-        # ((1, 0), (-10, -20), 241),
+        ((1, 0), (-10, 20), 119),
+        ((1, 0), (10, -20), 294),
+        ((1, 0), (-10, -20), 241),
     ],
 )
 def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
