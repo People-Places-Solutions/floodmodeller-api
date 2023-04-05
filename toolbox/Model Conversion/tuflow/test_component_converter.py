@@ -11,9 +11,10 @@ from component_converter import (
 )
 
 from pathlib import Path
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import Point, LineString, Polygon
 import pandas as pd
 import geopandas as gpd
+import numpy as np
 import pytest
 
 
@@ -22,40 +23,96 @@ def xml():
     return XML2D()
 
 
+@pytest.fixture
+def polygon1():
+    return Polygon([(0, 0), (1, 1), (1, 0)])
+
+
+@pytest.fixture
+def polygon2():
+    return Polygon([(0, 0), (1, 1), (0, 1)])
+
+
+@pytest.fixture
+def point1():
+    return Point(0, 1)
+
+
+@pytest.fixture
+def point2():
+    return Point(1, 0)
+
+
 def test_rename_and_select():
     df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
 
-    df1 = rename_and_select(df, {"a": "A", "b": "B"})
-    assert df1.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+    df1 = rename_and_select(df, {"aa": "A", "b": "B"})
+    assert df1.equals(pd.DataFrame({"B": [4, 5, 6]}))
 
-    df2 = rename_and_select(df, {"aa": "A", "b": "B"})
-    assert df2.equals(pd.DataFrame({"B": [4, 5, 6]}))
+    df2 = rename_and_select(df, {"a": "A", "b": "B"})
+    assert df2.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
 
 
-def test_filter():
-    gdf = gpd.GeoDataFrame(
-        {
-            "code": [0, 1],
-            "geometry": [
-                Polygon([(0, 0), (1, 1), (1, 0)]),
-                Polygon([(0, 0), (1, 1), (0, 1)]),
-            ],
-        }
-    )
+def test_filter(polygon1, polygon2):
+    gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
 
     deactive = filter(gdf, column="code", value=0)
-    assert deactive.equals(
-        gpd.GeoDataFrame({"geometry": [Polygon([(0, 0), (1, 1), (1, 0)])]}, index=[0])
-    )
+    assert deactive.equals(gpd.GeoDataFrame({"geometry": [polygon1]}, index=[0]))
 
     active = filter(gdf, column="code", value=1)
-    assert active.equals(
-        gpd.GeoDataFrame({"geometry": [Polygon([(0, 0), (1, 1), (0, 1)])]}, index=[1])
-    )
+    assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
 
 
 def test_concat():
-    assert True
+    gdf_list = [
+        gpd.GeoDataFrame({"x": [0, 1], "geometry": [polygon1, polygon2]}),
+        gpd.GeoDataFrame({"X": [2], "geometry": [point1]}),
+        gpd.GeoDataFrame({"y": [3], "geometry": [point2]}),
+    ]
+
+    gdf_concat = concat(gdf_list)
+    assert gdf_concat.equals(
+        gpd.GeoDataFrame(
+            {
+                "x": [0, 1, np.nan, np.nan],
+                "geometry": [polygon1, polygon2, point1, point2],
+                "X": [np.nan, np.nan, 2, np.nan],
+                "y": [np.nan, np.nan, np.nan, 3],
+            }
+        ),
+    )
+
+    gdf_concat = concat(gdf_list, lower_case=True)
+    assert gdf_concat.equals(
+        gpd.GeoDataFrame(
+            {
+                "x": [0, 1, 2, np.nan],
+                "geometry": [polygon1, polygon2, point1, point2],
+                "y": [np.nan, np.nan, np.nan, 3],
+            }
+        ),
+    )
+
+    gdf_concat = concat(gdf_list, mapper={"y": "x"})
+    assert gdf_concat.equals(
+        gpd.GeoDataFrame(
+            {
+                "x": [0, 1, np.nan, 3],
+                "geometry": [polygon1, polygon2, point1, point2],
+                "X": [np.nan, np.nan, 2, np.nan],
+            }
+        ),
+    )
+
+    gdf_concat = concat(gdf_list, lower_case=True, mapper={"y": "x"})
+    assert gdf_concat.equals(
+        gpd.GeoDataFrame(
+            {
+                "x": [0, 1, 2, 3],
+                "geometry": [polygon1, polygon2, point1, point2],
+            }
+        ),
+    )
 
 
 @pytest.mark.parametrize(
@@ -102,7 +159,6 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
 
 
 # TODO:
-# concat geodataframes
 # topography
 # roughness
 # scheme
@@ -111,4 +167,4 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
 # 2D: save & rollback
 
 if __name__ == "__main__":
-    test_filter()
+    test_concat()
