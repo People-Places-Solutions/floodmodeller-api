@@ -5,11 +5,6 @@
   "image": "mcr.microsoft.com/devcontainers/universal:2",
   "name": "Get Started!",
   "customizations": {
-    "codespaces": {
-      "openFiles": [
-        "README.md"
-      ]
-    },
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
       // Python and jupyter
@@ -18,10 +13,22 @@
         "ms-toolsai.jupyter"
       ],
       // VS Code settings
-      "settings": {}
+      "settings": {
+        "workbench.editorAssociations": {
+          "*.md": "vscode.markdown.preview.editor",
+          "*.ipynb": "jupyter-notebook"
+        }
+      }
+    },
+    "codespaces": {
+      "openFiles": [
+        "demo/landing.txt"
+      ]
     }
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
+  
   "postCreateCommand": "python setup.py develop"
+    
 }
