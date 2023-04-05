@@ -351,7 +351,7 @@ class XML2D(FMFile):
                 try:
                     self._recursive_remove_data_xml(new_dict[elem_key][list_idx], elem)
                     list_idx += 1
-                except IndexError:
+                except (IndexError, KeyError):
                     parent.remove(elem)
 
             elif elem_key in new_dict:
