@@ -29,6 +29,6 @@
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
   
-  "postCreateCommand": ["python", "setup.py", "develop", "&&", "code", "-r", "/workspaces/floodmodeller-api/demo/README.md"]
+  "postCreateCommand": "python setup.py develop && echo 'set up complete'"
     
 }
