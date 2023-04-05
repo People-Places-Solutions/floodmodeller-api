@@ -9,7 +9,7 @@ import pandas as pd
 import math
 
 
-def concat_geodataframes(
+def concat(
     gdf_list: List[gpd.GeoDataFrame], mapper: dict = None, lower_case: bool = False
 ) -> gpd.GeoDataFrame:
 
@@ -25,6 +25,10 @@ def concat_geodataframes(
 def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
     mapper_subset = {k: v for k, v in mapper.items() if k in df.columns}
     return df.rename(columns=mapper_subset)[mapper_subset.values()]
+
+
+def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
+    return gdf[gdf[column] == value].drop(columns=column)
 
 
 class ComponentConverter:
@@ -66,14 +70,9 @@ class ComputationalAreaConverter(ComponentConverter2D):
         self._active_area_path = Path.joinpath(folder, "active_area.shp")
         self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
-        all_areas_concat = concat_geodataframes(all_areas, lower_case=True)
-        self._filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
-        self._filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
-
-    def _filter(
-        self, gdf: gpd.GeoDataFrame, column: str, value: int
-    ) -> gpd.GeoDataFrame:
-        return gdf[gdf[column] == value].drop(columns=column)
+        all_areas_concat = concat(all_areas, lower_case=True)
+        filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
+        filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
 
     def edit_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
@@ -139,7 +138,7 @@ class TopographyConverter(ComponentConverter2D):
     def _combine_layers(self, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
         # separate into lines & points
-        lines_and_points = concat_geodataframes(
+        lines_and_points = concat(
             layers,
             mapper={"shape_widt": "width", "shape_opti": "options"},
             lower_case=True,
@@ -208,7 +207,7 @@ class RoughnessConverter(ComponentConverter2D):
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 
         (
-            concat_geodataframes(file_material, lower_case=True)
+            concat(file_material, lower_case=True)
             .merge(mapping, left_on="material", right_on="Material ID")[
                 ["Manning's n", "geometry"]
             ]
@@ -284,7 +283,7 @@ class BoundaryConverter(ComponentConverter2D):
                 "link_to_model": "ISIS1D",
                 "weircd": 1.2,
                 "weirml": 0.9,
-                "link": self._vector_path,
+                "link": [self._vector_path],
                 "ief": "ief_placeholder",
                 "mb": "mb_placeholder",
             }

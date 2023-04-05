@@ -1,7 +1,8 @@
 from floodmodeller_api import XML2D
 from component_converter import (
+    concat,
     rename_and_select,
-    concat_geodataframes,
+    filter,
     LocLineConverter,
     TopographyConverter,
     RoughnessConverter,
@@ -10,7 +11,7 @@ from component_converter import (
 )
 
 from pathlib import Path
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Polygon
 import pandas as pd
 import geopandas as gpd
 import pytest
@@ -21,16 +22,40 @@ def xml():
     return XML2D()
 
 
-def test_rename_and_select_valid_mapper():
+def test_rename_and_select():
     df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
-    df = rename_and_select(df, {"a": "A", "b": "B"})
-    assert df.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+
+    df1 = rename_and_select(df, {"a": "A", "b": "B"})
+    assert df1.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+
+    df2 = rename_and_select(df, {"aa": "A", "b": "B"})
+    assert df2.equals(pd.DataFrame({"B": [4, 5, 6]}))
 
 
-def test_rename_and_select_invalid_mapper():
-    df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
-    df = rename_and_select(df, {"aa": "A", "b": "B"})
-    assert df.equals(pd.DataFrame({"B": [4, 5, 6]}))
+def test_filter():
+    gdf = gpd.GeoDataFrame(
+        {
+            "code": [0, 1],
+            "geometry": [
+                Polygon([(0, 0), (1, 1), (1, 0)]),
+                Polygon([(0, 0), (1, 1), (0, 1)]),
+            ],
+        }
+    )
+
+    deactive = filter(gdf, column="code", value=0)
+    assert deactive.equals(
+        gpd.GeoDataFrame({"geometry": [Polygon([(0, 0), (1, 1), (1, 0)])]}, index=[0])
+    )
+
+    active = filter(gdf, column="code", value=1)
+    assert active.equals(
+        gpd.GeoDataFrame({"geometry": [Polygon([(0, 0), (1, 1), (0, 1)])]}, index=[1])
+    )
+
+
+def test_concat():
+    assert True
 
 
 @pytest.mark.parametrize(
@@ -47,7 +72,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
     active_area = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
 
-    filter = mocker.patch("component_converter.LocLineConverter._filter")
+    filter = mocker.patch("component_converter.filter")
     loc_line = LocLineConverter(
         xml=xml,
         folder=Path(tmpdir),
@@ -77,11 +102,13 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
 
 
 # TODO:
-# computational area - filter
+# concat geodataframes
 # topography
 # roughness
 # scheme
 # boundary
 # general: model & one component
 # 2D: save & rollback
-# concat geodataframes
+
+if __name__ == "__main__":
+    test_filter()
