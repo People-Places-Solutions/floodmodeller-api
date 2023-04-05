@@ -19,14 +19,17 @@
           "*.ipynb": "jupyter-notebook"
         }
       }
-    },
-    "codespaces": {
-      "openFiles": [
-        "demo/01-get-started.ipynb"
-      ]
     }
+    // "codespaces": {
+    //   "openFiles": [
+    //     "demo/01-get-started.ipynb"
+    //   ]
+    // }
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  "postCreateCommand": "python setup.py develop"
+  "postCreateCommand": [
+    "code demo/readme.md",
+    "python setup.py develop"
+  ]
 }
