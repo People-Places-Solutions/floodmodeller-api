@@ -9,7 +9,9 @@ You can use this to experiment with the API without needing to install anything 
 # Demo Notebooks
 There are a few demo notebooks which contain some code you can run. You can also use these notebooks to write your own code! Click the links in the section below to open each notebook editor and get started with the API.
 
-## 1. Start here!
-If you're new to python or jupyter notebooks, start here!
+If you're new to python or jupyter notebooks, start here! --> 
+[Introduction to python](01-get-started.ipynb)
 
-[Get Started Notebook!](01-get-started.ipynb)
+This notebook introduces the main principles of the API --> 
+[Introduction to Flood Modeller API](02-intro-floodmodeller-api.ipynb)
+
