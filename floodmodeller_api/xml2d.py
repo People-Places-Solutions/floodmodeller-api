@@ -352,9 +352,6 @@ class XML2D(FMFile):
                     self._recursive_remove_data_xml(new_dict[elem_key][list_idx], elem)
                     list_idx += 1
                 except (IndexError, KeyError):
-                    elem_key_type = type(new_dict[elem_key])
-                    if elem_key_type != list:
-                        raise Exception(f"{elem_key} attribute is of type {elem_key_type} but should be a list")
                     parent.remove(elem)
 
             elif elem_key in new_dict:
