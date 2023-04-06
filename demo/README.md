@@ -1,4 +1,4 @@
-# Get Started with the Floodmodeller Python API!
+# Get Started with the Flood Modeller Python API!
 
 Welcome to the Floodmodeller API Demo Codespaces!
 
@@ -6,14 +6,11 @@ You can use this to experiment with the API without needing to install anything 
 
 > Attention! ⏱️ You will need to wait one minute after opening for the Codespace to install our dependencies (this won't take long)...
 
-# Demo Notebooks
-There are a few demo notebooks which contain some code you can run. You can also use these notebooks to write your own code! Click the links in the section below to open each notebook editor and get started with the API.
+# Demo Notebook
+If you're new to python or Flood Modeller API, then start here --> 
+[Getting started](01-get-started.ipynb)
 
-If you're new to python or jupyter notebooks, start here --> 
-[Introduction to python](01-get-started.ipynb)
-
-This notebook introduces the main principles of the API  --> 
-[Introduction to Flood Modeller API](02-intro-floodmodeller-api.ipynb)
+This notebook walks you through some of the basics of python and gets you started with using the API
 
 # Using this codespace
 
