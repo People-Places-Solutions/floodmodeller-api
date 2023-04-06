@@ -24,8 +24,8 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
     domain = list(x2d.domains)[0]
     prev_dtm = x2d.domains[domain]["topography"]
 
-    x2d.link1d[0]["link"] = "new_link"
-    x2d.domains[domain]["topography"] = "new_dtm"
+    x2d.link1d[0]["link"] = ["new_link"]
+    x2d.domains[domain]["topography"] = ["new_dtm"]
     assert x2d._write() != data_before
 
     x2d.link1d[0]["link"] = prev_link
