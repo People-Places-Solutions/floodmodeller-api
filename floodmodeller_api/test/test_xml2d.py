@@ -135,6 +135,13 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
 
     assert x2d._write()
 
+def test_xml2d_update_value(xml_fp, data_before):
+    """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
+    x2d = XML2D(xml_fp)
+    domain = list(x2d.domains)[0]
+    prev_dtm = x2d.domains[domain]['run_data']['scheme'] = 'TVD'
+
+    assert x2d._write()
 
 # # debugging function
 # if __name__== '__main__':

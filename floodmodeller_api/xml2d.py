@@ -261,13 +261,7 @@ class XML2D(FMFile):
                         else:
                             # Attribute has been updated
                             elems = parent.findall(f"{self._ns}{key}")
-                            if key == "variables":
-                                elem = elems[0]
-                                if type(item) == list:
-                                    elem.text = "\n".join(item)
-                                else:
-                                    elem.text = str(item)
-                            elif type(item) == list:
+                            if type(item) == list and key != "variables":
                                 # Handle multiple similar elements
                                 if len(elems) < len(item):
                                     while len(elems) < len(item):
@@ -280,6 +274,13 @@ class XML2D(FMFile):
 
                                 for i in range(len(elems)):
                                     elems[i].text = item[i]
+                                    
+                            elif len(elems) == 1:
+                                elem = elems[0]
+                                if type(item) == list:
+                                    elem.text = "\n".join(item)
+                                else:
+                                    elem.text = str(item)
 
                             else:
                                 parent.set(key, str(item))
