@@ -233,11 +233,31 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
+def test_material_to_roughness(polygon1, polygon2):
+
+    roughness = RoughnessConverter.material_to_roughness(
+        [
+            gpd.GeoDataFrame({"material": [7, 3], "geometry": [polygon1, polygon2]}),
+            gpd.GeoDataFrame({"material": [5], "geometry": [polygon1]}),
+        ],
+        pd.DataFrame({"Material ID": [3, 5, 7], "Manning's n": [0.1, 0.9, 0.7]}),
+    )
+
+    assert roughness.equals(
+        gpd.GeoDataFrame(
+            {"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, polygon1]}
+        )
+    )
+
+
 def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
     roughness_path = Path.joinpath(Path(tmpdir), "roughness.shp")
+    mapping = pd.DataFrame({"Material ID": [3], "Manning's n": [0.1]})
 
-    concat = mocker.patch("component_converter.concat")
+    material_to_roughness = mocker.patch(
+        "component_converter.RoughnessConverter.material_to_roughness"
+    )
     roughness_converter = RoughnessConverter(
         xml=xml,
         folder=Path(tmpdir),
@@ -245,12 +265,13 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
         law="manning",
         global_material=3,
         file_material=[gdf1, gdf2],
-        mapping=pd.DataFrame({"Material ID": [3], "Manning's n": [0.1]}),
+        mapping=mapping,
     )
-    assert concat.call_count == 1
-    assert (concat.call_args_list[0][0][0][0]).equals(gdf1)
-    assert (concat.call_args_list[0][0][0][1]).equals(gdf2)
-    assert concat.mock_calls[4][1][0] == roughness_path
+    assert material_to_roughness.call_count == 1
+    assert (material_to_roughness.call_args_list[0][0][0][0]).equals(gdf1)
+    assert (material_to_roughness.call_args_list[0][0][0][1]).equals(gdf2)
+    assert (material_to_roughness.call_args_list[0][0][1]).equals(mapping)
+    assert material_to_roughness.mock_calls[1][1][0] == roughness_path
 
     roughness_converter.edit_file()
     assert xml.domains["Domain 1"]["roughness"] == [

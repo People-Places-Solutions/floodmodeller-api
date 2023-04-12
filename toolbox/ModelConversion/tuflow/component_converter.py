@@ -207,13 +207,19 @@ class RoughnessConverter(ComponentConverter2D):
 
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 
-        (
-            concat(file_material, lower_case=True)
+        roughness = self.material_to_roughness(file_material, mapping)
+        roughness.to_file(self._file_material_path)
+
+    @staticmethod
+    def material_to_roughness(
+        material: List[gpd.GeoDataFrame], mapping: pd.DataFrame
+    ) -> gpd.GeoDataFrame:
+        return (
+            concat(material, lower_case=True)
             .merge(mapping, left_on="material", right_on="Material ID")[
                 ["Manning's n", "geometry"]
             ]
             .rename(columns={"Manning's n": "value"})
-            .to_file(self._file_material_path)
         )
 
     def edit_file(self) -> None:
