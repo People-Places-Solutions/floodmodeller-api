@@ -233,8 +233,38 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
-def test_roughness_converter():
-    assert True
+def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
+
+    material_path = str(Path.joinpath(Path(tmpdir), "material.shp"))
+
+    concat = mocker.patch(
+        "component_converter.TopographyConverter.concat"
+    )
+    roughness_converter = RoughnessConverter(
+        xml=xml,
+        folder=Path(tmpdir),
+        domain_name="Domain 1",
+        global_material=0.1,
+        file_material=material_path,
+        mapping=self._tcf.get_dataframe("Read Materials File"),
+    )
+    assert concat.call_count == 1
+    assert (concat.call_args_list[0][0][0]).equals(material_path)
+    assert concat.mock_calls[1][1][0] == material_path
+
+    roughness_converter.edit_file()
+    assert xml.domains["Domain 1"]["topography"] == [
+        {
+            "type": "global",
+            "law": "manning",
+            "value": global_value,
+        },
+        {
+            "type": "file",
+            "law": "manning",
+            "value": file_material_path,
+        },
+    ]
 
 
 def test_scheme_converter():
@@ -246,4 +276,4 @@ def test_boundary_converter():
 
 
 if __name__ == "__main__":
-    test_topography_converter()
+    test_roughness_converter()
