@@ -128,7 +128,7 @@ class TopographyConverter(ComponentConverter2D):
         for i, value in enumerate(vectors):
             vector_path = str(Path.joinpath(folder, f"topography_{i}.shp"))
             self._vector_paths.append(vector_path)
-            self._combine_layers(value).to_file(vector_path)
+            self.combine_layers(value).to_file(vector_path)
 
     def edit_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = (
@@ -136,7 +136,7 @@ class TopographyConverter(ComponentConverter2D):
         )
 
     @staticmethod
-    def _combine_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+    def combine_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
         # separate into lines & points
         lines_and_points = concat(
@@ -254,12 +254,12 @@ class SchemeConverter(ComponentConverter2D):
 
     def edit_file(self) -> None:
         self._xml.domains[self._domain_name]["time"] = {
-            "start_offset": {"value": self._start_offset},
-            "total": {"value": self._total},
+            "start_offset": self._start_offset,
+            "total": self._total,
         }
         self._xml.domains[self._domain_name]["run_data"] = {
             "time_step": self._time_step,
-            "scheme": {"value": self._scheme},
+            "scheme": self._scheme,
         }
         self._xml.processor = {"type": self._processor}
 

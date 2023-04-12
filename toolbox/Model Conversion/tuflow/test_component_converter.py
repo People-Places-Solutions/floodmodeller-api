@@ -24,16 +24,6 @@ def xml():
 
 
 @pytest.fixture
-def polygon1():
-    return Polygon([(0, 0), (1, 1), (1, 0)])
-
-
-@pytest.fixture
-def polygon2():
-    return Polygon([(0, 0), (1, 1), (0, 1)])
-
-
-@pytest.fixture
 def point1():
     return Point(0, 1)
 
@@ -41,6 +31,16 @@ def point1():
 @pytest.fixture
 def point2():
     return Point(1, 0)
+
+
+@pytest.fixture
+def polygon1():
+    return Polygon([(0, 0), (1, 1), (1, 0)])
+
+
+@pytest.fixture
+def polygon2():
+    return Polygon([(0, 0), (1, 1), (0, 1)])
 
 
 def test_concat(polygon1, polygon2, point1, point2):
@@ -159,7 +159,41 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
 
 
 def test_combine_layers():
-    assert True
+
+    tuflow_p = gpd.GeoDataFrame(
+        {
+            "Z": [50.0, 80.0, 90.0, 20.0],
+            "dZ": [0, 0, 0, 0],
+            "geometry": [Point(2, 0), Point(2, 3), Point(3, 4), Point(4, 4)],
+        }
+    )
+    tuflow_l = gpd.GeoDataFrame(
+        {
+            "width": [2.0, 3.0],
+            "options": ["MAX", "MAX"],
+            "geometry": [
+                LineString([(2, 0), (2, 4), (3, 4)]),
+                LineString([(3, 4), (4, 4)]),
+            ],
+        }
+    )
+
+    combined = TopographyConverter.combine_layers((tuflow_p, tuflow_l))
+
+    assert combined.equals(
+        gpd.GeoDataFrame(
+            {
+                "geometry": [
+                    LineString([(2, 0), (2, 3)]),
+                    LineString([(2, 3), (2, 4), (3, 4)]),
+                    LineString([(3, 4), (4, 4)]),
+                ],
+                "height1": [50.0, 80.0, 90.0],
+                "height2": [80.0, 90.0, 20.0],
+                "thick": [2.0, 2.0, 3.0],
+            }
+        )
+    )
 
 
 def test_topography_converter():
@@ -179,4 +213,4 @@ def test_boundary_converter():
 
 
 if __name__ == "__main__":
-    test_concat()
+    test_combine_layers()
