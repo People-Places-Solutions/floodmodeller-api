@@ -219,6 +219,8 @@ class XML2D(FMFile):
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
+            if key in self._multi_value_keys and type(item) != list:
+                raise Exception(f"Element: '{key}' must be added as list")
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
@@ -242,7 +244,10 @@ class XML2D(FMFile):
                         except IndexError:
                             # New thing added, Add it all recursively
                             self._recursive_add_element(
-                                parent=parent, add_item=_item, add_key=key
+                                parent=parent,
+                                add_item=_item,
+                                add_key=key,
+                                from_list=True,
                             )
 
             else:
@@ -256,13 +261,13 @@ class XML2D(FMFile):
                         else:
                             # Attribute has been updated
                             elems = parent.findall(f"{self._ns}{key}")
-                            if len(elems) == 1:
+                            if key == "variables":
                                 elem = elems[0]
                                 if type(item) == list:
                                     elem.text = "\n".join(item)
                                 else:
                                     elem.text = str(item)
-                            elif len(elems) > 1:
+                            elif type(item) == list:
                                 # Handle multiple similar elements
                                 if len(elems) < len(item):
                                     while len(elems) < len(item):
@@ -284,7 +289,13 @@ class XML2D(FMFile):
                         parent=parent, add_item=item, add_key=key
                     )
 
-    def _recursive_add_element(self, parent, add_item, add_key):
+    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):
+        if (
+            add_key in self._multi_value_keys
+            and type(add_item) != list
+            and not from_list
+        ):
+            raise Exception(f"Element: '{add_key}' must be added as list")
         if type(add_item) == dict:
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
@@ -300,7 +311,7 @@ class XML2D(FMFile):
             else:
                 for item in add_item:
                     self._recursive_add_element(
-                        parent=parent, add_item=item, add_key=add_key
+                        parent=parent, add_item=item, add_key=add_key, from_list=True
                     )
         else:
             if add_key == "value":  # Value has been added
@@ -379,9 +390,13 @@ class XML2D(FMFile):
                         domain for _, domain in self.domains.items()
                     ]
                 else:
-                    self._data[attr] = getattr(self, attr)
+                    try:
+                        self._data[attr] = getattr(self, attr)
+                    except AttributeError:
+                        self._data[attr] = None
 
     def _write(self) -> str:
+        orig_xml_tree = deepcopy(self._xmltree)
         try:
             self._update_dict()
             self._recursive_update_xml(self._data, self._raw_data, "ROOT")
@@ -398,6 +413,7 @@ class XML2D(FMFile):
             return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
 
         except Exception as e:
+            self._xmltree = orig_xml_tree
             self._handle_exception(e, when="write")
 
     def _get_multi_value_keys(self):

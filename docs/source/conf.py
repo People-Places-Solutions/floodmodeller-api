@@ -19,11 +19,11 @@ print (sys.path)
 # -- Project information -----------------------------------------------------
 
 project = 'Flood Modeller Python API'
-copyright = '2022, Jacobs'
+copyright = '2023, Jacobs'
 author = 'Joe Pierce'
 
 # The full version, including alpha/beta/rc tags
-release = '0.3.11'
+release = '0.4.1'
 
 
 # -- General configuration ---------------------------------------------------
