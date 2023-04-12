@@ -235,34 +235,34 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
 def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
-    material_path = str(Path.joinpath(Path(tmpdir), "material.shp"))
+    roughness_path = Path.joinpath(Path(tmpdir), "roughness.shp")
 
-    concat = mocker.patch(
-        "component_converter.TopographyConverter.concat"
-    )
+    concat = mocker.patch("component_converter.concat")
     roughness_converter = RoughnessConverter(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
-        global_material=0.1,
-        file_material=material_path,
-        mapping=self._tcf.get_dataframe("Read Materials File"),
+        law="manning",
+        global_material=3,
+        file_material=[gdf1, gdf2],
+        mapping=pd.DataFrame({"Material ID": [3], "Manning's n": [0.1]}),
     )
     assert concat.call_count == 1
-    assert (concat.call_args_list[0][0][0]).equals(material_path)
-    assert concat.mock_calls[1][1][0] == material_path
+    assert (concat.call_args_list[0][0][0][0]).equals(gdf1)
+    assert (concat.call_args_list[0][0][0][1]).equals(gdf2)
+    assert concat.mock_calls[4][1][0] == roughness_path
 
     roughness_converter.edit_file()
-    assert xml.domains["Domain 1"]["topography"] == [
+    assert xml.domains["Domain 1"]["roughness"] == [
         {
             "type": "global",
             "law": "manning",
-            "value": global_value,
+            "value": 0.1,
         },
         {
             "type": "file",
             "law": "manning",
-            "value": file_material_path,
+            "value": roughness_path,
         },
     ]
 
