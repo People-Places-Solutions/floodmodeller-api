@@ -233,19 +233,19 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
-def test_material_to_roughness(polygon1, polygon2):
+def test_material_to_roughness(point1, polygon1, polygon2):
 
     roughness = RoughnessConverter.material_to_roughness(
         [
             gpd.GeoDataFrame({"material": [7, 3], "geometry": [polygon1, polygon2]}),
-            gpd.GeoDataFrame({"material": [5], "geometry": [polygon1]}),
+            gpd.GeoDataFrame({"material": [5], "geometry": [point1]}),
         ],
         pd.DataFrame({"Material ID": [3, 5, 7], "Manning's n": [0.1, 0.9, 0.7]}),
     )
 
     assert roughness.equals(
         gpd.GeoDataFrame(
-            {"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, polygon1]}
+            {"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, point1]}
         )
     )
 

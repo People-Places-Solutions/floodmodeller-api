@@ -23,7 +23,7 @@ class RaiseBedLevelsTool(FMTool):
     description = "Tool to raise bed levels of river sections in a DAT file"
     parameters = [
         Parameter(name="dat_input", dtype=str, description="Path to input DAT file", help_text="Not helpful text", required=True), 
-        Parameter(name="dat_output", dtype=str, description="Path to output  DAT file", help_text="Not helpful text", required=True),
+        Parameter(name="dat_output", dtype=str, description="Path to output DAT file", help_text="Not helpful text", required=True),
         Parameter(name="min_level_m", dtype=float,  description="Minimum bed level to raise to (in meters)", help_text="Not helpful text", required=True)
     ]
     tool_function = raise_section_bed_levels
