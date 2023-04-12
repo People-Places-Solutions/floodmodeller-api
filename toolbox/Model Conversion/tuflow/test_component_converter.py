@@ -43,7 +43,18 @@ def polygon2():
     return Polygon([(0, 0), (1, 1), (0, 1)])
 
 
+@pytest.fixture
+def gdf1():
+    return gpd.GeoDataFrame({"x": [1], "geometry": [point1]})
+
+
+@pytest.fixture
+def gdf2():
+    return gpd.GeoDataFrame({"x": [2], "geometry": [point2]})
+
+
 def test_concat(polygon1, polygon2, point1, point2):
+
     gdf_list = [
         gpd.GeoDataFrame({"x": [0, 1], "geometry": [polygon1, polygon2]}),
         gpd.GeoDataFrame({"X": [2], "geometry": [point1]}),
@@ -96,6 +107,7 @@ def test_concat(polygon1, polygon2, point1, point2):
 
 
 def test_rename_and_select():
+
     df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
 
     df1 = rename_and_select(df, {"aa": "A", "b": "B"})
@@ -106,6 +118,7 @@ def test_rename_and_select():
 
 
 def test_filter(polygon1, polygon2):
+
     gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
 
     deactive = filter(gdf, column="code", value=0)
@@ -124,7 +137,7 @@ def test_filter(polygon1, polygon2):
         ((1, 0), (-10, -20), 241),
     ],
 )
-def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
+def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
 
     active_area = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
@@ -136,12 +149,12 @@ def test_loc_line_converter(mocker, tmpdir, xml, start, end, rotation):
         domain_name="Domain 1",
         dx=2.5,
         lx_ly=(30.3, 40.4),
-        all_areas=[gpd.GeoDataFrame()],
+        all_areas=[gdf1],
         loc_line=LineString([start, end]),
     )
     assert filter.call_count == 2
-    assert (filter.call_args_list[0][0][0]).equals(gpd.GeoDataFrame())
-    assert (filter.call_args_list[1][0][0]).equals(gpd.GeoDataFrame())
+    assert (filter.call_args_list[0][0][0]).equals(gdf1)
+    assert (filter.call_args_list[1][0][0]).equals(gdf1)
     assert filter.mock_calls[1][1][0] == deactive_area
     assert filter.mock_calls[3][1][0] == active_area
 
@@ -196,8 +209,28 @@ def test_combine_layers():
     )
 
 
-def test_topography_converter():
-    assert True
+def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
+
+    raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
+    vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
+
+    combine_layers = mocker.patch(
+        "component_converter.TopographyConverter.combine_layers"
+    )
+    topography_converter = TopographyConverter(
+        xml=xml,
+        folder=Path(tmpdir),
+        domain_name="Domain 1",
+        rasters=[raster_path],
+        vectors=[(gdf1, gdf2)],
+    )
+    assert combine_layers.call_count == 1
+    assert (combine_layers.call_args_list[0][0][0][0]).equals(gdf1)
+    assert (combine_layers.call_args_list[0][0][0][1]).equals(gdf2)
+    assert combine_layers.mock_calls[1][1][0] == vector_path
+
+    topography_converter.edit_file()
+    assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
 def test_roughness_converter():
@@ -213,4 +246,4 @@ def test_boundary_converter():
 
 
 if __name__ == "__main__":
-    test_combine_layers()
+    test_topography_converter()
