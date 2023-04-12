@@ -254,12 +254,12 @@ class SchemeConverter(ComponentConverter2D):
 
     def edit_file(self) -> None:
         self._xml.domains[self._domain_name]["time"] = {
-            "start_offset": self._start_offset,
-            "total": self._total,
+            "start_offset": {"value": self._start_offset},
+            "total": {"value": self._total},
         }
         self._xml.domains[self._domain_name]["run_data"] = {
             "time_step": self._time_step,
-            "scheme": self._scheme,
+            "scheme": {"value": self._scheme},
         }
         self._xml.processor = {"type": self._processor}
 
