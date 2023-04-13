@@ -139,30 +139,27 @@ class TopographyConverter(ComponentConverter2D):
     def combine_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
         # separate into lines & points
-        lines_and_points = concat(
+        lines_points = concat(
             layers,
             mapper={"shape_widt": "width", "shape_opti": "options"},
             lower_case=True,
         )
-        lines = lines_and_points[
-            lines_and_points.geometry.geometry.type == "LineString"
-        ]
-        points = lines_and_points[lines_and_points.geometry.geometry.type == "Point"]
+        lines = lines_points[lines_points.geometry.geometry.type == "LineString"]
+        points = lines_points[lines_points.geometry.geometry.type == "Point"]
 
         # split lines according to points
         segments = gpd.GeoDataFrame(
             split(lines.geometry.unary_union, points.geometry.unary_union),
-            crs=lines_and_points.crs,
+            crs=lines_points.crs,
             columns=["geometry"],
         )
 
         # get line endpoints
-        segments["point1"] = segments.apply(
-            lambda x: x.geometry.boundary.geoms[0], axis=1
+        segments[["point1", "point2"]] = pd.DataFrame(
+            segments.apply(lambda x: list(x.geometry.boundary.geoms), axis=1).tolist()
         )
-        segments["point2"] = segments.apply(
-            lambda x: x.geometry.boundary.geoms[1], axis=1
-        )
+        segments["point1"] = gpd.GeoSeries(segments["point1"])
+        segments["point2"] = gpd.GeoSeries(segments["point2"])
 
         # get endpoint heights & line thickness
         segments = (
