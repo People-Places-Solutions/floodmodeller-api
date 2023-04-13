@@ -288,8 +288,38 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
     ]
 
 
-def test_scheme_converter():
-    assert True
+@pytest.mark.parametrize(
+    "in_scheme, in_hardware, fm_scheme, fm_proc",
+    [
+        ("HPC", "GPU", "TVD", "GPU"),
+        ("HPC", "CPU", "ADI", "CPU"),
+        ("Classic", "GPU", "ADI", "CPU"),
+        ("x", "y", "ADI", "CPU"),
+    ],
+)
+def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_proc):
+
+    scheme_converter = SchemeConverter(
+        xml=xml,
+        folder=Path(tmpdir),
+        domain_name="Domain 1",
+        time_step=0.5,
+        start_offset=3,
+        total=5,
+        scheme=in_scheme,
+        hardware=in_hardware,
+    )
+    scheme_converter.edit_file()
+
+    assert xml.domains["Domain 1"]["time"] == {
+        "start_offset": 3,
+        "total": 5,
+    }
+    assert xml.domains["Domain 1"]["run_data"] == {
+        "time_step": 0.5,
+        "scheme": fm_scheme,
+    }
+    assert xml.processor == {"type": fm_proc}
 
 
 def test_boundary_converter():
@@ -297,4 +327,4 @@ def test_boundary_converter():
 
 
 if __name__ == "__main__":
-    test_roughness_converter()
+    test_scheme_converter()
