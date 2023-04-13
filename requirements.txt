@@ -4,4 +4,5 @@ tqdm
 lxml
 pytest
 pytest-cov
+pytest-mock
 shapely
