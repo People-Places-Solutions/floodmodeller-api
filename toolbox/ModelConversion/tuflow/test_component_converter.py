@@ -7,7 +7,6 @@ from component_converter import (
     TopographyConverter,
     RoughnessConverter,
     SchemeConverter,
-    BoundaryConverter,
 )
 
 from pathlib import Path
@@ -320,10 +319,6 @@ def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_pro
         "scheme": fm_scheme,
     }
     assert xml.processor == {"type": fm_proc}
-
-
-def test_boundary_converter():
-    assert True
 
 
 if __name__ == "__main__":
