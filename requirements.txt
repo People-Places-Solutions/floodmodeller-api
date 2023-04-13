@@ -3,3 +3,4 @@ tqdm
 lxml
 pytest
 pytest-cov
+shapely
