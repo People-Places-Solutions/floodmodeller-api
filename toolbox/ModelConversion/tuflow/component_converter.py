@@ -149,7 +149,7 @@ class TopographyConverter(ComponentConverter2D):
 
         # split lines according to points
         segments = gpd.GeoDataFrame(
-            split(lines.geometry.unary_union, points.geometry.unary_union),
+            list(split(lines.geometry.unary_union, points.geometry.unary_union).geoms),
             crs=lines_points.crs,
             columns=["geometry"],
         )
