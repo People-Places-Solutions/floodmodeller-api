@@ -1,5 +1,5 @@
 from floodmodeller_api import XML2D
-from component_converter import (
+from toolbox.model_conversion.helpers.component_converter import (
     concat,
     rename_and_select,
     filter,
@@ -16,6 +16,8 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import pytest
+
+path_to_cc = "toolbox.model_conversion.helpers.component_converter"
 
 
 @pytest.fixture
@@ -148,7 +150,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
     active_area = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
 
-    filter = mocker.patch("component_converter.filter")
+    filter = mocker.patch(f"{path_to_cc}.filter")
     loc_line = LocLineConverter(
         xml=xml,
         folder=Path(tmpdir),
@@ -220,9 +222,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
     vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
 
-    combine_layers = mocker.patch(
-        "component_converter.TopographyConverter.combine_layers"
-    )
+    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverter.combine_layers")
     topography_converter = TopographyConverter(
         xml=xml,
         folder=Path(tmpdir),
@@ -262,7 +262,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
     mapping = pd.DataFrame({"Material ID": [3], "Manning's n": [0.1]})
 
     material_to_roughness = mocker.patch(
-        "component_converter.RoughnessConverter.material_to_roughness"
+        f"{path_to_cc}.RoughnessConverter.material_to_roughness"
     )
     roughness_converter = RoughnessConverter(
         xml=xml,

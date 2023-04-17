@@ -26,4 +26,3 @@ jobs:
       - name: Run unit tests
         run: |
           python -m pytest floodmodeller_api/test -v
-          python -m pytest floodmodeller_api/toolbox -v
