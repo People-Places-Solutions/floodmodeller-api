@@ -51,7 +51,7 @@ class FileParser:
 
     def get_all_geodataframes(
         self, name: str
-    ) -> List[Tuple[Union[gpd.GeoDataFrame, gpd.GeoDataFrame]]]:
+    ) -> List[Union[Tuple[gpd.GeoDataFrame], gpd.GeoDataFrame]]:
 
         gdf_list = []
 
