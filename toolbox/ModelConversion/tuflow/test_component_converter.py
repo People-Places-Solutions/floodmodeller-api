@@ -3,6 +3,7 @@ from component_converter import (
     concat,
     rename_and_select,
     filter,
+    ComponentConverter,
     LocLineConverter,
     TopographyConverter,
     RoughnessConverter,
@@ -125,6 +126,12 @@ def test_filter(polygon1, polygon2):
 
     active = filter(gdf, column="code", value=1)
     assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
+
+
+def test_abc():
+    abc = ComponentConverter("test")
+    with pytest.raises(NotImplementedError):
+        abc.edit_file()
 
 
 @pytest.mark.parametrize(
@@ -319,7 +326,3 @@ def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_pro
         "scheme": fm_scheme,
     }
     assert xml.processor == {"type": fm_proc}
-
-
-if __name__ == "__main__":
-    test_scheme_converter()

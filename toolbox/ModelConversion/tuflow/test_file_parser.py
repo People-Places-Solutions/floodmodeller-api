@@ -127,12 +127,21 @@ def test_all_paths(tuflow_parser, path1, path2):
     assert tuflow_parser.get_all_paths("var1") == [path1, path2]
 
 
-def test_all_geodataframes(tuflow_parser, mocker, path3, path4, path5, path6):
+def test_all_geodataframes(tuflow_parser, mocker, path1, path2, path3, path4, path5, path6):
+
     read_gdf = mocker.patch("geopandas.read_file", return_value="test")
-    result = tuflow_parser.get_all_geodataframes("var2")
-    assert result == [("test", "test"), ("test", "test")]
-    assert read_gdf.call_count == 4
-    assert read_gdf.call_args_list[0][0][0] == path3
-    assert read_gdf.call_args_list[1][0][0] == path4
-    assert read_gdf.call_args_list[2][0][0] == path5
-    assert read_gdf.call_args_list[3][0][0] == path6
+
+    assert tuflow_parser.get_all_geodataframes("var1") == ["test", "test"]
+    assert read_gdf.call_count == 2
+    assert read_gdf.call_args_list[0][0][0] == path1
+    assert read_gdf.call_args_list[1][0][0] == path2
+
+    assert tuflow_parser.get_all_geodataframes("var2") == [
+        ("test", "test"),
+        ("test", "test"),
+    ]
+    assert read_gdf.call_count == 6
+    assert read_gdf.call_args_list[2][0][0] == path3
+    assert read_gdf.call_args_list[3][0][0] == path4
+    assert read_gdf.call_args_list[4][0][0] == path5
+    assert read_gdf.call_args_list[5][0][0] == path6
