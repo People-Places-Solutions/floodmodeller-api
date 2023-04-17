@@ -1,5 +1,5 @@
 # Import the FMTool and Parameter classes to define the tool and parameters
-from floodmodeller_api.toolbox import FMTool, Parameter
+from floodmodeller_api.tool import FMTool, Parameter
 
 # ------ Define function ----- #
 # This is the funciton that should be run by the tool. In  this case it is just a simple sum function but you can

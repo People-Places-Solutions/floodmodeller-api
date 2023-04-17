@@ -1,4 +1,4 @@
-from floodmodeller_api.toolbox import FMTool, Parameter, Gui
+from floodmodeller_api.tool import FMTool, Parameter, Gui
 import pytest
 from unittest.mock import patch, MagicMock
 import tkinter as tk
