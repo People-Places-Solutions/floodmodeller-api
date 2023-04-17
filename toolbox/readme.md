@@ -4,10 +4,10 @@ This toolbox served as a place to store and maintain production-ready tools that
 Tools will sit under the following categories:
 |Category | Description |
 |---------|-------------|
-|[Results Analysis](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ResultsAnalysis)| Details
-|[Model Build](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ModelBuild)| Details
-|[Model Conversion](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/ModelConversion)| Details
-|[Visualisation](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/Visualisation)| Details
+|[Results Analysis](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/results_analysis)| Details
+|[Model Build](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/model_build)| Details
+|[Model Conversion](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/model_conversion)| Details
+|[Visualisation](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/visualisation)| Details
 
 These tools act as standalone scripts. To run them, please read the available documentation for each tool. 
 
