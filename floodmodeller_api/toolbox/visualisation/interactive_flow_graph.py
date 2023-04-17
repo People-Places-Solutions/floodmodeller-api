@@ -53,7 +53,7 @@ def flow_graph(zzn_file: Path):
     fig.write_html(Path(zzn_file.parent, f"{zzn_file.stem}_interactive_flow.html"))
 
 
-from floodmodeller_api.toolbox import FMTool, Parameter
+from floodmodeller_api.tool import FMTool, Parameter
 
 
 class InteractiveFlow(FMTool):
