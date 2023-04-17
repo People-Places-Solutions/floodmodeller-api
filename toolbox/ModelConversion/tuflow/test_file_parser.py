@@ -12,12 +12,12 @@ def tuflow_parser(tmpdir) -> Path:
 
     text = """
     var1 == folder1/file1
-    var1 == file2
-    var2 == a | b
+    var1 == ../file2
+    var2 == file3 | file4
     var3 == 5 | 7
     var4 == 4.123 !comment
     !var5 == test
-    var2 == c | d
+    var2 == file5 | file6
     """
 
     file_path = Path.joinpath(Path(tmpdir), "tuflow_file.txt")
@@ -37,31 +37,52 @@ def path1(tmpdir) -> Path:
 
 @pytest.fixture
 def path2(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\file2")
+    tmpdir_parent = str(Path(tmpdir).parent)
+    return Path(f"{tmpdir_parent}\\file2")
+
+
+@pytest.fixture
+def path3(tmpdir) -> Path:
+    return Path(f"{tmpdir}\\file3")
+
+
+@pytest.fixture
+def path4(tmpdir) -> Path:
+    return Path(f"{tmpdir}\\file4")
+
+
+@pytest.fixture
+def path5(tmpdir) -> Path:
+    return Path(f"{tmpdir}\\file5")
+
+
+@pytest.fixture
+def path6(tmpdir) -> Path:
+    return Path(f"{tmpdir}\\file6")
 
 
 def test_dict(tuflow_parser):
     assert tuflow_parser._dict == {
-        "var1": ["folder1/file1", "file2"],
-        "var2": ["a | b", "c | d"],
+        "var1": ["folder1/file1", "../file2"],
+        "var2": ["file3 | file4", "file5 | file6"],
         "var3": ["5 | 7"],
         "var4": ["4.123"],
     }
 
 
 def test_value(tuflow_parser):
-    assert tuflow_parser.get_value("var1") == "file2"
+    assert tuflow_parser.get_value("var1") == "../file2"
     assert tuflow_parser.get_value("var1", index=0) == "folder1/file1"
-    assert tuflow_parser.get_value("var2") == "c | d"
-    assert tuflow_parser.get_value("var2", index=0) == "a | b"
+    assert tuflow_parser.get_value("var2") == "file5 | file6"
+    assert tuflow_parser.get_value("var2", index=0) == "file3 | file4"
     assert tuflow_parser.get_value("var3") == "5 | 7"
     assert tuflow_parser.get_value("var4") == "4.123"
     assert tuflow_parser.get_value("var4", cast=float) == 4.123
 
 
 def test_tuple(tuflow_parser):
-    assert tuflow_parser.get_tuple("var2", "|") == ("c", "d")
-    assert tuflow_parser.get_tuple("var2", "|", index=0) == ("a", "b")
+    assert tuflow_parser.get_tuple("var2", "|") == ("file5", "file6")
+    assert tuflow_parser.get_tuple("var2", "|", index=0) == ("file3", "file4")
     assert tuflow_parser.get_tuple("var3", "|") == ("5", "7")
     assert tuflow_parser.get_tuple("var3", "|", cast=int) == (5, 7)
 
@@ -108,14 +129,25 @@ def test_all_paths(tuflow_parser, path1, path2):
     assert tuflow_parser.get_all_paths("var1") == [path1, path2]
 
 
-def test_all_geodataframes(tuflow_parser, mocker, path1, path2):
+def test_all_geodataframes(tuflow_parser, mocker, path3, path4, path5, path6):
+    
     empty_gdf = gpd.GeoDataFrame()
     read_gdf = mocker.patch("geopandas.read_file", return_value=empty_gdf)
-    result = tuflow_parser.get_all_geodataframes("var1")
-    assert len(result) == 2
+    result = tuflow_parser.get_all_geodataframes("var2")
+
     assert type(result) == list
-    assert result[0].equals(empty_gdf)
-    assert result[1].equals(empty_gdf)
-    assert read_gdf.call_count == 2
-    assert str(read_gdf.call_args_list[0][0][0]) == str(path1)
-    assert str(read_gdf.call_args_list[1][0][0]) == str(path2)
+    assert len(result) == 2
+    assert type(result[0]) == tuple
+    assert len(result[0]) == 2
+    assert type(result[1]) == tuple
+    assert len(result[1]) == 2
+
+    assert result[0][0].equals(empty_gdf)
+    assert result[0][1].equals(empty_gdf)
+    assert result[1][0].equals(empty_gdf)
+    assert result[1][1].equals(empty_gdf)
+    assert read_gdf.call_count == 4
+    assert str(read_gdf.call_args_list[0][0][0]) == str(path3)
+    assert str(read_gdf.call_args_list[1][0][0]) == str(path4)
+    assert str(read_gdf.call_args_list[2][0][0]) == str(path5)
+    assert str(read_gdf.call_args_list[3][0][0]) == str(path6)
