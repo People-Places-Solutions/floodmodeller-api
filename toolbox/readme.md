@@ -11,12 +11,6 @@ Tools will sit under the following categories:
 
 These tools act as standalone scripts. To run them, please read the available documentation for each tool. 
 
-## Why are these separate to the main package?
-There are several reasons why these tools are kept separate from the main Flood Modeller Python API:
-1. Reason one
-2. Reason two
-3. ...
-
 # Developing Custom Tools
 You can develop your own tools to integrate with the Flood Modeller Python API!
 
