@@ -17,7 +17,8 @@
         "workbench.editorAssociations": {
           "*.md": "vscode.markdown.preview.editor",
           "*.ipynb": "jupyter-notebook"
-        }
+        },
+        "notebook.compactView": false
       }
     },
     "codespaces": {
