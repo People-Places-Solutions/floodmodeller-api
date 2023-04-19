@@ -1,7 +1,7 @@
 ****************************
 Installation and Importing
 ****************************
-Before installing the Flood Modeller API, first ensure you already have Python installed on your machine (version 3.6 or greater) and, ideally, have a dedicated python environment set up.
+Before installing the Flood Modeller API, first ensure you already have Python installed on your machine (version 3.8 or greater) and, ideally, have a dedicated python environment set up.
 Consider using `miniforge <https://github.com/conda-forge/miniforge>`_ as a lightweight, open-source package manager. 
 
 Once you have your Python environment set up, you can install the floodmodeller_api package directly from PyPI using the following command:
