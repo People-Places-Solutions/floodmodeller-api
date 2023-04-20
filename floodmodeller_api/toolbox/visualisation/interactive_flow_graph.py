@@ -56,7 +56,7 @@ def flow_graph(zzn_file: Path):
 from floodmodeller_api.tool import FMTool, Parameter
 
 
-class InteractiveFlow(FMTool):
+class InteractiveFlowTool(FMTool):
     name = "Visualise Flow Graph"
     description = "This tool reads a zzn_file and visualises the flow graph"
     parameters = [Parameter("zzn_file", str)]
@@ -64,5 +64,5 @@ class InteractiveFlow(FMTool):
 
 
 if __name__ == "__main__":
-    tool = InteractiveFlow()
+    tool = InteractiveFlowTool()
     tool.run_from_command_line()
