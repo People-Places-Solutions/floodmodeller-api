@@ -1,0 +1,20 @@
+[ISIS Event Header]
+Title=ex3
+Datafile=EX3.DAT
+Results=ex3
+[ISIS Event Details]
+RunType=Unsteady
+initialconditions=EX3.zzs
+Start=0
+Finish=24
+InitialTimestep=20
+MinimumTimestep=5
+SaveInterval=300
+AdaptiveTimestep=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=0
+RulesAtTimeZero=0
+RulesOnFirstIteration=1
+ResetTimesAfterPos=0
+UseFPSModularLimit=0
+UseRemoteQ=0
