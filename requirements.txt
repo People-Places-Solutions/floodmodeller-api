@@ -5,4 +5,5 @@ lxml
 pytest
 pytest-cov
 pytest-mock
+plotly
 shapely
