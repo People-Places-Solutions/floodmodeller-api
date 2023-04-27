@@ -789,8 +789,7 @@ class SLUICE(Unit):
             block.append("TIME RULE DATA SET")
             block.append(join_10_char(len(self.time_rule_data)))
             time_rule_data = [
-                f"{join_10_char(t)}{o_r:<10}"
-                for t, o_r in self.time_rule_data.items()
+                f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
             ]
             block.extend(time_rule_data)
 
@@ -1414,7 +1413,7 @@ class FLAT_V_WEIR(Unit):
             setattr(self, param, val)
 
 
-class RESERVOIR(Unit): # NOT CURRENTLY IN USE
+class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
     """Class to hold and process RESERVOIR unit type
 
     Args:

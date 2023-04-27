@@ -85,15 +85,12 @@ class RAINGAUGE(UrbanUnit):
 
         # TODO:Improve indentation format when writing and include header for completeness
 
-        params1 = (
-            join_n_char_ljust(17, self.name)
-            + join_n_char_ljust(
-                15,
-                self.format,
-                self.interval,
-                self.snow_catch_factor,
-                self.data_option,
-            )
+        params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
+            15,
+            self.format,
+            self.interval,
+            self.snow_catch_factor,
+            self.data_option,
         )  # First group of parameters
 
         # Second group of parameters

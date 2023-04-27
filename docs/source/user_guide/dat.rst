@@ -7,6 +7,12 @@ is initiated with the full filepath of a DAT file to load an existing network. A
 a new dat file can be created in memory by simply calling ``DAT()`` without passing in a 
 file path. 
 
+.. admonition:: *New in version 0.4.1*
+
+   1D units can now be added and removed from networks using the ``.insert_unit()`` and
+   ``.remove_unit()`` methods
+
+
 .. code:: python
 
     from floodmodeller_api import DAT
@@ -155,6 +161,10 @@ Reference
    .. automethod:: update
 
    .. automethod:: save
+    
+   .. automethod:: insert_unit
+
+   .. automethod:: remove_unit
 
    .. automethod:: diff
 

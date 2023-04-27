@@ -5,7 +5,7 @@
 
 .. Icons used from Font Awesome, see licence at https://fontawesome.com/license
 
-Welcome to Flood Modeller Python API's documentation!
+Welcome to Flood Modeller API's documentation!
 =====================================================
 
 Flood Modeller API is a python package which provides a bridge between 

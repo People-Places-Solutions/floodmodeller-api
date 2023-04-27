@@ -90,10 +90,6 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.SPILL
 
-``RNWEIR()``
-~~~~~~~~~~~~~
-
-.. autoclass:: floodmodeller_api.units.RNWEIR
 
 ``CRUMP()``
 ~~~~~~~~~~~~~

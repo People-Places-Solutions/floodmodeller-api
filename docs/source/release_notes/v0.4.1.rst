@@ -6,7 +6,7 @@ This page details the changes for version 0.4.1 of Flood Modeller Python API
 
 New features
 --------------
-- Add/remove units and reaches from 1D networks
+- Add/remove units from 1D networks
 - Add/remove elements from 2D models
 - Simulate method added to XML2D
 - Automatic backups
@@ -71,5 +71,7 @@ Updates
 
 Bug fixes
 --------------
-- Addressed 'FutureWarning' raised by lf_helpers module
+- Addressed 'FutureWarning' raised by lf_helpers module (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/27>`_ )
+- Addressed Iteritems > items: futurewarning (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/30>`_ )
+
 

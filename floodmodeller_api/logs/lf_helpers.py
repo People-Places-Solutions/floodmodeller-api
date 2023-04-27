@@ -221,7 +221,7 @@ class TimeParser(DateTimeParser):
     def _process_line(self, raw: str) -> str:
         """Converts string to time"""
 
-        raw, _, _ = raw.partition(" ") # Temp fix to ignore '(+n d)' in EFT
+        raw, _, _ = raw.partition(" ")  # Temp fix to ignore '(+n d)' in EFT
         processed = super()._process_line(raw)
 
         return processed.time()

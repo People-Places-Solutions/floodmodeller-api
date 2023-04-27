@@ -1,5 +1,4 @@
 import pytest
-import tempfile
 import pandas as pd
 from pathlib import Path
 from floodmodeller_api.backup import File, BackupControl
@@ -12,9 +11,8 @@ def backup_control():
 
 
 @pytest.fixture
-def file():
-    temp_dir = tempfile.gettempdir()
-    test_file = "test/test_data/EX1.DAT"
+def file(test_workspace):
+    test_file = Path(test_workspace, "EX1.DAT")
     file = File(test_file)
     # Make a backup to clear in test
     file.backup()
@@ -27,21 +25,21 @@ def test_init_backup(backup_control):
     assert backup_control.backup_csv_path.exists()
 
 
-def test_generate_file_id(file):
+def test_generate_file_id(file, test_workspace):
     """Does this generate a consistent file ID for the same file on disk?"""
     # Test that the file ID is the same for the same path input
-    file1 = File("test/test_data/EX1.DAT")
-    file2 = File("test/test_data/EX1.DAT")
+    file1 = File(Path(test_workspace, "EX1.DAT"))
+    file2 = File(Path(test_workspace, "EX1.DAT"))
     assert file1.file_id == file2.file_id
 
 
-def test_clear_backup(file):
+def test_clear_backup(file, test_workspace):
     """
     Does the the clear_backup method work correctly
     """
     # Clearing backup -------------------
     # Load a different file to check it isn't affected by the
-    other_file = File("test/test_data/EX3.DAT")
+    other_file = File(Path(test_workspace, "EX3.DAT"))
     # Assert there is a backup for the other file
     other_file.backup()
     # Clear the backups for the file to test backup functionality
@@ -67,11 +65,11 @@ def test_backup_locations(file):
         assert f1.read() == f2.read()
 
 
-def test_no_duplicate_backup(file):
+def test_no_duplicate_backup(file, test_workspace):
     """The backup method should only backup if the file has changed"""
     # Don't Make Duplicate -------------------
     # Check that the file isn't backed up again if it hasn't changed
-    the_same_file = File("test/test_data/EX1.DAT")
+    the_same_file = File(Path(test_workspace, "EX1.DAT"))
     # Append something to the dttm string to ensure the filename is different to the previous backup
     # If the two File objects are created in the same second then then will have identical file names
     # The function should check for equivalence between file contents.

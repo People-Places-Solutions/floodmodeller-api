@@ -18,6 +18,7 @@ import pandas as pd
 
 from .helpers import join_10_char, split_10_char
 from ..diff import check_item_with_dataframe_equal
+
 ### Initial Conditions Class ###
 
 
@@ -90,14 +91,11 @@ class IIC:
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
-    
+
     def __eq__(self, other, return_diff=False):
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, 
-            other.__dict__, 
-            name=f"Initial Conditions",
-            diff=diff
+            self.__dict__, other.__dict__, name=f"Initial Conditions", diff=diff
         )
         return (result, diff) if return_diff else result

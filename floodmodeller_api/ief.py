@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-import os  
+import os
 import subprocess
 import time
 from pathlib import Path
@@ -92,10 +92,10 @@ class IEF(FMFile):
                         # Append event data to list so multiple can be specified
                         self.EventData[event_data_title] = value
                     else:
-                        
+
                         self.EventData = {event_data_title: value}
                     self._ief_properties.append("EventData")
-                    
+
                 else:
                     # Sets the property and value as class properties so they can be edited.
                     setattr(self, prop, value)
@@ -120,14 +120,14 @@ class IEF(FMFile):
             ief_string = ""
             event = 0  # Used as a counter for multiple eventdata files
             for idx, prop in enumerate(self._ief_properties):
-                if prop.startswith("["): 
+                if prop.startswith("["):
                     # writes the [] bound headers to ief string
                     ief_string += prop + "\n"
                 elif prop.lstrip().startswith(";"):
-                    if not self._ief_properties[idx+1] == "EventData":
+                    if not self._ief_properties[idx + 1].lower() == "eventdata":
                         # Only write comment if not preceding event data
-                        ief_string += prop + "\n" 
-                elif prop == "EventData":
+                        ief_string += prop + "\n"
+                elif prop.lower() == "eventdata":
                     event_data = getattr(self, prop)
                     # Add multiple EventData if present
                     for event_idx, key in enumerate(event_data):
@@ -174,7 +174,11 @@ class IEF(FMFile):
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
-            if (prop not in self._ief_properties) and (not prop.startswith("_")):
+            if (
+                (prop not in self._ief_properties)
+                and (not prop.startswith("_"))
+                and prop != "file"
+            ):
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
@@ -182,38 +186,38 @@ class IEF(FMFile):
                     )
                     continue
 
-                elif prop.upper() == "EVENTDATA":
+                if prop.upper() == "EVENTDATA":
                     # This will be triggered in special case where eventdata has been added with different case, but case
                     # needs to be kept as 'EventData', to allow dealing wiht multiple IEDs
-                    if (
-                        not prop == "EventData"
-                    ):  # In case of EventData being added with correct case where it doesn't already
+                    if prop != "EventData":  
+                        # In case of EventData being added with correct case where it doesn't already
                         # exist, this stops it being deleted
                         # Add new values to EventData flag
-                        setattr(self, "EventData", val)
                         delattr(self, prop)
+                        setattr(self, "EventData", val)
+                        prop = "EventData"
 
+                
+                # Check ief group header
+                group = f"[{flags[prop.upper()]}]"
+                if group in self._ief_properties:
+                    # If group already exists, add property to end of group
+                    group_idx = False
+                    # defaults to inserting in last place
+                    insert_index = len(self._ief_properties)
+                    for idx, item in enumerate(self._ief_properties):
+                        if group_idx == True and item.startswith("["):
+                            insert_index = idx
+                            break
+                        if item == group:
+                            group_idx = True
+
+                    self._ief_properties.insert(insert_index, prop)
                 else:
-                    # Check ief group header
-                    group = f"[{flags[prop.upper()]}]"
-                    if group in self._ief_properties:
-                        # If group already exists, add property to end of group
-                        group_idx = False
-                        # defaults to inserting in last place
-                        insert_index = len(self._ief_properties)
-                        for idx, item in enumerate(self._ief_properties):
-                            if group_idx == True and item.startswith("["):
-                                insert_index = idx
-                                break
-                            if item == group:
-                                group_idx = True
-
-                        self._ief_properties.insert(insert_index, prop)
-                    else:
-                        # Add group header to the end of list
-                        self._ief_properties.append(group)
-                        # Add property to end of list
-                        self._ief_properties.append(prop)
+                    # Add group header to the end of list
+                    self._ief_properties.append(group)
+                    # Add property to end of list
+                    self._ief_properties.append(prop)
 
         # Remove any deleted properties
         self._ief_properties = [
@@ -238,7 +242,7 @@ class IEF(FMFile):
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
-                "The 'EventData' attribute should be a dictionary with keys defining the event"\
+                "The 'EventData' attribute should be a dictionary with keys defining the event"
                 + " names and values referencing the IED files"
             )
 
@@ -267,10 +271,14 @@ class IEF(FMFile):
             num_props = len(self._ief_properties)
             for idx, itm in enumerate(reversed(self._ief_properties)):
                 if itm == "EventData":
-                    del self._ief_properties[num_props-1-idx]
+                    del self._ief_properties[num_props - 1 - idx]
                     # Also remove event data title comment if present
-                    if self._ief_properties[num_props-2-idx].lstrip().startswith(";"):
-                        del self._ief_properties[num_props-2-idx]
+                    if (
+                        self._ief_properties[num_props - 2 - idx]
+                        .lstrip()
+                        .startswith(";")
+                    ):
+                        del self._ief_properties[num_props - 2 - idx]
                     removed += 1
                     if removed == to_remove:
                         break
@@ -394,8 +402,8 @@ class IEF(FMFile):
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
         """
         try:
-            self.range_function = range_function
-            self.range_settings = range_settings           
+            self._range_function = range_function
+            self._range_settings = range_settings
             if self._filepath == None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
@@ -602,8 +610,8 @@ class IEF(FMFile):
             return
 
         # tqdm progress bar
-        for i in self.range_function(100, **self.range_settings):
-        
+        for i in self._range_function(100, **self._range_settings):
+
             # Process still running
             while process.poll() is None:
 
