@@ -108,7 +108,7 @@ class LocLineConverter(ComputationalAreaConverter):
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
             theta_rad += 2 * math.pi
-        self._rotation = round(math.degrees(theta_rad))
+        self._rotation = round(math.degrees(theta_rad), 3)
 
 
 class TopographyConverter(ComponentConverter2D):

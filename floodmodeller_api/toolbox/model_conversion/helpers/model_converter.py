@@ -72,7 +72,7 @@ class ModelConverter2D(ModelConverter):
         self._xml.save(self._xml_path)
 
         xml_folder = Path(self._xml_path).parents[0]
-        self._folder = Path.joinpath(xml_folder, "processed_inputs")
+        self._folder = Path.joinpath(xml_folder, "gis")
         self._folder.mkdir(parents=True, exist_ok=True)
 
     def save_file(self):

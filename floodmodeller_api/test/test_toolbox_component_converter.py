@@ -139,10 +139,10 @@ def test_abc():
 @pytest.mark.parametrize(
     "start,end,rotation",
     [
-        ((1, 0), (10, 20), 66),
-        ((1, 0), (-10, 20), 119),
-        ((1, 0), (10, -20), 294),
-        ((1, 0), (-10, -20), 241),
+        ((1, 0), (10, 20), 65.772),
+        ((1, 0), (-10, 20), 118.811),
+        ((1, 0), (10, -20), 294.228),
+        ((1, 0), (-10, -20), 241.189),
     ],
 )
 def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
