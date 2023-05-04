@@ -107,13 +107,13 @@ def test_dataframe(tuflow_parser, mocker, path1, path2):
     assert read_csv.call_count == 1
     assert read_csv.call_args_list[0][0][0] == path2
     assert read_csv.call_args_list[0][1]["comment"] == "!"
-    assert read_csv.call_args_list[0][1]["header"] == False
+    assert read_csv.call_args_list[0][1]["header"] == None
 
     assert tuflow_parser.get_dataframe("var1", index=0) == "test"
     assert read_csv.call_count == 2
     assert read_csv.call_args_list[1][0][0] == path1
     assert read_csv.call_args_list[1][1]["comment"] == "!"
-    assert read_csv.call_args_list[1][1]["header"] == True
+    assert read_csv.call_args_list[1][1]["header"] == "infer"
 
 
 def test_single_geometry(tuflow_parser, mocker, path1, path2):

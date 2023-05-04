@@ -283,18 +283,5 @@ class BoundaryConverter(ComponentConverter2D):
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
-        self._vector_path = str(Path.joinpath(folder, "link_line.shp"))
-
-        vectors[0].to_file(self._vector_path)
-
     def edit_file(self) -> None:
-        self._xml.link1d = [
-            {
-                "link_to_model": "ISIS1D",
-                "weircd": 1.2,
-                "weirml": 0.9,
-                "link": [self._vector_path],
-                "ief": "ief_placeholder",
-                "mb": "mb_placeholder",
-            }
-        ]
+        raise NotImplementedError("Boundary conditions not implemented yet")

@@ -40,7 +40,7 @@ class FileParser:
 
     def get_dataframe(self, name: str, index: int = -1) -> pd.DataFrame:
         filepath = self.get_path(name, index)
-        header = True if filepath.suffix == ".csv" else False
+        header = "infer" if filepath.suffix == ".csv" else None
         return pd.read_csv(filepath, comment=self._comment_symbol, header=header)
 
     def get_single_geometry(
