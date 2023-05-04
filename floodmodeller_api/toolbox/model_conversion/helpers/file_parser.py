@@ -39,7 +39,9 @@ class FileParser:
         return gpd.read_file(self.get_path(name, index))
 
     def get_dataframe(self, name: str, index: int = -1) -> pd.DataFrame:
-        return pd.read_csv(self.get_path(name, index), comment=self._comment_symbol)
+        filepath = self.get_path(name, index)
+        header = True if filepath.suffix == ".csv" else False
+        return pd.read_csv(filepath, comment=self._comment_symbol, header=header)
 
     def get_single_geometry(
         self, name: str, index: int = -1, geom_index: int = 0

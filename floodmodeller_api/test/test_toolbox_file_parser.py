@@ -11,8 +11,8 @@ import pytest
 def tuflow_parser(tmpdir) -> Path:
 
     text = """
-    var1 == folder1/file1
-    var1 == ../file2
+    var1 == folder1/file1.csv
+    var1 == ../file2.tmf
     var2 == file3 | file4
     var3 == 5 | 7
     var4 == 4.123 !comment
@@ -32,13 +32,13 @@ def tuflow_parser(tmpdir) -> Path:
 
 @pytest.fixture
 def path1(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\folder1\\file1")
+    return Path(f"{tmpdir}\\folder1\\file1.csv")
 
 
 @pytest.fixture
 def path2(tmpdir) -> Path:
     tmpdir_parent = str(Path(tmpdir).parent)
-    return Path(f"{tmpdir_parent}\\file2")
+    return Path(f"{tmpdir_parent}\\file2.tmf")
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ def path6(tmpdir) -> Path:
 
 def test_dict(tuflow_parser):
     assert tuflow_parser._dict == {
-        "var1": ["folder1/file1", "../file2"],
+        "var1": ["folder1/file1.csv", "../file2.tmf"],
         "var2": ["file3 | file4", "file5 | file6"],
         "var3": ["5 | 7"],
         "var4": ["4.123"],
@@ -71,8 +71,8 @@ def test_dict(tuflow_parser):
 
 
 def test_value(tuflow_parser):
-    assert tuflow_parser.get_value("var1") == "../file2"
-    assert tuflow_parser.get_value("var1", index=0) == "folder1/file1"
+    assert tuflow_parser.get_value("var1") == "../file2.tmf"
+    assert tuflow_parser.get_value("var1", index=0) == "folder1/file1.csv"
     assert tuflow_parser.get_value("var2") == "file5 | file6"
     assert tuflow_parser.get_value("var2", index=0) == "file3 | file4"
     assert tuflow_parser.get_value("var3") == "5 | 7"
@@ -99,12 +99,21 @@ def test_geodataframe(tuflow_parser, mocker, path2):
     assert read_file.call_args_list[0][0][0] == path2
 
 
-def test_dataframe(tuflow_parser, mocker, path2):
+def test_dataframe(tuflow_parser, mocker, path1, path2):
+
     read_csv = mocker.patch("pandas.read_csv", return_value="test")
+
     assert tuflow_parser.get_dataframe("var1") == "test"
     assert read_csv.call_count == 1
     assert read_csv.call_args_list[0][0][0] == path2
     assert read_csv.call_args_list[0][1]["comment"] == "!"
+    assert read_csv.call_args_list[0][1]["header"] == False
+
+    assert tuflow_parser.get_dataframe("var1", index=0) == "test"
+    assert read_csv.call_count == 2
+    assert read_csv.call_args_list[1][0][0] == path1
+    assert read_csv.call_args_list[1][1]["comment"] == "!"
+    assert read_csv.call_args_list[1][1]["header"] == True
 
 
 def test_single_geometry(tuflow_parser, mocker, path1, path2):
@@ -127,7 +136,9 @@ def test_all_paths(tuflow_parser, path1, path2):
     assert tuflow_parser.get_all_paths("var1") == [path1, path2]
 
 
-def test_all_geodataframes(tuflow_parser, mocker, path1, path2, path3, path4, path5, path6):
+def test_all_geodataframes(
+    tuflow_parser, mocker, path1, path2, path3, path4, path5, path6
+):
 
     read_gdf = mocker.patch("geopandas.read_file", return_value="test")
 
