@@ -198,14 +198,21 @@ class RoughnessConverter(ComponentConverter2D):
     ) -> None:
         super().__init__(xml, folder, domain_name)
         self._law = law
-        self._global_value = mapping.loc[
-            mapping["Material ID"] == global_material, "Manning's n"
+        self._mapping = self.standardise_mapping(mapping)
+        self._global_value = self._mapping.loc[
+            self._mapping["material_id"] == global_material, "value"
         ][0]
 
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 
-        roughness = self.material_to_roughness(file_material, mapping)
+        roughness = self.material_to_roughness(file_material, self._mapping)
         roughness.to_file(self._file_material_path)
+
+    @staticmethod
+    def standardise_mapping(file: pd.DataFrame) -> pd.DataFrame:
+        new_file = file.iloc[:, :2]
+        new_file.columns = ["material_id", "value"]
+        return new_file
 
     @staticmethod
     def material_to_roughness(
@@ -213,10 +220,9 @@ class RoughnessConverter(ComponentConverter2D):
     ) -> gpd.GeoDataFrame:
         return (
             concat(material, lower_case=True)
-            .merge(mapping, left_on="material", right_on="Material ID")[
-                ["Manning's n", "geometry"]
+            .merge(mapping, left_on="material", right_on="material_id")[
+                ["value", "geometry"]
             ]
-            .rename(columns={"Manning's n": "value"})
         )
 
     def edit_file(self) -> None:
