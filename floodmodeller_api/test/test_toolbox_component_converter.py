@@ -4,10 +4,10 @@ from toolbox.model_conversion.helpers.component_converter import (
     rename_and_select,
     filter,
     ComponentConverter,
-    LocLineConverter,
-    TopographyConverter,
-    RoughnessConverter,
-    SchemeConverter,
+    LocLineConverter2D,
+    TopographyConverter2D,
+    RoughnessConverter2D,
+    SchemeConverter2D,
 )
 
 from pathlib import Path
@@ -151,7 +151,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
     deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
 
     filter = mocker.patch(f"{path_to_cc}.filter")
-    loc_line = LocLineConverter(
+    loc_line = LocLineConverter2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -199,7 +199,7 @@ def test_combine_layers():
         }
     )
 
-    combined = TopographyConverter.combine_layers((tuflow_p, tuflow_l))
+    combined = TopographyConverter2D.combine_layers((tuflow_p, tuflow_l))
 
     assert combined.equals(
         gpd.GeoDataFrame(
@@ -222,8 +222,8 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
     vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
 
-    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverter.combine_layers")
-    topography_converter = TopographyConverter(
+    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverter2D.combine_layers")
+    topography_converter = TopographyConverter2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -241,7 +241,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
 def test_material_to_roughness(point1, polygon1, polygon2):
 
-    roughness = RoughnessConverter.material_to_roughness(
+    roughness = RoughnessConverter2D.material_to_roughness(
         [
             gpd.GeoDataFrame({"material": [7, 3], "geometry": [polygon1, polygon2]}),
             gpd.GeoDataFrame({"material": [5], "geometry": [point1]}),
@@ -263,9 +263,9 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
     standardised_mapping = pd.DataFrame({"material_id": [3], "value": [0.1]})
 
     material_to_roughness = mocker.patch(
-        f"{path_to_cc}.RoughnessConverter.material_to_roughness"
+        f"{path_to_cc}.RoughnessConverter2D.material_to_roughness"
     )
-    roughness_converter = RoughnessConverter(
+    roughness_converter = RoughnessConverter2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -306,7 +306,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
 )
 def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_proc):
 
-    scheme_converter = SchemeConverter(
+    scheme_converter = SchemeConverter2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",

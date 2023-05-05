@@ -1,4 +1,4 @@
-from floodmodeller_api import XML2D
+from floodmodeller_api import IEF, XML2D
 
 from pathlib import Path
 from shapely.geometry import LineString
@@ -39,6 +39,26 @@ class ComponentConverter:
         raise NotImplementedError()
 
 
+class ComponentConverter1D(ComponentConverter):
+    def __init__(self, ief: IEF, folder: Path) -> None:
+        super().__init__(folder)
+        self._ief = ief
+
+
+class SchemeConverter1D(ComponentConverter1D):
+    def __init__(
+        self,
+        ief: XML2D,
+        folder: Path,
+        time_step: float,
+    ) -> None:
+        super().__init__(ief, folder)
+        self._time_step = time_step
+
+    def edit_fm_file(self) -> None:
+        self._ief.Timestep = self._time_step
+
+
 class ComponentConverter2D(ComponentConverter):
     def __init__(self, xml: XML2D, folder: Path, domain_name: str) -> None:
         super().__init__(folder)
@@ -46,7 +66,7 @@ class ComponentConverter2D(ComponentConverter):
         self._domain_name = domain_name
 
 
-class ComputationalAreaConverter(ComponentConverter2D):
+class ComputationalAreaConverter2D(ComponentConverter2D):
 
     _xll: float
     _yll: float
@@ -87,7 +107,7 @@ class ComputationalAreaConverter(ComponentConverter2D):
         }
 
 
-class LocLineConverter(ComputationalAreaConverter):
+class LocLineConverter2D(ComputationalAreaConverter2D):
     def __init__(
         self,
         xml: XML2D,
@@ -111,7 +131,7 @@ class LocLineConverter(ComputationalAreaConverter):
         self._rotation = round(math.degrees(theta_rad), 3)
 
 
-class TopographyConverter(ComponentConverter2D):
+class TopographyConverter2D(ComponentConverter2D):
     def __init__(
         self,
         xml: XML2D,
@@ -185,7 +205,7 @@ class TopographyConverter(ComponentConverter2D):
         return segments
 
 
-class RoughnessConverter(ComponentConverter2D):
+class RoughnessConverter2D(ComponentConverter2D):
     def __init__(
         self,
         xml: XML2D,
@@ -218,12 +238,9 @@ class RoughnessConverter(ComponentConverter2D):
     def material_to_roughness(
         material: List[gpd.GeoDataFrame], mapping: pd.DataFrame
     ) -> gpd.GeoDataFrame:
-        return (
-            concat(material, lower_case=True)
-            .merge(mapping, left_on="material", right_on="material_id")[
-                ["value", "geometry"]
-            ]
-        )
+        return concat(material, lower_case=True).merge(
+            mapping, left_on="material", right_on="material_id"
+        )[["value", "geometry"]]
 
     def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["roughness"] = [
@@ -240,7 +257,7 @@ class RoughnessConverter(ComponentConverter2D):
         ]
 
 
-class SchemeConverter(ComponentConverter2D):
+class SchemeConverter2D(ComponentConverter2D):
     def __init__(
         self,
         xml: XML2D,
@@ -273,7 +290,7 @@ class SchemeConverter(ComponentConverter2D):
         self._xml.processor = {"type": self._processor}
 
 
-class BoundaryConverter(ComponentConverter2D):
+class BoundaryConverter2D(ComponentConverter2D):
     def __init__(
         self,
         xml: XML2D,
