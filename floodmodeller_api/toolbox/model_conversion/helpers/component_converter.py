@@ -35,7 +35,7 @@ class ComponentConverter:
     def __init__(self, folder: Path) -> None:
         self._folder = folder
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         raise NotImplementedError()
 
 
@@ -74,7 +74,7 @@ class ComputationalAreaConverter(ComponentConverter2D):
         filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
         filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
             "xll": self._xll,
             "yll": self._yll,
@@ -130,7 +130,7 @@ class TopographyConverter(ComponentConverter2D):
             self._vector_paths.append(vector_path)
             self.combine_layers(value).to_file(vector_path)
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = (
             self._raster_paths + self._vector_paths
         )
@@ -225,7 +225,7 @@ class RoughnessConverter(ComponentConverter2D):
             ]
         )
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["roughness"] = [
             {
                 "type": "global",
@@ -261,7 +261,7 @@ class SchemeConverter(ComponentConverter2D):
         self._scheme = "TVD" if use_tvd_gpu else "ADI"
         self._processor = "GPU" if use_tvd_gpu else "CPU"
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["time"] = {
             "start_offset": self._start_offset,
             "total": self._total,
@@ -283,5 +283,5 @@ class BoundaryConverter(ComponentConverter2D):
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
-    def edit_file(self) -> None:
+    def edit_fm_file(self) -> None:
         raise NotImplementedError("Boundary conditions not implemented yet")

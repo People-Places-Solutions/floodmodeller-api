@@ -133,7 +133,7 @@ def test_filter(polygon1, polygon2):
 def test_abc():
     abc = ComponentConverter("test")
     with pytest.raises(NotImplementedError):
-        abc.edit_file()
+        abc.edit_fm_file()
 
 
 @pytest.mark.parametrize(
@@ -166,7 +166,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
     assert filter.mock_calls[1][1][0] == deactive_area
     assert filter.mock_calls[3][1][0] == active_area
 
-    loc_line.edit_file()
+    loc_line.edit_fm_file()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 1,
         "yll": 0,
@@ -235,7 +235,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert (combine_layers.call_args_list[0][0][0][1]).equals(gdf2)
     assert combine_layers.mock_calls[1][1][0] == vector_path
 
-    topography_converter.edit_file()
+    topography_converter.edit_fm_file()
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
@@ -280,7 +280,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert (material_to_roughness.call_args_list[0][0][1]).equals(standardised_mapping)
     assert material_to_roughness.mock_calls[1][1][0] == roughness_path
 
-    roughness_converter.edit_file()
+    roughness_converter.edit_fm_file()
     assert xml.domains["Domain 1"]["roughness"] == [
         {
             "type": "global",
@@ -316,7 +316,7 @@ def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_pro
         scheme=in_scheme,
         hardware=in_hardware,
     )
-    scheme_converter.edit_file()
+    scheme_converter.edit_fm_file()
 
     assert xml.domains["Domain 1"]["time"] == {
         "start_offset": 3,

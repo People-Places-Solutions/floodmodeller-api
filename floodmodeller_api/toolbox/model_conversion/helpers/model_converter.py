@@ -1,4 +1,5 @@
-from floodmodeller_api import XML2D
+from floodmodeller_api import IEF, XML2D
+from floodmodeller_api._base import FMFile
 from .file_parser import TuflowParser
 from .component_converter import (
     LocLineConverter,
@@ -17,10 +18,20 @@ class ModelConverter:
 
     _cc_dict: dict
 
-    def __init__(self, log_file: Union[str, Path]) -> None:
+    PROCESSED_INPUTS_FOLDER_NAME = "gis"
+
+    def __init__(
+        self,
+        fm_file_class: FMFile,
+        fm_file_path: Union[str, Path],
+        log_path: Union[str, Path],
+    ) -> None:
+
+        self._fm_file_class = fm_file_class
+        self._fm_file_path = fm_file_path
 
         logging.basicConfig(
-            filename=log_file,
+            filename=log_path,
             filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
@@ -28,69 +39,63 @@ class ModelConverter:
         )
         self._logger = logging.getLogger("model_converter")
 
-    def save_file(self) -> None:
-        raise NotImplementedError()
+        self._fm_file = self._fm_file_class()
+        self._fm_file.save(self._fm_file_path)
 
-    def rollback_file(self) -> None:
-        raise NotImplementedError()
+        self._processed_inputs_folder = Path.joinpath(
+            Path(self._fm_file_path).parents[0], self.PROCESSED_INPUTS_FOLDER_NAME
+        )
+        self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
     def convert_model(self) -> None:
-        for k, v in self._cc_dict.items():
-            self._convert_one_component(k, v)
 
-    def _convert_one_component(
+        for cc_class_display_name, cc_factory in self._cc_dict.items():
+
+            self._logger.info(f"converting {cc_class_display_name}...")
+
+            try:
+                cc_object = cc_factory()
+                cc_object.edit_fm_file()
+                self.save_fm_file()
+            except:
+                self._logger.exception("failure")
+                self.rollback_fm_file()
+                continue
+
+            self._logger.info("success")
+
+    def save_fm_file(self) -> None:
+        self._fm_file.update()
+
+    def rollback_fm_file(self) -> None:
+        self._fm_file = self._fm_file_class(self._fm_file_path)
+
+
+class TuflowModelConverter1D(ModelConverter):
+    def __init__(
         self,
-        cc_class_display_name: str,
-        cc_factory: callable,
+        ecf_path: Union[str, Path],
+        ief_path: Union[str, Path],
+        log_path: Union[str, Path],
     ) -> None:
-        self._logger.info(f"converting {cc_class_display_name}...")
 
-        try:
-            cc_object = cc_factory()
-        except:
-            self._logger.exception("failure")
-            return
+        super().__init__(IEF, ief_path, log_path)
 
-        try:
-            cc_object.edit_file()
-            self.save_file()
-        except:
-            self._logger.exception("failure")
-            self.rollback_file()
-            return
+        self._logger.info("reading files...")
 
-        self._logger.info("success")
+        self._ecf = TuflowParser(ecf_path)
+        self._logger.info("ecf done")
 
 
-class ModelConverter2D(ModelConverter):
-    def __init__(self, xml_path: Union[str, Path], log_file: Union[str, Path]) -> None:
-
-        super().__init__(log_file)
-
-        self._xml_path = xml_path
-        self._xml = XML2D()
-        self._xml.save(self._xml_path)
-
-        xml_folder = Path(self._xml_path).parents[0]
-        self._folder = Path.joinpath(xml_folder, "gis")
-        self._folder.mkdir(parents=True, exist_ok=True)
-
-    def save_file(self):
-        self._xml.update()
-
-    def rollback_file(self):
-        self._xml = XML2D(self._xml_path)
-
-
-class TuflowModelConverter2D(ModelConverter2D):
+class TuflowModelConverter2D(ModelConverter):
     def __init__(
         self,
         tcf_path: Union[str, Path],
         xml_path: Union[str, Path],
-        log_file: Union[str, Path],
+        log_path: Union[str, Path],
     ) -> None:
 
-        super().__init__(xml_path, log_file)
+        super().__init__(XML2D, xml_path, log_path)
 
         self._logger.info("reading files...")
 
@@ -117,8 +122,8 @@ class TuflowModelConverter2D(ModelConverter2D):
     def _create_computational_area_cc(self):
 
         return LocLineConverter(
-            xml=self._xml,
-            folder=self._folder,
+            xml=self._fm_file,
+            folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             dx=self._tgc.get_value("Cell Size", float),
             lx_ly=self._tgc.get_tuple("Grid Size (X,Y)", ",", int),
@@ -129,8 +134,8 @@ class TuflowModelConverter2D(ModelConverter2D):
     def _create_topography_cc(self):
 
         return TopographyConverter(
-            xml=self._xml,
-            folder=self._folder,
+            xml=self._fm_file,
+            folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             rasters=self._tgc.get_all_paths("Read GRID Zpts"),
             vectors=self._tgc.get_all_geodataframes("Read GIS Z Shape"),
@@ -139,8 +144,8 @@ class TuflowModelConverter2D(ModelConverter2D):
     def _create_roughness_cc(self):
 
         return RoughnessConverter(
-            xml=self._xml,
-            folder=self._folder,
+            xml=self._fm_file,
+            folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             law="manning",
             global_material=self._tgc.get_value("Set Mat", int),
@@ -151,8 +156,8 @@ class TuflowModelConverter2D(ModelConverter2D):
     def _create_scheme_cc(self):
 
         return SchemeConverter(
-            xml=self._xml,
-            folder=self._folder,
+            xml=self._fm_file,
+            folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             time_step=self._tcf.get_value("Timestep", float),
             start_offset=self._tcf.get_value("Start Time", float),
@@ -164,8 +169,8 @@ class TuflowModelConverter2D(ModelConverter2D):
     def _create_boundary_cc(self):
 
         return BoundaryConverter(
-            xml=self._xml,
-            folder=self._folder,
+            xml=self._fm_file,
+            folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             vectors=self._tbc.get_all_geodataframes("Read GIS BC"),
         )
