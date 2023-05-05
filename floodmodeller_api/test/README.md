@@ -2,7 +2,7 @@
 ## Overview
 The Flood Modeller API uses the [`pytest` framework](https://docs.pytest.org/) for unit tests. 
 
-Writing comprehensive unit tests is an essential part of contributing to the Flood Modeller API. We encourage contributors to acdopt Test Driven Development.
+Writing comprehensive unit tests is an essential part of contributing to the Flood Modeller API. We encourage contributors to adopt Test Driven Development.
 
 # Running Tests
 You can run tests from the terminal using pytest test and add the verbosity flag for more information: -v. You can also get a test coverage report using `pytest coverage` (requires pytest-cov). Test coverage reports are important to ensure that all parts of the API are being tested and can help identify areas that need further testing.
