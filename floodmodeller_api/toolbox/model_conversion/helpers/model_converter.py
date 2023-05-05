@@ -17,6 +17,7 @@ import logging
 class ModelConverter:
 
     _cc_dict: dict
+    _mc_dict: dict
 
     PROCESSED_INPUTS_FOLDER_NAME = "gis"
 
@@ -49,6 +50,7 @@ class ModelConverter:
 
     def convert_model(self) -> None:
 
+        # component converter
         for cc_class_display_name, cc_factory in self._cc_dict.items():
 
             self._logger.info(f"converting {cc_class_display_name}...")
@@ -60,6 +62,20 @@ class ModelConverter:
             except:
                 self._logger.exception("failure")
                 self.rollback_fm_file()
+                continue
+
+            self._logger.info("success")
+
+        # model converter (recursive)
+        for mc_class_display_name, mc_factory in self._mc_dict.items():
+
+            self._logger.info(f"converting {mc_class_display_name}...")
+
+            try:
+                mc_object = mc_factory()
+                mc_object.convert_model()
+            except:
+                self._logger.exception("failure")
                 continue
 
             self._logger.info("success")
@@ -93,23 +109,23 @@ class TuflowModelConverter2D(ModelConverter):
         tcf_path: Union[str, Path],
         xml_path: Union[str, Path],
         log_path: Union[str, Path],
+        ief_path: Union[str, Path] = None,
     ) -> None:
 
         super().__init__(XML2D, xml_path, log_path)
+
+        self._ief_path = ief_path
 
         self._logger.info("reading files...")
 
         self._tcf = TuflowParser(tcf_path)
         self._logger.info("tcf done")
 
-        for k, v in {
-            "tgc": "Geometry Control File",
-            "tbc": "BC Control File",
-            "ecf": "ESTRY Control File",
-        }.items():
-            path = self._tcf.get_path(v)
-            setattr(self, f"_{k}", TuflowParser(path))
-            self._logger.info(f"{k} done")
+        self._tgc = TuflowParser(self._tcf.get_path("Geometry Control File"))
+        self._logger.info("tgc done")
+
+        self._tbc = TuflowParser(self._tcf.get_path("BC Control File"))
+        self._logger.info("tbc done")
 
         self._cc_dict = {
             "computational area": self._create_computational_area_cc,
@@ -117,6 +133,10 @@ class TuflowModelConverter2D(ModelConverter):
             "roughness": self._create_roughness_cc,
             "scheme": self._create_scheme_cc,
             "boundary": self._create_boundary_cc,
+        }
+
+        self._mc_dict = {
+            "estry": self._convert_estry,
         }
 
     def _create_computational_area_cc(self):
@@ -173,4 +193,12 @@ class TuflowModelConverter2D(ModelConverter):
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             vectors=self._tbc.get_all_geodataframes("Read GIS BC"),
+        )
+
+    def _convert_estry(self):
+
+        return TuflowModelConverter1D(
+            ecf_path=self._tcf.get_path("ESTRY Control File"),
+            ief_path=self._ief_path,
+            log_path="placeholder",
         )
