@@ -53,6 +53,9 @@ class ModelConverter:
         if logger:
             return logger
 
+        for handler in logging.root.handlers[:]:
+            logging.root.removeHandler(handler)
+
         logging.basicConfig(
             filename=log_path,
             filemode="w",
@@ -60,7 +63,7 @@ class ModelConverter:
             datefmt="%H:%M:%S",
             level=logging.INFO,
         )
-        return logging.getLogger("model_converter")
+        return logging.getLogger(__name__)
 
     def convert_model(self) -> None:
 
@@ -122,7 +125,7 @@ class TuflowModelConverter1D(ModelConverter):
         return SchemeConverter1D(
             ief=self._fm_file,
             folder=self._processed_inputs_folder,
-            time_step=self._ecf.get_value("Timestep", float),
+            time_step=self._ecf.get_value("timestep", float),
         )
 
 
@@ -146,10 +149,10 @@ class TuflowModelConverter2D(ModelConverter):
         self._tcf = TuflowParser(tcf_path)
         self._logger.info("tcf done")
 
-        self._tgc = TuflowParser(self._tcf.get_path("Geometry Control File"))
+        self._tgc = TuflowParser(self._tcf.get_path("geometry control file"))
         self._logger.info("tgc done")
 
-        self._tbc = TuflowParser(self._tcf.get_path("BC Control File"))
+        self._tbc = TuflowParser(self._tcf.get_path("bc control file"))
         self._logger.info("tbc done")
 
         self._cc_dict = {
@@ -170,10 +173,10 @@ class TuflowModelConverter2D(ModelConverter):
             xml=self._fm_file,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
-            dx=self._tgc.get_value("Cell Size", float),
-            lx_ly=self._tgc.get_tuple("Grid Size (X,Y)", ",", int),
-            all_areas=self._tgc.get_all_geodataframes("Read GIS Code"),
-            loc_line=self._tgc.get_single_geometry("Read GIS Location"),
+            dx=self._tgc.get_value("cell size", float),
+            lx_ly=self._tgc.get_tuple("grid size (x,y)", ",", int),
+            all_areas=self._tgc.get_all_geodataframes("read gis code"),
+            loc_line=self._tgc.get_single_geometry("read gis location"),
         )
 
     def _create_topography_cc(self):
@@ -182,8 +185,8 @@ class TuflowModelConverter2D(ModelConverter):
             xml=self._fm_file,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
-            rasters=self._tgc.get_all_paths("Read GRID Zpts"),
-            vectors=self._tgc.get_all_geodataframes("Read GIS Z Shape"),
+            rasters=self._tgc.get_all_paths("read grid zpts"),
+            vectors=self._tgc.get_all_geodataframes("read gis z shape"),
         )
 
     def _create_roughness_cc(self):
@@ -193,9 +196,9 @@ class TuflowModelConverter2D(ModelConverter):
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             law="manning",
-            global_material=self._tgc.get_value("Set Mat", int),
-            file_material=self._tgc.get_all_geodataframes("Read GIS Mat"),
-            mapping=self._tcf.get_dataframe("Read Materials File"),
+            global_material=self._tgc.get_value("set mat", int),
+            file_material=self._tgc.get_all_geodataframes("read gis mat"),
+            mapping=self._tcf.get_dataframe("read materials file"),
         )
 
     def _create_scheme_cc(self):
@@ -204,11 +207,11 @@ class TuflowModelConverter2D(ModelConverter):
             xml=self._fm_file,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
-            time_step=self._tcf.get_value("Timestep", float),
-            start_offset=self._tcf.get_value("Start Time", float),
-            total=self._tcf.get_value("End Time", float),
-            scheme=self._tcf.get_value("Solution Scheme"),
-            hardware=self._tcf.get_value("Hardware"),
+            time_step=self._tcf.get_value("timestep", float),
+            start_offset=self._tcf.get_value("start time", float),
+            total=self._tcf.get_value("end time", float),
+            scheme=self._tcf.get_value("solution scheme"),
+            hardware=self._tcf.get_value("hardware"),
         )
 
     def _create_boundary_cc(self):
@@ -217,13 +220,13 @@ class TuflowModelConverter2D(ModelConverter):
             xml=self._fm_file,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
-            vectors=self._tbc.get_all_geodataframes("Read GIS BC"),
+            vectors=self._tbc.get_all_geodataframes("read gis bc"),
         )
 
     def _create_estry_mc(self):
 
         return TuflowModelConverter1D(
-            ecf_path=self._tcf.get_path("ESTRY Control File"),
+            ecf_path=self._tcf.get_path("estry control file"),
             ief_path=self._ief_path,
             inputs_name = self._inputs_name,
             logger=self._logger,

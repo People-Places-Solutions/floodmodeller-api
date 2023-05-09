@@ -21,7 +21,21 @@ class Tuflow2DConversionTool(FMTool):
             required=True,
         ),
         Parameter(
-            name="log_file",
+            name="ief_path",
+            dtype=str,
+            description="Path to output IEF file",
+            help_text="Where the IEF file will be saved",
+            required=True,
+        ),
+        Parameter(
+            name="inputs_name",
+            dtype=str,
+            description="Path to output processed GIS files",
+            help_text="Where the process GIS files will be saved",
+            required=True,
+        ),
+        Parameter(
+            name="log_path",
             dtype=str,
             description="Path to output log file",
             help_text="Where the log file will be saved",
@@ -29,8 +43,3 @@ class Tuflow2DConversionTool(FMTool):
         ),
     ]
     tool_function = lambda **kwargs: TuflowModelConverter2D(**kwargs).convert_model()
-
-
-if __name__ == "__main__":
-    tool = Tuflow2DConversionTool()
-    tool.run_from_command_line()

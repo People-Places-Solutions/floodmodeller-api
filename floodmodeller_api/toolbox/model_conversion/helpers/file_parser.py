@@ -11,10 +11,7 @@ class TuflowParser:
     COMMENT_SYMBOL = "!"
     TUPLE_SYMBOL = "|"
 
-    def __init__(
-        self,
-        file: Union[str, Path],
-    ) -> None:
+    def __init__(self, file: Union[str, Path]) -> None:
 
         self._folder = Path(file).parents[0]
         self._dict = {}
@@ -28,9 +25,12 @@ class TuflowParser:
                 if line.isspace() or not line:
                     continue
 
+                if self.ASSIGNMENT_SYMBOL not in line:
+                    continue
+
                 k, v = line.split(self.ASSIGNMENT_SYMBOL)
 
-                k = k.strip()
+                k = k.strip().lower()
                 v = v.strip()
 
                 if k not in self._dict:

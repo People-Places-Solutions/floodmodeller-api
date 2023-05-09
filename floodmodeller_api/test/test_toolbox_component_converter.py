@@ -242,10 +242,9 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
 def test_material_to_roughness(point1, polygon1, polygon2):
 
     roughness = RoughnessConverter2D.material_to_roughness(
-        [
-            gpd.GeoDataFrame({"material": [7, 3], "geometry": [polygon1, polygon2]}),
-            gpd.GeoDataFrame({"material": [5], "geometry": [point1]}),
-        ],
+        gpd.GeoDataFrame(
+            {"material_id": [7, 3, 5], "geometry": [polygon1, polygon2, point1]}
+        ),
         pd.DataFrame({"material_id": [3, 5, 7], "value": [0.1, 0.9, 0.7]}),
     )
 
@@ -260,6 +259,9 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
     roughness_path = Path.joinpath(Path(tmpdir), "roughness.shp")
     mapping = pd.DataFrame({"A": [3], "B": [0.1], "C": ["D"]})
+    standardised_material = gpd.GeoDataFrame(
+        {"material_id": [1, 2], "geometry": [point1, point2]}
+    )
     standardised_mapping = pd.DataFrame({"material_id": [3], "value": [0.1]})
 
     material_to_roughness = mocker.patch(
@@ -275,8 +277,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
         mapping=mapping,
     )
     assert material_to_roughness.call_count == 1
-    assert (material_to_roughness.call_args_list[0][0][0][0]).equals(gdf1)
-    assert (material_to_roughness.call_args_list[0][0][0][1]).equals(gdf2)
+    assert (material_to_roughness.call_args_list[0][0][0]).equals(standardised_material)
     assert (material_to_roughness.call_args_list[0][0][1]).equals(standardised_mapping)
     assert material_to_roughness.mock_calls[1][1][0] == roughness_path
 
