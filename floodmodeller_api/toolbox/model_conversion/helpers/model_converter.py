@@ -20,18 +20,18 @@ class ModelConverter:
     _cc_dict: dict
     _mc_dict: dict
 
-    PROCESSED_INPUTS_FOLDER_NAME = "gis"
-
     def __init__(
         self,
         fm_file_class: FMFile,
         fm_file_path: Union[str, Path],
+        inputs_name: str,
         log_path: Union[str, Path] = None,
         logger: logging.Logger = None,
     ) -> None:
 
         self._fm_file_class = fm_file_class
         self._fm_file_path = fm_file_path
+        self._inputs_name = inputs_name
 
         self._logger = self._create_logger(log_path, logger)
 
@@ -39,7 +39,7 @@ class ModelConverter:
         self._fm_file.save(self._fm_file_path)
 
         self._processed_inputs_folder = Path.joinpath(
-            Path(self._fm_file_path).parents[0], self.PROCESSED_INPUTS_FOLDER_NAME
+            Path(self._fm_file_path).parents[0], self._inputs_name
         )
         self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
@@ -73,12 +73,10 @@ class ModelConverter:
                 cc_object = cc_factory()
                 cc_object.edit_fm_file()
                 self.save_fm_file()
+                self._logger.info("success")
             except:
                 self._logger.exception("failure")
                 self.rollback_fm_file()
-                continue
-
-            self._logger.info("success")
 
         # model converter (recursive)
         for mc_class_display_name, mc_factory in self._mc_dict.items():
@@ -88,11 +86,9 @@ class ModelConverter:
             try:
                 mc_object = mc_factory()
                 mc_object.convert_model()
+                self._logger.info(f"success converting {mc_class_display_name}")
             except:
-                self._logger.exception("failure")
-                continue
-
-            self._logger.info("success")
+                self._logger.exception(f"failure converting {mc_class_display_name}")
 
     def save_fm_file(self) -> None:
         self._fm_file.update()
@@ -106,10 +102,12 @@ class TuflowModelConverter1D(ModelConverter):
         self,
         ecf_path: Union[str, Path],
         ief_path: Union[str, Path],
-        log_path: Union[str, Path],
+        inputs_name: str,
+        log_path: Union[str, Path] = None,
+        logger: logging.Logger = None,
     ) -> None:
 
-        super().__init__(IEF, ief_path, log_path)
+        super().__init__(IEF, ief_path, inputs_name, log_path, logger)
 
         self._logger.info("reading files...")
 
@@ -133,11 +131,13 @@ class TuflowModelConverter2D(ModelConverter):
         self,
         tcf_path: Union[str, Path],
         xml_path: Union[str, Path],
-        log_path: Union[str, Path],
+        inputs_name: str,
+        log_path: Union[str, Path] = None,
+        logger: logging.Logger = None,
         ief_path: Union[str, Path] = None,
     ) -> None:
 
-        super().__init__(XML2D, xml_path, log_path)
+        super().__init__(XML2D, xml_path, inputs_name, log_path, logger)
 
         self._ief_path = ief_path
 
@@ -161,7 +161,7 @@ class TuflowModelConverter2D(ModelConverter):
         }
 
         self._mc_dict = {
-            "estry": self._convert_estry,
+            "estry": self._create_estry_mc,
         }
 
     def _create_computational_area_cc(self):
@@ -220,10 +220,11 @@ class TuflowModelConverter2D(ModelConverter):
             vectors=self._tbc.get_all_geodataframes("Read GIS BC"),
         )
 
-    def _convert_estry(self):
+    def _create_estry_mc(self):
 
         return TuflowModelConverter1D(
             ecf_path=self._tcf.get_path("ESTRY Control File"),
             ief_path=self._ief_path,
-            log_path=self._logger,
+            inputs_name = self._inputs_name,
+            logger=self._logger,
         )

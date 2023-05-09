@@ -5,21 +5,38 @@ import geopandas as gpd
 import pandas as pd
 
 
-class FileParser:
+class TuflowParser:
 
-    _dict: dict
+    ASSIGNMENT_SYMBOL = "=="
+    COMMENT_SYMBOL = "!"
+    TUPLE_SYMBOL = "|"
 
     def __init__(
         self,
         file: Union[str, Path],
-        assignment_symbol: str,
-        comment_symbol: str,
-        tuple_symbol: str,
     ) -> None:
+
         self._folder = Path(file).parents[0]
-        self._assignment_symbol = assignment_symbol
-        self._comment_symbol = comment_symbol
-        self._tuple_symbol = tuple_symbol
+        self._dict = {}
+
+        with open(file) as f:
+
+            for line in f:
+
+                line = line.partition(self.COMMENT_SYMBOL)[0]
+
+                if line.isspace() or not line:
+                    continue
+
+                k, v = line.split(self.ASSIGNMENT_SYMBOL)
+
+                k = k.strip()
+                v = v.strip()
+
+                if k not in self._dict:
+                    self._dict[k] = [v]
+                else:
+                    self._dict[k].append(v)
 
     def _resolve_path(self, relative_path: Path) -> Path:
         return Path.joinpath(self._folder, relative_path).resolve()
@@ -41,7 +58,7 @@ class FileParser:
     def get_dataframe(self, name: str, index: int = -1) -> pd.DataFrame:
         filepath = self.get_path(name, index)
         header = "infer" if filepath.suffix == ".csv" else None
-        return pd.read_csv(filepath, comment=self._comment_symbol, header=header)
+        return pd.read_csv(filepath, comment=self.COMMENT_SYMBOL, header=header)
 
     def get_single_geometry(
         self, name: str, index: int = -1, geom_index: int = 0
@@ -58,11 +75,11 @@ class FileParser:
         gdf_list = []
 
         for i, string in enumerate(self._dict[name]):
-            if self._tuple_symbol in string:
+            if self.TUPLE_SYMBOL in string:
                 to_append = tuple(
                     [
                         gpd.read_file(self._resolve_path(x))
-                        for x in self.get_tuple(name, self._tuple_symbol, index=i)
+                        for x in self.get_tuple(name, self.TUPLE_SYMBOL, index=i)
                     ]
                 )
             else:
@@ -71,32 +88,3 @@ class FileParser:
             gdf_list.append(to_append)
 
         return gdf_list
-
-
-class TuflowParser(FileParser):
-    def __init__(self, file: Union[str, Path]) -> None:
-
-        super().__init__(
-            file, assignment_symbol="==", comment_symbol="!", tuple_symbol="|"
-        )
-
-        self._dict = {}
-
-        with open(file) as f:
-
-            for line in f:
-
-                line = line.partition(self._comment_symbol)[0]
-
-                if line.isspace() or not line:
-                    continue
-
-                k, v = line.split(self._assignment_symbol)
-
-                k = k.strip()
-                v = v.strip()
-
-                if k not in self._dict:
-                    self._dict[k] = [v]
-                else:
-                    self._dict[k].append(v)
