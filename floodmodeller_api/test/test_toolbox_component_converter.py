@@ -179,17 +179,21 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
     }
 
 
-def test_combine_layers():
+def test_combine_points_and_lines():
 
     tuflow_p = gpd.GeoDataFrame(
         {
             "Z": [50.0, 80.0, 90.0, 20.0],
             "dZ": [0, 0, 0, 0],
+            "width": np.nan,
+            "options": np.nan,
             "geometry": [Point(2, 0), Point(2, 3), Point(3, 4), Point(4, 4)],
         }
     )
     tuflow_l = gpd.GeoDataFrame(
         {
+            "Z": np.nan,
+            "dZ": np.nan,
             "width": [2.0, 3.0],
             "options": ["MAX", "MAX"],
             "geometry": [

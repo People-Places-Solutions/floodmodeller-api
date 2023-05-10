@@ -3,7 +3,7 @@ from floodmodeller_api import IEF, XML2D
 from pathlib import Path
 from shapely.geometry import LineString
 from shapely.ops import split
-from typing import List, Tuple
+from typing import List, Tuple, Union
 import geopandas as gpd
 import pandas as pd
 import math
@@ -16,7 +16,7 @@ def concat(
     if lower_case:
         gdf_list = [x.rename(columns=str.lower) for x in gdf_list]
 
-    if mapper:
+    if mapper:   # TODO: remove this
         gdf_list = [x.rename(columns=mapper) for x in gdf_list]
 
     return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
@@ -138,7 +138,7 @@ class TopographyConverter2D(ComponentConverter2D):
         folder: Path,
         domain_name: str,
         rasters: List[Path],
-        vectors: List[Tuple[gpd.GeoDataFrame]],
+        vectors: List[Union[Tuple[gpd.GeoDataFrame], gpd.GeoDataFrame]],
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
@@ -148,6 +148,8 @@ class TopographyConverter2D(ComponentConverter2D):
         for i, value in enumerate(vectors):
             vector_path = str(Path.joinpath(folder, f"topography_{i}.shp"))
             self._vector_paths.append(vector_path)
+            if type(value) != tuple:
+                value = (value,)
             self.combine_layers(value).to_file(vector_path)
 
     def edit_fm_file(self) -> None:
@@ -155,22 +157,47 @@ class TopographyConverter2D(ComponentConverter2D):
             self._raster_paths + self._vector_paths
         )
 
-    @staticmethod
-    def combine_layers(layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+    @classmethod
+    def combine_layers(cls, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
-        # separate into lines & points
-        lines_points = concat(
+        all_types = concat(
             layers,
-            mapper={"shape_widt": "width", "shape_opti": "options"},
+            mapper={ # TODO: order not names
+                "shape_widt": "width",
+                "shape_opti": "options",
+            }, 
             lower_case=True,
         )
-        lines = lines_points[lines_points.geometry.geometry.type == "LineString"]
-        points = lines_points[lines_points.geometry.geometry.type == "Point"]
+
+        lines = all_types[all_types.geometry.geometry.type == "LineString"]
+        points = all_types[all_types.geometry.geometry.type == "Point"]
+        polygons = all_types[all_types.geometry.geometry.type == "Polygon"]
+
+        lines_present = len(lines.index) > 0
+        points_present = len(points.index) > 0
+        polygons_present = len(polygons.index) > 0
+
+        if lines_present and points_present:
+            return cls.combine_lines_and_points(lines, points)
+
+        elif lines_present and not (points_present or polygons_present):
+            return lines  # TODO: something
+
+        elif polygons_present and not (points_present or lines_present):
+            return polygons  # TODO: something
+
+        else:
+            raise Exception("not supported")  # TODO: more descriptive
+
+    @staticmethod
+    def combine_lines_and_points(
+        lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
+    ) -> gpd.GeoDataFrame:
 
         # split lines according to points
         segments = gpd.GeoDataFrame(
             list(split(lines.geometry.unary_union, points.geometry.unary_union).geoms),
-            crs=lines_points.crs,
+            crs=lines.crs,
             columns=["geometry"],
         )
 
@@ -232,8 +259,8 @@ class RoughnessConverter2D(ComponentConverter2D):
         roughness.to_file(self._file_material_path)
 
     @staticmethod
-    def standardise_material(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        new_file = concat(file, lower_case=True)
+    def standardise_material(file: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+        new_file = concat(file, lower_case=True)  # FIXME: standardise iloc/columns THEN concat
         new_file = new_file.iloc[:, [0, -1]]
         new_file.columns = ["material_id", "geometry"]
         return new_file
