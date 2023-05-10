@@ -75,38 +75,6 @@ def test_concat(polygon1, polygon2, point1, point2):
         ),
     )
 
-    gdf_concat = concat(gdf_list, lower_case=True)
-    assert gdf_concat.equals(
-        gpd.GeoDataFrame(
-            {
-                "x": [0, 1, 2, np.nan],
-                "geometry": [polygon1, polygon2, point1, point2],
-                "y": [np.nan, np.nan, np.nan, 3],
-            }
-        ),
-    )
-
-    gdf_concat = concat(gdf_list, mapper={"y": "x"})
-    assert gdf_concat.equals(
-        gpd.GeoDataFrame(
-            {
-                "x": [0, 1, np.nan, 3],
-                "geometry": [polygon1, polygon2, point1, point2],
-                "X": [np.nan, np.nan, 2, np.nan],
-            }
-        ),
-    )
-
-    gdf_concat = concat(gdf_list, lower_case=True, mapper={"y": "x"})
-    assert gdf_concat.equals(
-        gpd.GeoDataFrame(
-            {
-                "x": [0, 1, 2, 3],
-                "geometry": [polygon1, polygon2, point1, point2],
-            }
-        ),
-    )
-
 
 def test_rename_and_select():
 
@@ -183,19 +151,19 @@ def test_combine_points_and_lines():
 
     tuflow_p = gpd.GeoDataFrame(
         {
-            "Z": [50.0, 80.0, 90.0, 20.0],
-            "dZ": [0, 0, 0, 0],
-            "width": np.nan,
-            "options": np.nan,
+            "a": [50.0, 80.0, 90.0, 20.0],
+            "b": [0, 0, 0, 0],
+            "c": np.nan,
+            "d": np.nan,
             "geometry": [Point(2, 0), Point(2, 3), Point(3, 4), Point(4, 4)],
         }
     )
     tuflow_l = gpd.GeoDataFrame(
         {
-            "Z": np.nan,
-            "dZ": np.nan,
-            "width": [2.0, 3.0],
-            "options": ["MAX", "MAX"],
+            "e": np.nan,
+            "f": np.nan,
+            "g": [2.0, 3.0],
+            "h": ["MAX", "MAX"],
             "geometry": [
                 LineString([(2, 0), (2, 4), (3, 4)]),
                 LineString([(3, 4), (4, 4)]),

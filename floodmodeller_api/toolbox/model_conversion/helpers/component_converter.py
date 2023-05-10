@@ -9,16 +9,7 @@ import pandas as pd
 import math
 
 
-def concat(
-    gdf_list: List[gpd.GeoDataFrame], mapper: dict = None, lower_case: bool = False
-) -> gpd.GeoDataFrame:
-
-    if lower_case:
-        gdf_list = [x.rename(columns=str.lower) for x in gdf_list]
-
-    if mapper:   # TODO: remove this
-        gdf_list = [x.rename(columns=mapper) for x in gdf_list]
-
+def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
 
 
@@ -90,9 +81,16 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         self._active_area_path = Path.joinpath(folder, "active_area.shp")
         self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
-        all_areas_concat = concat(all_areas, lower_case=True)
+        print(all_areas)
+        all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
         filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
         filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
+
+    @staticmethod
+    def standardise_areas(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        new_file = file.iloc[:, :]
+        new_file.columns = ["code", "geometry"]
+        return new_file
 
     def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["computational_area"] = {
@@ -160,14 +158,7 @@ class TopographyConverter2D(ComponentConverter2D):
     @classmethod
     def combine_layers(cls, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
 
-        all_types = concat(
-            layers,
-            mapper={ # TODO: order not names
-                "shape_widt": "width",
-                "shape_opti": "options",
-            }, 
-            lower_case=True,
-        )
+        all_types = concat([cls.standardise_topography(x) for x in layers])
 
         lines = all_types[all_types.geometry.geometry.type == "LineString"]
         points = all_types[all_types.geometry.geometry.type == "Point"]
@@ -188,6 +179,12 @@ class TopographyConverter2D(ComponentConverter2D):
 
         else:
             raise Exception("not supported")  # TODO: more descriptive
+
+    @staticmethod
+    def standardise_topography(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        new_file = file.iloc[:, :]
+        new_file.columns = ["z", "dz", "width", "options", "geometry"]
+        return new_file
 
     @staticmethod
     def combine_lines_and_points(
@@ -247,7 +244,7 @@ class RoughnessConverter2D(ComponentConverter2D):
         super().__init__(xml, folder, domain_name)
 
         self._law = law
-        self._material = self.standardise_material(file_material)
+        self._material = concat([self.standardise_material(x) for x in file_material])
         self._mapping = self.standardise_mapping(mapping)
 
         is_global = self._mapping["material_id"] == global_material
@@ -259,9 +256,8 @@ class RoughnessConverter2D(ComponentConverter2D):
         roughness.to_file(self._file_material_path)
 
     @staticmethod
-    def standardise_material(file: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
-        new_file = concat(file, lower_case=True)  # FIXME: standardise iloc/columns THEN concat
-        new_file = new_file.iloc[:, [0, -1]]
+    def standardise_material(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        new_file = file.iloc[:, [0, -1]]
         new_file.columns = ["material_id", "geometry"]
         return new_file
 
