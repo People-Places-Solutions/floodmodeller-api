@@ -224,13 +224,7 @@ class TopographyConverter2D(ComponentConverter2D):
                 on="point2",
             )
             .drop(columns="point2")
-            .sjoin(
-                rename_and_select(lines, {"width": "thick", "geometry": "geometry"}),
-                how="inner",
-                predicate="within",
-            )
-            .drop(columns="index_right")
-            .astype({"height1": float, "height2": float, "thick": float})
+            .astype({"height1": float, "height2": float})
         )
 
         return segments

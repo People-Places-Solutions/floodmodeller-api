@@ -183,7 +183,6 @@ def test_convert_points_and_lines():
                 ],
                 "height1": [50.0, 80.0, 90.0],
                 "height2": [80.0, 90.0, 20.0],
-                "thick": [2.0, 2.0, 3.0],
             }
         )
     )
