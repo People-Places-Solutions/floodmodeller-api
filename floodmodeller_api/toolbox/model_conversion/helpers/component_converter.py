@@ -28,7 +28,7 @@ class ComponentConverter:
         self._folder = folder
 
     def edit_fm_file(self) -> None:
-        raise NotImplementedError()
+        raise NotImplementedError("Abstract method not overwritten")
 
 
 class ComponentConverter1D(ComponentConverter):
@@ -175,7 +175,17 @@ class TopographyConverter2D(ComponentConverter2D):
             return cls.convert_polygons(polygons)
 
         else:
-            raise Exception("not supported")  # TODO: more descriptive
+
+            spatial_types = []
+            if lines_present:
+                spatial_types.append("lines")
+            if points_present:
+                spatial_types.append("points")
+            if polygons_present:
+                spatial_types.append("polygons")
+            spatial_types_display = ", ".join(spatial_types)
+
+            raise RuntimeError(f"Combination not supported: {spatial_types_display}")
 
     @staticmethod
     def standardise_topography(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -227,14 +237,14 @@ class TopographyConverter2D(ComponentConverter2D):
 
     @staticmethod
     def convert_polygons(polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-        
+
         new_polygons = polygons.iloc[:, [0, 3, 4]]
         new_polygons.columns = ["height", "method", "geometry"]
 
         method_is_add = new_polygons["method"] == "ADD"
-        new_polygons.loc[method_is_add,"method"] = "add"
-        new_polygons.loc[~method_is_add,"method"] = np.nan
-        
+        new_polygons.loc[method_is_add, "method"] = "add"
+        new_polygons.loc[~method_is_add, "method"] = np.nan
+
         return new_polygons
 
 
@@ -339,6 +349,3 @@ class BoundaryConverter2D(ComponentConverter2D):
         vectors: List[gpd.GeoDataFrame],
     ) -> None:
         super().__init__(xml, folder, domain_name)
-
-    def edit_fm_file(self) -> None:
-        raise NotImplementedError("Boundary conditions not implemented yet")
