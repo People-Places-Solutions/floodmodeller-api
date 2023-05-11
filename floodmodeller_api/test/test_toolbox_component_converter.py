@@ -189,6 +189,37 @@ def test_convert_points_and_lines():
     )
 
 
+def test_convert_polygons():
+
+    tuflow_r = gpd.GeoDataFrame(
+        {
+            "a": [2.0, 3.0],
+            "b": np.nan,
+            "c": np.nan,
+            "d": ["ADD", "add"],
+            "geometry": [
+                Polygon([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]),
+                Polygon([[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]),
+            ],
+        }
+    )
+
+    combined = TopographyConverter2D.combine_layers((tuflow_r,))
+
+    assert combined.equals(
+        gpd.GeoDataFrame(
+            {
+                "height": [2.0, 3.0],
+                "method": ["add", np.nan],
+                "geometry": [
+                    Polygon([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]),
+                    Polygon([[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]),
+                ],
+            }
+        )
+    )
+
+
 def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
 
     raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
