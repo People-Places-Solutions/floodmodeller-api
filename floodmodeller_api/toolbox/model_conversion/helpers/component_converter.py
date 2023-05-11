@@ -6,6 +6,7 @@ from shapely.ops import split
 from typing import List, Tuple, Union
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import math
 
 
@@ -81,7 +82,6 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         self._active_area_path = Path.joinpath(folder, "active_area.shp")
         self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
-        print(all_areas)
         all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
         filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
         filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
@@ -169,13 +169,10 @@ class TopographyConverter2D(ComponentConverter2D):
         polygons_present = len(polygons.index) > 0
 
         if lines_present and points_present:
-            return cls.combine_lines_and_points(lines, points)
-
-        elif lines_present and not (points_present or polygons_present):
-            return lines  # TODO: something
+            return cls.convert_lines_and_points(lines, points)
 
         elif polygons_present and not (points_present or lines_present):
-            return polygons  # TODO: something
+            return cls.convert_polygons(polygons)
 
         else:
             raise Exception("not supported")  # TODO: more descriptive
@@ -187,7 +184,7 @@ class TopographyConverter2D(ComponentConverter2D):
         return new_file
 
     @staticmethod
-    def combine_lines_and_points(
+    def convert_lines_and_points(
         lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
     ) -> gpd.GeoDataFrame:
 
@@ -227,6 +224,18 @@ class TopographyConverter2D(ComponentConverter2D):
         )
 
         return segments
+
+    @staticmethod
+    def convert_polygons(polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+        
+        new_polygons = polygons.iloc[:, [0, 3, 4]]
+        new_polygons.columns = ["height", "method", "geometry"]
+
+        method_is_add = new_polygons["method"] == "ADD"
+        new_polygons.loc[method_is_add,"method"] = "add"
+        new_polygons.loc[~method_is_add,"method"] = np.nan
+        
+        return new_polygons
 
 
 class RoughnessConverter2D(ComponentConverter2D):

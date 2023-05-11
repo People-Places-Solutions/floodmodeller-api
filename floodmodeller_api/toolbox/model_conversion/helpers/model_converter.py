@@ -228,6 +228,6 @@ class TuflowModelConverter2D(ModelConverter):
         return TuflowModelConverter1D(
             ecf_path=self._tcf.get_path("estry control file"),
             ief_path=self._ief_path,
-            inputs_name = self._inputs_name,
+            inputs_name=self._inputs_name,
             logger=self._logger,
         )

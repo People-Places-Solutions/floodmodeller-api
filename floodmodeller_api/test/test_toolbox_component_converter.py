@@ -147,7 +147,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
     }
 
 
-def test_combine_points_and_lines():
+def test_convert_points_and_lines():
 
     tuflow_p = gpd.GeoDataFrame(
         {
