@@ -79,12 +79,23 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         self._dx = dx
         self._nrows = int(lx_ly[0] / self._dx)
         self._ncols = int(lx_ly[1] / self._dx)
-        self._active_area_path = Path.joinpath(folder, "active_area.shp")
-        self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
 
         all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
-        filter(all_areas_concat, "code", 0).to_file(self._deactive_area_path)
-        filter(all_areas_concat, "code", 1).to_file(self._active_area_path)
+
+        active_area = filter(all_areas_concat, "code", 1)
+        if len(active_area.index) > 0:
+            self._active_area_path = Path.joinpath(folder, "active_area.shp")
+            active_area.to_file(self._active_area_path)
+        else:
+            self._active_area_path = None
+
+        deactive_area = filter(all_areas_concat, "code", 0)
+        if len(deactive_area.index) > 0:
+            self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
+            deactive_area.to_file(self._deactive_area_path)
+        else:
+            self._deactive_area_path = None
+
 
     @staticmethod
     def standardise_areas(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -93,7 +104,7 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         return new_file
 
     def edit_fm_file(self) -> None:
-        self._xml.domains[self._domain_name]["computational_area"] = {
+        comp_area_dict = {
             "xll": self._xll,
             "yll": self._yll,
             "dx": self._dx,
@@ -103,6 +114,14 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
             "deactive_area": self._deactive_area_path,
             "rotation": self._rotation,
         }
+
+        if not self._active_area_path:
+            comp_area_dict.pop("active_area")
+
+        if not self._deactive_area_path:
+            comp_area_dict.pop("deactive_area")
+
+        self._xml.domains[self._domain_name]["computational_area"] = comp_area_dict
 
 
 class LocLineConverter2D(ComputationalAreaConverter2D):
@@ -343,3 +362,4 @@ class BoundaryConverter2D(ComponentConverter2D):
         vectors: List[gpd.GeoDataFrame],
     ) -> None:
         super().__init__(xml, folder, domain_name)
+        # print(vectors)
