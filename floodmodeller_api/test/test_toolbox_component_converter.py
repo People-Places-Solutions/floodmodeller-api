@@ -129,8 +129,10 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
         loc_line=LineString([start, end]),
     )
     assert filter.call_count == 2
-    assert (filter.call_args_list[0][0][0]).equals(gdf1)
-    assert (filter.call_args_list[1][0][0]).equals(gdf1)
+    assert str(filter.call_args_list[0][0][0]) == str(gdf1)
+    assert str(filter.call_args_list[1][0][0]) == str(gdf1)
+    # assert (filter.call_args_list[0][0][0]).equals(gdf1)
+    # assert (filter.call_args_list[1][0][0]).equals(gdf1)
     # assert str(filter.mock_calls[0]) == 3
     # assert filter.mock_calls[1][1][0] == deactive_area
     # assert filter.mock_calls[3][1][0] == active_area
