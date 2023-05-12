@@ -117,6 +117,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
 
     active_area = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area = Path.joinpath(Path(tmpdir), "deactive_area.shp")
+    standardised_areas = gpd.GeoDataFrame({"code": [1], "geometry": [point1]})
 
     filter = mocker.patch(f"{path_to_cc}.filter")
     loc_line = LocLineConverter2D(
@@ -129,10 +130,8 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
         loc_line=LineString([start, end]),
     )
     assert filter.call_count == 2
-    assert str(filter.call_args_list[0][0][0]) == str(gdf1)
-    assert str(filter.call_args_list[1][0][0]) == str(gdf1)
-    # assert (filter.call_args_list[0][0][0]).equals(gdf1)
-    # assert (filter.call_args_list[1][0][0]).equals(gdf1)
+    assert (filter.call_args_list[0][0][0]).equals(gdf1)
+    assert (filter.call_args_list[1][0][0]).equals(gdf1)
     # assert str(filter.mock_calls[0]) == 3
     # assert filter.mock_calls[1][1][0] == deactive_area
     # assert filter.mock_calls[3][1][0] == active_area
