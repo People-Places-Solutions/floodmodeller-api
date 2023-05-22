@@ -48,12 +48,12 @@ def polygon2():
 
 
 @pytest.fixture
-def gdf1():
+def gdf1(point1):
     return gpd.GeoDataFrame({"x": [1], "geometry": [point1]})
 
 
 @pytest.fixture
-def gdf2():
+def gdf2(point2):
     return gpd.GeoDataFrame({"x": [0], "geometry": [point2]})
 
 
@@ -110,30 +110,28 @@ def test_abc():
     with pytest.raises(NotImplementedError):
         abc.edit_xml()
 
-def _test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
-    # TODO: fix this now that active and deactive areas are optional
+def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
     
     active_area_path = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area_path = Path.joinpath(Path(tmpdir), "deactive_area.shp")
-
-    assert type(gdf1) == gpd.GeoDataFrame
-    assert type(gdf2) == gpd.GeoDataFrame
 
     comp_area = ComputationalAreaConverter2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
+        xll=3,
+        yll=2,
         dx=2.5,
         lx_ly=(30.3, 40.4),
         all_areas=[gdf1, gdf2],
     )
-    assert gpd.read_file(active_area_path).equals(gpd.GeoDataFrame({"geometry": [point1]}))
-    assert gpd.read_file(deactive_area_path).equals(gpd.GeoDataFrame({"geometry": [point2]}))
+    assert gpd.read_file(active_area_path).equals(gpd.GeoDataFrame({"FID": 0, "geometry": [point1]}))
+    assert gpd.read_file(deactive_area_path).equals(gpd.GeoDataFrame({"FID": 0, "geometry": [point2]}))
 
     comp_area.edit_xml()
     assert xml.domains["Domain 1"]["computational_area"] == {
-        "xll": 1,
-        "yll": 0,
+        "xll": 3,
+        "yll": 2,
         "dx": 2.5,
         "nrows": 12,
         "ncols": 16,
@@ -284,7 +282,7 @@ def test_material_to_roughness(point1, polygon1, polygon2):
     )
 
 
-def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
+def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
 
     roughness_path = Path.joinpath(Path(tmpdir), "roughness.shp")
     mapping = pd.DataFrame({"A": [3], "B": [0.1], "C": ["D"]})

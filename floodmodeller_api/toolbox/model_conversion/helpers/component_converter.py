@@ -20,10 +20,8 @@ def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
 
 
 def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
-    is_selected = gdf[column] == value
+    is_selected = gdf.loc[:, column] == value
     is_selected = is_selected[is_selected].index
-    if len(is_selected) == 1:
-        is_selected = [is_selected[0]]
     return gdf.iloc[is_selected].drop(columns=column)
 
 
@@ -67,8 +65,6 @@ class ComponentConverter2D(ComponentConverter):
 
 class ComputationalAreaConverter2D(ComponentConverter2D):
 
-    _xll: float
-    _yll: float
     _rotation: int
 
     def __init__(
@@ -76,16 +72,22 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         xml: XML2D,
         folder: Path,
         domain_name: str,
+        xll: float,
+        yll: float,
         dx: float,
         lx_ly: Tuple[float],
         all_areas: List[gpd.GeoDataFrame],
+        rotation: float = None,
     ) -> None:
 
         super().__init__(xml, folder, domain_name)
 
+        self._xll = xll
+        self._yll = yll
         self._dx = dx
         self._nrows = int(lx_ly[0] / self._dx)
         self._ncols = int(lx_ly[1] / self._dx)
+        self._rotation = rotation
 
         self._active_area_path = None
         self._deactive_area_path = None
@@ -114,8 +116,10 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
             "dx": self._dx,
             "nrows": self._nrows,
             "ncols": self._ncols,
-            "rotation": self._rotation,
         }
+
+        if self._rotation:
+            comp_area_dict["rotation"] = self._rotation
 
         if self._active_area_path:
             comp_area_dict["active_area"] = self._active_area_path
@@ -137,12 +141,11 @@ class LocLineConverter2D(ComputationalAreaConverter2D):
         all_areas: List[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
-        super().__init__(xml, folder, domain_name, dx, lx_ly, all_areas)
-
+        
         x1, y1 = loc_line.coords[0]
         x2, y2 = loc_line.coords[1]
-        self._xll = x1
-        self._yll = y1
+
+        super().__init__(xml, folder, domain_name, x1, y1, dx, lx_ly, all_areas)
 
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
