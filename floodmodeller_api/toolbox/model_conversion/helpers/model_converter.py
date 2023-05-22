@@ -22,44 +22,35 @@ class TuflowModelConverter2D:
         name: str,
     ) -> None:
 
-        self._root = Path.joinpath(Path(folder), name)
+        self._tcf_path = tcf_path
+        self._name = name
+        self._root = Path.joinpath(Path(folder), self._name)
         self._root.mkdir(parents=True, exist_ok=True)
 
-        self._logger = self._create_logger(Path.joinpath(self._root, f"{name}.log"))
+        self._create_logger()
+        self._read_tuflow_files()
+        self._init_fm_files()
+        self._init_cc_dicts()
 
-        self._read_tuflow_files(tcf_path)
-        self._init_fm_files(name)
-
-        self._cc_dict = {
-            "computational area": self._create_computational_area_cc,
-            "topography": self._create_topography_cc,
-            "roughness": self._create_roughness_cc,
-            "scheme": self._create_scheme_cc,
-            "boundary": self._create_boundary_cc,
-        }
-
-        if self._contains_estry:
-            self._cc_dict["estry"] = self._create_estry_cc
-
-    def _create_logger(self, log_name: Path) -> logging.Logger:
+    def _create_logger(self) -> None:
 
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
         logging.basicConfig(
-            filename=log_name,
+            filename=Path.joinpath(self._root, f"{self._name}.log"),
             filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
             level=logging.INFO,
         )
-        return logging.getLogger(__name__)
+        self._logger = logging.getLogger(__name__)
 
-    def _read_tuflow_files(self, tcf_path: Union[str, Path]):
+    def _read_tuflow_files(self) -> None:
 
         self._logger.info("reading TUFLOW files...")
 
-        self._tcf = TuflowParser(tcf_path)
+        self._tcf = TuflowParser(self._tcf_path)
         self._logger.info("tcf done")
 
         self._tgc = TuflowParser(self._tcf.get_path("geometry control file"))
@@ -76,7 +67,7 @@ class TuflowModelConverter2D:
         else:
             self._logger.info("ecf not detected")
 
-    def _init_fm_files(self, name: str):
+    def _init_fm_files(self) -> None:
 
         self._logger.info("initialising Flood Modeller files...")
 
@@ -84,42 +75,62 @@ class TuflowModelConverter2D:
         self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
         self._xml = XML2D()
-        self._xml_filepath = Path.joinpath(self._root, f"{name}.xml")
+        self._xml_filepath = Path.joinpath(self._root, f"{self._name}.xml")
         self._xml.save(self._xml_filepath)
         self._logger.info("xml done")
 
         if self._contains_estry:
             self._ief = IEF()
-            self._ief_filepath = Path.joinpath(self._root, f"{name}.ief")
+            self._ief_filepath = Path.joinpath(self._root, f"{self._name}.ief")
             self._ief.save(self._ief_filepath)
             self._logger.info("ief done")
 
+    def _init_cc_dicts(self) -> None:
+        
+        self._cc_2d_dict = {
+            "computational area": self._create_computational_area_cc_2d,
+            "topography": self._create_topography_cc_2d,
+            "roughness": self._create_roughness_cc_2d,
+            "scheme": self._create_scheme_cc_2d,
+            "boundary": self._create_boundary_cc_2d,
+        }
+        
+        if self._contains_estry:
+            self._cc_1d_dict = {"estry": self._create_scheme_cc_1d}
+        else:
+            self._cc_1d_dict = {}
+
     def convert_model(self) -> None:
 
-        for cc_class_display_name, cc_factory in self._cc_dict.items():
+        # 2D
+        for cc_class_display_name, cc_factory in self._cc_2d_dict.items():
 
             self._logger.info(f"converting {cc_class_display_name}...")
 
             try:
                 cc_object = cc_factory()
                 cc_object.edit_fm_file()
-                self.save_fm_file()
+                self._xml.update()
                 self._logger.info("success")
             except:
                 self._logger.exception("failure")
-                self.rollback_fm_file()
+                self._xml = XML2D(self._xml_filepath)  # rollback
 
-    def save_fm_file(self) -> None:
-        self._xml.update()
-        if self._contains_estry:
-            self._ief.update()
+        # 1D estry
+        for cc_class_display_name, cc_factory in self._cc_1d_dict.items():
 
-    def rollback_fm_file(self) -> None:
-        self._xml = XML2D(self._xml_filepath)
-        if self._contains_estry:
-            self._ief = IEF(self._ief_filepath)
+            self._logger.info(f"converting {cc_class_display_name}...")
 
-    def _create_computational_area_cc(self):
+            try:
+                cc_object = cc_factory()
+                cc_object.edit_fm_file()
+                self._ief.update()
+                self._logger.info("success")
+            except:
+                self._logger.exception("failure")
+                self._ief = IEF(self._ief_filepath)  # rollback
+
+    def _create_computational_area_cc_2d(self) -> LocLineConverter2D:
 
         return LocLineConverter2D(
             xml=self._xml,
@@ -131,7 +142,7 @@ class TuflowModelConverter2D:
             loc_line=self._tgc.get_single_geometry("read gis location"),
         )
 
-    def _create_topography_cc(self):
+    def _create_topography_cc_2d(self) -> TopographyConverter2D:
 
         return TopographyConverter2D(
             xml=self._xml,
@@ -141,7 +152,7 @@ class TuflowModelConverter2D:
             vectors=self._tgc.get_all_geodataframes("read gis z shape"),
         )
 
-    def _create_roughness_cc(self):
+    def _create_roughness_cc_2d(self) -> RoughnessConverter2D:
 
         return RoughnessConverter2D(
             xml=self._xml,
@@ -153,7 +164,7 @@ class TuflowModelConverter2D:
             mapping=self._tcf.get_dataframe("read materials file"),
         )
 
-    def _create_scheme_cc(self):
+    def _create_scheme_cc_2d(self) -> SchemeConverter2D:
 
         return SchemeConverter2D(
             xml=self._xml,
@@ -166,7 +177,7 @@ class TuflowModelConverter2D:
             hardware=self._tcf.get_value("hardware"),
         )
 
-    def _create_boundary_cc(self):
+    def _create_boundary_cc_2d(self) -> BoundaryConverter2D:
 
         return BoundaryConverter2D(
             xml=self._xml,
@@ -175,7 +186,7 @@ class TuflowModelConverter2D:
             vectors=self._tbc.get_all_geodataframes("read gis bc"),
         )
 
-    def _create_estry_cc(self):
+    def _create_scheme_cc_1d(self) -> SchemeConverter1D:
 
         return SchemeConverter1D(
             ief=self._ief,
