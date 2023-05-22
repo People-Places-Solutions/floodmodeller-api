@@ -40,6 +40,9 @@ class TuflowParser:
 
     def _resolve_path(self, relative_path: Path) -> Path:
         return Path.joinpath(self._folder, relative_path).resolve()
+    
+    def check_key(self, name: str) -> bool:
+        return name in self._dict
 
     def get_value(self, name: str, cast: type = str, index: int = -1) -> object:
         return cast(self._dict[name][index])

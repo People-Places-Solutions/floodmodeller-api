@@ -1,5 +1,4 @@
 from floodmodeller_api import IEF, XML2D
-from floodmodeller_api._base import FMFile
 from .file_parser import TuflowParser
 from .component_converter import (
     SchemeConverter1D,
@@ -15,49 +14,40 @@ from typing import Union
 import logging
 
 
-class ModelConverter:
-
-    _cc_dict: dict
-    _mc_dict: dict
-
+class TuflowModelConverter2D:
     def __init__(
         self,
-        fm_file_class: FMFile,
-        fm_file_path: Union[str, Path],
-        inputs_name: str,
-        log_path: Union[str, Path] = None,
-        logger: logging.Logger = None,
+        tcf_path: Union[str, Path],
+        folder: Union[str, Path],
+        name: str,
     ) -> None:
 
-        self._fm_file_class = fm_file_class
-        self._fm_file_path = fm_file_path
-        self._inputs_name = inputs_name
+        self._root = Path.joinpath(Path(folder), name)
+        self._root.mkdir(parents=True, exist_ok=True)
 
-        self._logger = self._create_logger(log_path, logger)
+        self._logger = self._create_logger(Path.joinpath(self._root, f"{name}.log"))
 
-        self._fm_file = self._fm_file_class()
-        self._fm_file.save(self._fm_file_path)
+        self._read_tuflow_files(tcf_path)
+        self._init_fm_files(name)
 
-        self._processed_inputs_folder = Path.joinpath(
-            Path(self._fm_file_path).parents[0], self._inputs_name
-        )
-        self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
+        self._cc_dict = {
+            "computational area": self._create_computational_area_cc,
+            "topography": self._create_topography_cc,
+            "roughness": self._create_roughness_cc,
+            "scheme": self._create_scheme_cc,
+            "boundary": self._create_boundary_cc,
+        }
 
-    def _create_logger(
-        self, log_path: Union[str, Path], logger: logging.Logger
-    ) -> logging.Logger:
+        if self._contains_estry:
+            self._cc_dict["estry"] = self._create_estry_cc
 
-        if (log_path and logger) or (not log_path and not logger):
-            raise RuntimeError("Exactly one of log_path and logger is required")
-
-        if logger:
-            return logger
+    def _create_logger(self, log_name: Path) -> logging.Logger:
 
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
         logging.basicConfig(
-            filename=log_path,
+            filename=log_name,
             filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
@@ -65,9 +55,47 @@ class ModelConverter:
         )
         return logging.getLogger(__name__)
 
+    def _read_tuflow_files(self, tcf_path: Union[str, Path]):
+
+        self._logger.info("reading TUFLOW files...")
+
+        self._tcf = TuflowParser(tcf_path)
+        self._logger.info("tcf done")
+
+        self._tgc = TuflowParser(self._tcf.get_path("geometry control file"))
+        self._logger.info("tgc done")
+
+        self._tbc = TuflowParser(self._tcf.get_path("bc control file"))
+        self._logger.info("tbc done")
+
+        self._contains_estry = self._tcf.check_key("estry control file")
+
+        if self._contains_estry:
+            self._ecf = TuflowParser(self._tcf.get_path("estry control file"))
+            self._logger.info("ecf done")
+        else:
+            self._logger.info("ecf not detected")
+
+    def _init_fm_files(self, name: str):
+
+        self._logger.info("initialising Flood Modeller files...")
+
+        self._processed_inputs_folder = Path.joinpath(self._root, "gis")
+        self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
+
+        self._xml = XML2D()
+        self._xml_filepath = Path.joinpath(self._root, f"{name}.xml")
+        self._xml.save(self._xml_filepath)
+        self._logger.info("xml done")
+
+        if self._contains_estry:
+            self._ief = IEF()
+            self._ief_filepath = Path.joinpath(self._root, f"{name}.ief")
+            self._ief.save(self._ief_filepath)
+            self._logger.info("ief done")
+
     def convert_model(self) -> None:
 
-        # component converter
         for cc_class_display_name, cc_factory in self._cc_dict.items():
 
             self._logger.info(f"converting {cc_class_display_name}...")
@@ -81,96 +109,20 @@ class ModelConverter:
                 self._logger.exception("failure")
                 self.rollback_fm_file()
 
-        # model converter (recursive)
-        for mc_class_display_name, mc_factory in self._mc_dict.items():
-
-            self._logger.info(f"converting {mc_class_display_name}...")
-
-            try:
-                mc_object = mc_factory()
-                mc_object.convert_model()
-                self._logger.info(f"success converting {mc_class_display_name}")
-            except:
-                self._logger.exception(f"failure converting {mc_class_display_name}")
-
     def save_fm_file(self) -> None:
-        self._fm_file.update()
+        self._xml.update()
+        if self._contains_estry:
+            self._ief.update()
 
     def rollback_fm_file(self) -> None:
-        self._fm_file = self._fm_file_class(self._fm_file_path)
-
-
-class TuflowModelConverter1D(ModelConverter):
-    def __init__(
-        self,
-        ecf_path: Union[str, Path],
-        ief_path: Union[str, Path],
-        inputs_name: str,
-        log_path: Union[str, Path] = None,
-        logger: logging.Logger = None,
-    ) -> None:
-
-        super().__init__(IEF, ief_path, inputs_name, log_path, logger)
-
-        self._logger.info("reading files...")
-
-        self._ecf = TuflowParser(ecf_path)
-        self._logger.info("ecf done")
-
-        self._cc_dict = {"scheme": self._create_scheme_cc}
-        self._mc_dict = {}
-
-    def _create_scheme_cc(self):
-
-        return SchemeConverter1D(
-            ief=self._fm_file,
-            folder=self._processed_inputs_folder,
-            time_step=self._ecf.get_value("timestep", float),
-        )
-
-
-class TuflowModelConverter2D(ModelConverter):
-    def __init__(
-        self,
-        tcf_path: Union[str, Path],
-        xml_path: Union[str, Path],
-        inputs_name: str,
-        log_path: Union[str, Path] = None,
-        logger: logging.Logger = None,
-        ief_path: Union[str, Path] = None,
-    ) -> None:
-
-        super().__init__(XML2D, xml_path, inputs_name, log_path, logger)
-
-        self._ief_path = ief_path
-
-        self._logger.info("reading files...")
-
-        self._tcf = TuflowParser(tcf_path)
-        self._logger.info("tcf done")
-
-        self._tgc = TuflowParser(self._tcf.get_path("geometry control file"))
-        self._logger.info("tgc done")
-
-        self._tbc = TuflowParser(self._tcf.get_path("bc control file"))
-        self._logger.info("tbc done")
-
-        self._cc_dict = {
-            "computational area": self._create_computational_area_cc,
-            "topography": self._create_topography_cc,
-            "roughness": self._create_roughness_cc,
-            "scheme": self._create_scheme_cc,
-            "boundary": self._create_boundary_cc,
-        }
-
-        self._mc_dict = {
-            "estry": self._create_estry_mc,
-        }
+        self._xml = XML2D(self._xml_filepath)
+        if self._contains_estry:
+            self._ief = IEF(self._ief_filepath)
 
     def _create_computational_area_cc(self):
 
         return LocLineConverter2D(
-            xml=self._fm_file,
+            xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             dx=self._tgc.get_value("cell size", float),
@@ -182,7 +134,7 @@ class TuflowModelConverter2D(ModelConverter):
     def _create_topography_cc(self):
 
         return TopographyConverter2D(
-            xml=self._fm_file,
+            xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             rasters=self._tgc.get_all_paths("read grid zpts"),
@@ -192,7 +144,7 @@ class TuflowModelConverter2D(ModelConverter):
     def _create_roughness_cc(self):
 
         return RoughnessConverter2D(
-            xml=self._fm_file,
+            xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             law="manning",
@@ -204,7 +156,7 @@ class TuflowModelConverter2D(ModelConverter):
     def _create_scheme_cc(self):
 
         return SchemeConverter2D(
-            xml=self._fm_file,
+            xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             time_step=self._tcf.get_value("timestep", float),
@@ -217,17 +169,16 @@ class TuflowModelConverter2D(ModelConverter):
     def _create_boundary_cc(self):
 
         return BoundaryConverter2D(
-            xml=self._fm_file,
+            xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name="Domain 1",
             vectors=self._tbc.get_all_geodataframes("read gis bc"),
         )
 
-    def _create_estry_mc(self):
+    def _create_estry_cc(self):
 
-        return TuflowModelConverter1D(
-            ecf_path=self._tcf.get_path("estry control file"),
-            ief_path=self._ief_path,
-            inputs_name=self._inputs_name,
-            logger=self._logger,
+        return SchemeConverter1D(
+            ief=self._ief,
+            folder=self._processed_inputs_folder,
+            time_step=self._ecf.get_value("timestep", float),
         )
