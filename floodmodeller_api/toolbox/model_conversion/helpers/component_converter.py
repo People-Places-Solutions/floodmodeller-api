@@ -20,7 +20,11 @@ def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
 
 
 def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
-    return gdf[gdf[column] == value].drop(columns=column)
+    is_selected = (gdf[column] == value)
+    is_selected = is_selected[is_selected].index
+    if len(is_selected) == 1:
+        is_selected = [is_selected[0]]
+    return gdf.iloc[is_selected].drop(columns=column)
 
 
 class ComponentConverter:
@@ -80,22 +84,18 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         self._nrows = int(lx_ly[0] / self._dx)
         self._ncols = int(lx_ly[1] / self._dx)
 
+        self._active_area_path = None
+        self._deactive_area_path = None
+
         all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
 
-        active_area = filter(all_areas_concat, "code", 1)
-        if len(active_area.index) > 0:
-            self._active_area_path = Path.joinpath(folder, "active_area.shp")
-            active_area.to_file(self._active_area_path)
-        else:
-            self._active_area_path = None
-
-        deactive_area = filter(all_areas_concat, "code", 0)
-        if len(deactive_area.index) > 0:
-            self._deactive_area_path = Path.joinpath(folder, "deactive_area.shp")
-            deactive_area.to_file(self._deactive_area_path)
-        else:
-            self._deactive_area_path = None
-
+        for name, code in {"active": 1, "deactive": 0}.items():
+            area = filter(all_areas_concat, "code", code)
+            area_exists = len(area.index) > 0
+            if area_exists:
+                path = Path.joinpath(folder, f"{name}_area.shp")
+                setattr(self, f"_{name}_area_path", path)
+                area.to_file(path)
 
     @staticmethod
     def standardise_areas(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -104,22 +104,21 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         return new_file
 
     def edit_fm_file(self) -> None:
+
         comp_area_dict = {
             "xll": self._xll,
             "yll": self._yll,
             "dx": self._dx,
             "nrows": self._nrows,
             "ncols": self._ncols,
-            "active_area": self._active_area_path,
-            "deactive_area": self._deactive_area_path,
             "rotation": self._rotation,
         }
 
-        if not self._active_area_path:
-            comp_area_dict.pop("active_area")
+        if self._active_area_path:
+            comp_area_dict["active_area"] = self._active_area_path
 
-        if not self._deactive_area_path:
-            comp_area_dict.pop("deactive_area")
+        if self._deactive_area_path:
+            comp_area_dict["deactive_area"] = self._deactive_area_path
 
         self._xml.domains[self._domain_name]["computational_area"] = comp_area_dict
 
