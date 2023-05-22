@@ -109,7 +109,7 @@ class TuflowModelConverter2D:
 
             try:
                 cc_object = cc_factory()
-                cc_object.edit_fm_file()
+                cc_object.edit_xml()
                 self._xml.update()
                 self._logger.info("success")
             except:
@@ -123,7 +123,7 @@ class TuflowModelConverter2D:
 
             try:
                 cc_object = cc_factory()
-                cc_object.edit_fm_file()
+                cc_object.edit_ief()
                 self._ief.update()
                 self._logger.info("success")
             except:

@@ -3,7 +3,8 @@ from toolbox.model_conversion.helpers.component_converter import (
     concat,
     rename_and_select,
     filter,
-    ComponentConverter,
+    ComponentConverter1D,
+    ComponentConverter2D,
     ComputationalAreaConverter2D,
     LocLineConverter2D,
     TopographyConverter2D,
@@ -100,9 +101,14 @@ def test_filter(polygon1, polygon2):
 
 
 def test_abc():
-    abc = ComponentConverter("test")
+   
+    abc = ComponentConverter1D("test", "test")
     with pytest.raises(NotImplementedError):
-        abc.edit_fm_file()
+        abc.edit_ief()
+
+    abc = ComponentConverter2D("test", "test", "test")
+    with pytest.raises(NotImplementedError):
+        abc.edit_xml()
 
 def _test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
     # TODO: fix this now that active and deactive areas are optional
@@ -124,7 +130,7 @@ def _test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
     assert gpd.read_file(active_area_path).equals(gpd.GeoDataFrame({"geometry": [point1]}))
     assert gpd.read_file(deactive_area_path).equals(gpd.GeoDataFrame({"geometry": [point2]}))
 
-    comp_area.edit_fm_file()
+    comp_area.edit_xml()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 1,
         "yll": 0,
@@ -157,7 +163,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
         loc_line=LineString([start, end]),
     )
 
-    loc_line.edit_fm_file()
+    loc_line.edit_xml()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 1,
         "yll": 0,
@@ -258,7 +264,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert (combine_layers.call_args_list[0][0][0][1]).equals(gdf2)
     assert combine_layers.mock_calls[1][1][0] == vector_path
 
-    topography_converter.edit_fm_file()
+    topography_converter.edit_xml()
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
@@ -304,7 +310,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2):
     assert (material_to_roughness.call_args_list[0][0][1]).equals(standardised_mapping)
     assert material_to_roughness.mock_calls[1][1][0] == roughness_path
 
-    roughness_converter.edit_fm_file()
+    roughness_converter.edit_xml()
     assert xml.domains["Domain 1"]["roughness"] == [
         {
             "type": "global",
@@ -340,7 +346,7 @@ def test_scheme_converter(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_pro
         scheme=in_scheme,
         hardware=in_hardware,
     )
-    scheme_converter.edit_fm_file()
+    scheme_converter.edit_xml()
 
     assert xml.domains["Domain 1"]["time"] == {
         "start_offset": 3,
