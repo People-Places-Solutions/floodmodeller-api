@@ -2,9 +2,9 @@ from floodmodeller_api.tool import FMTool, Parameter
 from .helpers.model_converter import TuflowModelConverter2D
 
 
-class Tuflow2DConversionTool(FMTool):
-    name = "TUFLOW 2D Conversion Tool"
-    description = "Convert 2D models"
+class TuflowConversionTool(FMTool):
+    name = "TUFLOW Conversion Tool"
+    description = "Convert models from TUFLOW to Flood Modeller"
     parameters = [
         Parameter(
             name="tcf_path",

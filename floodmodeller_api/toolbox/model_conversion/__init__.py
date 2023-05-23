@@ -1,1 +1,1 @@
-from .tuflow_2d import Tuflow2DConversionTool
+from .tuflow import TuflowConversionTool
