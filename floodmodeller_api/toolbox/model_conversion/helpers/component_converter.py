@@ -65,8 +65,6 @@ class ComponentConverter2D(ComponentConverter):
 
 class ComputationalAreaConverter2D(ComponentConverter2D):
 
-    _rotation: int
-
     def __init__(
         self,
         xml: XML2D,
@@ -192,7 +190,7 @@ class TopographyConverter2D(ComponentConverter2D):
         points_present = len(points.index) > 0
         polygons_present = len(polygons.index) > 0
 
-        if lines_present and points_present:
+        if lines_present and points_present and not polygons_present:
             return cls.convert_lines_and_points(lines, points)
 
         elif polygons_present and not (points_present or lines_present):

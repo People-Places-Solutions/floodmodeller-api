@@ -17,6 +17,7 @@ def tuflow_parser(tmpdir) -> Path:
     var3 == 5 | 7
     var4 == 4.123 !comment
     !var5 == test
+    var6
     var2 == file5 | file6
     """
 
@@ -68,6 +69,15 @@ def test_dict(tuflow_parser):
         "var3": ["5 | 7"],
         "var4": ["4.123"],
     }
+
+
+def test_check_key(tuflow_parser):
+    assert tuflow_parser.check_key("var1") == True
+    assert tuflow_parser.check_key("var2") == True
+    assert tuflow_parser.check_key("var3") == True
+    assert tuflow_parser.check_key("var4") == True
+    assert tuflow_parser.check_key("var5") == False
+    assert tuflow_parser.check_key("var6") == False
 
 
 def test_value(tuflow_parser):
