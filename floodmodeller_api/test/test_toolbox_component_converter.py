@@ -291,7 +291,7 @@ def test_convert_unsupported_shape(tuflow_p, tuflow_l, tuflow_r):
 
 
 @pytest.mark.parametrize("tuple_input", [True, False])
-def test_topography_converter_tuple(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
+def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
 
     inputs = (gdf1, gdf2) if tuple_input else gdf1
     outputs = (gdf1, gdf2) if tuple_input else (gdf1,)
@@ -310,27 +310,6 @@ def test_topography_converter_tuple(mocker, tmpdir, xml, gdf1, gdf2, tuple_input
     assert combine_layers.call_count == 1
     for i, gdf in enumerate(outputs):
         assert (combine_layers.call_args_list[0][0][0][i]).equals(gdf)
-    assert combine_layers.mock_calls[1][1][0] == vector_path
-
-    topography_converter.edit_xml()
-    assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
-
-
-def test_topography_converter_single(mocker, tmpdir, xml, gdf1):
-
-    raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
-    vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
-
-    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverter2D.combine_layers")
-    topography_converter = TopographyConverter2D(
-        xml=xml,
-        folder=Path(tmpdir),
-        domain_name="Domain 1",
-        rasters=[raster_path],
-        vectors=[gdf1],
-    )
-    assert combine_layers.call_count == 1
-    assert (combine_layers.call_args_list[0][0][0][0]).equals(gdf1)
     assert combine_layers.mock_calls[1][1][0] == vector_path
 
     topography_converter.edit_xml()
