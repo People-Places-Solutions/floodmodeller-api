@@ -31,5 +31,5 @@ setup(
     long_description=readme_txt,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    install_requires=["pandas", "lxml", "tqdm", "pytest"],
+    install_requires=["pandas==2.0.2", "lxml==4.9.2", "tqdm==4.65.0", "pytest==7.3.1"],
 )
