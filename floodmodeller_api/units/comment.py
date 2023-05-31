@@ -1,17 +1,22 @@
+"""
+Flood Modeller Python API
+Copyright (C) 2023 Jacobs U.K. Limited
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
+"""
+
 import pandas as pd
 
 from ._base import Unit
-from .helpers import (
-    join_10_char,
-    join_12_char_ljust,
-    join_n_char_ljust,
-    split_10_char,
-    split_12_char,
-    split_n_char,
-    _to_float,
-    _to_int,
-)
-from floodmodeller_api.validation import _validate_unit
 
 
 
@@ -28,11 +33,11 @@ class COMMENT(Unit):
 
     def _read(self, block):
         """Function to read a given COMMENT block and store data as class attributes"""
-        self.text = block[0].strip()
+        self.text = block[2:] # join into text 
 
 
     def _write(self):
-        """Function to write a valid INTERPOLATE block"""
+        """Function to write a valid comments block"""
         block = [self._unit]
     
         # Number of comment lines
