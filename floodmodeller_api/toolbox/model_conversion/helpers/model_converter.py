@@ -86,7 +86,7 @@ class TuflowModelConverter2D:
             self._logger.info("ief done")
 
     def _init_cc_dicts(self) -> None:
-        
+
         self._cc_2d_dict = {
             "computational area": self._create_computational_area_cc_2d,
             "topography": self._create_topography_cc_2d,
@@ -94,7 +94,7 @@ class TuflowModelConverter2D:
             "scheme": self._create_scheme_cc_2d,
             "boundary": self._create_boundary_cc_2d,
         }
-        
+
         if self._contains_estry:
             self._cc_1d_dict = {"estry": self._create_scheme_cc_1d}
         else:
