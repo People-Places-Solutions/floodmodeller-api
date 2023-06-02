@@ -739,14 +739,16 @@ class DAT(FMFile):
                     "add_before or add_after argument must be a Flood Modeller Unit type"
                 )
 
-            _validate_unit(unit)
-            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"] #get rid
-            unit_group = getattr(self, unit_group_name) 
             unit_class = unit._unit 
-            if unit.name in unit_group:
-                raise NameError(
-                    "Name already appears in unit group. Cannot have two units with same name in same group"
-                ) #nothing 
+            if unit_class != "COMMENT":
+                _validate_unit(unit)
+                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"] #get rid
+                unit_group = getattr(self, unit_group_name) 
+                #unit_class = unit._unit 
+                if unit.name in unit_group:
+                    raise NameError(
+                        "Name already appears in unit group. Cannot have two units with same name in same group"
+                    ) 
 
             # positional argument
             if add_at is not None:
@@ -769,19 +771,23 @@ class DAT(FMFile):
             
             unit_data = unit._write()
             self._all_units.insert(insert_index, unit)
-            unit_group[unit.name] = unit
+            if unit._unit != "COMMENT":
+                unit_group[unit.name] = unit
             self._dat_struct.insert(
                 insert_index + 1, {"Type": unit_class, "new_insert": unit_data}
             ) #add to dat struct without unit.name
 
-            # update the iic's tables
-            iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            self.initial_conditions.data.loc[
-                len(self.initial_conditions.data)
-            ] = iic_data #flaged
+
+            if unit._unit != "COMMENT":
+                # update the iic's tables
+                iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                self.initial_conditions.data.loc[
+                    len(self.initial_conditions.data)
+                ] = iic_data #flaged
 
             # update all
-            self.general_parameters["Node Count"] += 1 #flag no update for comments
+            if unit._unit != "COMMENT":
+                self.general_parameters["Node Count"] += 1 #flag no update for comments
             self._update_raw_data()
             self._update_dat_struct()
 

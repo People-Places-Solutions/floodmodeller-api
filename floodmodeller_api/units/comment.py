@@ -41,21 +41,21 @@ class COMMENT(Unit):
         block = [self._unit]
     
         # Number of comment lines
-        num_lines = len(self.comment.strip().split("\n"))
+        num_lines = len(self.text)
         num_lines_line = "{:>10}".format(str(num_lines))
         block.append(num_lines_line)
     
         # Comment text lines
-        comment_text = self.comment.strip().split("\n")
-        block.extend(comment_text)
+        text = self.text
+        block.extend(text)
     
         return block
 
-    def _create_from_blank(self, text = ''):
-
-        for param, val in {
-            "comment text": text,
-        }.items():
-            setattr(self, param, val)
+    #def _create_from_blank(self, text = []):
+        #for param, val in {"text": text,}.items():setattr(self, param, val)
         
-        
+    def _create_from_blank(self, text=None):
+        '''Function to create an empty comment unit. '''
+        if text is None:
+            text = []
+        setattr(self, "text", text)
