@@ -25,9 +25,9 @@ tuflow_to_floodmodeller --tcf_path "<tcf file path>" --folder "<where to save ne
 
 Within python code:
 ```
-from floodmodeller_api.toolbox import TuflowConversionTool
+from floodmodeller_api.toolbox import TuflowToFloodModeller
 
-TuflowConversionTool.run(
+TuflowToFloodModeller.run(
     tcf_path="path/to/tcf.tcf",
     folder="path/to/model",
     name="model_name",

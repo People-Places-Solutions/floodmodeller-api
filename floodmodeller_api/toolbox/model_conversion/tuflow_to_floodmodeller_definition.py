@@ -1,5 +1,5 @@
 from floodmodeller_api.tool import FMTool, Parameter
-from .helpers.model_converter import TuflowModelConverter2D
+from .tuflow_to_floodmodeller.model_converter import TuflowModelConverter2D
 
 
 class TuflowToFloodModeller(FMTool):
