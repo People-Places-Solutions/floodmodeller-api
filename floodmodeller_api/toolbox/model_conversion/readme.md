@@ -1,6 +1,6 @@
 # Model Conversion
 
-## `tuflow.py`
+## `tuflow_to_floodmodeller.py`
 ### Overview
 The tool defined in this file converts models from TUFLOW to Flood Modeller.
 It is intended to be a first step in the conversion process.
@@ -17,6 +17,13 @@ If a component fails to convert, the tool will not crash.
 Instead, it will skip that component and print the error in the log.
 
 ### Usage
+
+From command line (within python environment where floodmodeller_api is installed):
+```
+tuflow_to_floodmodeller --tcf_path "<tcf file path>" --folder "<where to save new model>" --name <name for new model>"
+```
+
+Within python code:
 ```
 from floodmodeller_api.toolbox import TuflowConversionTool
 
@@ -25,4 +32,9 @@ TuflowConversionTool.run(
     folder="path/to/model",
     name="model_name",
 )
+```
+
+As simple gui (within python environment where floodmodeller_api is installed):
+```
+tuflow_to_floodmodeller gui
 ```

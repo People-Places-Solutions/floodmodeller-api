@@ -1,6 +1,6 @@
 import argparse
+import sys
 from dataclasses import dataclass
-import argparse
 import tkinter as tk
 
 
@@ -262,13 +262,25 @@ class FMTool:
 
         This method parses command line arguments (as defined in self.parameters) and passes them to run to execute the tool
         """
+        run_gui = False
+        try:
+            if sys.argv[1] == "gui":
+                # gui flag added so running as gui
+                run_gui = True
+        except IndexError:
+            pass
+        
+        if run_gui:
+            self.run_gui()
+            return
+        
         # Create an argument parse and add each argument defined in the parameters
         parser = argparse.ArgumentParser(description=self.description)
-        # Add each param as an argument
+       
+        # Parse the aruments from the commandline
         for input_param in self.parameters:
             parser.add_argument(f"--{input_param.name}", required=input_param.required, help=input_param.help_text)
         
-        # Parse the aruments from the commandline
         args = parser.parse_args()
         # And then construct a dictionary of them that can be passed to the run function as keyword arguments
         input_kwargs = {}

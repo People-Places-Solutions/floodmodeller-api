@@ -2,8 +2,8 @@ from floodmodeller_api.tool import FMTool, Parameter
 from .helpers.model_converter import TuflowModelConverter2D
 
 
-class TuflowConversionTool(FMTool):
-    name = "TUFLOW Conversion Tool"
+class TuflowToFloodModeller(FMTool):
+    name = "TUFLOW to Flood Modeller Conversion Tool"
     description = "Convert models from TUFLOW to Flood Modeller"
     parameters = [
         Parameter(
@@ -29,3 +29,4 @@ class TuflowConversionTool(FMTool):
         ),
     ]
     tool_function = lambda **kwargs: TuflowModelConverter2D(**kwargs).convert_model()
+

@@ -38,7 +38,7 @@ class TuflowModelConverter2D:
             logging.root.removeHandler(handler)
 
         logging.basicConfig(
-            filename=Path.joinpath(self._root, f"{self._name}.log"),
+            filename=Path.joinpath(self._root, f"{self._name}_conversion.log"),
             filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",

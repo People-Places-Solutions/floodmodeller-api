@@ -1,4 +1,5 @@
 from setuptools import setup
+from pathlib import Path
 
 with open("README.md") as f:
     readme_txt = f.read()
@@ -19,7 +20,7 @@ setup(
         "floodmodeller_api.test",
         "floodmodeller_api.test.test_data"
     ],
-    scripts=[],
+    scripts=[str(path) for path in Path("scripts").glob("*")],
     project_urls={
         "API Documentation": "https://api.floodmodeller.com/api/",
         "Flood Modeller Homepage": "https://www.floodmodeller.com/",
