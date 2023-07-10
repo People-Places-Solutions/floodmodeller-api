@@ -1,1 +1,1 @@
-from .tuflow_to_floodmodeller import TuflowToFloodModeller
+from .tuflow_to_floodmodeller_definition import TuflowToFloodModeller
