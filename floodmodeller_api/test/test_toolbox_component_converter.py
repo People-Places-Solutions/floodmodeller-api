@@ -1,5 +1,5 @@
 from floodmodeller_api import IEF, XML2D
-from toolbox.model_conversion.helpers.component_converter import (
+from toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
     concat,
     rename_and_select,
     filter,
@@ -21,7 +21,7 @@ import geopandas as gpd
 import numpy as np
 import pytest
 
-path_to_cc = "toolbox.model_conversion.helpers.component_converter"
+path_to_cc = "toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
 
 
 @pytest.fixture

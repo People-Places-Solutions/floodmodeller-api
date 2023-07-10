@@ -1,4 +1,4 @@
-from toolbox.model_conversion.helpers.file_parser import TuflowParser
+from toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import TuflowParser
 
 from pathlib import Path
 from shapely.geometry import Point
