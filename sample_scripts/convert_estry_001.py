@@ -4,12 +4,10 @@ import sys
 import geopandas as gpd 
 import pandas as pd
 from shapely.geometry import Point
-try:
-    from floodmodeller_api import DAT 
-    from floodmodeller_api.units import RIVER
-except ImportError:
-    print('Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment')
-    sys.exit()
+from floodmodeller_api import DAT 
+from floodmodeller_api.units.sections import RIVER
+from floodmodeller_api.units.comment import COMMENT 
+
 
 
 #   File paths for model, xs and nwk, read in 
@@ -138,7 +136,7 @@ def get_coordinates(point):
     return point.x, point.y
 
 geoseries = gpd.GeoSeries(xs_attributes['location'])
-easting, northing = geoseries.apply(get_coordinates).str
+easting, northing = geoseries.apply(get_coordinates).str #type: ignore 
 xs_attributes['easting'] = easting
 xs_attributes['northing'] = northing
 
@@ -179,6 +177,7 @@ cross_sections['Name'] = ['RIV' + str(i).zfill(3) for i in range(1, len(cross_se
 
 
 dat = DAT()
+comment = COMMENT(text = "End of Reach")
 headings = ['X', 'Y', 'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting',
        'Northing', 'Deactivation', 'SP. Marker']
 #iterate through adding xs 
@@ -195,21 +194,25 @@ for index, row in cross_sections.iterrows():
         unit_data['Marker'].fillna(False, inplace = True)
         unit_data['SP. Marker'].fillna(0, inplace=True)
     
-        unit = RIVER(name = row['name'], data = unit_data, density= 1000.0, dist_to_next=row['dist_to_next'], slope = 0.0001) 
+        unit = RIVER(name = row['Name'], 
+                     data = unit_data, 
+                     density= 1000.0, 
+                     dist_to_next=row['dist_to_next'], 
+                     slope = 0.0001) 
         dat.insert_unit(unit, add_at=-1)
-        if row['Flag'] == "end" or "join_end":
-            pass
-            
-#add in comment after flag = end 
+        if row['Flag']=='end' or row['Flag']=='join_end':
+            dat.insert_unit(comment, add_at= -1)
 
+
+dat.save(r"new2.dat")
 
 
 #   Write out .gxy 
 file_contents = ""
 for index, row in cross_sections.iterrows():
-    file_contents += row['Name']
+    file_contents += "[RIVER_SECTION_{}]\n".format(row['Name'])
     file_contents += "x={:.2f}\n".format(row['easting'])
     file_contents += "y={:.2f}\n\n".format(row['northing'])
 
-with open('test.gxy', 'w') as file:
+with open('new2.gxy', 'w') as file:
     file.write(file_contents)

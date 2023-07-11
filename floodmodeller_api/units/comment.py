@@ -15,6 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 import pandas as pd
+import math 
 
 from ._base import Unit
 
@@ -41,13 +42,13 @@ class COMMENT(Unit):
         block = [self._unit]
     
         # Number of comment lines
-        num_lines = len(self.text)
+        num_lines = math.ceil(len(self.text)/80)
         num_lines_line = "{:>10}".format(str(num_lines))
         block.append(num_lines_line)
     
         # Comment text lines
         text = self.text
-        block.extend(text)
+        block.append(text)
     
         return block
 
@@ -58,4 +59,6 @@ class COMMENT(Unit):
         '''Function to create an empty comment unit. '''
         if text is None:
             text = []
-        setattr(self, "text", text)
+        setattr(self, 
+                "text", 
+                text)
