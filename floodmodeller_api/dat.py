@@ -356,20 +356,20 @@ class DAT(FMFile):
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
-        line = (self._raw_data[2]) + ' '* (70 - len(self._raw_data[2]))
+        line = f"{self._raw_data[2]:<70}"
         params = units.helpers.split_10_char(line)
-        if params[6] == '':
-            # Adds the measurements unit if not specified
-            params[6]="DEFAULT"
-        line = (self._raw_data[3]) + ' '* (70 - len(self._raw_data[3]))
+        if params[6] == "":
+            # Adds the measurements unit as DEFAULT if not specified
+            params[6] = "DEFAULT"
+        line = f"{self._raw_data[3]:<70}"
         params.extend(units.helpers.split_10_char(line))
 
-        self.general_parameters["Node Count"] = _to_int(params[0],0)
+        self.general_parameters["Node Count"] = _to_int(params[0], 0)
         self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
         self.general_parameters["Upper Froude"] = _to_float(params[2], 0.9)
         self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
         self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
-        self._label_len = _to_int(params[5],12)  # label length
+        self._label_len = _to_int(params[5], 12)  # label length
         self.general_parameters["Units"] = params[6]  # "DEFAULT" set during read above.
         self.general_parameters["Water Temperature"] = _to_float(params[7], 10.0)
         self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.01)
