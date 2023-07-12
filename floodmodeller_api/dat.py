@@ -482,6 +482,9 @@ class DAT(FMFile):
                     if block["Type"] == "INITIAL CONDITIONS":
                         new_unit_data = self.initial_conditions._write()
 
+                    elif block["Type"] == "VARIABLES":
+                        new_unit_data = self.variables._write()
+
                     else:
                         if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                             unit_name = unit_data[2][: self._label_len].strip()
