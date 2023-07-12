@@ -44,10 +44,12 @@ is also a great place to explore different ways that people have used the API.
 
 --------------------
 
-### A simple example of running a model and fetching the results...
+### Youtube mini tutorials
+These videos give you a quick overview of some of the basics of using the Flood Modeller API
 
-![gif demo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/ief_zzn_demo.gif)
+**Running a simulation**
 
+<a href="https://www.youtube.com/watch?v=WfCNkC44shI" target="_blank"><img src="https://github.com/People-Places-Solutions/floodmodeller-api/assets/56606086/8a714e5b-9364-4073-9af5-679dab0a8249" width="500"></a>
 
 
 
