@@ -20,7 +20,7 @@ from typing import Optional, Union
 from . import units  # Import for using as package
 from .units._base import Unit
 from ._base import FMFile
-from .units.helpers import _to_float
+from .units.helpers import _to_float, _to_int
 from .validation.validation import _validate_unit
 
 
@@ -356,26 +356,28 @@ class DAT(FMFile):
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
-        params = units.helpers.split_10_char(self._raw_data[2])
-        if len(params) == 6:
-            # Adds the measurements unit if not specified
-            params.append("DEFAULT")
-        params.extend(units.helpers.split_10_char(self._raw_data[3]))
+        line = f"{self._raw_data[2]:<70}"
+        params = units.helpers.split_10_char(line)
+        if params[6] == "":
+            # Adds the measurements unit as DEFAULT if not specified
+            params[6] = "DEFAULT"
+        line = f"{self._raw_data[3]:<70}"
+        params.extend(units.helpers.split_10_char(line))
 
-        self.general_parameters["Node Count"] = int(params[0])
+        self.general_parameters["Node Count"] = _to_int(params[0], 0)
         self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
         self.general_parameters["Upper Froude"] = _to_float(params[2], 0.9)
         self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
         self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
-        self._label_len = int(params[5])  # label length
+        self._label_len = _to_int(params[5], 12)  # label length
         self.general_parameters["Units"] = params[6]  # "DEFAULT" set during read above.
-        self.general_parameters["Water Temperature"] = _to_float(params[7], 10)
-        self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.1)
-        self.general_parameters["Convergence Head"] = _to_float(params[9], 0.1)
+        self.general_parameters["Water Temperature"] = _to_float(params[7], 10.0)
+        self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.01)
+        self.general_parameters["Convergence Head"] = _to_float(params[9], 0.01)
         self.general_parameters["Mathematical Damping"] = _to_float(params[10], 0.7)
         self.general_parameters["Pivotal Choice"] = _to_float(params[11], 0.1)
         self.general_parameters["Under-relaxation"] = _to_float(params[12], 0.7)
-        self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0)
+        self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0.0)
         self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
     def _update_general_parameters(self):
