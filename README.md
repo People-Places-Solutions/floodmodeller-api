@@ -49,7 +49,7 @@ These videos give you a quick overview of some of the basics of using the Flood 
 
 **Running a simulation**
 
-<a href="https://www.youtube.com/watch?v=WfCNkC44shI" target="_blank"><img src="https://github.com/People-Places-Solutions/floodmodeller-api/assets/56606086/8a714e5b-9364-4073-9af5-679dab0a8249" width="500"></a>
+<a href="https://www.youtube.com/watch?v=WfCNkC44shI" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/56606086/253010465-8a714e5b-9364-4073-9af5-679dab0a8249.png" width="500"></a>
 
 
 
