@@ -27,7 +27,7 @@ with the same name. For example to set the model title, simply type:
    path) and the original source IEF remains unchanged
 
 Class properties can be updated in this fashion for existing IEF settings as well as to 
-add new settings. To remove a particular setting from the IEF simply delete the propery 
+add new settings. To remove a particular setting from the IEF simply delete the property 
 object, for example to remove 'LINKFLOW' simple type: 
 
 .. code:: python
