@@ -74,20 +74,3 @@ class Variables:
         var_block.append("END VARIABLES")
 
         return var_block
-
-
-class Rules:
-    """Class to hold RULES"""
-
-    def __init__(self, var_block):
-        self._read(var_block)
-
-    def __repr__(self):
-        return f"<floodmodeller_api Variables Class: Rules()>"
-
-    def _read(self, rul_block):
-        self.data = rul_block  # like this until we know how rules block works
-
-    def _write(self):
-        rul_block = self.data
-        return rul_block
