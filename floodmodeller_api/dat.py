@@ -485,6 +485,9 @@ class DAT(FMFile):
                     elif block["Type"] == "VARIABLES":
                         new_unit_data = self.variables._write()
 
+                    elif block["Type"] == "RULES":
+                        new_unit_data = self.rules._write()
+
                     else:
                         if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                             unit_name = unit_data[2][: self._label_len].strip()
@@ -534,6 +537,10 @@ class DAT(FMFile):
 
                 if block["Type"] == "VARIABLES":
                     self.variables = units.Variables(unit_data)
+                    continue
+
+                if block["Type"] == "RULES":
+                    self.rules = units.Rules(unit_data)
                     continue
 
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
@@ -592,6 +599,7 @@ class DAT(FMFile):
         in_general = True
         in_comment = False
         in_variable = False
+        in_rules = False
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
@@ -648,7 +656,20 @@ class DAT(FMFile):
                     dat_struct.append(variable_block)
                     in_variable = False
                     continue
-                elif unit_block['Type'] == 'VARIABLES':
+                elif unit_block["Type"] == "VARIABLES":
+                    continue
+
+            if line == "RULES":
+                in_rules = True
+                rules_block = {"start": idx, "Type": "GENERAL"}
+
+            if in_rules:
+                if line == "END RULES":  # temporary until rules block is understood (normally there is no: END RULES)
+                    rules_block["end"] = idx
+                    dat_struct.append(rules_block)
+                    in_rules = False
+                    continue
+                elif unit_block["Type"] == "RULES":
                     continue
 
             if not gisinfo_block:
