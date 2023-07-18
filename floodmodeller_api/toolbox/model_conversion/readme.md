@@ -1,6 +1,6 @@
 # Model Conversion
 
-## `tuflow_to_floodmodeller.py`
+## `tuflow_to_floodmodeller`
 ### Overview
 The tool defined in this file converts models from TUFLOW to Flood Modeller.
 It is intended to be a first step in the conversion process.
