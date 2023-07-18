@@ -1,7 +1,9 @@
 from floodmodeller_api import IEF, XML2D
 from .file_parser import TuflowParser
 from .component_converter import (
+    ComponentConverter,
     SchemeConverter1D,
+    ComputationalAreaConverter2D,
     LocLineConverter2D,
     TopographyConverter2D,
     RoughnessConverter2D,
@@ -10,11 +12,29 @@ from .component_converter import (
 )
 
 from pathlib import Path
-from typing import Union
+from typing import Union, Dict, Callable, Type
+from dataclasses import dataclass
 import logging
 
 
+@dataclass
+class FMFileConfig:
+    cc_dict: Dict[str, Callable[..., ComponentConverter]]
+    fm_file_class: Type[Union[XML2D, IEF]]
+    fm_file_object: Union[XML2D, IEF]
+    fm_filepath: Union[str, Path]
+
+    def rollback(self) -> None:
+        self.fm_file_object = self.fm_file_class(self.fm_filepath)
+
+    def update(self) -> None:
+        self.fm_file_object.update()
+
+
 class TuflowModelConverter2D:
+
+    DOMAIN_NAME = "Domain 1"
+
     def __init__(
         self,
         tcf_path: Union[str, Path],
@@ -102,44 +122,65 @@ class TuflowModelConverter2D:
 
     def convert_model(self) -> None:
 
-        # 2D
-        for cc_class_display_name, cc_factory in self._cc_2d_dict.items():
+        fm_file_configs = [
+            FMFileConfig(
+                cc_dict=self._cc_2d_dict,
+                fm_file_class=XML2D,
+                fm_file_object=self._xml,
+                fm_filepath=self._xml_filepath,
+            )
+        ]
 
-            self._logger.info(f"converting {cc_class_display_name}...")
+        if self._contains_estry:
+            fm_file_configs.append(
+                FMFileConfig(
+                    cc_dict=self._cc_1d_dict,
+                    fm_file_class=IEF,
+                    fm_file_object=self._ief,
+                    fm_filepath=self._ief_filepath,
+                )
+            )
 
-            try:
-                cc_object = cc_factory()
-                cc_object.edit_xml()
-                self._xml.update()
-                self._logger.info("success")
-            except:
-                self._logger.exception("failure")
-                self._xml = XML2D(self._xml_filepath)  # rollback
+        for fm_file_config in fm_file_configs:
 
-        # 1D estry
-        for cc_class_display_name, cc_factory in self._cc_1d_dict.items():
+            for cc_class_display_name, cc_factory in fm_file_config.cc_dict.items():
 
-            self._logger.info(f"converting {cc_class_display_name}...")
+                self._logger.info(f"converting {cc_class_display_name}...")
 
-            try:
-                cc_object = cc_factory()
-                cc_object.edit_ief()
-                self._ief.update()
-                self._logger.info("success")
-            except:
-                self._logger.exception("failure")
-                self._ief = IEF(self._ief_filepath)  # rollback
+                try:
+                    cc_object = cc_factory()
+                    cc_object.edit_fm_file()
+                    fm_file_config.update()
+                    self._logger.info("success")
 
-    def _create_computational_area_cc_2d(self) -> LocLineConverter2D:
+                except:
+                    self._logger.exception("failure")
+                    fm_file_config.rollback()
 
-        return LocLineConverter2D(
+    def _create_computational_area_cc_2d(self) -> ComputationalAreaConverter2D:
+
+        dx = self._tgc.get_value("cell size", float)
+        lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
+        all_areas = self._tgc.get_all_geodataframes("read gis code")
+
+        if self._tgc.check_key("read gis location"):
+            return LocLineConverter2D(
+                xml=self._xml,
+                folder=self._processed_inputs_folder,
+                domain_name=self.DOMAIN_NAME,
+                dx=dx,
+                lx_ly=lx_ly,
+                all_areas=all_areas,
+                loc_line=self._tgc.get_single_geometry("read gis location"),
+            )
+
+        return ComputationalAreaConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
-            domain_name="Domain 1",
-            dx=self._tgc.get_value("cell size", float),
-            lx_ly=self._tgc.get_tuple("grid size (x,y)", ",", int),
-            all_areas=self._tgc.get_all_geodataframes("read gis code"),
-            loc_line=self._tgc.get_single_geometry("read gis location"),
+            domain_name=self.DOMAIN_NAME,
+            dx=dx,
+            lx_ly=lx_ly,
+            all_areas=all_areas,
         )
 
     def _create_topography_cc_2d(self) -> TopographyConverter2D:
@@ -147,7 +188,7 @@ class TuflowModelConverter2D:
         return TopographyConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
-            domain_name="Domain 1",
+            domain_name=self.DOMAIN_NAME,
             rasters=self._tgc.get_all_paths("read grid zpts"),
             vectors=self._tgc.get_all_geodataframes("read gis z shape"),
         )
@@ -157,7 +198,7 @@ class TuflowModelConverter2D:
         return RoughnessConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
-            domain_name="Domain 1",
+            domain_name=self.DOMAIN_NAME,
             law="manning",
             global_material=self._tgc.get_value("set mat", int),
             file_material=self._tgc.get_all_geodataframes("read gis mat"),
@@ -169,7 +210,7 @@ class TuflowModelConverter2D:
         return SchemeConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
-            domain_name="Domain 1",
+            domain_name=self.DOMAIN_NAME,
             time_step=self._tcf.get_value("timestep", float),
             start_offset=self._tcf.get_value("start time", float),
             total=self._tcf.get_value("end time", float),
@@ -182,7 +223,7 @@ class TuflowModelConverter2D:
         return BoundaryConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
-            domain_name="Domain 1",
+            domain_name=self.DOMAIN_NAME,
             vectors=self._tbc.get_all_geodataframes("read gis bc"),
         )
 

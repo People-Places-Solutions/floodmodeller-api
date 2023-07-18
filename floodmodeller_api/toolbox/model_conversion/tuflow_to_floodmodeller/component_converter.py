@@ -29,14 +29,14 @@ class ComponentConverter:
     def __init__(self, folder: Path) -> None:
         self._folder = folder
 
+    def edit_fm_file(self) -> None:
+        raise NotImplementedError("Abstract method not overwritten")
+
 
 class ComponentConverter1D(ComponentConverter):
     def __init__(self, ief: IEF, folder: Path) -> None:
         super().__init__(folder)
         self._ief = ief
-
-    def edit_ief(self) -> None:
-        raise NotImplementedError("Abstract method not overwritten")
 
 
 class SchemeConverter1D(ComponentConverter1D):
@@ -49,7 +49,7 @@ class SchemeConverter1D(ComponentConverter1D):
         super().__init__(ief, folder)
         self._time_step = time_step
 
-    def edit_ief(self) -> None:
+    def edit_fm_file(self) -> None:
         self._ief.Timestep = self._time_step
 
 
@@ -59,12 +59,8 @@ class ComponentConverter2D(ComponentConverter):
         self._xml = xml
         self._domain_name = domain_name
 
-    def edit_xml(self) -> None:
-        raise NotImplementedError("Abstract method not overwritten")
-
 
 class ComputationalAreaConverter2D(ComponentConverter2D):
-
     def __init__(
         self,
         xml: XML2D,
@@ -106,7 +102,7 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         new_file.columns = ["code", "geometry"]
         return new_file
 
-    def edit_xml(self) -> None:
+    def edit_fm_file(self) -> None:
 
         comp_area_dict = {
             "xll": self._xll,
@@ -139,7 +135,7 @@ class LocLineConverter2D(ComputationalAreaConverter2D):
         all_areas: List[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
-        
+
         x1, y1 = loc_line.coords[0]
         x2, y2 = loc_line.coords[1]
 
@@ -172,7 +168,7 @@ class TopographyConverter2D(ComponentConverter2D):
                 value = (value,)
             self.combine_layers(value).to_file(vector_path)
 
-    def edit_xml(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["topography"] = (
             self._raster_paths + self._vector_paths
         )
@@ -308,7 +304,7 @@ class RoughnessConverter2D(ComponentConverter2D):
     ) -> gpd.GeoDataFrame:
         return pd.merge(material, mapping, on="material_id")[["value", "geometry"]]
 
-    def edit_xml(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["roughness"] = [
             {
                 "type": "global",
@@ -344,7 +340,7 @@ class SchemeConverter2D(ComponentConverter2D):
         self._scheme = "TVD" if use_tvd_gpu else "ADI"
         self._processor = "GPU" if use_tvd_gpu else "CPU"
 
-    def edit_xml(self) -> None:
+    def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["time"] = {
             "start_offset": self._start_offset,
             "total": self._total,
