@@ -198,9 +198,6 @@ class Unit:
                 f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
             ]
             block.extend(time_varrule_data)
-
-        else:
-            block.extend(self._raw_extra_lines)
         
         return block
 

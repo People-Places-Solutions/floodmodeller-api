@@ -755,6 +755,9 @@ class SLUICE(Unit):
 
             block = self._write_rules(block)
 
+        else:
+            block.extend(self._raw_extra_lines)
+
         return block
 
     def _get_gates(self, ngates, block, gate_row):
