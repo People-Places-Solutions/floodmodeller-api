@@ -21,6 +21,9 @@ import pandas as pd
 from .helpers import (
     split_10_char,
     _to_float,
+    _to_str,
+    join_n_char_ljust,
+    join_10_char,
 )
 
 
@@ -107,15 +110,12 @@ class Unit:
 
     # rules & varrules
 
-    def _read_logic(self, block):
-        logical_params = split_10_char(block[6])
-        self.max_movement_rate = logical_params[1]
-        self.max_setting = logical_params[2]
-        self.min_setting = logical_params[3]
-        self.gates = self._get_gates(self.ngates, block, gate_row=7)
+    def _read_rules(self, block):
         rule_params = split_10_char(block[self._last_gate_row + 1])
         self.nrules = int(rule_params[0])
         self.rule_sample_time = _to_float(rule_params[1])
+        self.timeunit = _to_str(rule_params[2], "SECONDS", check_float=False)
+        self.extendmethod = _to_str(rule_params[3], "EXTEND")
         self.rules = self._get_logical_rules(
             self.nrules, block, self._last_gate_row + 2
         )
@@ -133,8 +133,10 @@ class Unit:
         rule_data = rule_data["Operating Rules"]
         self.time_rule_data = rule_data
         # VARRULES (not always necessary)
+        self.has_varrules = False
         if self._last_time_row + 1 < len(block):
             if block[self._last_time_row + 1].strip() == "VARRULES":
+                self.has_varrules = True
                 varrule_params = split_10_char(block[self._last_time_row + 2])
                 self.nvarrules = int(varrule_params[0])
                 self.varrule_sample_time = _to_float(rule_params[1])
@@ -159,52 +161,48 @@ class Unit:
                 varrule_data = varrule_data["Operating Rules"]
                 self.time_varrule_data = varrule_data
 
-    def _get_gates(self, ngates, block, gate_row):
-        gates = []
+    def _write_rules(self, block):
+        # ADD RULES
+        block.append("RULES")
+        self.nrules = len(self.rules)
+        block.append(
+            f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+        )
+        for rule in self.rules:
+            block.append(rule["name"])
+            block.extend(rule["logic"].split("\n"))
 
-        if self.control_method == "TIME":
-            for gate in range(ngates):
-                nrows = int(split_10_char(block[gate_row + 1])[0])
-                data_list = []
-                for row in block[gate_row + 2 : gate_row + 2 + nrows]:
-                    row_split = split_10_char(f"{row:<20}")
-                    x = _to_float(row_split[0])  # time
-                    y = _to_float(row_split[1])  # opening
-                    data_list.append([x, y])
+        # ADD TIME RULE DATA SET
+        block.append("TIME RULE DATA SET")
+        block.append(join_10_char(len(self.time_rule_data)))
+        time_rule_data = [
+            f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
+        ]
+        block.extend(time_rule_data)
 
-                gate_data = pd.DataFrame(data_list, columns=["Time", "Opening"])
-                gate_data = gate_data.set_index("Time")
-                gate_data = gate_data["Opening"]
+        #ADD VARRULES (IF THEY ARE THERE)
+        if self.has_varrules:
+            block.append("VARRULES")
+            self.nvarrules = len(self.varrules)
+            block.append(
+                f"{join_n_char_ljust(10, self.nvarrules)}{join_10_char(self.varrule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+            )
+            for varrule in self.varrules:
+                block.append(varrule["name"])
+                block.extend(varrule["logic"].split("\n"))
+            
+            # ADD TIME VARRULE DATA SET
+            block.append("TIME RULE DATA SET")
+            block.append(join_10_char(len(self.time_varrule_data)))
+            time_varrule_data = [
+                f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
+            ]
+            block.extend(time_varrule_data)
 
-                gates.append(gate_data)
-
-                gate_row += 2 + nrows
-
-            self._last_gate_row = gate_row
-
-            return gates
-
-        elif self.control_method == "LOGICAL":
-            for gate in range(ngates):
-                nrows = int(split_10_char(block[gate_row + 1])[0])
-                data_list = []
-                for row in block[gate_row + 2 : gate_row + 2 + nrows]:
-                    row_split = split_10_char(f"{row:<30}")
-                    x = _to_float(row_split[0])  # time
-                    y = row_split[1]  # mode
-                    z = _to_float(row_split[2])  # opening
-                    data_list.append([x, y, z])
-
-                gate_data = pd.DataFrame(data_list, columns=["Time", "Mode", "Opening"])
-                gate_data = gate_data.set_index("Time")
-
-                gates.append(gate_data)
-
-                gate_row += 2 + nrows
-
-            self._last_gate_row = gate_row
-
-            return gates
+        else:
+            block.extend(self._raw_extra_lines)
+        
+        return block
 
     def _get_logical_rules(self, nrules, block, rule_row):
         rules = []

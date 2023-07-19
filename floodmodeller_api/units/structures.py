@@ -653,7 +653,12 @@ class SLUICE(Unit):
             self.gates = self._get_gates(self.ngates, block, gate_row=7)
 
         elif self.control_method == "LOGICAL":
-            self._read_logic(block)
+            logical_params = split_10_char(block[6])
+            self.max_movement_rate = logical_params[1]
+            self.max_setting = logical_params[2]
+            self.min_setting = logical_params[3]
+            self.gates = self._get_gates(self.ngates, block, gate_row=7)
+            self._read_rules(block)
 
         else:
             self._raw_extra_lines = block[6:]
@@ -748,30 +753,56 @@ class SLUICE(Unit):
                 block.extend(gate_data)
                 n += 1
 
-            # ADD RULES
-            block.append("RULES")
-            self.nrules = len(self.rules)
-            block.append(
-                f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
-            )
-            for rule in self.rules:
-                block.append(rule["name"])
-                block.extend(rule["logic"].split("\n"))
-
-            # ADD TIME RULE DATA SET
-            block.append("TIME RULE DATA SET")
-            block.append(join_10_char(len(self.time_rule_data)))
-            time_rule_data = [
-                f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
-            ]
-            block.extend(time_rule_data)
-
-        else:
-            block.extend(self._raw_extra_lines)
+            block = self._write_rules(block)
 
         return block
 
+    def _get_gates(self, ngates, block, gate_row):
+        gates = []
 
+        if self.control_method == "TIME":
+            for gate in range(ngates):
+                nrows = int(split_10_char(block[gate_row + 1])[0])
+                data_list = []
+                for row in block[gate_row + 2 : gate_row + 2 + nrows]:
+                    row_split = split_10_char(f"{row:<20}")
+                    x = _to_float(row_split[0])  # time
+                    y = _to_float(row_split[1])  # opening
+                    data_list.append([x, y])
+
+                gate_data = pd.DataFrame(data_list, columns=["Time", "Opening"])
+                gate_data = gate_data.set_index("Time")
+                gate_data = gate_data["Opening"]
+
+                gates.append(gate_data)
+
+                gate_row += 2 + nrows
+
+            self._last_gate_row = gate_row
+
+            return gates
+
+        elif self.control_method == "LOGICAL":
+            for gate in range(ngates):
+                nrows = int(split_10_char(block[gate_row + 1])[0])
+                data_list = []
+                for row in block[gate_row + 2 : gate_row + 2 + nrows]:
+                    row_split = split_10_char(f"{row:<30}")
+                    x = _to_float(row_split[0])  # time
+                    y = row_split[1]  # mode
+                    z = _to_float(row_split[2])  # opening
+                    data_list.append([x, y, z])
+
+                gate_data = pd.DataFrame(data_list, columns=["Time", "Mode", "Opening"])
+                gate_data = gate_data.set_index("Time")
+
+                gates.append(gate_data)
+
+                gate_row += 2 + nrows
+
+            self._last_gate_row = gate_row
+
+            return gates
 class ORIFICE(Unit):
     """Class to hold and process ORIFICE unit type
 
