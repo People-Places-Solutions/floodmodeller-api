@@ -169,9 +169,7 @@ class Unit:
         self.nrules = len(self.rules)
         block.append(
             f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
-        )  ###
-        self.rules.append({"name": "Rule Tst", "logic": "IF no e n d !\nP"})
-        ###
+        )
         for rule in self.rules:
             try:
                 if rule["logic"].strip().upper().endswith(("END", "ENDIF")):
