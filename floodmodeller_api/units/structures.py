@@ -752,7 +752,6 @@ class SLUICE(Unit):
                 ]
                 block.extend(gate_data)
                 n += 1
-
             block = self._write_rules(block)
 
         else:
@@ -806,6 +805,8 @@ class SLUICE(Unit):
             self._last_gate_row = gate_row
 
             return gates
+
+
 class ORIFICE(Unit):
     """Class to hold and process ORIFICE unit type
 

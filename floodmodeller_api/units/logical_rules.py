@@ -40,19 +40,19 @@ class Variables:
         ]
         data_list = []
         for line in var_block[1:-1]:
-            nme = line[:20].strip()
-            typ = line[20:30].strip()
-            iva = line[30:40].strip()
-            if typ == "timer":
-                ist = line[40:50].strip()
+            name = line[:20].strip()
+            type = line[20:30].strip()
+            initial_value = line[30:40].strip()
+            if type.upper() == "TIMER":
+                initial_status = line[40:50].strip()
             else:
-                ist = "n/a"  # unless the type is a timer, nothing else has an initial status
+                initial_status = "n/a"  # unless the type is a timer, nothing else has an initial status
             data_list.append(
                 [
-                    nme,
-                    typ,
-                    iva,
-                    ist,
+                    name,
+                    type,
+                    initial_value,
+                    initial_status,
                 ]
             )
         self.data = pd.DataFrame(data_list, columns=header)
@@ -74,3 +74,14 @@ class Variables:
         var_block.append("END VARIABLES")
 
         return var_block
+
+    def _get_diff(self, other):
+        return self.__eq__(other, return_diff=True)
+
+    def __eq__(self, other, return_diff=False):
+        result = True
+        diff = []
+        result, diff = check_item_with_dataframe_equal(
+            self.__dict__, other.__dict__, name=f"Variables", diff=diff
+        )
+        return (result, diff) if return_diff else result
