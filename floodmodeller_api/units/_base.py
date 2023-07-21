@@ -17,8 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base unit class for all FM Units """
 
 from ..diff import check_item_with_dataframe_equal
-from pathlib import Path
-from ..version import __version__
 import pandas as pd
 from .helpers import (
     split_10_char,
@@ -171,16 +169,13 @@ class Unit:
             f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
         )
         for rule in self.rules:
-            try:
-                if rule["logic"].strip().upper().endswith(("END", "ENDIF")):
-                    block.append(rule["name"])
-                    block.extend(rule["logic"].split("\n"))
-                else:
-                    raise Exception(
-                        f"You have tried to add a new rule ({rule['name']}) to {self.name}.rules, the logic of which does not end in either END or ENDIF"
-                    )
-            except Exception as e:
-                self._handle_exception(e, when="add a new rule")
+            if rule["logic"].strip().upper().endswith(("END", "ENDIF")):
+                block.append(rule["name"])
+                block.extend(rule["logic"].split("\n"))
+            else:
+                raise Exception(
+                    f"You have tried to add a new rule ({rule['name']}) to {self.name}.rules, the logic of which does not end in either END or ENDIF"
+                )
 
         # ADD TIME RULE DATA SET
         block.append("TIME RULE DATA SET")
@@ -234,19 +229,3 @@ class Unit:
         self._last_rule_row = rule_row
 
         return rules
-
-    def _handle_exception(self, err, when):
-        tb = err.__traceback__
-        while tb.tb_next is not None:
-            tb = tb.tb_next
-        line_no = tb.tb_lineno
-        tb_path = Path(tb.tb_frame.f_code.co_filename)
-        fname = "/".join(tb_path.parts[-2:])
-
-        raise Exception(
-            "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-            f"\nAPI Error: Problem encountered when trying to {when} to block: {self.name}."
-            f"\n\nDetails: {__version__}-{fname}-{line_no}"
-            f"\nMsg: {err}"
-            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api"
-        )
