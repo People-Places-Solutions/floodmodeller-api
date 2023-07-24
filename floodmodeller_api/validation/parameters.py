@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 # fmt: off
+
 parameter_options = {
     "name": {
         "type": "string-length",
@@ -439,8 +440,21 @@ parameter_options = {
                 "options": (str)
             },
             "logic": {
+                "type": "end-value-match",
+                "options": ["END","ENDIF"]
+            }
+        }
+    },
+    "varrules": {
+        "type": "list-dict-match",
+        "options": {
+            "name": {
                 "type": "type-match",
                 "options": (str)
+            },
+            "logic": {
+                "type": "end-value-match",
+                "options": ["END","ENDIF"]
             }
         }
     },

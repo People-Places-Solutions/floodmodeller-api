@@ -482,6 +482,9 @@ class DAT(FMFile):
                     if block["Type"] == "INITIAL CONDITIONS":
                         new_unit_data = self.initial_conditions._write()
 
+                    elif block["Type"] == "VARIABLES":
+                        new_unit_data = self.variables._write()
+
                     else:
                         if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                             unit_name = unit_data[2][: self._label_len].strip()
@@ -527,6 +530,10 @@ class DAT(FMFile):
                 # Deal with initial conditions block
                 if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
+                    continue
+
+                if block["Type"] == "VARIABLES":
+                    self.variables = units.Variables(unit_data)
                     continue
 
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
@@ -584,6 +591,7 @@ class DAT(FMFile):
         in_block = False
         in_general = True
         in_comment = False
+        in_variable = False
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
