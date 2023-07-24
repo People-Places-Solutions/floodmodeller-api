@@ -169,13 +169,8 @@ class Unit:
             f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
         )
         for rule in self.rules:
-            if rule["logic"].strip().upper().endswith(("END", "ENDIF")):
-                block.append(rule["name"])
-                block.extend(rule["logic"].split("\n"))
-            else:
-                raise Exception(
-                    f"You have tried to add a new rule ({rule['name']}) to {self.name}.rules, the logic of which does not end in either END or ENDIF"
-                )
+            block.append(rule["name"])
+            block.extend(rule["logic"].split("\n"))
 
         # ADD TIME RULE DATA SET
         block.append("TIME RULE DATA SET")

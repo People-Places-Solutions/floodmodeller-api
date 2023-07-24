@@ -41,16 +41,16 @@ class Variables:
         data_list = []
         for line in var_block[1:-1]:
             name = line[:20].strip()
-            type = line[20:30].strip()
+            _type = line[20:30].strip()
             initial_value = line[30:40].strip()
-            if type.upper() == "TIMER":
+            if _type.upper() == "TIMER":
                 initial_status = line[40:50].strip()
             else:
                 initial_status = "n/a"  # unless the type is a timer, nothing else has an initial status
             data_list.append(
                 [
                     name,
-                    type,
+                    _type,
                     initial_value,
                     initial_status,
                 ]
@@ -62,12 +62,12 @@ class Variables:
             "VARIABLES",
         ]
         rows = []
-        for _, nme, typ, iva, ist in self.data.itertuples():
-            string = f"{nme:<{20}}"
-            if typ == "timer":
-                string += join_10_char(typ, iva, ist)
+        for _, name, _type, initial_value, initial_status in self.data.itertuples():
+            string = f"{name:<{20}}"
+            if _type.upper() == "TIMER":
+                string += join_10_char(_type, initial_value, initial_status)
             else:
-                string += join_10_char(typ, iva)
+                string += join_10_char(_type, initial_value)
             rows.append(string)
 
         var_block.extend(rows)

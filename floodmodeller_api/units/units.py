@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 ### UNIT CLASSES ###
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .iic import IIC
-from .logical_rules import Variables
+from .variables import Variables
 from .sections import RIVER, INTERPOLATE, REPLICATE
 from .structures import (
     BRIDGE,

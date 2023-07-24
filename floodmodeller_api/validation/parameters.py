@@ -445,6 +445,19 @@ parameter_options = {
             }
         }
     },
+    "varrules": {
+        "type": "list-dict-match",
+        "options": {
+            "name": {
+                "type": "type-match",
+                "options": (str)
+            },
+            "logic": {
+                "type": "end-value-match",
+                "options": ["END","ENDIF"]
+            }
+        }
+    },
     "use_degrees": {
         "type": "type-match",
         "options": (bool)

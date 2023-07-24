@@ -638,19 +638,6 @@ class DAT(FMFile):
                     dat_struct, "GISINFO", unit_block, in_block, idx
                 )
 
-            if line == "VARIABLES":
-                in_variable = True
-                variable_block = {"start": idx, "Type": "GENERAL"}
-
-            if in_variable:
-                if line == "END VARIABLES":
-                    variable_block["end"] = idx
-                    dat_struct.append(variable_block)
-                    in_variable = False
-                    continue
-                elif unit_block["Type"] == "VARIABLES":
-                    continue
-
             if not gisinfo_block:
                 if line.split(" ")[0] in units.ALL_UNIT_TYPES:
                     # The " " is needed here in case of empty string
