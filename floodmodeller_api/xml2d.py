@@ -515,7 +515,7 @@ class XML2D(FMFile):
         # - Clean up the lf code?
         # - Remove or sort out get results
 
-        self.range_function = range_function
+        self.range_function = range_function 
         self.range_settings = range_settings
 
         try:
