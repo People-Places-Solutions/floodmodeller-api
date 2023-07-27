@@ -1,7 +1,10 @@
-python setup.py install # to install to current python environment 
-python setup.py develop # to copy path link to current python environment 
+*deprecated* python setup.py install # to install to current python environment 
+pip install <local_path> # to install to current python environment 
+*deprecated* python setup.py develop # to copy path link to current python environment 
+pip install -e <local_path> # to copy path link to current python environment
 
-python setup.py sdist bdist_wheel # to build tar to upload to PyPI
+*deprecated* python setup.py sdist bdist_wheel # to build tar to upload to PyPI
+python -m build 
 twine upload --repository testpypi dist/* # to upload to test.PyPI
 twine upload dist/* # to upload to main PyPI
 
