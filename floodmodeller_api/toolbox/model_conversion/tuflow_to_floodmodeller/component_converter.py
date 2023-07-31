@@ -139,12 +139,14 @@ class LocLineConverter2D(ComputationalAreaConverter2D):
         x1, y1 = loc_line.coords[0]
         x2, y2 = loc_line.coords[1]
 
-        super().__init__(xml, folder, domain_name, x1, y1, dx, lx_ly, all_areas)
-
         theta_rad = math.atan2(y2 - y1, x2 - x1)
         if theta_rad < 0:
             theta_rad += 2 * math.pi
-        self._rotation = round(math.degrees(theta_rad), 3)
+        rotation = round(math.degrees(theta_rad), 3)
+
+        super().__init__(
+            xml, folder, domain_name, x1, y1, dx, lx_ly, all_areas, rotation
+        )
 
 
 class TopographyConverter2D(ComponentConverter2D):
