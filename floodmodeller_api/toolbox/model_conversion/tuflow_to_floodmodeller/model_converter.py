@@ -13,22 +13,27 @@ from .component_converter import (
 
 from pathlib import Path
 from typing import Union, Dict, Callable, Type
-from dataclasses import dataclass
 import logging
 
 
-@dataclass
-class FMFileConfig:
-    cc_dict: Dict[str, Callable[..., ComponentConverter]]
-    fm_file_class: Type[Union[XML2D, IEF]]
-    fm_file_object: Union[XML2D, IEF]
-    fm_filepath: Union[str, Path]
+class FMFileWrapper:
+    def __init__(
+        self,
+        cc_dict: Dict[str, Callable[..., ComponentConverter]],
+        fm_file_class: Type[Union[XML2D, IEF]],
+        fm_filepath: Union[str, Path],
+    ) -> None:
+        self.cc_dict = cc_dict
+        self.fm_file_class = fm_file_class
+        self.fm_filepath = fm_filepath
+        self.fm_file = self.fm_file_class()
+        self.fm_file.save(self.fm_filepath)
 
     def rollback(self) -> None:
-        self.fm_file_object = self.fm_file_class(self.fm_filepath)
+        self.fm_file = self.fm_file_class(self.fm_filepath)
 
     def update(self) -> None:
-        self.fm_file_object.update()
+        self.fm_file.update()
 
 
 class TuflowModelConverter2D:
@@ -50,7 +55,6 @@ class TuflowModelConverter2D:
         self._create_logger()
         self._read_tuflow_files()
         self._init_fm_files()
-        self._init_cc_dicts()
 
     def _create_logger(self) -> None:
 
@@ -94,54 +98,40 @@ class TuflowModelConverter2D:
         self._processed_inputs_folder = Path.joinpath(self._root, "gis")
         self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
-        self._xml = XML2D()
-        self._xml_filepath = Path.joinpath(self._root, f"{self._name}.xml")
-        self._xml.save(self._xml_filepath)
+        self._fm_files = {
+            "xml": FMFileWrapper(
+                cc_dict={
+                    "computational area": self._create_computational_area_cc_2d,
+                    "topography": self._create_topography_cc_2d,
+                    "roughness": self._create_roughness_cc_2d,
+                    "scheme": self._create_scheme_cc_2d,
+                    "boundary": self._create_boundary_cc_2d,
+                },
+                fm_file_class=XML2D,
+                fm_filepath=Path.joinpath(self._root, f"{self._name}.xml"),
+            )
+        }
         self._logger.info("xml done")
 
         if self._contains_estry:
-            self._ief = IEF()
-            self._ief_filepath = Path.joinpath(self._root, f"{self._name}.ief")
-            self._ief.save(self._ief_filepath)
+            self._fm_files["ief"] = FMFileWrapper(
+                cc_dict={"estry": self._create_scheme_cc_1d},
+                fm_file_class=IEF,
+                fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
+            )
             self._logger.info("ief done")
 
-    def _init_cc_dicts(self) -> None:
-
-        self._cc_2d_dict = {
-            "computational area": self._create_computational_area_cc_2d,
-            "topography": self._create_topography_cc_2d,
-            "roughness": self._create_roughness_cc_2d,
-            "scheme": self._create_scheme_cc_2d,
-            "boundary": self._create_boundary_cc_2d,
-        }
-
-        if self._contains_estry:
-            self._cc_1d_dict = {"estry": self._create_scheme_cc_1d}
-        else:
-            self._cc_1d_dict = {}
+    @property
+    def _xml(self):
+        return self._fm_files["xml"].fm_file
+    
+    @property
+    def _ief(self):
+        return self._fm_files["ief"].fm_file
 
     def convert_model(self) -> None:
 
-        fm_file_configs = [
-            FMFileConfig(
-                cc_dict=self._cc_2d_dict,
-                fm_file_class=XML2D,
-                fm_file_object=self._xml,
-                fm_filepath=self._xml_filepath,
-            )
-        ]
-
-        if self._contains_estry:
-            fm_file_configs.append(
-                FMFileConfig(
-                    cc_dict=self._cc_1d_dict,
-                    fm_file_class=IEF,
-                    fm_file_object=self._ief,
-                    fm_filepath=self._ief_filepath,
-                )
-            )
-
-        for fm_file_config in fm_file_configs:
+        for fm_file_config in self._fm_files.values():
 
             for cc_class_display_name, cc_factory in fm_file_config.cc_dict.items():
 
