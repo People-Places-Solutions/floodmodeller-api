@@ -156,10 +156,12 @@ class IED(FMFile):
         self.structures = {}
         self.conduits = {}
         self.losses = {}
+        self._unsupported = {}
+        self._all_units = []
         for block in self._ied_struct:
+            unit_data = self._raw_data[block["start"] : block["end"] + 1]
             # Check for all supported boundary types, starting just with QTBDY type
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                unit_data = self._raw_data[block["start"] : block["end"] + 1]
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
                 if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     # Takes first 12 characters as name
@@ -177,6 +179,35 @@ class IED(FMFile):
                     )
                 else:
                     unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
+                
+                self._all_units.append(unit_group[unit_name])
+
+            elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
+                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+                if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                    # Takes first 12 characters as name
+                    unit_name = unit_data[2][:12].strip()
+                    subtype = True
+                else:
+                    unit_name = unit_data[1][:12].strip()
+                    subtype = False
+
+                #_label_len = _to_int(params[5], 12)  # label length
+                self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
+                    unit_data,
+                    12,
+                    unit_name=unit_name,
+                    unit_type=block["Type"],
+                    subtype=subtype,
+                )
+                self._all_units.append(
+                    self._unsupported[f"{unit_name} ({block['Type']})"]
+                )
+
+        print()
+
+
+
 
     def _update_ied_struct(self):
         # Generate IED structure
