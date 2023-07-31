@@ -18,6 +18,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ._base import Unit
+
 from .helpers import (
     join_10_char,
     join_12_char_ljust,
@@ -656,31 +657,8 @@ class SLUICE(Unit):
             self.max_movement_rate = logical_params[1]
             self.max_setting = logical_params[2]
             self.min_setting = logical_params[3]
-
             self.gates = self._get_gates(self.ngates, block, gate_row=7)
-
-            rule_params = split_10_char(block[self._last_gate_row + 1])
-            self.nrules = int(rule_params[0])
-            self.rule_sample_time = _to_float(rule_params[1])
-
-            self.rules = self._get_logical_rules(
-                self.nrules, block, self._last_gate_row + 2
-            )
-
-            # Get time rule data set
-
-            nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
-            data_list = []
-            for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + nrows]:
-                row_split = split_10_char(f"{row:<20}")
-                x = _to_float(row_split[0])  # time
-                y = row_split[1]  # operating rules
-                data_list.append([x, y])
-
-            rule_data = pd.DataFrame(data_list, columns=["Time", "Operating Rules"])
-            rule_data = rule_data.set_index("Time")
-            rule_data = rule_data["Operating Rules"]
-            self.time_rule_data = rule_data
+            self._read_rules(block)
 
         else:
             self._raw_extra_lines = block[6:]
@@ -774,24 +752,7 @@ class SLUICE(Unit):
                 ]
                 block.extend(gate_data)
                 n += 1
-
-            # ADD RULES
-            block.append("RULES")
-            self.nrules = len(self.rules)
-            block.append(
-                f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
-            )
-            for rule in self.rules:
-                block.append(rule["name"])
-                block.extend(rule["logic"].split("\n"))
-
-            # ADD TIME RULE DATA SET
-            block.append("TIME RULE DATA SET")
-            block.append(join_10_char(len(self.time_rule_data)))
-            time_rule_data = [
-                f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
-            ]
-            block.extend(time_rule_data)
+            block = self._write_rules(block)
 
         else:
             block.extend(self._raw_extra_lines)
@@ -844,30 +805,6 @@ class SLUICE(Unit):
             self._last_gate_row = gate_row
 
             return gates
-
-    def _get_logical_rules(self, nrules, block, rule_row):
-        rules = []
-        rules_recorded = 0
-        rule_logic = []
-        rule_dict = {}
-        nl = "\n"
-        while rules_recorded < nrules:
-            if block[rule_row].strip().upper().endswith(("END", "ENDIF")):
-                rule_logic.append(block[rule_row])
-                rule_dict["logic"] = f"{nl.join(rule_logic)}"
-                rules.append(rule_dict)
-                rule_logic = []
-                rule_dict = {}
-                rules_recorded += 1
-            elif len(rule_dict) == 0:
-                rule_dict = {"name": block[rule_row].strip()}
-            else:
-                rule_logic.append(block[rule_row])
-            rule_row += 1
-
-        self._last_rule_row = rule_row
-
-        return rules
 
 
 class ORIFICE(Unit):
@@ -963,7 +900,6 @@ class ORIFICE(Unit):
         surcharged_flow=1.0,
         modular_limit=0.7,
     ):
-
         for param, val in {
             "name": name,
             "flapped": flapped,
@@ -1058,7 +994,6 @@ class SPILL(Unit):
         modular_limit=0.9,
         data=None,
     ):
-
         for param, val in {
             "name": name,
             "ds_label": ds_label,
@@ -1163,7 +1098,6 @@ class RNWEIR(Unit):
         weir_breadth=0.0,
         weir_elevation=0.0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -1224,7 +1158,6 @@ class CRUMP(Unit):
         self.downstream_crest_height = _to_float(params2[1])
 
     def _write(self):
-
         """Function to write a valid CRUMP block"""
         _validate_unit(self)
         header = "CRUMP " + self.comment
@@ -1267,7 +1200,6 @@ class CRUMP(Unit):
         us_remote_label="",
         ds_remote_label="",
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -1391,7 +1323,6 @@ class FLAT_V_WEIR(Unit):
         coriolis_coefficient=1.2,
         bank_top_elevation=0.0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -1547,7 +1478,6 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         lat3="",
         lat4="",
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -1662,7 +1592,6 @@ class OUTFALL(Unit):
         surcharged_flow=1.0,
         modular_limit=0.7,
     ):
-
         for param, val in {
             "name": name,
             "flapped": flapped,
