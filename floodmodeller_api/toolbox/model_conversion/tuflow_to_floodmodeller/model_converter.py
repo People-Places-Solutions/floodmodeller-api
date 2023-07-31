@@ -19,18 +19,18 @@ import logging
 class FMFileWrapper:
     def __init__(
         self,
-        cc_dict: Dict[str, Callable[..., ComponentConverter]],
         fm_file_class: Type[Union[XML2D, IEF]],
         fm_filepath: Union[str, Path],
+        cc_dict: Dict[str, Callable[..., ComponentConverter]],
     ) -> None:
+        self._fm_file_class = fm_file_class
+        self._fm_filepath = fm_filepath
+        self.fm_file = self._fm_file_class()
+        self.fm_file.save(self._fm_filepath)
         self.cc_dict = cc_dict
-        self.fm_file_class = fm_file_class
-        self.fm_filepath = fm_filepath
-        self.fm_file = self.fm_file_class()
-        self.fm_file.save(self.fm_filepath)
 
     def rollback(self) -> None:
-        self.fm_file = self.fm_file_class(self.fm_filepath)
+        self.fm_file = self._fm_file_class(self._fm_filepath)
 
     def update(self) -> None:
         self.fm_file.update()
@@ -100,6 +100,8 @@ class TuflowModelConverter2D:
 
         self._fm_files = {
             "xml": FMFileWrapper(
+                fm_file_class=XML2D,
+                fm_filepath=Path.joinpath(self._root, f"{self._name}.xml"),
                 cc_dict={
                     "computational area": self._create_computational_area_cc_2d,
                     "topography": self._create_topography_cc_2d,
@@ -107,17 +109,15 @@ class TuflowModelConverter2D:
                     "scheme": self._create_scheme_cc_2d,
                     "boundary": self._create_boundary_cc_2d,
                 },
-                fm_file_class=XML2D,
-                fm_filepath=Path.joinpath(self._root, f"{self._name}.xml"),
             )
         }
         self._logger.info("xml done")
 
         if self._contains_estry:
             self._fm_files["ief"] = FMFileWrapper(
-                cc_dict={"estry": self._create_scheme_cc_1d},
                 fm_file_class=IEF,
                 fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
+                cc_dict={"estry": self._create_scheme_cc_1d},
             )
             self._logger.info("ief done")
 
