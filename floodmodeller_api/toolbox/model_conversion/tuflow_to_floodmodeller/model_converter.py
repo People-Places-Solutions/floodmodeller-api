@@ -25,9 +25,9 @@ class FMFileWrapper:
     ) -> None:
         self._fm_file_class = fm_file_class
         self._fm_filepath = fm_filepath
+        self.cc_dict = cc_dict
         self.fm_file = self._fm_file_class()
         self.fm_file.save(self._fm_filepath)
-        self.cc_dict = cc_dict
 
     def rollback(self) -> None:
         self.fm_file = self._fm_file_class(self._fm_filepath)
@@ -51,10 +51,12 @@ class TuflowModelConverter2D:
         self._name = name
         self._root = Path.joinpath(Path(folder), self._name)
         self._root.mkdir(parents=True, exist_ok=True)
+        self._processed_inputs_folder = Path.joinpath(self._root, "gis")
+        self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
         self._create_logger()
-        self._read_tuflow_files()
-        self._init_fm_files()
+        self._initialise_2d()
+        self._initialise_1d()
 
     def _create_logger(self) -> None:
 
@@ -70,7 +72,7 @@ class TuflowModelConverter2D:
         )
         self._logger = logging.getLogger(__name__)
 
-    def _read_tuflow_files(self) -> None:
+    def _initialise_2d(self) -> None:
 
         self._logger.info("reading TUFLOW files...")
 
@@ -83,22 +85,9 @@ class TuflowModelConverter2D:
         self._tbc = TuflowParser(self._tcf.get_path("bc control file"))
         self._logger.info("tbc done")
 
-        self._contains_estry = self._tcf.check_key("estry control file")
+        self._logger.info("initialising FM files...")
 
-        if self._contains_estry:
-            self._ecf = TuflowParser(self._tcf.get_path("estry control file"))
-            self._logger.info("ecf done")
-        else:
-            self._logger.info("ecf not detected")
-
-    def _init_fm_files(self) -> None:
-
-        self._logger.info("initialising Flood Modeller files...")
-
-        self._processed_inputs_folder = Path.joinpath(self._root, "gis")
-        self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
-
-        self._fm_files = {
+        self._fm_file_wrappers = {
             "xml": FMFileWrapper(
                 fm_file_class=XML2D,
                 fm_filepath=Path.joinpath(self._root, f"{self._name}.xml"),
@@ -113,39 +102,54 @@ class TuflowModelConverter2D:
         }
         self._logger.info("xml done")
 
-        if self._contains_estry:
-            self._fm_files["ief"] = FMFileWrapper(
-                fm_file_class=IEF,
-                fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
-                cc_dict={"estry": self._create_scheme_cc_1d},
-            )
-            self._logger.info("ief done")
+    def _initialise_1d(self) -> None:
+
+        self._logger.info("reading TUFLOW files...")
+
+        contains_estry = self._tcf.check_key("estry control file")
+        if not contains_estry:
+            self._logger.info("ecf not detected; no ief required")
+            return
+
+        self._ecf = TuflowParser(self._tcf.get_path("estry control file"))
+        self._logger.info("ecf done")
+
+        self._logger.info("initialising FM files...")
+
+        self._fm_file_wrappers["ief"] = FMFileWrapper(
+            fm_file_class=IEF,
+            fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
+            cc_dict={
+                "estry": self._create_scheme_cc_1d,
+            },
+        )
+        self._logger.info("ief done")
 
     @property
-    def _xml(self):
-        return self._fm_files["xml"].fm_file
-    
+    def _xml(self) -> XML2D:
+        return self._fm_file_wrappers["xml"].fm_file
+
     @property
-    def _ief(self):
-        return self._fm_files["ief"].fm_file
+    def _ief(self) -> IEF:
+        return self._fm_file_wrappers["ief"].fm_file
 
     def convert_model(self) -> None:
 
-        for fm_file_config in self._fm_files.values():
+        for fm_file_wrapper in self._fm_file_wrappers.values():
 
-            for cc_class_display_name, cc_factory in fm_file_config.cc_dict.items():
+            for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
 
-                self._logger.info(f"converting {cc_class_display_name}...")
+                self._logger.info(f"converting {cc_display_name}...")
 
                 try:
                     cc_object = cc_factory()
                     cc_object.edit_fm_file()
-                    fm_file_config.update()
+                    fm_file_wrapper.update()
                     self._logger.info("success")
 
                 except:
                     self._logger.exception("failure")
-                    fm_file_config.rollback()
+                    fm_file_wrapper.rollback()
 
     def _create_computational_area_cc_2d(self) -> ComputationalAreaConverter2D:
 

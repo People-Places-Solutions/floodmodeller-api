@@ -91,10 +91,11 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         for name, code in {"active": 1, "deactive": 0}.items():
             area = filter(all_areas_concat, "code", code)
             area_exists = len(area.index) > 0
-            if area_exists:
-                path = Path.joinpath(folder, f"{name}_area.shp")
-                setattr(self, f"_{name}_area_path", path)
-                area.to_file(path)
+            if not area_exists:
+                continue
+            path = Path.joinpath(folder, f"{name}_area.shp")
+            setattr(self, f"_{name}_area_path", path)
+            area.to_file(path)
 
     @staticmethod
     def standardise_areas(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
