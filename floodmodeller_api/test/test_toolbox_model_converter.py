@@ -5,24 +5,42 @@ from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
 )
 
 from pathlib import Path
+import pytest
 
 
-def test_fm_file_wrapper(tmpdir):
+@pytest.mark.parametrize(
+    "fm_file_class,file_name",
+    [
+        (XML2D, "test.xml"),
+        (IEF, "test.ief"),
+    ],
+)
+def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
 
-    filepath = Path.joinpath(Path(tmpdir), "test.xml")
-    fm_file_wrapper = FMFileWrapper(XML2D, filepath, {})
-    assert fm_file_wrapper.fm_file == XML2D(filepath)
+    def change_timestep(fm_file_wrapper: FMFileWrapper, timestep: float) -> None:
 
-    fm_file_wrapper.fm_file.processor = {"type": "CPU"}
-    assert fm_file_wrapper.fm_file != XML2D(filepath)
+        fm_file = fm_file_wrapper.fm_file
+
+        if isinstance(fm_file, XML2D):
+            fm_file.domains["Domain 1"]["run_data"] = {
+                "time_step": timestep,
+                "scheme": "TVD",
+            }
+        elif isinstance(fm_file, IEF):
+            fm_file.Timestep = timestep
+
+    filepath = Path.joinpath(Path(tmpdir), file_name)
+    fm_file_wrapper = FMFileWrapper(fm_file_class, filepath, {})
+    assert fm_file_wrapper.fm_file == fm_file_class(filepath)
+
+    change_timestep(fm_file_wrapper, '0.1')
+    assert fm_file_wrapper.fm_file != fm_file_class(filepath)
 
     fm_file_wrapper.update()
-    assert fm_file_wrapper.fm_file == XML2D(filepath)
+    assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
-    fm_file_wrapper.fm_file.processor = {"type": "GPU"}
-    assert fm_file_wrapper.fm_file != XML2D(filepath)
+    change_timestep(fm_file_wrapper, '0.2')
+    assert fm_file_wrapper.fm_file != fm_file_class(filepath)
 
     fm_file_wrapper.rollback()
-    assert fm_file_wrapper.fm_file == XML2D(filepath)
-
-    # parameterise IEF and XML2D
+    assert fm_file_wrapper.fm_file == fm_file_class(filepath)
