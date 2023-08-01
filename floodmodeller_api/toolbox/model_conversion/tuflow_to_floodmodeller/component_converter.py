@@ -364,4 +364,3 @@ class BoundaryConverter2D(ComponentConverter2D):
         vectors: List[gpd.GeoDataFrame],
     ) -> None:
         super().__init__(xml, folder, domain_name)
-        # print(vectors)
