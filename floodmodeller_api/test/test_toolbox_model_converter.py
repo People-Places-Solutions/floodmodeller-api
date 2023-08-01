@@ -3,13 +3,11 @@ from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter2D,
 )
-from toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import TuflowParser
 
 from pathlib import Path
 import pytest
 
 path_to_mc = "toolbox.model_conversion.tuflow_to_floodmodeller.model_converter"
-path_to_fp = "toolbox.model_conversion.tuflow_to_floodmodeller.file_parser"
 
 
 @pytest.mark.parametrize(
@@ -47,9 +45,8 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
     assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
 
-def test_model_converter(tmpdir):
-
-    model_name = "test_name"
+@pytest.fixture
+def tcf(tmpdir) -> str:
 
     tcf_name = "test_tcf.tcf"
     tgc_name = "test_tgc.tgc"
@@ -72,16 +69,35 @@ def test_model_converter(tmpdir):
         with open(Path.joinpath(Path(tmpdir), name), "w") as file:
             file.write(contents)
 
+    return tcf_name
+
+
+def test_model_converter(tmpdir, tcf):
+
+    model_name = "test_name"
+
     tuflow_converter = TuflowModelConverter2D(
-        Path.joinpath(Path(tmpdir), tcf_name), tmpdir, model_name
+        Path.joinpath(Path(tmpdir), tcf), tmpdir, model_name
     )
 
     log_path = Path.joinpath(Path(tmpdir), model_name, f"{model_name}_conversion.log")
 
-    with open(log_path, "r") as file:
-        log_contents = file.read()
+    expected_log = [
+        "reading TUFLOW files...",
+        "tcf done",
+        "tgc done",
+        "tbc done",
+        "initialising FM files...",
+        "xml done",
+        "reading TUFLOW files...",
+        "ecf done",
+        "initialising FM files...",
+        "ief done",
+    ]
 
-    assert log_contents[-9:] == "ief done\n"
+    with open(log_path, "r") as file:
+        for l1, l2 in zip(expected_log, file):
+            assert f"INFO - {l1}\n" == l2.split(' - ', 1)[1]
 
     # tuflow_converter._xml
     # tuflow_converter._ief

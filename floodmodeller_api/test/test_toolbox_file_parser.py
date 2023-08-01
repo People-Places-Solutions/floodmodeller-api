@@ -2,13 +2,12 @@ from toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import TuflowP
 
 from pathlib import Path
 from shapely.geometry import Point
-import pandas as pd
 import geopandas as gpd
 import pytest
 
 
 @pytest.fixture
-def tuflow_parser(tmpdir) -> Path:
+def tuflow_parser(tmpdir) -> TuflowParser:
 
     text = """
     var1 == folder1/file1.csv
