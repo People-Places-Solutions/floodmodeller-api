@@ -179,7 +179,7 @@ class IED(FMFile):
                     )
                 else:
                     unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
-                
+
                 self._all_units.append(unit_group[unit_name])
 
             elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
@@ -192,7 +192,7 @@ class IED(FMFile):
                     unit_name = unit_data[1][:12].strip()
                     subtype = False
 
-                #_label_len = _to_int(params[5], 12)  # label length
+                # _label_len = _to_int(params[5], 12)  # label length
                 self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
                     unit_data,
                     12,
@@ -205,9 +205,6 @@ class IED(FMFile):
                 )
 
         print()
-
-
-
 
     def _update_ied_struct(self):
         # Generate IED structure
