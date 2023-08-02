@@ -22,21 +22,23 @@ def tcf(tmpdir) -> Path:
     line_name = "test_line.shp"
 
     tcf_str = f"""
-        geometry control file == {tgc_name}
-        bc control file == {tbc_name}
-        estry control file == {ecf_name}
+        Geometry Control File == {tgc_name}
+        BC Control File == {tbc_name}
+        ESTRY Control File == {ecf_name}
         """
     tgc_str = f"""
-        cell size == 10
-        grid size (x,y) == 20,30
-        read gis code == {code_name}
-        read gis location == {line_name}
+        Cell Size == 10
+        Grid Size (X,Y) == 20,30
+        Read GIS Code == {code_name}
+        Read GIS Location == {line_name}
         """
     tbc_str = ""
     ecf_str = ""
 
-    code_gpd = gpd.GeoDataFrame({"x": [1], "geometry": [Point(0, 0)]})
-    line_gpd = gpd.GeoDataFrame({"x": [1], "geometry": [LineString([(0, 0), (1, 1)])]})
+    code_gpd = gpd.GeoDataFrame({"CODE": [1], "geometry": [Point(0, 0)]})
+    line_gpd = gpd.GeoDataFrame(
+        {"Comment": [""], "geometry": [LineString([(0, 0), (1, 1)])]}
+    )
 
     for name, contents in zip(
         [tcf_name, tgc_name, tbc_name, ecf_name, code_name, line_name],
@@ -87,7 +89,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
     assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
 
-def test_model_converter(tmpdir, tcf):
+def test_model_converter(tmpdir, tcf, mocker):
     def assert_log_contains(log_path, expected):
         with open(log_path, "r") as file:
             for l1, l2 in zip(file, expected):
@@ -99,6 +101,11 @@ def test_model_converter(tmpdir, tcf):
 
     # initialisation
     tuflow_converter = TuflowModelConverter2D(tcf, tmpdir, model_name)
+    mocker.patch.object(
+        tuflow_converter._logger,
+        "exception",
+        side_effect=tuflow_converter._logger.error,
+    )
 
     expected_xml = XML2D()
     expected_ief = IEF()
