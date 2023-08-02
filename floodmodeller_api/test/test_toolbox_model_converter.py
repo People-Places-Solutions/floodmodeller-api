@@ -122,9 +122,9 @@ def test_model_converter(tmpdir, tcf, mocker):
         "INFO - ief done",
     ]
 
-    assert_log_contains(log_path, expected_log)
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
+    assert_log_contains(log_path, expected_log)
 
     # conversion
     tuflow_converter.convert_model()
@@ -153,9 +153,6 @@ def test_model_converter(tmpdir, tcf, mocker):
         "ERROR - failure",
     ]
 
-    assert_log_contains(log_path, expected_log)
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
-
-    # parameterise loc line
-    # parameterise estry
+    assert_log_contains(log_path, expected_log)

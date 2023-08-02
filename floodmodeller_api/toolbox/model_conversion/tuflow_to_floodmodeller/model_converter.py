@@ -179,12 +179,17 @@ class TuflowModelConverter2D:
 
     def _create_topography_cc_2d(self) -> TopographyConverter2D:
 
+        vectors = (
+            self._tgc.get_all_geodataframes("read gis z shape")
+            if self._tgc.check_key("read gis z shape")
+            else []
+        )
         return TopographyConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
             rasters=self._tgc.get_all_paths("read grid zpts"),
-            vectors=self._tgc.get_all_geodataframes("read gis z shape"),
+            vectors=vectors,
         )
 
     def _create_roughness_cc_2d(self) -> RoughnessConverter2D:
