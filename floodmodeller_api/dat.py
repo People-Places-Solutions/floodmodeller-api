@@ -23,7 +23,6 @@ from ._base import FMFile
 from .units.helpers import _to_float, _to_int
 from .validation.validation import _validate_unit
 
-
 class DAT(FMFile):
     """Reads and write Flood Modeller datafile format '.dat'
 
@@ -450,6 +449,8 @@ class DAT(FMFile):
 
     def _update_raw_data(self):
         block_shift = 0
+        comment_tracker = 0
+        comment_units = [unit for unit in self._all_units if unit._unit == "COMMENT"]
         prev_block_end = self._dat_struct[0]["end"]
         existing_units = {
             "boundaries": [],
@@ -458,7 +459,7 @@ class DAT(FMFile):
             "conduits": [],
             "losses": [],
         }
-
+ 
         for block in self._dat_struct:
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
@@ -481,6 +482,10 @@ class DAT(FMFile):
 
                     if block["Type"] == "INITIAL CONDITIONS":
                         new_unit_data = self.initial_conditions._write()
+                    elif block["Type"] == "COMMENT":
+                        comment = comment_units[comment_tracker]
+                        new_unit_data = comment._write()
+                        comment_tracker += 1 
 
                     elif block["Type"] == "VARIABLES":
                         new_unit_data = self.variables._write()
@@ -531,11 +536,15 @@ class DAT(FMFile):
                 if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
                     continue
-
+            
+                if block["Type"] == "COMMENT":
+                    self._all_units.append(units.COMMENT(unit_data, n=self._label_len))
+                    continue
+                    
                 if block["Type"] == "VARIABLES":
                     self.variables = units.Variables(unit_data)
                     continue
-
+                    
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
                 if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     unit_name = unit_data[2][: self._label_len].strip()
@@ -740,14 +749,16 @@ class DAT(FMFile):
                     "add_before or add_after argument must be a Flood Modeller Unit type"
                 )
 
-            _validate_unit(unit)
-            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
-            unit_group = getattr(self, unit_group_name)
-            unit_class = unit._unit
-            if unit.name in unit_group:
-                raise NameError(
-                    "Name already appears in unit group. Cannot have two units with same name in same group"
-                )
+            unit_class = unit._unit 
+            if unit_class != "COMMENT":
+                _validate_unit(unit)
+                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"] #get rid
+                unit_group = getattr(self, unit_group_name) 
+                #unit_class = unit._unit 
+                if unit.name in unit_group:
+                    raise NameError(
+                        "Name already appears in unit group. Cannot have two units with same name in same group"
+                    ) 
 
             # positional argument
             if add_at is not None:
@@ -766,23 +777,27 @@ class DAT(FMFile):
                 else:
                     raise Exception(
                         f"{check_unit} not found in dat network, so cannot be used to add before/after"
-                    )
-
+                    )            
+            
             unit_data = unit._write()
             self._all_units.insert(insert_index, unit)
-            unit_group[unit.name] = unit
+            if unit._unit != "COMMENT":
+                unit_group[unit.name] = unit
             self._dat_struct.insert(
                 insert_index + 1, {"Type": unit_class, "new_insert": unit_data}
-            )
+            ) #add to dat struct without unit.name
 
-            # update the iic's tables
-            iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            self.initial_conditions.data.loc[
-                len(self.initial_conditions.data)
-            ] = iic_data
+
+            if unit._unit != "COMMENT":
+                # update the iic's tables
+                iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                self.initial_conditions.data.loc[
+                    len(self.initial_conditions.data)
+                ] = iic_data #flaged
 
             # update all
-            self.general_parameters["Node Count"] += 1
+            if unit._unit != "COMMENT":
+                self.general_parameters["Node Count"] += 1 #flag no update for comments
             self._update_raw_data()
             self._update_dat_struct()
 
