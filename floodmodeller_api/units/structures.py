@@ -577,6 +577,9 @@ class SLUICE(Unit):
         rules (List[dict]): List of logical rules to use. Each rule is represented as a Dictionary with keys 'name' and 'logic'.
         time_rule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
             dataseries for 'Operating Rules'
+        varrules (List[dict]): List of logical variable rules to use. Each varrule is represented as a Dictionary with keys 'name' and 'logic'.
+        time_varrule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
+            dataseries for 'Operating Rules'
 
 
     **Radial Type (``SLUICE.subtype == 'RADIAL'``)**

@@ -155,6 +155,34 @@ DAT settings and can be edited by assigning them new values.
             "RAD File": ""
         }
 
+Within a unit, there is also support for logical RULES & VARRULES. There is also support for VARIABLES in the DAT file as well.
+
+.. warning:: 
+    You can only use RULES, VARRULES & VARIABLES if your unit/file actually has them.
+
+.. code:: python
+    dat.structures["MINT_SLu"].rules
+    >>> {
+            {"name": "Rule 1", "logic": "IF (LEVEL(KENT06_036...mer=ON\nEND"},
+            {"name": "Rule 2", "logic": "IF (Level(KENT06_036...ESTART\nEND"},
+            {"name": "Rule 3", "logic": "IF (Level(KENT06_036...VE = 0\nEND"}
+        }
+
+    dat.structures["MINT_SLu"].varrules
+    >>> {
+            {"name": "Varrule 1", "logic": "IF (Level(KENT06_036....RESET\nEND"},
+            {"name": "Varrule 2", "logic": "IF (Level(KENT06_036....RESET\nEND"}
+        }
+
+    dat.variables.data
+    >>> {
+            Index(["name", "type", "initial value", "initial status"], dtype="object")
+            0: array(["TravelTimer", "TIMER", "0", "0"], dtype=object)
+            1: array(["DumVar", "integer", "", "n/a"], dtype=object)
+        }
+
+
+
 Reference
 --------------
 .. autoclass:: floodmodeller_api.DAT
