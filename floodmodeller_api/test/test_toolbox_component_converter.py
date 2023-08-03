@@ -156,11 +156,11 @@ def test_abc():
 
     abc = ComponentConverter1D("test", "test")
     with pytest.raises(NotImplementedError):
-        abc.edit_ief()
+        abc.edit_fm_file()
 
     abc = ComponentConverter2D("test", "test", "test")
     with pytest.raises(NotImplementedError):
-        abc.edit_xml()
+        abc.edit_fm_file()
 
 
 def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
@@ -185,7 +185,7 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
         gpd.GeoDataFrame({"FID": 0, "geometry": [point2]})
     )
 
-    comp_area.edit_xml()
+    comp_area.edit_fm_file()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 3,
         "yll": 2,
@@ -219,7 +219,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
         loc_line=LineString([start, end]),
     )
 
-    loc_line.edit_xml()
+    loc_line.edit_fm_file()
     assert xml.domains["Domain 1"]["computational_area"] == {
         "xll": 1,
         "yll": 0,
@@ -312,7 +312,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
         assert (combine_layers.call_args_list[0][0][0][i]).equals(gdf)
     assert combine_layers.mock_calls[1][1][0] == vector_path
 
-    topography_converter.edit_xml()
+    topography_converter.edit_fm_file()
     assert xml.domains["Domain 1"]["topography"] == [raster_path, vector_path]
 
 
@@ -358,7 +358,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
     assert (material_to_roughness.call_args_list[0][0][1]).equals(standardised_mapping)
     assert material_to_roughness.mock_calls[1][1][0] == roughness_path
 
-    roughness_converter.edit_xml()
+    roughness_converter.edit_fm_file()
     assert xml.domains["Domain 1"]["roughness"] == [
         {
             "type": "global",
@@ -394,7 +394,7 @@ def test_scheme_converter_2d(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_
         scheme=in_scheme,
         hardware=in_hardware,
     )
-    scheme_converter.edit_xml()
+    scheme_converter.edit_fm_file()
 
     assert xml.domains["Domain 1"]["time"] == {
         "start_offset": 3,
@@ -416,7 +416,7 @@ def test_boundary_converter(tmpdir, xml, gdf1, gdf2):
         vectors=[gdf1, gdf2],
     )
     with pytest.raises(NotImplementedError):
-        boundary_converter.edit_xml()
+        boundary_converter.edit_fm_file()
 
 
 def test_scheme_converter_1d(tmpdir, ief):
@@ -426,6 +426,6 @@ def test_scheme_converter_1d(tmpdir, ief):
         folder=Path(tmpdir),
         time_step=3,
     )
-    scheme_converter.edit_ief()
+    scheme_converter.edit_fm_file()
 
     assert ief.Timestep == 3

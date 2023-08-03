@@ -50,11 +50,22 @@ def _validate_unit(unit, urban=False):
 def _validate_parameter(param, value):
     if param["type"] == "type-match":
         return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
+    
     elif param["type"] == "value-match":
         if isinstance(value, str):
             return value.upper() in param["options"], f'-> Expected: {param["options"]}'
         else:
             return value in param["options"], f'-> Expected: {param["options"]}'
+        
+    elif param["type"] == "end-value-match":
+        if value.strip().upper().endswith(tuple(param['options'])):
+            return (True, 0)
+        else:
+            return (
+                        False,
+                        f"-> Could not add rule: \n{value}\n     as it doesn't end with END or ENDIF.",
+                    )
+
     elif param["type"] == "type-value-match":
 
         new_rule = {"type": "type-match", "options": param["options"][0]}
