@@ -21,6 +21,7 @@ from .version import __version__
 from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
+from .units.comment import COMMENT 
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .backup import File
 
