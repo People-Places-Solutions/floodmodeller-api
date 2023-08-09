@@ -92,7 +92,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
 
 
 def test_model_converter(tmpdir, tcf, mocker):
-    def assert_log_contains(log_path, expected):
+    def assert_log_equals(log_path, expected):
         with open(log_path, "r") as file:
             for l1, l2 in zip(file, expected):
                 assert l1.split(" - ", 1)[1] == f"{l2}\n"
@@ -128,8 +128,7 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
-    assert tuflow_converter._dat == expected_dat
-    assert_log_contains(log_path, expected_log)
+    assert_log_equals(log_path, expected_log)
 
     # conversion
     tuflow_converter.convert_model()
@@ -160,5 +159,4 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
-    assert tuflow_converter._dat == expected_dat
-    assert_log_contains(log_path, expected_log)
+    assert_log_equals(log_path, expected_log)

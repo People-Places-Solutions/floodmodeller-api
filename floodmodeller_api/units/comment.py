@@ -34,7 +34,7 @@ class COMMENT(Unit):
 
     def _read(self, block):
         """Function to read a given COMMENT block and store data as class attributes"""
-        self.text = block[2:] # join into text 
+        self.text = "\n".join(block[2:]) # join into text 
 
 
     def _write(self):
@@ -42,13 +42,11 @@ class COMMENT(Unit):
         block = [self._unit]
     
         # Number of comment lines
-        num_lines = math.ceil(len(self.text)/80)
-        num_lines_line = "{:>10}".format(str(num_lines))
-        block.append(num_lines_line)
+        num_lines = len(self.text.split("\n"))
+        block.append(f"{num_lines:>10}")
     
         # Comment text lines
-        text = self.text
-        block.append(text)
+        block.extend(self.text.split("\n"))
     
         return block
 
@@ -58,7 +56,5 @@ class COMMENT(Unit):
     def _create_from_blank(self, text=None):
         '''Function to create an empty comment unit. '''
         if text is None:
-            text = []
-        setattr(self, 
-                "text", 
-                text)
+            text = ""
+        self.text = text
