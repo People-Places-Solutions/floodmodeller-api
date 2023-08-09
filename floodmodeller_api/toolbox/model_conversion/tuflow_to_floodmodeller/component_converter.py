@@ -1,4 +1,5 @@
-from floodmodeller_api import IEF, XML2D
+from floodmodeller_api import IEF, XML2D, DAT
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.convert_estry_001_oop import TuflowToDat
 
 from pathlib import Path
 from shapely.geometry import LineString
@@ -34,9 +35,9 @@ class ComponentConverter:
 
 
 class ComponentConverter1D(ComponentConverter):
-    def __init__(self, ief: IEF, folder: Path) -> None:
+    def __init__(self, folder: Path) -> None:
         super().__init__(folder)
-        self._ief = ief
+        
 
 
 class SchemeConverter1D(ComponentConverter1D):
@@ -46,11 +47,41 @@ class SchemeConverter1D(ComponentConverter1D):
         folder: Path,
         time_step: float,
     ) -> None:
-        super().__init__(ief, folder)
+        super().__init__(folder)
+        self._ief = ief
         self._time_step = time_step
 
     def edit_fm_file(self) -> None:
         self._ief.Timestep = self._time_step
+
+
+class NetworkConverter1D(ComponentConverter1D):
+    def __init__(
+        self,
+        dat: DAT,
+        folder: Path,
+        parent_folder: str,
+        nwk_path: str,
+        xs_path: str,
+    ) -> None:
+        super().__init__(folder)
+        self._dat = dat
+        tuf2dat = TuflowToDat()
+        self._temp_dat = tuf2dat.convert(parent_folder, nwk_path, xs_path)
+
+    def edit_fm_file(self) -> None:
+        filepath = self._dat._filepath
+        #self._dat.boundaries = self._temp_dat.boundaries
+        #self._dat.structures = self._temp_dat.structures
+        #self._dat.sections = self._temp_dat.sections
+        #self._dat.conduits = self._temp_dat.conduits
+        #self._dat.losses = self._temp_dat.losses
+        self._dat = self._temp_dat
+        self._dat._write()
+        self._temp_dat._write()
+        self._dat._filepath = filepath
+        print("")
+        #fm_file_wrapper.fm_file = self._dat
 
 
 class ComponentConverter2D(ComponentConverter):
@@ -123,6 +154,7 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
             comp_area_dict["deactive_area"] = self._deactive_area_path
 
         self._xml.domains[self._domain_name]["computational_area"] = comp_area_dict
+        print("")
 
 
 class LocLineConverter2D(ComputationalAreaConverter2D):
@@ -282,7 +314,7 @@ class RoughnessConverter2D(ComponentConverter2D):
         self._mapping = self.standardise_mapping(mapping)
 
         is_global = self._mapping["material_id"] == global_material
-        self._global_value = float(self._mapping.loc[is_global, "value"])
+        self._global_value = float(self._mapping.iloc[is_global, "value"])
 
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 

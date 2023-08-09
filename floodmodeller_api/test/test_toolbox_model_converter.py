@@ -1,4 +1,4 @@
-from floodmodeller_api import IEF, XML2D
+from floodmodeller_api import IEF, XML2D, DAT
 from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter2D,
@@ -71,6 +71,8 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
             }
         elif isinstance(fm_file, IEF):
             fm_file.Timestep = timestep
+        elif isinstance(fm_file, DAT):
+            fm_file.sections
 
     filepath = Path.joinpath(Path(tmpdir), file_name)
     fm_file_wrapper = FMFileWrapper(fm_file_class, filepath, {})
@@ -109,6 +111,7 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     expected_xml = XML2D()
     expected_ief = IEF()
+    expected_dat = DAT()
     expected_log = [
         "INFO - reading TUFLOW files...",
         "INFO - tcf done",
@@ -120,10 +123,12 @@ def test_model_converter(tmpdir, tcf, mocker):
         "INFO - ecf done",
         "INFO - initialising FM files...",
         "INFO - ief done",
+        "INFO - dat done",
     ]
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
+    assert tuflow_converter._dat == expected_dat
     assert_log_contains(log_path, expected_log)
 
     # conversion
@@ -155,4 +160,5 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
+    assert tuflow_converter._dat == expected_dat
     assert_log_contains(log_path, expected_log)

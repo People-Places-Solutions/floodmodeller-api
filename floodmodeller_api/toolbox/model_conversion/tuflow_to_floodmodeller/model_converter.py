@@ -1,8 +1,9 @@
-from floodmodeller_api import IEF, XML2D
+from floodmodeller_api import IEF, XML2D, DAT
 from .file_parser import TuflowParser
 from .component_converter import (
     ComponentConverter,
     SchemeConverter1D,
+    NetworkConverter1D,
     ComputationalAreaConverter2D,
     LocLineConverter2D,
     TopographyConverter2D,
@@ -19,14 +20,19 @@ import logging
 class FMFileWrapper:
     def __init__(
         self,
-        fm_file_class: Type[Union[XML2D, IEF]],
+        fm_file_class: Type[Union[XML2D, IEF, DAT]],
         fm_filepath: Union[str, Path],
         cc_dict: Dict[str, Callable[..., ComponentConverter]],
+        **kwargs
     ) -> None:
         self._fm_file_class = fm_file_class
         self._fm_filepath = fm_filepath
         self.cc_dict = cc_dict
-        self.fm_file = self._fm_file_class()
+        self.fm_file = self._fm_file_class(**kwargs)
+
+        if (fm_file_class == DAT) and not (hasattr(self.fm_file,"_gxy_data")):
+            self.fm_file._gxy_data = None
+
         self.fm_file.save(self._fm_filepath)
 
     def rollback(self) -> None:
@@ -108,7 +114,7 @@ class TuflowModelConverter2D:
 
         contains_estry = self._tcf.check_key("estry control file")
         if not contains_estry:
-            self._logger.info("ecf not detected; no ief required")
+            self._logger.info("ecf not detected; no ief or dat required")
             return
 
         self._ecf = TuflowParser(self._tcf.get_path("estry control file"))
@@ -125,6 +131,17 @@ class TuflowModelConverter2D:
         )
         self._logger.info("ief done")
 
+        print("")
+        self._fm_file_wrappers["dat"] = FMFileWrapper(
+            fm_file_class=DAT,
+            fm_filepath=Path.joinpath(self._root, f"{self._name}.dat"),
+            cc_dict={
+                "network+gxy": self._create_network_cc_1d,
+            },
+            with_gxy = True,
+        )
+        self._logger.info("dat done")
+
     @property
     def _xml(self) -> XML2D:
         return self._fm_file_wrappers["xml"].fm_file
@@ -132,13 +149,16 @@ class TuflowModelConverter2D:
     @property
     def _ief(self) -> IEF:
         return self._fm_file_wrappers["ief"].fm_file
+    
+    @property
+    def _dat(self) -> DAT:
+        return self._fm_file_wrappers["dat"].fm_file
 
     def convert_model(self) -> None:
 
         for fm_file_wrapper in self._fm_file_wrappers.values():
-
             for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
-
+                print("")
                 self._logger.info(f"converting {cc_display_name}...")
 
                 try:
@@ -150,6 +170,7 @@ class TuflowModelConverter2D:
                 except:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
+
 
     def _create_computational_area_cc_2d(self) -> ComputationalAreaConverter2D:
 
@@ -178,7 +199,7 @@ class TuflowModelConverter2D:
         )
 
     def _create_topography_cc_2d(self) -> TopographyConverter2D:
-
+        print("")
         vectors = (
             self._tgc.get_all_geodataframes("read gis z shape")
             if self._tgc.check_key("read gis z shape")
@@ -230,6 +251,17 @@ class TuflowModelConverter2D:
 
         return SchemeConverter1D(
             ief=self._ief,
+            dat=self._dat,
             folder=self._processed_inputs_folder,
             time_step=self._ecf.get_value("timestep", float),
+        )
+    
+    def _create_network_cc_1d(self) -> NetworkConverter1D:
+
+        return NetworkConverter1D(
+            dat=self._dat,
+            folder=self._processed_inputs_folder,
+            parent_folder=str(Path(self._tcf.get_path("estry control file")).parent),
+            nwk_path=r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp",
+            xs_path=r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp"
         )

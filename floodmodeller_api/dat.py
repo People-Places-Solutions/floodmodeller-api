@@ -40,7 +40,7 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
             self._filepath = dat_filepath
             if self._filepath != None:
@@ -48,7 +48,7 @@ class DAT(FMFile):
                 self._read()
 
             else:
-                self._create_from_blank()
+                self._create_from_blank(with_gxy)
 
             self._get_general_parameters()
             self._get_unit_definitions()
@@ -331,7 +331,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="write")
 
-    def _create_from_blank(self):
+    def _create_from_blank(self, with_gxy=False):
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
         self._dat_struct = [
@@ -349,7 +349,11 @@ class DAT(FMFile):
             "INITIAL CONDITIONS",
             " label   ?      flow     stage froude no  velocity     umode    ustate         z",
         ]
-        self._gxy_filepath = None
+        if not with_gxy:
+            self._gxy_filepath = None
+        else:
+            #write gxy file
+            pass
 
     def _get_general_parameters(self):
         # ** Get general parameters here

@@ -11,9 +11,9 @@ from floodmodeller_api.units.comment import COMMENT
 
 
 #   File paths for model, xs and nwk, read in 
-model_path = r"C:\Users\LAMBERD3\Documents\Python\Data\Tuflow_data\TUFLOW\model"
-nwk_path = r"C:\Users\LAMBERD3\Documents\Python\Data\Tuflow_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp"
-xs_path = r"C:\Users\LAMBERD3\Documents\Python\Data\Tuflow_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp"
+model_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model"
+nwk_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp"
+xs_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp"
 
 def process_shapefile(path):
     attributes = gpd.read_file(path)
@@ -79,7 +79,7 @@ for i, row in nwk_attributes.iterrows():
     nwk_attributes.at[i, 'before'] = previous_ids
     
     
-#   Hihlight flag from nwk and map length/ maning/gxy stuff to xs
+#   Highlight flag from nwk and map length/ maning/gxy stuff to xs
 filtered_df = nwk_attributes[nwk_attributes['connected'].apply(lambda x: len(x) > 1)] 
 lists = filtered_df['connected'].tolist() 
 master_list = [item for sublist in lists for item in sublist] 
@@ -136,7 +136,9 @@ def get_coordinates(point):
     return point.x, point.y
 
 geoseries = gpd.GeoSeries(xs_attributes['location'])
-easting, northing = geoseries.apply(get_coordinates).str #type: ignore 
+coords = geoseries.apply(get_coordinates).str #type: ignore 
+easting = coords[0]
+northing = coords[1]
 xs_attributes['easting'] = easting
 xs_attributes['northing'] = northing
 
@@ -180,6 +182,7 @@ dat = DAT()
 comment = COMMENT(text = "End of Reach")
 headings = ['X', 'Y', 'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting',
        'Northing', 'Deactivation', 'SP. Marker']
+dat._gxy_data = None
 #iterate through adding xs 
 for index, row in cross_sections.iterrows():
         unit_csv_name = str(row['Source']) #'..\\csv\\1d_xs_M14_C99.csv' pulled out     
@@ -204,9 +207,6 @@ for index, row in cross_sections.iterrows():
             dat.insert_unit(comment, add_at= -1)
 
 
-dat.save(r"new2.dat")
-
-
 #   Write out .gxy 
 file_contents = ""
 for index, row in cross_sections.iterrows():
@@ -214,5 +214,5 @@ for index, row in cross_sections.iterrows():
     file_contents += "x={:.2f}\n".format(row['easting'])
     file_contents += "y={:.2f}\n\n".format(row['northing'])
 
-with open('new2.gxy', 'w') as file:
-    file.write(file_contents)
+dat._gxy_data = file_contents
+dat.save(r"new2.dat")

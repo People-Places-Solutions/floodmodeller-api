@@ -20,7 +20,7 @@ Instead, it will skip that component and print the error in the log.
 
 From command line (within python environment where floodmodeller_api is installed):
 ```
-tuflow_to_floodmodeller --tcf_path "<tcf file path>" --folder "<where to save new model>" --name <name for new model>"
+tuflow_to_floodmodeller --tcf_path "<tcf file path>" --folder "<where to save new model>" --name "<name for new model>"
 ```
 
 Within python code:
