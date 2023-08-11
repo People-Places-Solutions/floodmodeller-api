@@ -7,30 +7,36 @@ from shapely.geometry import Point
 from floodmodeller_api import DAT 
 from floodmodeller_api.units.sections import RIVER
 from floodmodeller_api.units.comment import COMMENT 
+from typing import List
 
 class TuflowToDat:
 
-    def _process_shapefile(self, path):
-        attributes = gpd.read_file(path)
-        attributes.dropna(how='all', axis=1, inplace=True)
+    def _process_shapefile(self, paths):
+        attributes_list = []
+        for path in paths:
+            temp = gpd.read_file(path)
+            temp.dropna(how='all', axis=1, inplace=True)
+            attributes_list.append(temp)
+
+        attributes = gpd.GeoDataFrame(pd.concat(attributes_list, ignore_index=True))
         return attributes
     
 
-    def _read_in(self, model_path, nwk_path, xs_path):
+    def _read_in(self, model_path, nwk_paths, xs_path):
         #   File paths for model, xs and nwk, read in 
 
         self._model_path = model_path
-        self._nwk_path = nwk_path
+        self._nwk_paths = nwk_paths
         self._xs_path = xs_path
         #self._model_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model"
         #self._nwk_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp"
         #self._xs_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp"
-#
-        self._nwk_attributes = self._process_shapefile(self._nwk_path)
+
+        self._nwk_attributes = self._process_shapefile(self._nwk_paths)
         self._xs_attributes = self._process_shapefile(self._xs_path)
 
 
-    def _clean_df(self):
+    def _clean_df_1(self):
         #   Clean up dataframes
         self._nwk_attributes = self._nwk_attributes.query("Type.str.lower() == 's'") 
         self._nwk_attributes = self._nwk_attributes.dropna(subset=['geometry']) 
@@ -157,6 +163,7 @@ class TuflowToDat:
         self._xs_attributes['easting'] = easting
         self._xs_attributes['northing'] = northing
 
+
     # this method needs fixing apparently
     def _organise_df(self):
         ###### Currently works but misses out last XS in series 
@@ -165,26 +172,29 @@ class TuflowToDat:
         order_counter = 1
         for i, row in self._xs_attributes.iterrows():
             # Check if the row is a start or join_start
-            if 'start' in row['Flag'] or 'join_start' in row['Flag']:
-                self._xs_attributes.at[i, 'order'] = order_counter
+            if not ('start' in row['Flag'] or 'join_start' in row['Flag']):
+                return
+            self._xs_attributes.at[i, 'order'] = order_counter
+            order_counter += 1
+            intersect_value = row['intersect']
+            next_row_index = self._xs_attributes[(self._xs_attributes['end_intersect'] == intersect_value) & (self._xs_attributes['Flag'] == '')].index
+            while not next_row_index.empty: 
+                next_row_index = next_row_index[0]
+                self._xs_attributes.at[next_row_index, 'order'] = order_counter
                 order_counter += 1
-                intersect_value = row['intersect']
+
+                intersect_value = self._xs_attributes.at[next_row_index, 'intersect']
+                end_intersect_value = self._xs_attributes.at[next_row_index, 'end_intersect']
                 next_row_index = self._xs_attributes[(self._xs_attributes['end_intersect'] == intersect_value) & (self._xs_attributes['Flag'] == '')].index
-                while not next_row_index.empty: 
-                    next_row_index = next_row_index[0]
-                    self._xs_attributes.at[next_row_index, 'order'] = order_counter
-                    order_counter += 1
 
-                    intersect_value = self._xs_attributes.at[next_row_index, 'intersect']
-                    end_intersect_value = self._xs_attributes.at[next_row_index, 'end_intersect']
-                    next_row_index = self._xs_attributes[(self._xs_attributes['end_intersect'] == intersect_value) & (self._xs_attributes['Flag'] == '')].index
+            if next_row_index.empty:
+                next_row_index = self._xs_attributes[self._xs_attributes['end_intersect'] == intersect_value].index
+                next_row_index = next_row_index[0]
+                self._xs_attributes.at[next_row_index, 'order'] = order_counter
+                order_counter += 1
 
-                if next_row_index.empty:
-                    next_row_index = self._xs_attributes[self._xs_attributes['end_intersect'] == intersect_value].index
-                    next_row_index = next_row_index[0]
-                    self._xs_attributes.at[next_row_index, 'order'] = order_counter
-                    order_counter += 1
 
+    def _clean_df_2(self):
         # Sort the dataframe based on the order column
         self._xs_attributes = self._xs_attributes.sort_values('order')
 
@@ -194,8 +204,8 @@ class TuflowToDat:
         self._cross_sections['Name'] = ['RIV' + str(i).zfill(3) for i in range(1, len(self._cross_sections) + 1)]
 
 
-    def _make_dat(self):
-        self._dat = DAT()
+    def _make_dat(self, empty_dat):
+        self._dat = empty_dat
         self._comment = COMMENT(text = "End of Reach")
         self._headings = ['X', 'Y', 'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting',
                'Northing', 'Deactivation', 'SP. Marker']
@@ -238,11 +248,11 @@ class TuflowToDat:
         self._dat._gxy_data = file_contents
 
 
-    def convert(self, model_path, nwk_path, xs_path):
+    def convert(self, model_path: str, nwk_paths: List[str], xs_path: str, empty_dat: DAT):
 
-        self._read_in(model_path, nwk_path, xs_path)
+        self._read_in(model_path, nwk_paths, xs_path)
 
-        self._clean_df()
+        self._clean_df_1()
 
         self._extract_geometry_data()
         
@@ -260,7 +270,9 @@ class TuflowToDat:
 
         self._organise_df()
 
-        self._make_dat()
+        self._clean_df_2()
+
+        self._make_dat(empty_dat)
 
         self._add_xss()
 
@@ -268,5 +280,5 @@ class TuflowToDat:
 
         #self._dat.save(output_path)
 
-        return self._dat
+        #return self._dat
 

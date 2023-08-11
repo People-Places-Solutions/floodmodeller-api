@@ -1,7 +1,7 @@
 from floodmodeller_api import IEF, XML2D, DAT
 from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
-    TuflowModelConverter2D,
+    TuflowModelConverter,
 )
 
 from pathlib import Path
@@ -102,7 +102,7 @@ def test_model_converter(tmpdir, tcf, mocker):
     log_path = Path.joinpath(Path(tmpdir), model_name, f"{model_name}_conversion.log")
 
     # initialisation
-    tuflow_converter = TuflowModelConverter2D(tcf, tmpdir, model_name)
+    tuflow_converter = TuflowModelConverter(tcf, tmpdir, model_name)
     mocker.patch.object(
         tuflow_converter._logger,
         "exception",

@@ -1,5 +1,7 @@
 from floodmodeller_api import IEF, XML2D, DAT
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.convert_estry_001_oop import TuflowToDat
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.convert_estry_001_oop import (
+    TuflowToDat,
+)
 
 from pathlib import Path
 from shapely.geometry import LineString
@@ -34,13 +36,12 @@ class ComponentConverter:
         raise NotImplementedError("Abstract method not overwritten")
 
 
-class ComponentConverter1D(ComponentConverter):
+class ComponentConverterIEF(ComponentConverter):
     def __init__(self, folder: Path) -> None:
         super().__init__(folder)
-        
 
 
-class SchemeConverter1D(ComponentConverter1D):
+class SchemeConverterIEF(ComponentConverterIEF):
     def __init__(
         self,
         ief: IEF,
@@ -55,43 +56,39 @@ class SchemeConverter1D(ComponentConverter1D):
         self._ief.Timestep = self._time_step
 
 
-class NetworkConverter1D(ComponentConverter1D):
+class ComponentConverterDAT(ComponentConverter):
+    def __init__(self, folder: Path) -> None:
+        super().__init__(folder)
+
+
+class NetworkConverterDAT(ComponentConverterDAT):
     def __init__(
         self,
         dat: DAT,
         folder: Path,
         parent_folder: str,
-        nwk_path: str,
+        nwk_paths: List[str],
         xs_path: str,
     ) -> None:
         super().__init__(folder)
         self._dat = dat
-        tuf2dat = TuflowToDat()
-        self._temp_dat = tuf2dat.convert(parent_folder, nwk_path, xs_path)
+        self.parent_folder = parent_folder
+        self.nwk_paths = nwk_paths
+        self.xs_path = xs_path
 
     def edit_fm_file(self) -> None:
-        filepath = self._dat._filepath
-        #self._dat.boundaries = self._temp_dat.boundaries
-        #self._dat.structures = self._temp_dat.structures
-        #self._dat.sections = self._temp_dat.sections
-        #self._dat.conduits = self._temp_dat.conduits
-        #self._dat.losses = self._temp_dat.losses
-        self._dat = self._temp_dat
-        self._dat._write()
-        self._temp_dat._write()
-        self._dat._filepath = filepath
-        print("")
-        #fm_file_wrapper.fm_file = self._dat
+        tuf2dat = TuflowToDat()
+        tuf2dat.convert(self.parent_folder, self.nwk_paths, self.xs_path, self._dat)
 
 
-class ComponentConverter2D(ComponentConverter):
+class ComponentConverterXML2D(ComponentConverter):
     def __init__(self, xml: XML2D, folder: Path, domain_name: str) -> None:
         super().__init__(folder)
         self._xml = xml
         self._domain_name = domain_name
 
 
-class ComputationalAreaConverter2D(ComponentConverter2D):
+class ComputationalAreaConverter2D(ComponentConverterXML2D):
     def __init__(
         self,
         xml: XML2D,
@@ -104,7 +101,6 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         all_areas: List[gpd.GeoDataFrame],
         rotation: float = None,
     ) -> None:
-
         super().__init__(xml, folder, domain_name)
 
         self._xll = xll
@@ -135,7 +131,6 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
         return new_file
 
     def edit_fm_file(self) -> None:
-
         comp_area_dict = {
             "xll": self._xll,
             "yll": self._yll,
@@ -154,7 +149,6 @@ class ComputationalAreaConverter2D(ComponentConverter2D):
             comp_area_dict["deactive_area"] = self._deactive_area_path
 
         self._xml.domains[self._domain_name]["computational_area"] = comp_area_dict
-        print("")
 
 
 class LocLineConverter2D(ComputationalAreaConverter2D):
@@ -168,7 +162,6 @@ class LocLineConverter2D(ComputationalAreaConverter2D):
         all_areas: List[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
-
         x1, y1 = loc_line.coords[0]
         x2, y2 = loc_line.coords[1]
 
@@ -182,7 +175,7 @@ class LocLineConverter2D(ComputationalAreaConverter2D):
         )
 
 
-class TopographyConverter2D(ComponentConverter2D):
+class TopographyConverter2D(ComponentConverterXML2D):
     def __init__(
         self,
         xml: XML2D,
@@ -210,7 +203,6 @@ class TopographyConverter2D(ComponentConverter2D):
 
     @classmethod
     def combine_layers(cls, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
-
         all_types = concat([cls.standardise_topography(x) for x in layers])
 
         lines = all_types[all_types.geometry.geometry.type == "LineString"]
@@ -228,7 +220,6 @@ class TopographyConverter2D(ComponentConverter2D):
             return cls.convert_polygons(polygons)
 
         else:
-
             spatial_types = []
             if lines_present:
                 spatial_types.append("lines")
@@ -250,8 +241,9 @@ class TopographyConverter2D(ComponentConverter2D):
     def convert_lines_and_points(
         lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
     ) -> gpd.GeoDataFrame:
-
         # split lines according to points
+
+        # split() causes: RuntimeWarning: invalid value encountered in line_locate_point: return lib.line_locate_point(line, other)
         segments = gpd.GeoDataFrame(
             list(split(lines.geometry.unary_union, points.geometry.unary_union).geoms),
             crs=lines.crs,
@@ -284,7 +276,6 @@ class TopographyConverter2D(ComponentConverter2D):
 
     @staticmethod
     def convert_polygons(polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-
         new_polygons = polygons.iloc[:, [0, 3, 4]]
         new_polygons.columns = ["height", "method", "geometry"]
 
@@ -295,7 +286,7 @@ class TopographyConverter2D(ComponentConverter2D):
         return new_polygons
 
 
-class RoughnessConverter2D(ComponentConverter2D):
+class RoughnessConverter2D(ComponentConverterXML2D):
     def __init__(
         self,
         xml: XML2D,
@@ -306,7 +297,6 @@ class RoughnessConverter2D(ComponentConverter2D):
         file_material: List[gpd.GeoDataFrame],
         mapping: pd.DataFrame,
     ) -> None:
-
         super().__init__(xml, folder, domain_name)
 
         self._law = law
@@ -314,7 +304,7 @@ class RoughnessConverter2D(ComponentConverter2D):
         self._mapping = self.standardise_mapping(mapping)
 
         is_global = self._mapping["material_id"] == global_material
-        self._global_value = float(self._mapping.iloc[is_global, "value"])
+        self._global_value = float(self._mapping.loc[is_global, "value"])
 
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 
@@ -354,7 +344,7 @@ class RoughnessConverter2D(ComponentConverter2D):
         ]
 
 
-class SchemeConverter2D(ComponentConverter2D):
+class SchemeConverter2D(ComponentConverterXML2D):
     def __init__(
         self,
         xml: XML2D,
@@ -387,7 +377,7 @@ class SchemeConverter2D(ComponentConverter2D):
         self._xml.processor = {"type": self._processor}
 
 
-class BoundaryConverter2D(ComponentConverter2D):
+class BoundaryConverter2D(ComponentConverterXML2D):
     def __init__(
         self,
         xml: XML2D,

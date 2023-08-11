@@ -58,6 +58,7 @@ class DAT(FMFile):
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
         self._update()
+        self._write_gxy(self._gxy_filepath)
 
     def save(self, filepath: Union[str, Path]) -> None:
         """Saves the DAT to the given location, if pointing to an existing file it will be overwritten.
@@ -72,6 +73,9 @@ class DAT(FMFile):
         """
         filepath = Path(filepath).absolute()
         self._save(filepath)
+        self._write_gxy(filepath)
+
+    def _write_gxy(self, filepath):
         if not self._gxy_data == None:
             gxy_string = self._gxy_data
             new_gxy_path = filepath.with_suffix(".gxy")
@@ -349,11 +353,12 @@ class DAT(FMFile):
             "INITIAL CONDITIONS",
             " label   ?      flow     stage froude no  velocity     umode    ustate         z",
         ]
-        if not with_gxy:
-            self._gxy_filepath = None
+
+        self._gxy_filepath = None
+        if with_gxy:
+            self._gxy_data = ""
         else:
-            #write gxy file
-            pass
+            self._gxy_data = None
 
     def _get_general_parameters(self):
         # ** Get general parameters here

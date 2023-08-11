@@ -1,9 +1,12 @@
 from floodmodeller_api import IEF, XML2D, DAT
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
+    ComponentConverter,
+)
 from .file_parser import TuflowParser
 from .component_converter import (
     ComponentConverter,
-    SchemeConverter1D,
-    NetworkConverter1D,
+    SchemeConverterIEF,
+    NetworkConverterDAT,
     ComputationalAreaConverter2D,
     LocLineConverter2D,
     TopographyConverter2D,
@@ -23,16 +26,12 @@ class FMFileWrapper:
         fm_file_class: Type[Union[XML2D, IEF, DAT]],
         fm_filepath: Union[str, Path],
         cc_dict: Dict[str, Callable[..., ComponentConverter]],
-        **kwargs
+        **kwargs,
     ) -> None:
         self._fm_file_class = fm_file_class
         self._fm_filepath = fm_filepath
         self.cc_dict = cc_dict
         self.fm_file = self._fm_file_class(**kwargs)
-
-        if (fm_file_class == DAT) and not (hasattr(self.fm_file,"_gxy_data")):
-            self.fm_file._gxy_data = None
-
         self.fm_file.save(self._fm_filepath)
 
     def rollback(self) -> None:
@@ -40,10 +39,29 @@ class FMFileWrapper:
 
     def update(self) -> None:
         self.fm_file.update()
+    
+    #def set_fm_filepath(self):
+    #    return ""
 
 
-class TuflowModelConverter2D:
+#class XML2DWrapper(FMFileWrapper):
+#    
+#    def set_fm_filepath(self):
+#        return XML2D
+#
+#
+#class IEFWrapper(FMFileWrapper):
+#    
+#    def set_fm_filepath(self):
+#        return IEF
+#    
+#    
+#class DATWrapper(FMFileWrapper):
+#    
+#    def set_fm_filepath(self):
+#        return DAT
 
+class TuflowModelConverter:
     DOMAIN_NAME = "Domain 1"
 
     def __init__(
@@ -52,7 +70,6 @@ class TuflowModelConverter2D:
         folder: Union[str, Path],
         name: str,
     ) -> None:
-
         self._tcf_path = tcf_path
         self._name = name
         self._root = Path.joinpath(Path(folder), self._name)
@@ -61,11 +78,9 @@ class TuflowModelConverter2D:
         self._processed_inputs_folder.mkdir(parents=True, exist_ok=True)
 
         self._create_logger()
-        self._initialise_2d()
-        self._initialise_1d()
+        self._initialise_control_files()
 
     def _create_logger(self) -> None:
-
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
 
@@ -78,8 +93,7 @@ class TuflowModelConverter2D:
         )
         self._logger = logging.getLogger(__name__)
 
-    def _initialise_2d(self) -> None:
-
+    def _initialise_control_files(self) -> None:
         self._logger.info("reading TUFLOW files...")
 
         self._tcf = TuflowParser(self._tcf_path)
@@ -98,17 +112,15 @@ class TuflowModelConverter2D:
                 fm_file_class=XML2D,
                 fm_filepath=Path.joinpath(self._root, f"{self._name}.xml"),
                 cc_dict={
-                    "computational area": self._create_computational_area_cc_2d,
-                    "topography": self._create_topography_cc_2d,
-                    "roughness": self._create_roughness_cc_2d,
-                    "scheme": self._create_scheme_cc_2d,
-                    # "boundary": self._create_boundary_cc_2d,
+                    "computational area": self._create_computational_area_cc_xml2d,
+                    "topography": self._create_topography_cc_xml2d,
+                    "roughness": self._create_roughness_cc_xml2d,
+                    "scheme": self._create_scheme_cc_xml2d,
+                    # "boundary": self._create_boundary_cc_xml2d,
                 },
             )
         }
         self._logger.info("xml done")
-
-    def _initialise_1d(self) -> None:
 
         self._logger.info("reading TUFLOW files...")
 
@@ -126,19 +138,18 @@ class TuflowModelConverter2D:
             fm_file_class=IEF,
             fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
             cc_dict={
-                "estry": self._create_scheme_cc_1d,
+                "estry": self._create_scheme_cc_ief,
             },
         )
         self._logger.info("ief done")
 
-        print("")
         self._fm_file_wrappers["dat"] = FMFileWrapper(
             fm_file_class=DAT,
             fm_filepath=Path.joinpath(self._root, f"{self._name}.dat"),
             cc_dict={
-                "network+gxy": self._create_network_cc_1d,
+                "network and gxy": self._create_network_cc_dat,
             },
-            with_gxy = True,
+            with_gxy=True,
         )
         self._logger.info("dat done")
 
@@ -149,16 +160,15 @@ class TuflowModelConverter2D:
     @property
     def _ief(self) -> IEF:
         return self._fm_file_wrappers["ief"].fm_file
-    
+
     @property
     def _dat(self) -> DAT:
         return self._fm_file_wrappers["dat"].fm_file
 
     def convert_model(self) -> None:
-
         for fm_file_wrapper in self._fm_file_wrappers.values():
             for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
-                print("")
+
                 self._logger.info(f"converting {cc_display_name}...")
 
                 try:
@@ -171,9 +181,7 @@ class TuflowModelConverter2D:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
 
-
-    def _create_computational_area_cc_2d(self) -> ComputationalAreaConverter2D:
-
+    def _create_computational_area_cc_xml2d(self) -> ComputationalAreaConverter2D:
         dx = self._tgc.get_value("cell size", float)
         lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
         all_areas = self._tgc.get_all_geodataframes("read gis code")
@@ -198,8 +206,8 @@ class TuflowModelConverter2D:
             all_areas=all_areas,
         )
 
-    def _create_topography_cc_2d(self) -> TopographyConverter2D:
-        print("")
+
+    def _create_topography_cc_xml2d(self) -> TopographyConverter2D:
         vectors = (
             self._tgc.get_all_geodataframes("read gis z shape")
             if self._tgc.check_key("read gis z shape")
@@ -212,9 +220,9 @@ class TuflowModelConverter2D:
             rasters=self._tgc.get_all_paths("read grid zpts"),
             vectors=vectors,
         )
+    
 
-    def _create_roughness_cc_2d(self) -> RoughnessConverter2D:
-
+    def _create_roughness_cc_xml2d(self) -> RoughnessConverter2D:
         return RoughnessConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
@@ -225,8 +233,7 @@ class TuflowModelConverter2D:
             mapping=self._tcf.get_dataframe("read materials file"),
         )
 
-    def _create_scheme_cc_2d(self) -> SchemeConverter2D:
-
+    def _create_scheme_cc_xml2d(self) -> SchemeConverter2D:
         return SchemeConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
@@ -238,8 +245,7 @@ class TuflowModelConverter2D:
             hardware=self._tcf.get_value("hardware"),
         )
 
-    def _create_boundary_cc_2d(self) -> BoundaryConverter2D:
-
+    def _create_boundary_cc_xml2d(self) -> BoundaryConverter2D:
         return BoundaryConverter2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
@@ -247,21 +253,22 @@ class TuflowModelConverter2D:
             vectors=self._tbc.get_all_geodataframes("read gis bc"),
         )
 
-    def _create_scheme_cc_1d(self) -> SchemeConverter1D:
-
-        return SchemeConverter1D(
+    def _create_scheme_cc_ief(self) -> SchemeConverterIEF:
+        return SchemeConverterIEF(
             ief=self._ief,
-            dat=self._dat,
             folder=self._processed_inputs_folder,
             time_step=self._ecf.get_value("timestep", float),
         )
-    
-    def _create_network_cc_1d(self) -> NetworkConverter1D:
 
-        return NetworkConverter1D(
+    def _create_network_cc_dat(self) -> NetworkConverterDAT:
+        networks = []
+        for path in self._ecf._dict["read gis network"]:
+            networks.append(str(self._ecf._folder) + "\\" + str(path))
+
+        return NetworkConverterDAT(
             dat=self._dat,
             folder=self._processed_inputs_folder,
-            parent_folder=str(Path(self._tcf.get_path("estry control file")).parent),
-            nwk_path=r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp",
-            xs_path=r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp"
+            parent_folder=str(self._ecf._folder),
+            nwk_paths=networks, # r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp",
+            xs_path=str(self._ecf.get_path("read gis table links")), # r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp",
         )
