@@ -12,13 +12,19 @@ from typing import List
 class TuflowToDat:
 
     def _process_shapefile(self, paths):
-        attributes_list = []
-        for path in paths:
-            temp = gpd.read_file(path)
-            temp.dropna(how='all', axis=1, inplace=True)
-            attributes_list.append(temp)
+        attributes = ""
+        if type(paths) == str:
+            #the paths is just a single path and also a single string
+            attributes = gpd.read_file(paths)
+            attributes.dropna(how='all', axis=1, inplace=True)
+        else:
+            attributes_list = []
+            for path in paths:
+                temp = gpd.read_file(path)
+                temp.dropna(how='all', axis=1, inplace=True)
+                attributes_list.append(temp)
 
-        attributes = gpd.GeoDataFrame(pd.concat(attributes_list, ignore_index=True))
+            attributes = gpd.GeoDataFrame(pd.concat(attributes_list, ignore_index=True))
         return attributes
     
 
@@ -38,10 +44,25 @@ class TuflowToDat:
 
     def _clean_df_1(self):
         #   Clean up dataframes
-        self._nwk_attributes = self._nwk_attributes.query("Type.str.lower() == 's'") 
+        self._nwk_attributes = self._nwk_attributes.query("Type.str.lower() == 's' | Type.str.lower() == 'r'") 
+        if "Len_or_ANA" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Len_or_ANA'])
+        if "Form_Loss" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Form_Loss'])
+        if "pBlockage" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['pBlockage'])
+        if "Conn_No" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Conn_No'])
+        if "Width_or_D" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Width_or_D'])
+        if "Height_or_" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Height_or_'])
+        if "Number_of" in self._nwk_attributes:
+            self._nwk_attributes = self._nwk_attributes.drop(columns=['Number_of'])
         self._nwk_attributes = self._nwk_attributes.dropna(subset=['geometry']) 
         self._xs_attributes = self._xs_attributes.dropna(subset=['geometry']) 
-        self._xs_attributes = self._xs_attributes[self._xs_attributes.intersects(self._nwk_attributes.unary_union)] 
+        if not (self._nwk_attributes.unary_union == None):
+            self._xs_attributes = self._xs_attributes[self._xs_attributes.intersects(self._nwk_attributes.unary_union)] 
 
 
     def _extract_geometry_data(self):
@@ -83,6 +104,8 @@ class TuflowToDat:
             intersected_rows = self._nwk_attributes[~self._nwk_attributes.index.isin([i]) & self._nwk_attributes.geometry.intersects(end_point)]
             next_ids = intersected_rows['ID'].tolist()
             self._nwk_attributes.at[i, 'connected'] = next_ids
+            if not (row['Type'] == "s"):
+                self._nwk_attributes['Flag'][i] = "culvert"
 
 
     def _find_us_intersect(self):
@@ -141,13 +164,16 @@ class TuflowToDat:
             mask = self._xs_attributes['end_intersect'] == key
             self._xs_attributes.loc[mask, 'mannings'] = values['n_nF_Cd']
 
-        self._xs_attributes['location'] = ''
+        self._xs_attributes['location'] = ''#self._xs_attributes['start']
         for key, values in self._full_flag_dict.items():
             mask = self._xs_attributes['intersect'] == key
             self._xs_attributes.loc[mask, 'location'] = values['start']
         for key, values in self._end_dict.items():
             mask = self._xs_attributes['end_intersect'] == key
             self._xs_attributes.loc[mask, 'location'] = values['end']
+        #for index, row in self._xs_attributes.iterrows():
+        #    if row['location'] == '':
+        #        self._xs_attributes = self._xs_attributes.drop(index)
 
 
     def _get_coordinates(self, point):
@@ -170,15 +196,24 @@ class TuflowToDat:
         #   organise df 
         self._xs_attributes['order'] = 0
         order_counter = 1
+        isCulvertDict = (self._nwk_attributes['Flag'] == "culvert").to_dict()
+        culvertsIndex = [key for key, value in isCulvertDict.items() if value == True]
+        culvertsID = []
+        for index in culvertsIndex:
+            culvertsID.append(self._nwk_attributes['ID'][index])
         for i, row in self._xs_attributes.iterrows():
+            if row['intersect'] in culvertsID:
+                    continue
             # Check if the row is a start or join_start
             if not ('start' in row['Flag'] or 'join_start' in row['Flag']):
-                return
+                continue
             self._xs_attributes.at[i, 'order'] = order_counter
             order_counter += 1
             intersect_value = row['intersect']
             next_row_index = self._xs_attributes[(self._xs_attributes['end_intersect'] == intersect_value) & (self._xs_attributes['Flag'] == '')].index
             while not next_row_index.empty: 
+                if row['intersect'] in culvertsID:
+                    continue
                 next_row_index = next_row_index[0]
                 self._xs_attributes.at[next_row_index, 'order'] = order_counter
                 order_counter += 1
@@ -193,11 +228,14 @@ class TuflowToDat:
                 self._xs_attributes.at[next_row_index, 'order'] = order_counter
                 order_counter += 1
 
+        print("")
 
-    def _clean_df_2(self):
         # Sort the dataframe based on the order column
         self._xs_attributes = self._xs_attributes.sort_values('order')
+        print("")
 
+
+    def _clean_df_2(self):
         #clean up df 
         col_to_drop = ["Type", "Z_Incremen", "Z_Maximum", "mid_intersect", "geometry", "intersect", "end_intersect", "location", "order"]
         self._cross_sections = self._xs_attributes.drop(col_to_drop, axis = 1)
