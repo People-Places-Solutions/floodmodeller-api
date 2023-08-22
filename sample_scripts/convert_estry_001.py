@@ -215,4 +215,4 @@ for index, row in cross_sections.iterrows():
     file_contents += "y={:.2f}\n\n".format(row['northing'])
 
 dat._gxy_data = file_contents
-dat.save(r"new2.dat")
+dat.save(r"new3.dat")
