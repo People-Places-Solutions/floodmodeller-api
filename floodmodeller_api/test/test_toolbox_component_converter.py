@@ -1,11 +1,12 @@
 from floodmodeller_api import IEF, XML2D
-from toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
     concat,
     rename_and_select,
     filter,
-    SchemeConverter1D,
-    ComponentConverter1D,
-    ComponentConverter2D,
+    SchemeConverterIEF,#SchemeConverter1D,
+    ComponentConverter,
+    #ComponentConverter1D,
+    #ComponentConverter2D,
     ComputationalAreaConverter2D,
     LocLineConverter2D,
     TopographyConverter2D,
@@ -154,11 +155,11 @@ def test_filter(polygon1, polygon2):
 
 def test_abc():
 
-    abc = ComponentConverter1D("test", "test")
+    abc = ComponentConverter("test", "test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
-    abc = ComponentConverter2D("test", "test", "test")
+    abc = ComponentConverter("test", "test", "test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
@@ -421,7 +422,7 @@ def test_boundary_converter(tmpdir, xml, gdf1, gdf2):
 
 def test_scheme_converter_1d(tmpdir, ief):
 
-    scheme_converter = SchemeConverter1D(
+    scheme_converter = SchemeConverterIEF(
         ief=ief,
         folder=Path(tmpdir),
         time_step=3,
