@@ -68,10 +68,10 @@ class TuflowToDat:
         self._nwk_attributes["end"] = self._nwk_attributes["geometry"].apply(
             lambda g: Point(g.coords[-1])
         )
-        self._culvert_attributes["start"] = self._culvert_attributes["geometry"].apply(
+        self._culvert_attributes["end"] = self._culvert_attributes["geometry"].apply(
             lambda g: Point(g.coords[0])
         )
-        self._culvert_attributes["end"] = self._culvert_attributes["geometry"].apply(
+        self._culvert_attributes["start"] = self._culvert_attributes["geometry"].apply(
             lambda g: Point(g.coords[-1])
         )
 
@@ -364,56 +364,72 @@ class TuflowToDat:
                 self._dat.insert_unit(self._comment, add_at=-1)
 
     def _add_culverts(self):
+        self._culvert_comment = COMMENT(text="End of Culvert")
         # iterate through adding xs
         for index, row in self._culvert_attributes.iterrows():
-            unit_data = pd.DataFrame(columns=self._headings)
-            #unit_data["X"] = unit_csv["X"]
-            #unit_data["Y"] = unit_csv["Z"]
-            #unit_data["Mannings n"] = row["mannings"]
-            #unit_data["Panel"].fillna(False, inplace=True)
-            #unit_data["RPL"].fillna(1.0, inplace=True)
-            #unit_data["Marker"].fillna(False, inplace=True)
-            #unit_data["SP. Marker"].fillna(0, inplace=True)
-
-            params = ""
-            friction_params = ""
             if row["Type"] == "R":
                 subtype = "RECTANGULAR"
-                invert = _to_float(row["US_Invert"])
                 width = _to_float(row["Width_or_D"])
                 height = _to_float(row["Height_or_"])
-                params = join_10_char(invert,width,height)
-                friction_below_axis = 0.0
-                friction_above_axis = 0.0
-                friction_params = join_10_char(friction_below_axis,friction_above_axis)
+                friction_on_walls = _to_float(row["n_nF_Cd"])
+                friction_on_invert = _to_float(row["n_nF_Cd"])
+                friction_on_soffit = _to_float(row["n_nF_Cd"])
             elif row["Type"] == "C":
                 subtype = "CIRCULAR"
-                # add circular *params
+                diameter = _to_float(row["Width_or_D"])
+                friction_below_axis = _to_float(row["n_nF_Cd"])
+                friction_above_axis = _to_float(row["n_nF_Cd"])
             else:
                 subtype = "SECTION"
             comment = ""
             name = "UNIT{:03d}".format(index)
             spill = ""
-            dist_to_next = 0.0 # how to get this?
+            length = row["Len_or_ANA"]
+            dist_to_next = 0.0
             friction_eq = "MANNING"
+            invert = 0.0
             
-            c_block = []
-            c_block.append("CONDUIT "+comment)
-            c_block.append(subtype)
-            c_block.append(join_10_char(name,spill))
-            c_block.append(str(dist_to_next))
-            c_block.append(friction_eq)
-            c_block.append(params)
-            c_block.append(friction_params)
+            for i in range (0,2):
+                if i == 0:
+                    name_ud = name+"u"
+                    next_dist = length
+                    invert = _to_float(row["US_Invert"])
+                else:
+                    name_ud = name+"d"
+                    next_dist = dist_to_next
+                    invert = _to_float(row["DS_Invert"])
 
-            unit = CONDUIT(
-                unit_block=c_block,
-                n=10,
-            )
+                if row["Type"] == "R":
+                    unit = CONDUIT(
+                        name=name_ud,
+                        spill=spill,
+                        comment=comment,
+                        dist_to_next=next_dist,
+                        subtype=subtype,
+                        friction_eq=friction_eq,
+                        invert=invert,
+                        width=width,
+                        height=height,
+                        friction_on_walls=friction_on_walls,
+                        friction_on_invert=friction_on_invert,
+                        friction_on_soffit=friction_on_soffit,
+                    )
+                elif row["Type"] == "C":
+                    unit = CONDUIT(
+                        name=name_ud,
+                        spill=spill,
+                        comment=comment,
+                        dist_to_next=next_dist,
+                        subtype=subtype,
+                        friction_eq=friction_eq,
+                        invert=invert,
+                        diameter=diameter,
+                        friction_below_axis=friction_below_axis,
+                        friction_above_axis=friction_above_axis,
+                    )
 
-            self._dat.insert_unit(unit, add_at=-1)
-            #if row["Flag"] == "end" or row["Flag"] == "join_end":
-            self._dat.insert_unit(self._comment, add_at=-1)
+                self._dat.insert_unit(unit, add_at=-1)
+            self._dat.insert_unit(self._culvert_comment, add_at=-1)
 
     def _add_gxy_data(self):
         #   Write out .gxy
@@ -431,9 +447,14 @@ class TuflowToDat:
                 # add circular *params
             else:
                 subtype = "SECTION"
-            file_contents += "[CONDUIT_{}_{}]\n".format(subtype,"UNIT{:03d}".format(index))
-            file_contents += "x={:.2f}\n".format((row["start"].x+row["end"].x)/2)
-            file_contents += "y={:.2f}\n\n".format((row["start"].y+row["end"].y)/2)
+            # upstream conduit for the culvert
+            file_contents += "[CONDUIT_{}_{}]\n".format(subtype,"UNIT{:03d}d".format(index))
+            file_contents += "x={:.2f}\n".format(row["start"].x)
+            file_contents += "y={:.2f}\n\n".format(row["start"].y)
+            # downstream conduit for the culvert
+            file_contents += "[CONDUIT_{}_{}]\n".format(subtype,"UNIT{:03d}u".format(index))
+            file_contents += "x={:.2f}\n".format(row["end"].x)
+            file_contents += "y={:.2f}\n\n".format(row["end"].y)
 
         self._dat._gxy_data = file_contents
 

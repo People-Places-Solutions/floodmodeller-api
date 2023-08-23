@@ -90,6 +90,56 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
+    def _create_from_blank(
+            self,
+            name="new_unit",
+            spill="",
+            comment="",
+            dist_to_next=0.0,
+            subtype="SECTION",
+            friction_eq="MANNING",
+            invert=0.0,
+            width=0.0,
+            height=0.0,
+            use_bottom_slot="GLOBAL",
+            bottom_slot_dist=0.0,
+            bottom_slot_depth=0.0,
+            use_top_slot="GLOBAL",
+            top_slot_dist=0.0,
+            top_slot_depth=0.0,
+            friction_on_invert=0.0,
+            friction_on_walls=0.0,
+            friction_on_soffit=0.0,
+            diameter=0.0,
+            friction_above_axis=0.0,
+    ):
+        for param, val in {
+            "name" : name,
+            "spill" : spill,
+            "comment" : comment,
+            "dist_to_next" : dist_to_next,
+            "subtype" : subtype,
+            "friction_eq" : friction_eq,
+            "invert" : invert,
+            "width" : width,
+            "height" : height,
+            "use_bottom_slot" : use_bottom_slot,
+            "bottom_slot_dist" : bottom_slot_dist,
+            "bottom_slot_depth" : bottom_slot_depth,
+            "use_top_slot" : use_top_slot,
+            "top_slot_dist" : top_slot_dist,
+            "top_slot_depth" : top_slot_depth,
+            "friction_on_invert" : friction_on_invert,
+            "friction_on_walls" : friction_on_walls,
+            "friction_on_soffit" : friction_on_soffit,
+            "diameter" : diameter,
+            "friction_above_axis" : friction_above_axis,
+        }.items():
+            setattr(self, param, val)
+
+    def subtype(self, new_value):
+        pass
+
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()

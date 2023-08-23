@@ -26,7 +26,7 @@ def _validate_unit(unit, urban=False):
 
         options = (
             parameter_options if not urban else urban_parameter_options
-        )  # define which dictionary to use
+        ) # define which dictionary to use
 
         if param in options:
             value = getattr(unit, param)
