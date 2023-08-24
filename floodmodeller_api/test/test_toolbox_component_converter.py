@@ -157,7 +157,7 @@ def test_filter(polygon1, polygon2):
 
 
 def test_abc():
-    
+
     abc = ComponentConverter("test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
@@ -233,12 +233,13 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
 
     loc_line.edit_fm_file()
     assert xml.domains["Domain 1"]["computational_area"] == {
-        "xll": 1,
-        "yll": 0,
+        "xll": 1.0,
+        "yll": 0.0,
         "dx": 2.5,
         "nrows": 12,
         "ncols": 16,
         "rotation": rotation,
+        "active_area": Path(tmpdir+"\\active_area.shp"),
     }
 
 
