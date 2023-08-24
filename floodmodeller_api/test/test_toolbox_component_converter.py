@@ -5,6 +5,9 @@ from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.componen
     filter,
     SchemeConverterIEF,#SchemeConverter1D,
     ComponentConverter,
+    ComponentConverterDAT,
+    ComponentConverterIEF,
+    ComponentConverterXML2D,
     #ComponentConverter1D,
     #ComponentConverter2D,
     ComputationalAreaConverter2D,
@@ -154,12 +157,20 @@ def test_filter(polygon1, polygon2):
 
 
 def test_abc():
-
-    abc = ComponentConverter("test", "test")
+    
+    abc = ComponentConverter("test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
-    abc = ComponentConverter("test", "test", "test")
+    abc = ComponentConverterDAT("test")
+    with pytest.raises(NotImplementedError):
+        abc.edit_fm_file()
+
+    abc = ComponentConverterIEF("test")
+    with pytest.raises(NotImplementedError):
+        abc.edit_fm_file()
+
+    abc = ComponentConverterXML2D(XML2D, "test", "test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
