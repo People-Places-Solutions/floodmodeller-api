@@ -68,6 +68,7 @@ To develop a custom tool and extend with `FMTool`, follow the example below.
 1. Write a function to do what you need to do! You can do whatever you want here, but for now you will need to save the output to a file and pass any complex python objects (e.g. a `DAT`) as a file path.
 
 .. code:: python
+
     # Import modules
     ## Modules for the function
     from pathlib import Path
@@ -96,6 +97,7 @@ You need to add the class attributes for:
 
 
 .. code:: python
+
     ## Modules to create a tool
     from floodmodeller_api.toolbox import FMTool, Parameter
     ## Wrap the FMTool class ---------------- #
@@ -111,12 +113,16 @@ You need to add the class attributes for:
 
 
 You can then run the GUI like this:
+
 .. code:: python
+
     tool = RaiseBedLevelsTool()
     tool.run_gui()
 
 Or expose it to the command line like this:
+
 .. code:: python
+    
     if __name__ == "__main__":
         tool = RaiseBedLevelsTool()
         tool.run_from_command_line()

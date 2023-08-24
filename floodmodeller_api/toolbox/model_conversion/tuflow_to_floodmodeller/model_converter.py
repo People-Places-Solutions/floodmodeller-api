@@ -39,27 +39,6 @@ class FMFileWrapper:
 
     def update(self) -> None:
         self.fm_file.update()
-    
-    #def set_fm_filepath(self):
-    #    return ""
-
-
-#class XML2DWrapper(FMFileWrapper):
-#    
-#    def set_fm_filepath(self):
-#        return XML2D
-#
-#
-#class IEFWrapper(FMFileWrapper):
-#    
-#    def set_fm_filepath(self):
-#        return IEF
-#    
-#    
-#class DATWrapper(FMFileWrapper):
-#    
-#    def set_fm_filepath(self):
-#        return DAT
 
 class TuflowModelConverter:
     DOMAIN_NAME = "Domain 1"
