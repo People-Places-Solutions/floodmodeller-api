@@ -176,11 +176,20 @@ class CONDUIT(Unit):
 
         elif self.subtype == "SECTION":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            self.coords = []
             end_index = (5 + _to_int(c_block[4]))
+            x = []
+            y = []
+            friction = []
             for i in range(5, end_index):
                 row_data = split_10_char(f"{c_block[i]:<30}")
-                self.coords.append([_to_float(row_data[0]),_to_float(row_data[1]),_to_float(row_data[2])])
+                x.append(_to_float(row_data[0]))
+                y.append(_to_float(row_data[1]))
+                friction.append(_to_float(row_data[2]))
+            self.coords = pd.DataFrame({
+                "x": x,
+                "y": y,
+                "cw_friction": friction
+            })
 
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
