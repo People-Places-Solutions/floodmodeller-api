@@ -123,7 +123,7 @@ with open(csv_output_path, "w", newline="") as file:
             weir_coefficient = structure.weir_flow_coefficient
             dimensions = f"crest elevation: {structure.crest_elevation:.2f} x width: {structure.weir_breadth:.2f} x length: {structure.weir_length:.2f}"
         elif structure._unit == "RNWEIR":
-            dimensions = f"crest elevation: {structure.weir_elevation:.2f} x width: {structure.weir_breadth:.2f} x height: {structure.weir_length:.2f}"
+            dimensions = f"crest elevation: {structure.weir_elevation:.2f} x width: {structure.weir_breadth:.2f} x length: {structure.weir_length:.2f}"
         elif structure._unit == "BRIDGE":
             all_mannings = structure.section_data["Mannings n"].tolist()
             mannings_set = set([min(all_mannings), max(all_mannings)])
@@ -131,6 +131,9 @@ with open(csv_output_path, "w", newline="") as file:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
                 friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
+                height = structure.opening_data.values[0][3] - min(structure.section_data.Y.tolist())
+                width = structure.opening_data.values[0][1] - structure.opening_data.values[0][0]
+            dimensions = f"height: {height:.2f} x width: {width:.2f}"
 
         writer.writerow(
             [
