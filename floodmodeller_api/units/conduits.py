@@ -79,6 +79,46 @@ class CONDUIT(Unit):
         friction_below_axis (float): Friction value for conduit below axis
         friction_above_axis (float): Friction value for conduit above axis
 
+    **Sprung Type (``CONDUIT.subtype == 'SPRUNG'``)**
+
+    Args:
+        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        elevation_invert (float): Height of the conduit above datum (m)
+        width (float): Width of conduit (m)
+        height_springing (float): Height of conduit's springing (m)
+        height_crown (float): Height of conduit's crown (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_walls (float): Friction value for conduit walls
+        friction_on_soffit (float): Friction value for conduit soffit
+        
+    **Sprungarch Type (``CONDUIT.subtype == 'SPRUNGARCH'``)**
+
+    Args:
+        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        elevation_invert (float): Height of the conduit above datum (m)
+        width (float): Width of conduit (m)
+        height_springing (float): Height of conduit's springing (m)
+        height_crown (float): Height of conduit's crown (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_walls (float): Friction value for conduit walls
+        friction_on_soffit (float): Friction value for conduit soffit
+        
+    **Section Type (``CONDUIT.subtype == 'SECTION'``)**
+
+    Args:
+        None - common args attributes only 
 
     Raises:
         NotImplementedError: Raised if class is initialised without existing Conduit block (i.e. if attempting to create new
@@ -119,7 +159,7 @@ class CONDUIT(Unit):
 
         elif self.subtype == "RECTANGULAR":
             # Read Params
-            self.dist_to_next = self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
             params = split_10_char(f"{c_block[5]:<90}")
             self.invert = _to_float(params[0])
