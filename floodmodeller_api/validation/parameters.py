@@ -263,6 +263,22 @@ parameter_options = {
         "type": "type-match",
         "options": (float, int)
     },
+    "equation": {
+        "type": "type-match",
+        "options": (str)
+    },
+    "elevation_invert": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "height_springing": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "height_crown": {
+        "type": "type-match",
+        "options": (float, int)
+    },
     "easting": {
         "type": "type-match",
         "options": (float, int)
@@ -404,6 +420,14 @@ parameter_options = {
         "options": (float, int)
     },
     "ds_weir_height": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "discharge_coefficeient": {
+        "type": "type-match",
+        "options": (float, int)
+    },
+    "exponent": {
         "type": "type-match",
         "options": (float, int)
     },
