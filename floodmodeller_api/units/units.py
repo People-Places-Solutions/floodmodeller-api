@@ -25,6 +25,7 @@ from .structures import (
     ORIFICE,
     SPILL,
     RNWEIR,
+    WEIR,
     CRUMP,
     FLAT_V_WEIR,
     OUTFALL,
@@ -50,6 +51,7 @@ SUPPORTED_UNIT_TYPES = {
     "BLOCKAGE": {"group": "losses", "has_subtype": False},
     "CULVERT": {"group": "losses", "has_subtype": True},
     "RNWEIR": {"group": "structures", "has_subtype": False},
+    "WEIR": {"group": "structures", "has_subtype": False},  # general weir
     "CRUMP": {"group": "structures", "has_subtype": False},
     "FLAT-V WEIR": {"group": "structures", "has_subtype": False},
     # "RESERVOIR": {"group":"structures", "has_subtype": False}, # Needs further testing
@@ -131,7 +133,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "SYPHON": {"group": "structures", "has_subtype": False},  # syphon unit
     # "TIDAL": {"has_subtype": }, #can still be read - similar to TIDBY
     "TIDBDY": {"group": "boundaries", "has_subtype": False},  # tidal
-    "WEIR": {"group": "structures", "has_subtype": False},  # general weir
 }
 
 ALL_UNIT_TYPES = set(SUPPORTED_UNIT_TYPES.keys()).union(UNSUPPORTED_UNIT_TYPES)

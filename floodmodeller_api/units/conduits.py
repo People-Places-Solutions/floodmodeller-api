@@ -139,7 +139,7 @@ class CONDUIT(Unit):
         elif self.subtype == "SPRUNG":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
-            params = split_10_char(f"{c_block[5]:<90}")
+            params = split_10_char(f"{c_block[5]:<100}")
             self.elevation_invert = _to_float(params[0])
             self.width = _to_float(params[1])
             self.height_springing = _to_float(params[2])
@@ -158,7 +158,7 @@ class CONDUIT(Unit):
         elif self.subtype == "SPRUNGARCH":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
-            params = split_10_char(f"{c_block[5]:<90}")
+            params = split_10_char(f"{c_block[5]:<100}")
             self.elevation_invert = _to_float(params[0])
             self.width = _to_float(params[1])
             self.height_springing = _to_float(params[2])
@@ -251,6 +251,68 @@ class CONDUIT(Unit):
                 ]
             )
             return c_block
+        
+        elif self.subtype == "SPRUNG":
+            c_block.extend(
+                [
+                    str(self.dist_to_next),
+                    self.equation,
+                    join_10_char(
+                        self.elevation_invert,
+                        self.width,
+                        self.height_springing,
+                        self.height_crown,
+                        self.use_bottom_slot,
+                        self.bottom_slot_dist,
+                        self.bottom_slot_depth,
+                        self.use_top_slot,
+                        self.top_slot_dist,
+                        self.top_slot_depth,
+                    ),
+                    join_10_char(
+                        self.friction_on_invert,
+                        self.friction_on_walls,
+                        self.friction_on_soffit,
+                    ),
+                ]
+            )
+            return c_block
+        
+        elif self.subtype == "SPRUNGARCH":
+            c_block.extend(
+                [
+                    str(self.dist_to_next),
+                    self.equation,
+                    join_10_char(
+                        self.elevation_invert,
+                        self.width,
+                        self.height_springing,
+                        self.height_crown,
+                        self.use_bottom_slot,
+                        self.bottom_slot_dist,
+                        self.bottom_slot_depth,
+                        self.use_top_slot,
+                        self.top_slot_dist,
+                        self.top_slot_depth,
+                    ),
+                    join_10_char(
+                        self.friction_on_invert,
+                        self.friction_on_walls,
+                        self.friction_on_soffit,
+                    ),
+                ]
+            )
+            return c_block
+        
+        elif self.subtype == "SECTION":
+            c_block.extend(
+                [
+                    join_10_char(self.dist_to_next),
+                    join_10_char(len(self.coords)),
+                ]
+            )
+            for index, coord in self.coords.iterrows():
+                c_block.extend([join_10_char(coord.x,coord.y,coord.cw_friction)])
 
         else:
             return self._raw_block

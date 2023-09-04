@@ -1,11 +1,29 @@
 from floodmodeller_api import DAT
 import csv
-from floodmodeller_api.units.structures import WEIR
+from floodmodeller_api.units.conduits import CONDUIT
 
 dat_file_path = (
     r"C:\FloodModellerJacobs\Structure Log\DAT_for_API\Bourn_Rea_OBC_BLN_DEF_006.dat"
 )
 csv_output_path = r"C:\FloodModellerJacobs\Structure Log\output\structure_log.csv"
+
+c = CONDUIT
+c._label_len=12
+c.subtype="SPRUNGARCH"
+c._read(
+    c,
+    [
+        "CONDUIT *CH2M 2016 - Bridge unit replaced by a culvert due to tunnel length*",
+        "SPRUNGARCH",
+        "REA01_6486c",
+        "    27.000",
+        "MANNING",
+        "   102.340     8.500     3.450     1.390    GLOBAL     0.000     0.000",
+        "",
+    ]
+)
+print(c._write(c))
+
 
 dat = DAT(dat_file_path)
 
