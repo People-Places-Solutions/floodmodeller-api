@@ -71,8 +71,6 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
             }
         elif isinstance(fm_file, IEF):
             fm_file.Timestep = timestep
-        elif isinstance(fm_file, DAT):
-            fm_file.sections
 
     filepath = Path.joinpath(Path(tmpdir), file_name)
     fm_file_wrapper = FMFileWrapper(fm_file_class, filepath, {})
@@ -94,7 +92,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
 def test_model_converter(tmpdir, tcf, mocker):
     def assert_log_equals(log_path, expected):
         with open(log_path, "r") as file:
-            for l1, l2 in zip(file, expected):
+            for l1, l2 in zip(file, expected, strict=True):
                 assert l1.split(" - ", 1)[1] == f"{l2}\n"
 
     model_name = "test_name"
@@ -111,6 +109,7 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     expected_xml = XML2D()
     expected_ief = IEF()
+    expected_dat = DAT()
     expected_log = [
         "INFO - reading TUFLOW files...",
         "INFO - tcf done",
@@ -127,6 +126,7 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
+    assert tuflow_converter._dat == expected_dat
     assert_log_equals(log_path, expected_log)
 
     # conversion
@@ -154,8 +154,11 @@ def test_model_converter(tmpdir, tcf, mocker):
         "ERROR - failure",
         "INFO - converting estry...",
         "ERROR - failure",
+        "INFO - converting network and gxy...",
+        "ERROR - failure",
     ]
 
     assert tuflow_converter._xml == expected_xml
     assert tuflow_converter._ief == expected_ief
+    assert tuflow_converter._dat == expected_dat
     assert_log_equals(log_path, expected_log)
