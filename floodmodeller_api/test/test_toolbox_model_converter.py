@@ -6,6 +6,7 @@ from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
 
 from pathlib import Path
 from shapely.geometry import Point, LineString
+from itertools import zip_longest
 import geopandas as gpd
 import pytest
 
@@ -92,7 +93,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
 def test_model_converter(tmpdir, tcf, mocker):
     def assert_log_equals(log_path, expected):
         with open(log_path, "r") as file:
-            for l1, l2 in zip(file, expected, strict=True):
+            for l1, l2 in zip_longest(file, expected):
                 assert l1.split(" - ", 1)[1] == f"{l2}\n"
 
     model_name = "test_name"
