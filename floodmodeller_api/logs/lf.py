@@ -315,7 +315,10 @@ class LF2(LF):
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]]):
 
-        data_to_extract = lf2_data_to_extract
+        data_to_extract = {
+            **lf1_unsteady_data_to_extract,
+            **lf2_data_to_extract,
+        }
 
         super().__init__(lf_filepath, data_to_extract, steady=False)
 
