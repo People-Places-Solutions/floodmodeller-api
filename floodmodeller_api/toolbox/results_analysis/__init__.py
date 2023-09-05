@@ -1,1 +1,1 @@
-from .structure_log import StructureLog
+from .structure_log_definition import StructureLog

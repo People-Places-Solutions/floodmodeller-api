@@ -3,6 +3,10 @@ import csv
 
 class StructureLog:
 
+    def __init__(self, input_path, output_path) -> None:
+        self.dat_file_path = input_path
+        self.csv_output_path = output_path
+
     def _add_fields(self):
         field = [
             "Unit Name",
@@ -261,12 +265,12 @@ class StructureLog:
     ]
 )
 
-    def create(self, dat_file_path, csv_output_path):
+    def create(self):
         # Read in the .dat file
-        self._dat = DAT(dat_file_path)
+        self._dat = DAT(self.dat_file_path)
 
         # Create a new .csv file
-        with open(csv_output_path, "w", newline="") as file:
+        with open(self.csv_output_path, "w", newline="") as file:
             self.writer = csv.writer(file)
 
             self._add_fields()
