@@ -8,6 +8,7 @@ from floodmodeller_api.units.sections import RIVER
 from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.comment import COMMENT
 from shapely.geometry import Point
+from shapely import wkt
 
 
 class TuflowToDat:
@@ -228,10 +229,11 @@ class TuflowToDat:
         self._xs_attributes["location"] = ""
         for key, values in self._full_flag_dict.items():
             mask = self._xs_attributes["intersect"] == key
-            self._xs_attributes.loc[mask, "location"] = values["start"]
+            self._xs_attributes.loc[mask, "location"] = values["start"].wkt
         for key, values in self._end_dict.items():
             mask = self._xs_attributes["end_intersect"] == key
-            self._xs_attributes.loc[mask, "location"] = values["end"]
+            self._xs_attributes.loc[mask, "location"] = values["end"].wkt
+        self._xs_attributes["location"] = self._xs_attributes["location"].apply(wkt.loads)
 
     def _get_coordinates(self, point):
         #   take xs intersect, map to start point from nwk, set x as east, y as north
