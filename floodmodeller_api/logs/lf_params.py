@@ -416,6 +416,23 @@ lf2_data_to_extract = {
         "prefix": "!!output2 Data prep completed in",
         "data_type": "last",
     },
+    "max_courant_number": {
+        "class": FloatParser,
+        "prefix": "!!output2 Maximum Courant number:",
+        "data_type": "last",
+    },
+    "final_mass_error": {
+        "class": FloatSplitParser,
+        "prefix": "!!output2    Final mass error            :",
+        "data_type": "last",
+        "split": "%",
+    },
+    "combined_mass_error": {
+        "class": FloatSplitParser,
+        "prefix": "!!output2     Combined mass error (%):",
+        "data_type": "last",
+        "split": "%",
+    },
     # run
     "simulated": {
         "class": TimeDeltaHMSParser,
@@ -434,17 +451,17 @@ lf2_data_to_extract = {
         "prefix": "!!PlotG2 Wet cells",
         "data_type": "all",
     },
-    "2D_boundary_inflow": {
+    "boundary_inflow_2D": {
         "class": FloatParser,
         "prefix": "!!PlotG2 2D boundary inflow",
         "data_type": "all",
     },
-    "2D_boundary_outflow": {
+    "boundary_outflow_2D": {
         "class": FloatParser,
         "prefix": "!!PlotG2 2D boundary outflow",
         "data_type": "all",
     },
-    "1D_link_flow": {
+    "link_flow_1D": {
         "class": FloatParser,
         "prefix": "!!PlotG2 1D link flow",
         "data_type": "all",
