@@ -189,7 +189,8 @@ Further, we can remove all information relating to the key roughness,
 
     del model.domains[domain_name]["roughness"]
 
-
+The xml2d files should follow the Flood Modeller xsd schema - preferably the most recent version 
+but backwards compatability is possible.
 
 Reference
 --------------

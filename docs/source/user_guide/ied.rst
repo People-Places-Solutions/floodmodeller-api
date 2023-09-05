@@ -74,6 +74,24 @@ For example to add a brand new blank ``HTBDY`` into an ied, you could run:
 .. tip::
    Full details on all the various boundary unit classes can be found in the :ref:`Boundary units <boundary_units>` section.
 
+You can get all of the units currently unsupported by the api that have been read in from the ied file:
+
+.. code:: python
+    ied._unsupported
+    >>> { 
+            <floodmodeller_api Unit Class: FSSR16BDY(name=resin, type=False)>
+        }
+
+Or if you want to get both supported & unsupported units:
+
+.. code:: python
+    ied._all_units
+    >>> { 
+            <floodmodeller_api Unit Class: FSSR16BDY(name=resin, type=False)>,
+            <floodmodeller_api Unit Class: QTBDY(name=CS26)>,
+            <floodmodeller_api Unit Class: QHBDY(name=DS4)>
+        }
+
 Reference
 --------------
 .. autoclass:: floodmodeller_api.IED

@@ -577,6 +577,9 @@ class SLUICE(Unit):
         rules (List[dict]): List of logical rules to use. Each rule is represented as a Dictionary with keys 'name' and 'logic'.
         time_rule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
             dataseries for 'Operating Rules'
+        varrules (List[dict]): List of logical variable rules to use. Each varrule is represented as a Dictionary with keys 'name' and 'logic'.
+        time_varrule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
+            dataseries for 'Operating Rules'
 
 
     **Radial Type (``SLUICE.subtype == 'RADIAL'``)**
@@ -1106,6 +1109,95 @@ class RNWEIR(Unit):
             "modular_limit": modular_limit,
             "upstream_crest_height": upstream_crest_height,
             "downstream_crest_height": downstream_crest_height,
+            "weir_length": weir_length,
+            "wier_breadth": weir_breadth,
+            "weir_elevation": weir_elevation,
+        }.items():
+            setattr(self, param, val)
+
+class WEIR(Unit):
+    """Class to hold and process WEIR unit type
+
+    Args:
+        name (str, optional): Upstream label name.
+        comment (str, optional): Comment included in unit.
+        ds_label (str, optional): Downstream label.
+        exponent (float, optional): Coefficient of discharge for the weir,
+        discharge_coefficeient (float, optional): Exponent used in the weir flow equation,
+        velocity_coefficient (float, optional): Coefficient of approach velocity.
+        weir_length (float, optional): Length of weir crest in the direction of flow (m).
+        weir_breadth (float, optional): Breadth of weir at control section (normal to the flow direction)(m).
+        weir_elevation (float, optional): Elevation of weir crest (m AD).
+        modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode.
+
+    Returns:
+        WEIR: Flood Modeller WEIR Unit class object"""
+
+    _unit = "WEIR"
+
+    def _read(self, block):
+        """Function to read a given WEIR block and store data as class attributes"""
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = block[0].replace("WEIR", "").strip()
+
+        # Exponent
+        self.exponent = _to_float(block[2].strip())
+
+        # Parameters line
+        params = split_10_char(f"{block[3]:<50}")
+        self.discharge_coefficient = _to_float(params[0])
+        self.velocity_coefficient = _to_float(params[1])
+        self.weir_breadth = _to_float(params[2])
+        self.weir_elevation = _to_float(params[3])
+        self.modular_limit = _to_float(params[4])
+
+    def _write(self):
+        """Function to write a valid WEIR block"""
+        _validate_unit(self)
+        header = "WEIR " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+        block = [header, labels]
+
+        # Exponent line
+        exp_line = join_10_char(self.exponent)
+        block.append(exp_line)
+
+        # Parameter line
+        params = join_10_char(
+            self.discharge_coefficient,
+            self.velocity_coefficient,
+            self.weir_breadth,
+            self.weir_elevation,
+            self.modular_limit,
+        )
+        block.append(params)
+
+        return block
+
+    def _create_from_blank(
+        self,
+        name="new_weir",
+        comment="",
+        ds_label="",
+        exponent=1.5,
+        discharge_coefficeient=1.0,
+        velocity_coefficient=1.0,
+        modular_limit=0.7,
+        weir_length=0.0,
+        weir_breadth=0.0,
+        weir_elevation=0.0,
+    ):
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "ds_label": ds_label,
+            "exponent": exponent,
+            "discharge_coefficeient": discharge_coefficeient,
+            "velocity_coefficient": velocity_coefficient,
+            "modular_limit": modular_limit,
             "weir_length": weir_length,
             "wier_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
