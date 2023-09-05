@@ -1,21 +1,19 @@
-from floodmodeller_api import IEF, XML2D
+from floodmodeller_api import IEF, XML2D, DAT
 from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
     concat,
     rename_and_select,
     filter,
-    SchemeConverterIEF,#SchemeConverter1D,
+    SchemeConverterIEF,
     ComponentConverter,
     ComponentConverterDAT,
     ComponentConverterIEF,
     ComponentConverterXML2D,
-    #ComponentConverter1D,
-    #ComponentConverter2D,
-    ComputationalAreaConverter2D,
-    LocLineConverter2D,
-    TopographyConverter2D,
-    RoughnessConverter2D,
-    SchemeConverter2D,
-    BoundaryConverter2D,
+    ComputationalAreaConverterXML2D,
+    LocLineConverterXML2D,
+    TopographyConverterXML2D,
+    RoughnessConverterXML2D,
+    SchemeConverterXML2D,
+    BoundaryConverterXML2D,
 )
 
 from pathlib import Path
@@ -25,7 +23,7 @@ import geopandas as gpd
 import numpy as np
 import pytest
 
-path_to_cc = "toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
+path_to_cc = "floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
 
 
 @pytest.fixture
@@ -162,11 +160,11 @@ def test_abc():
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
-    abc = ComponentConverterDAT("test")
+    abc = ComponentConverterDAT(DAT, "test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
-    abc = ComponentConverterIEF("test")
+    abc = ComponentConverterIEF(IEF, "test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
 
@@ -180,7 +178,7 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
     active_area_path = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area_path = Path.joinpath(Path(tmpdir), "deactive_area.shp")
 
-    comp_area = ComputationalAreaConverter2D(
+    comp_area = ComputationalAreaConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -218,10 +216,9 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
         ((1, 0), (-10, -20), 241.189),
     ],
 )
-def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
+def test_loc_line_converter(tmpdir, xml, gdf1, start, end, rotation):
 
-    mocker.patch(f"{path_to_cc}.filter")
-    loc_line = LocLineConverter2D(
+    loc_line = LocLineConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -245,7 +242,7 @@ def test_loc_line_converter(mocker, tmpdir, xml, gdf1, start, end, rotation):
 
 def test_convert_points_and_lines(tuflow_p, tuflow_l):
 
-    combined = TopographyConverter2D.combine_layers((tuflow_p, tuflow_l))
+    combined = TopographyConverterXML2D.combine_layers((tuflow_p, tuflow_l))
 
     assert combined.equals(
         gpd.GeoDataFrame(
@@ -264,7 +261,7 @@ def test_convert_points_and_lines(tuflow_p, tuflow_l):
 
 def test_convert_polygons(tuflow_r):
 
-    combined = TopographyConverter2D.combine_layers((tuflow_r,))
+    combined = TopographyConverterXML2D.combine_layers((tuflow_r,))
 
     assert combined.equals(
         gpd.GeoDataFrame(
@@ -283,23 +280,23 @@ def test_convert_polygons(tuflow_r):
 def test_convert_unsupported_shape(tuflow_p, tuflow_l, tuflow_r):
 
     with pytest.raises(RuntimeError) as e:
-        TopographyConverter2D.combine_layers((tuflow_l,))
+        TopographyConverterXML2D.combine_layers((tuflow_l,))
     assert str(e.value) == "Combination not supported: lines"
 
     with pytest.raises(RuntimeError) as e:
-        TopographyConverter2D.combine_layers((tuflow_p,))
+        TopographyConverterXML2D.combine_layers((tuflow_p,))
     assert str(e.value) == "Combination not supported: points"
 
     with pytest.raises(RuntimeError) as e:
-        TopographyConverter2D.combine_layers((tuflow_l, tuflow_r))
+        TopographyConverterXML2D.combine_layers((tuflow_l, tuflow_r))
     assert str(e.value) == "Combination not supported: lines, polygons"
 
     with pytest.raises(RuntimeError) as e:
-        TopographyConverter2D.combine_layers((tuflow_p, tuflow_r))
+        TopographyConverterXML2D.combine_layers((tuflow_p, tuflow_r))
     assert str(e.value) == "Combination not supported: points, polygons"
 
     with pytest.raises(RuntimeError) as e:
-        TopographyConverter2D.combine_layers((tuflow_l, tuflow_p, tuflow_r))
+        TopographyConverterXML2D.combine_layers((tuflow_l, tuflow_p, tuflow_r))
     assert str(e.value) == "Combination not supported: lines, points, polygons"
 
 
@@ -312,8 +309,8 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
     raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
     vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
 
-    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverter2D.combine_layers")
-    topography_converter = TopographyConverter2D(
+    combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverterXML2D.combine_layers")
+    topography_converter = TopographyConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -331,7 +328,7 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
 
 def test_material_to_roughness(point1, polygon1, polygon2):
 
-    roughness = RoughnessConverter2D.material_to_roughness(
+    roughness = RoughnessConverterXML2D.material_to_roughness(
         gpd.GeoDataFrame(
             {"material_id": [7, 3, 5], "geometry": [polygon1, polygon2, point1]}
         ),
@@ -355,9 +352,9 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
     standardised_mapping = pd.DataFrame({"material_id": [3], "value": [0.1]})
 
     material_to_roughness = mocker.patch(
-        f"{path_to_cc}.RoughnessConverter2D.material_to_roughness"
+        f"{path_to_cc}.RoughnessConverterXML2D.material_to_roughness",
     )
-    roughness_converter = RoughnessConverter2D(
+    roughness_converter = RoughnessConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -397,7 +394,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
 )
 def test_scheme_converter_2d(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_proc):
 
-    scheme_converter = SchemeConverter2D(
+    scheme_converter = SchemeConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -422,7 +419,7 @@ def test_scheme_converter_2d(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_
 
 def test_boundary_converter(tmpdir, xml, gdf1, gdf2):
 
-    boundary_converter = BoundaryConverter2D(
+    boundary_converter = BoundaryConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
         domain_name="Domain 1",
@@ -442,3 +439,4 @@ def test_scheme_converter_1d(tmpdir, ief):
     scheme_converter.edit_fm_file()
 
     assert ief.Timestep == 3
+    

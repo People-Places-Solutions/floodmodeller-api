@@ -111,7 +111,6 @@ def test_model_converter(tmpdir, tcf, mocker):
 
     expected_xml = XML2D()
     expected_ief = IEF()
-    expected_dat = DAT()
     expected_log = [
         "INFO - reading TUFLOW files...",
         "INFO - tcf done",
