@@ -180,7 +180,7 @@ class StructureLog:
         elif structure.shape == "CIRCULAR":
             diameter = structure.soffit - structure.invert
             dimensions = f"dia: {diameter:.2f}"
-        dimensions
+        return dimensions
 
     def _spill_data(self, structure):
         elevation = min(structure.data.Y.tolist())
