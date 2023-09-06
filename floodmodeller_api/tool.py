@@ -206,8 +206,6 @@ class Gui:
                 entry = ctk.CTkEntry(
                     self.inputs,
                     width=400,
-                    border_width=2,
-                    border_color="gray50",
                     font=("Courier New", 14),
                 )
             elif data_type == int:
@@ -215,8 +213,6 @@ class Gui:
                     self.inputs,
                     validate="key",
                     width=400,
-                    border_width=2,
-                    border_color="gray50",
                     font=("Courier New", 12),
                 )
                 entry.config(validatecommand=(entry.register(validate_int), "%P"))
@@ -225,8 +221,6 @@ class Gui:
                     self.inputs,
                     validate="key",
                     width=400,
-                    border_width=2,
-                    border_color="gray50",
                     font=("Courier New", 12),
                 )
                 entry.config(validatecommand=(entry.register(validate_float), "%P"))
