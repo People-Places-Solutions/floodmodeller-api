@@ -519,9 +519,6 @@ class DAT(FMFile):
                             # Bdy block has been deleted
                             new_unit_data = []
 
-                    if (type(new_unit_data).__name__) == "NoneType":
-                        pass
-                    
                     new_block_len = len(new_unit_data)
                     self._raw_data[
                         block["start"] + block_shift : block["end"] + 1 + block_shift

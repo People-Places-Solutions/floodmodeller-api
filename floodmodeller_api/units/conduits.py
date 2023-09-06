@@ -404,6 +404,7 @@ class CONDUIT(Unit):
             )
             for index, coord in self.coords.iterrows():
                 c_block.extend([join_10_char(coord.x,coord.y,coord.cw_friction)])
-
+            return c_block
+        
         else:
             return self._raw_block
