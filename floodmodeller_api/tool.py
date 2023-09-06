@@ -418,7 +418,7 @@ class FMTool:
         Method to run the GUI
         """
         self.generate_gui()
-        self.app.master.after(100,self.testing)
+        #self.app.master.after(100,self.testing)
         #self.app.master.
         self.app.master.mainloop()
     
