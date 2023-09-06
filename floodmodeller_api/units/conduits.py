@@ -183,6 +183,7 @@ class CONDUIT(Unit):
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()
+        self.subtype = self._subtype
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -190,7 +191,7 @@ class CONDUIT(Unit):
         self.comment = c_block[0].replace("CONDUIT", "").strip()
 
         # Read CIRCULAR type unit
-        if self.subtype == "CIRCULAR":
+        if self._subtype == "CIRCULAR":
             # Read Params
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
@@ -207,7 +208,7 @@ class CONDUIT(Unit):
             self.friction_below_axis = _to_float(friction_params[0])
             self.friction_above_axis = _to_float(friction_params[1])
 
-        elif self.subtype == "RECTANGULAR":
+        elif self._subtype == "RECTANGULAR":
             # Read Params
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
@@ -226,7 +227,7 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
-        elif self.subtype == "SPRUNG":
+        elif self._subtype == "SPRUNG":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
             params = split_10_char(f"{c_block[5]:<100}")
@@ -245,7 +246,7 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
-        elif self.subtype == "SPRUNGARCH":
+        elif self._subtype == "SPRUNGARCH":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
             params = split_10_char(f"{c_block[5]:<100}")
@@ -264,7 +265,7 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
-        elif self.subtype == "SECTION":
+        elif self._subtype == "SECTION":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             end_index = (5 + _to_int(c_block[4]))
             x = []
@@ -284,7 +285,7 @@ class CONDUIT(Unit):
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
             print(
-                f'This Conduit sub-type: "{self.subtype}" is currently unsupported for reading/editing'
+                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing'
             )
             self._raw_block = c_block
 
@@ -293,9 +294,9 @@ class CONDUIT(Unit):
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = "CONDUIT " + self.comment
         labels = join_n_char_ljust(self._label_len, self.name, self.spill)
-        c_block = [header, self.subtype, labels]
+        c_block = [header, self._subtype, labels]
 
-        if self.subtype == "CIRCULAR":
+        if self._subtype == "CIRCULAR":
             params = join_10_char(
                 self.invert,
                 self.diameter,
@@ -319,7 +320,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self.subtype == "RECTANGULAR":
+        elif self._subtype == "RECTANGULAR":
             params = join_10_char(
                 self.invert,
                 self.width,
@@ -342,7 +343,7 @@ class CONDUIT(Unit):
             )
             return c_block
         
-        elif self.subtype == "SPRUNG":
+        elif self._subtype == "SPRUNG":
             c_block.extend(
                 [
                     str(self.dist_to_next),
@@ -368,7 +369,7 @@ class CONDUIT(Unit):
             )
             return c_block
         
-        elif self.subtype == "SPRUNGARCH":
+        elif self._subtype == "SPRUNGARCH":
             c_block.extend(
                 [
                     str(self.dist_to_next),
@@ -394,7 +395,7 @@ class CONDUIT(Unit):
             )
             return c_block
         
-        elif self.subtype == "SECTION":
+        elif self._subtype == "SECTION":
             c_block.extend(
                 [
                     join_10_char(self.dist_to_next),
