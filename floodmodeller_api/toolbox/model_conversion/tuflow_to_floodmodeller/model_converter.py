@@ -7,12 +7,12 @@ from .component_converter import (
     ComponentConverter,
     SchemeConverterIEF,
     NetworkConverterDAT,
-    ComputationalAreaConverter2D,
-    LocLineConverter2D,
-    TopographyConverter2D,
-    RoughnessConverter2D,
-    SchemeConverter2D,
-    BoundaryConverter2D,
+    ComputationalAreaConverterXML2D,
+    LocLineConverterXML2D,
+    TopographyConverterXML2D,
+    RoughnessConverterXML2D,
+    SchemeConverterXML2D,
+    BoundaryConverterXML2D,
 )
 
 from pathlib import Path
@@ -160,13 +160,13 @@ class TuflowModelConverter:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
 
-    def _create_computational_area_cc_xml2d(self) -> ComputationalAreaConverter2D:
+    def _create_computational_area_cc_xml2d(self) -> ComputationalAreaConverterXML2D:
         dx = self._tgc.get_value("cell size", float)
         lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
         all_areas = self._tgc.get_all_geodataframes("read gis code")
 
         if self._tgc.check_key("read gis location"):
-            return LocLineConverter2D(
+            return LocLineConverterXML2D(
                 xml=self._xml,
                 folder=self._processed_inputs_folder,
                 domain_name=self.DOMAIN_NAME,
@@ -176,7 +176,7 @@ class TuflowModelConverter:
                 loc_line=self._tgc.get_single_geometry("read gis location"),
             )
 
-        return ComputationalAreaConverter2D(
+        return ComputationalAreaConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
@@ -186,13 +186,13 @@ class TuflowModelConverter:
         )
 
 
-    def _create_topography_cc_xml2d(self) -> TopographyConverter2D:
+    def _create_topography_cc_xml2d(self) -> TopographyConverterXML2D:
         vectors = (
             self._tgc.get_all_geodataframes("read gis z shape")
             if self._tgc.check_key("read gis z shape")
             else []
         )
-        return TopographyConverter2D(
+        return TopographyConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
@@ -201,8 +201,8 @@ class TuflowModelConverter:
         )
     
 
-    def _create_roughness_cc_xml2d(self) -> RoughnessConverter2D:
-        return RoughnessConverter2D(
+    def _create_roughness_cc_xml2d(self) -> RoughnessConverterXML2D:
+        return RoughnessConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
@@ -212,8 +212,8 @@ class TuflowModelConverter:
             mapping=self._tcf.get_dataframe("read materials file"),
         )
 
-    def _create_scheme_cc_xml2d(self) -> SchemeConverter2D:
-        return SchemeConverter2D(
+    def _create_scheme_cc_xml2d(self) -> SchemeConverterXML2D:
+        return SchemeConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
@@ -224,8 +224,8 @@ class TuflowModelConverter:
             hardware=self._tcf.get_value("hardware"),
         )
 
-    def _create_boundary_cc_xml2d(self) -> BoundaryConverter2D:
-        return BoundaryConverter2D(
+    def _create_boundary_cc_xml2d(self) -> BoundaryConverterXML2D:
+        return BoundaryConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
@@ -248,6 +248,6 @@ class TuflowModelConverter:
             dat=self._dat,
             folder=self._processed_inputs_folder,
             parent_folder=str(self._ecf._folder),
-            nwk_paths=networks, # r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_nwk_EG14_channels_001_L.shp",
-            xs_path=str(self._ecf.get_path("read gis table links")), # r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model\gis\1d_xs_EG14_001_L.shp",
+            nwk_paths=networks,
+            xs_path=str(self._ecf.get_path("read gis table links")),
         )
