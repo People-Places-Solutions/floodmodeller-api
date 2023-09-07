@@ -291,7 +291,6 @@ class BLOCKAGE(Unit):
         extendmethod="EXTEND",
         data=None,
     ):
-
         # Initiate new BLOCKAGE unit
         for param, val in {
             "name": name,

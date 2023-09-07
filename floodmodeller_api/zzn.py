@@ -203,7 +203,6 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-
             arr = np.array(self.data["all_results"])
             time_index = np.linspace(
                 self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz

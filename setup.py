@@ -17,7 +17,7 @@ setup(
         "floodmodeller_api.urban1d",
         "floodmodeller_api.logs",
         "floodmodeller_api.test",
-        "floodmodeller_api.test.test_data"
+        "floodmodeller_api.test.test_data",
     ],
     scripts=[],
     project_urls={

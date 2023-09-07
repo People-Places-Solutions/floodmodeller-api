@@ -41,7 +41,6 @@ class INP(FMFile):
     _suffix: str = ".inp"
 
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
-
         try:
             self._filepath = inp_filepath
             if self._filepath != None:
@@ -70,7 +69,6 @@ class INP(FMFile):
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
         try:
-
             _validate_unit(self, urban=True)
 
             block_shift = 0  # Used to allow changes in the length of subsections.
@@ -99,7 +97,6 @@ class INP(FMFile):
                             ]
 
                             for param, value in self.options.items():
-
                                 if value != None:
                                     option_line = join_n_char_ljust(
                                         21, param.upper(), value
@@ -157,7 +154,6 @@ class INP(FMFile):
         # Loop through all blocks (subsections) within INP  and process if of a supported type.
         for block in self._inp_struct:
             if block["Subsection_Type"] in subsections.SUPPORTED_SUBSECTIONS:
-
                 raw_subsection_data = self._raw_data[
                     block["start"] : block["end"] + 1
                 ]  # Raw data for subsection block of INP file
@@ -167,7 +163,6 @@ class INP(FMFile):
                     subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
                     == "general"
                 ):
-
                     if block["Subsection_Type"] == "[OPTIONS]":
                         self.options = DEFAULT_OPTIONS.copy()
                         for line in raw_subsection_data:
@@ -217,12 +212,10 @@ class INP(FMFile):
         in_block = False
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
-
             # TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
 
             # Check if subsection is known
             if line.upper() in subsections.ALL_SUBSECTIONS:
-
                 if in_block == True:
                     unit_block["end"] = idx - 1  # add ending index
                     inp_struct.append(

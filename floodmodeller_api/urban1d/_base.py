@@ -112,7 +112,6 @@ class UrbanSubsection:
         return "\n".join(self._write())
 
     def _read(self, block):
-
         setattr(self, self._attribute, {})
         units = getattr(self, self._attribute)
 
@@ -128,7 +127,6 @@ class UrbanSubsection:
                 self._struct.append(line)
 
     def _write(self):
-
         block = []
 
         if self._attribute == "raingauges":

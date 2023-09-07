@@ -274,7 +274,7 @@ class XML2D(FMFile):
 
                                 for i in range(len(elems)):
                                     elems[i].text = item[i]
-                                    
+
                             elif len(elems) == 1:
                                 elem = elems[0]
                                 if type(item) == list:
@@ -479,7 +479,6 @@ class XML2D(FMFile):
         range_function: Optional[callable] = trange,
         range_settings: Optional[dict] = {},
     ) -> Optional[Popen]:
-
         """Simulate the XML2D file directly as a subprocess.
 
         Args:
@@ -659,10 +658,8 @@ class XML2D(FMFile):
 
         # tqdm progress bar
         for i in self.range_function(100, **self.range_settings):
-
             # Process still running
             while process.poll() is None:
-
                 time.sleep(0.1)
 
                 # Find progress
@@ -675,7 +672,6 @@ class XML2D(FMFile):
 
             # Process stopped
             if process.poll() is not None:
-
                 # Find final progress
                 self._lf.read(suppress_final_step=True)
                 progress = self._lf.report_progress()

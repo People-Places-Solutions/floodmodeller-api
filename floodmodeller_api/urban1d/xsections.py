@@ -48,7 +48,6 @@ class XSECTION(UrbanUnit):
     _unit = "XSECTION"
 
     def _read(self, line):
-
         unit_data = line.split()
 
         # TODO: add functionality to read comments
@@ -56,7 +55,6 @@ class XSECTION(UrbanUnit):
         self.name = str(unit_data[0])
 
         if unit_data[1] in _shape_options:
-
             # Extend length of unit_data to account for missing optional arguments.
 
             while len(unit_data) < 8:

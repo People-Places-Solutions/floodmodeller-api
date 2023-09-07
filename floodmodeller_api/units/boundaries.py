@@ -67,7 +67,6 @@ class QTBDY(Unit):
         _something=0.0,
         data=None,
     ):
-
         # Initiate new QTBDY
 
         for param, val in {

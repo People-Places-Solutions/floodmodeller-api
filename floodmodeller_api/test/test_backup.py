@@ -61,7 +61,7 @@ def test_backup_locations(file):
     backup_file_path = Path(file.backup_dir, file.backup_filename)
     assert backup_file_path.exists()
     # check if contents of backup file match the original file
-    with open(backup_file_path, 'r') as f1, open(file.path, 'r') as f2:
+    with open(backup_file_path, "r") as f1, open(file.path, "r") as f2:
         assert f1.read() == f2.read()
 
 
@@ -79,7 +79,9 @@ def test_no_duplicate_backup(file, test_workspace):
     # Attempt a backup
     the_same_file.backup()
     # Check that the file hasn't been created
-    duplicate_backup_path = Path(the_same_file.backup_dir, the_same_file.backup_filename)
+    duplicate_backup_path = Path(
+        the_same_file.backup_dir, the_same_file.backup_filename
+    )
     assert not duplicate_backup_path.exists()
 
 
@@ -89,14 +91,18 @@ def test_backup_logs(file):
     file.clear_backup()
     # There shouldn't be any edits in the csv
     backup_logs = pd.read_csv(file.backup_csv_path)
-    backup_count = backup_logs[(backup_logs.file_id == file.file_id) & (backup_logs.dttm == file.dttm_str)].shape[0]
+    backup_count = backup_logs[
+        (backup_logs.file_id == file.file_id) & (backup_logs.dttm == file.dttm_str)
+    ].shape[0]
     assert backup_count == 0
     # Make a backup and assert it is in the CSV
     file.backup()
     # Check edits to the backup CSV
     # Check a row has been added to the csv for the file & version
     backup_logs = pd.read_csv(file.backup_csv_path)
-    backup_count = backup_logs[(backup_logs.file_id == file.file_id) & (backup_logs.dttm == file.dttm_str)].shape[0]
+    backup_count = backup_logs[
+        (backup_logs.file_id == file.file_id) & (backup_logs.dttm == file.dttm_str)
+    ].shape[0]
     assert backup_count == 1
 
 
