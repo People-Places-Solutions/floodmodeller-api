@@ -11,7 +11,9 @@ def zzn_fp(test_workspace):
 
 @pytest.fixture
 def tabCSV_output(test_workspace):
-    tabCSV_output = pd.read_csv(os.path.join(test_workspace, "network_from_tabularCSV.csv"))
+    tabCSV_output = pd.read_csv(
+        os.path.join(test_workspace, "network_from_tabularCSV.csv")
+    )
     tabCSV_output["Max State"] = tabCSV_output["Max State"].astype("float64")
     return tabCSV_output
 

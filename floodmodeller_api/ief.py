@@ -173,7 +173,11 @@ class IEF(FMFile):
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
-            if (prop not in self._ief_properties) and (not prop.startswith("_")) and prop != "file":
+            if (
+                (prop not in self._ief_properties)
+                and (not prop.startswith("_"))
+                and prop != "file"
+            ):
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
@@ -217,7 +221,11 @@ class IEF(FMFile):
         self._ief_properties = [
             line
             for line in self._ief_properties
-            if (line.startswith("[") or (line in dir(self)) or line.lstrip().startswith(";"))
+            if (
+                line.startswith("[")
+                or (line in dir(self))
+                or line.lstrip().startswith(";")
+            )
         ]
 
         # Rearrange order of Flow Time Profiles group if present * Currently assuming all relevent flags included
@@ -263,7 +271,11 @@ class IEF(FMFile):
                 if itm == "EventData":
                     del self._ief_properties[num_props - 1 - idx]
                     # Also remove event data title comment if present
-                    if self._ief_properties[num_props - 2 - idx].lstrip().startswith(";"):
+                    if (
+                        self._ief_properties[num_props - 2 - idx]
+                        .lstrip()
+                        .startswith(";")
+                    ):
                         del self._ief_properties[num_props - 2 - idx]
                     removed += 1
                     if removed == to_remove:
@@ -397,13 +409,17 @@ class IEF(FMFile):
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # Defaults to single...
                 for attr in dir(self):
-                    if attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION":  # Unless DP specified
+                    if (
+                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"
+                    ):  # Unless DP specified
                         if getattr(self, attr) == "1":
                             precision = "DOUBLE"
                             break
 
             if enginespath == "":
-                _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
+                _enginespath = (
+                    r"C:\Program Files\Flood Modeller\bin"  # Default location
+                )
             else:
                 _enginespath = enginespath
                 if not Path(_enginespath).exists:
@@ -417,7 +433,9 @@ class IEF(FMFile):
                 isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
             if not Path(isis32_fp).exists:
-                raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
+                raise Exception(
+                    f"Flood Modeller engine not found! Expected location: {isis32_fp}"
+                )
 
             run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 

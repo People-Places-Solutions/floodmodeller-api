@@ -9,7 +9,9 @@ from pathlib import Path
 try:
     import plotly.graph_objects as go
 except ImportError:
-    print("Importing plotly package failed, this script requires you to have plotly installed")
+    print(
+        "Importing plotly package failed, this script requires you to have plotly installed"
+    )
     sys.exit()
 try:
     from floodmodeller_api import ZZN

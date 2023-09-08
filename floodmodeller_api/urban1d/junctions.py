@@ -48,7 +48,9 @@ class JUNCTION(UrbanUnit):
 
         unit_data = line.split()  # Get unit parameters
 
-        while len(unit_data) < 6:  # Extend length of unit_data if options variables not provided.
+        while (
+            len(unit_data) < 6
+        ):  # Extend length of unit_data if options variables not provided.
             unit_data.append("")
 
         self.name = str(unit_data[0])

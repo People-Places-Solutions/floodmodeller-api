@@ -109,12 +109,16 @@ def _to_str(itm, default, check_float=False):
         return itm
 
 
-def _to_data_list(block: list[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
+def _to_data_list(
+    block: list[str], num_cols: Optional[int] = None, date_col: Optional[int] = None
+):
     if num_cols is not None:
         num_cols += 1 if date_col is not None else 0
     data_list = []
     for row in block:
-        row_split = split_10_char(row) if num_cols is None else split_10_char(row)[:num_cols]
+        row_split = (
+            split_10_char(row) if num_cols is None else split_10_char(row)[:num_cols]
+        )
         if date_col is not None:
             date_time = " ".join(row_split[date_col : date_col + 2])
             row_split = [

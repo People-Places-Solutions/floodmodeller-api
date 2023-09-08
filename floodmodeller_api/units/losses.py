@@ -141,7 +141,9 @@ class CULVERT(Unit):
         c_block = [header, self.subtype, labels]
 
         if self.subtype == "INLET":
-            params = join_10_char(self.k, self.m, self.c, self.y, self.ki, self.type_code, dp=4)
+            params = join_10_char(
+                self.k, self.m, self.c, self.y, self.ki, self.type_code, dp=4
+            )
             params1 = join_10_char(
                 self.screen_width,
                 self.bar_proportion,
@@ -158,7 +160,9 @@ class CULVERT(Unit):
             return c_block
 
         elif self.subtype == "OUTLET":
-            params = join_10_char(self.loss_coefficient, self.reverse_flow_mode, self.headloss_type)
+            params = join_10_char(
+                self.loss_coefficient, self.reverse_flow_mode, self.headloss_type
+            )
 
             c_block.append(params)
             return c_block
@@ -256,7 +260,9 @@ class BLOCKAGE(Unit):
         )
         params = join_10_char(self.inlet_loss, self.outlet_loss)
         self.nrows = len(self.data)
-        params1 = join_10_char(self.nrows, self.timeoffset, self.timeunit, self.extendmethod)
+        params1 = join_10_char(
+            self.nrows, self.timeoffset, self.timeunit, self.extendmethod
+        )
 
         blockage_block = [header, labels, params, params1]
 
@@ -305,5 +311,7 @@ class BLOCKAGE(Unit):
             setattr(self, param, val)
 
         self.data = (
-            data if isinstance(data, pd.Series) else pd.Series([0.0], index=[0.0], name="Blockage")
+            data
+            if isinstance(data, pd.Series)
+            else pd.Series([0.0], index=[0.0], name="Blockage")
         )

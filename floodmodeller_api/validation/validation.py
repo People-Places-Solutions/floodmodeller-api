@@ -41,7 +41,9 @@ def _validate_unit(unit, urban=False):
                 if not value[0]
             ]
         )
-        raise ValueError(f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}")
+        raise ValueError(
+            f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}"
+        )
 
 
 def _validate_parameter(param, value):

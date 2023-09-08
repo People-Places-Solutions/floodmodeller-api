@@ -51,7 +51,9 @@ exclude_patterns = []
 html_theme = "pydata_sphinx_theme"
 html_logo = "_static/flood-modeller-logo-hero-image.png"
 html_theme_options = {
-    "navbar_end": ["search-field.html"],  # ["navbar-icon-links.html", "search-field.html"],
+    "navbar_end": [
+        "search-field.html"
+    ],  # ["navbar-icon-links.html", "search-field.html"],
     "icon_links": [
         {
             "name": "GitHub",
