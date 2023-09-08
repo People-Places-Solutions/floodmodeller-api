@@ -130,7 +130,7 @@ class DAT(FMFile):
             elif hasattr(unit, "ds_label"):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
-            elif unit._unit == "JUNCTION":
+            elif unit._unit == 'JUNCTION':
                 return [
                     self._name_label_match(unit, name_override=lbl)
                     for lbl in unit.labels
