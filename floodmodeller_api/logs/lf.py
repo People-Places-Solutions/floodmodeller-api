@@ -77,9 +77,7 @@ class LF(FMFile):
         if not suppress_final_step:
             self._set_attributes()
 
-    def read(
-        self, force_reread: bool = False, suppress_final_step: bool = False
-    ) -> None:
+    def read(self, force_reread: bool = False, suppress_final_step: bool = False) -> None:
         """Reads log file
 
         Args:
@@ -104,9 +102,7 @@ class LF(FMFile):
         for key in self._data_to_extract:
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
-            subdictionary_kwargs = {
-                k: v for k, v in subdictionary.items() if k != "class"
-            }
+            subdictionary_kwargs = {k: v for k, v in subdictionary.items() if k != "class"}
             subdictionary_kwargs["name"] = key
             self._extracted_data[key] = subdictionary_class(**subdictionary_kwargs)
 
@@ -191,9 +187,7 @@ class LF(FMFile):
         # TODO: make more like ZZN.to_dataframe
 
         data_type_all = {
-            k: getattr(self, k)
-            for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all"
+            k: getattr(self, k) for k, v in self._data_to_extract.items() if v["data_type"] == "all"
         }
 
         df = pd.concat(data_type_all, axis=1)

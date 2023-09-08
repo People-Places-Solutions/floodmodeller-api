@@ -81,9 +81,7 @@ class INP(FMFile):
                     prev_block_len = len(subsection_data)
 
                     if (
-                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
-                            "group"
-                        ]
+                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
                         == "general"
                     ):
                         # General parameters
@@ -98,14 +96,10 @@ class INP(FMFile):
 
                             for param, value in self.options.items():
                                 if value != None:
-                                    option_line = join_n_char_ljust(
-                                        21, param.upper(), value
-                                    )
+                                    option_line = join_n_char_ljust(21, param.upper(), value)
                                     new_subsection_data.append(option_line)
 
-                            new_subsection_data.append(
-                                ""
-                            )  # blank line before next section
+                            new_subsection_data.append("")  # blank line before next section
 
                     else:  # Of unit type
                         subsection = getattr(
@@ -180,12 +174,11 @@ class INP(FMFile):
 
                 # Create appropriate sub-class instences for supported units
                 elif (
-                    subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
-                    == "units"
+                    subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"] == "units"
                 ):
-                    subsection_class = subsections.SUPPORTED_SUBSECTIONS[
-                        block["Subsection_Type"]
-                    ]["class"]
+                    subsection_class = subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
+                        "class"
+                    ]
 
                     subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
@@ -218,9 +211,7 @@ class INP(FMFile):
             if line.upper() in subsections.ALL_SUBSECTIONS:
                 if in_block == True:
                     unit_block["end"] = idx - 1  # add ending index
-                    inp_struct.append(
-                        unit_block
-                    )  # append existing block bdy to the inp_struct
+                    inp_struct.append(unit_block)  # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
 
                 unit_block["Subsection_Type"] = line.upper()

@@ -79,9 +79,7 @@ def test_no_duplicate_backup(file, test_workspace):
     # Attempt a backup
     the_same_file.backup()
     # Check that the file hasn't been created
-    duplicate_backup_path = Path(
-        the_same_file.backup_dir, the_same_file.backup_filename
-    )
+    duplicate_backup_path = Path(the_same_file.backup_dir, the_same_file.backup_filename)
     assert not duplicate_backup_path.exists()
 
 

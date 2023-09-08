@@ -119,9 +119,7 @@ class RIVER(Unit):
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(
-                f"{riv_block[2]:<{7*self._label_len}}", self._label_len
-            )
+            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
             self.name = labels[0]
             self.spill1 = labels[1]
             self.spill2 = labels[2]

@@ -186,9 +186,7 @@ class XML2D(FMFile):
                 f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']"
             )
         else:
-            schema_elem = schema_elem.find(
-                "{http://www.w3.org/2001/XMLSchema}complexType"
-            )
+            schema_elem = schema_elem.find("{http://www.w3.org/2001/XMLSchema}complexType")
         if schema_elem is None:
             return parent.getchildren()
 
@@ -224,9 +222,7 @@ class XML2D(FMFile):
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
-                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[
-                    list_idx or 0
-                ]
+                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
 
             if key not in orig_dict:
                 # New key added, add recursively
@@ -238,9 +234,7 @@ class XML2D(FMFile):
                 for i, _item in enumerate(item):
                     if type(_item) == dict:
                         try:
-                            self._recursive_update_xml(
-                                _item, orig_dict[key][i], key, list_idx=i
-                            )
+                            self._recursive_update_xml(_item, orig_dict[key][i], key, list_idx=i)
                         except IndexError:
                             # New thing added, Add it all recursively
                             self._recursive_add_element(
@@ -265,9 +259,7 @@ class XML2D(FMFile):
                                 # Handle multiple similar elements
                                 if len(elems) < len(item):
                                     while len(elems) < len(item):
-                                        elems.append(
-                                            etree.SubElement(parent, f"{self._ns}{key}")
-                                        )
+                                        elems.append(etree.SubElement(parent, f"{self._ns}{key}"))
                                 elif len(elems) > len(item):
                                     while len(elems) > len(item):
                                         parent.remove(elems.pop())
@@ -286,23 +278,15 @@ class XML2D(FMFile):
                                 parent.set(key, str(item))
                 except KeyError:
                     # New value/attribute added
-                    self._recursive_add_element(
-                        parent=parent, add_item=item, add_key=key
-                    )
+                    self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
     def _recursive_add_element(self, parent, add_item, add_key, from_list=False):
-        if (
-            add_key in self._multi_value_keys
-            and type(add_item) != list
-            and not from_list
-        ):
+        if add_key in self._multi_value_keys and type(add_item) != list and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
         if type(add_item) == dict:
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
-                self._recursive_add_element(
-                    parent=new_element, add_item=item, add_key=key
-                )
+                self._recursive_add_element(parent=new_element, add_item=item, add_key=key)
         elif type(add_item) == list:
             # new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             if add_key == "variables":
@@ -387,9 +371,7 @@ class XML2D(FMFile):
         ]:
             if getattr(self, attr) is not None:
                 if attr == "domains":
-                    self._data["domain"] = [
-                        domain for _, domain in self.domains.items()
-                    ]
+                    self._data["domain"] = [domain for _, domain in self.domains.items()]
                 else:
                     try:
                         self._data[attr] = getattr(self, attr)
@@ -555,12 +537,12 @@ class XML2D(FMFile):
                 isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
             if not Path(isis2d_fp).exists:
-                raise Exception(
-                    f"Flood Modeller engine not found! Expected location: {isis2d_fp}"
-                )
+                raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
 
             console_output = console_output.lower()
-            run_command = f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
+            run_command = (
+                f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
+            )
             stdout = DEVNULL if console_output == "simple" else None
 
             if method.upper() == "WAIT":

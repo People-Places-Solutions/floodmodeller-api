@@ -51,9 +51,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
         elif isinstance(item_a, special_types):
             # item is a Unit or other fmapi class
             result, new_diff = item_a._get_diff(item_b)
-            new_diff = [
-                (f"{name}->{new_name}", new_item) for new_name, new_item in new_diff
-            ]
+            new_diff = [(f"{name}->{new_name}", new_item) for new_name, new_item in new_diff]
             diff.extend(new_diff)
         else:
             if not item_a == item_b:

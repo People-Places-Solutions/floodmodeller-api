@@ -19,9 +19,7 @@ os.chdir(script_loc)  # Set current working directory to this script location
 
 # Set workspace path
 
-for datfile in glob(
-    "sample_data/*.dat"
-):  # Iterate through all dat files in sample folder
+for datfile in glob("sample_data/*.dat"):  # Iterate through all dat files in sample folder
     dat = DAT(datfile)  # Initialise DAT class object
     csv_out = f"sample_data/{os.path.basename(datfile)}_output_sections.csv"  # Specify output CSV
     with open(csv_out, "w", newline="") as csvfile:

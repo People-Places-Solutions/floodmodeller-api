@@ -131,10 +131,7 @@ class DAT(FMFile):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
             elif unit._unit == "JUNCTION":
-                return [
-                    self._name_label_match(unit, name_override=lbl)
-                    for lbl in unit.labels
-                ]
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
 
             elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
                 return None
@@ -178,10 +175,7 @@ class DAT(FMFile):
                 return None
 
             elif unit._unit == "JUNCTION":
-                return [
-                    self._name_label_match(unit, name_override=lbl)
-                    for lbl in unit.labels
-                ]
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
 
             prev_units = []
             _prev_in_dat = self._prev_in_dat_struct(unit)
@@ -269,9 +263,7 @@ class DAT(FMFile):
         else:
             return _ds_list
 
-    def _name_label_match(
-        self, current_unit, name_override=None
-    ) -> Union[Unit, list[Unit], None]:
+    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]:
         """Pulls out all units with same name as the input unit.
 
         Returns:
@@ -466,9 +458,7 @@ class DAT(FMFile):
                 if "new_insert" in block.keys():
                     block["start"] = prev_block_end + 1
                     block["end"] = block["start"] + len(block["new_insert"]) - 1
-                    self._raw_data[block["start"] : block["start"]] = block[
-                        "new_insert"
-                    ]
+                    self._raw_data[block["start"] : block["start"]] = block["new_insert"]
                     block_shift += len(block["new_insert"])
                     prev_block_end = block["end"]
                     del block["new_insert"]
@@ -543,9 +533,7 @@ class DAT(FMFile):
                     unit_name = unit_data[1][: self._label_len].strip()
 
                 # Create instance of unit and add to relevant group
-                unit_group = getattr(
-                    self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                )
+                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
@@ -574,9 +562,7 @@ class DAT(FMFile):
                     unit_type=block["Type"],
                     subtype=subtype,
                 )
-                self._all_units.append(
-                    self._unsupported[f"{unit_name} ({block['Type']})"]
-                )
+                self._all_units.append(self._unsupported[f"{unit_name} ({block['Type']})"])
 
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
@@ -733,9 +719,7 @@ class DAT(FMFile):
                 )
             if not isinstance(unit, Unit):
                 raise TypeError("unit isn't a unit")
-            if add_at is None and not (
-                isinstance(add_before, Unit) or isinstance(add_after, Unit)
-            ):
+            if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
                 raise TypeError(
                     "add_before or add_after argument must be a Flood Modeller Unit type"
                 )
@@ -771,15 +755,11 @@ class DAT(FMFile):
             unit_data = unit._write()
             self._all_units.insert(insert_index, unit)
             unit_group[unit.name] = unit
-            self._dat_struct.insert(
-                insert_index + 1, {"Type": unit_class, "new_insert": unit_data}
-            )
+            self._dat_struct.insert(insert_index + 1, {"Type": unit_class, "new_insert": unit_data})
 
             # update the iic's tables
             iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            self.initial_conditions.data.loc[
-                len(self.initial_conditions.data)
-            ] = iic_data
+            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data
 
             # update all
             self.general_parameters["Node Count"] += 1
@@ -789,9 +769,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="insert unit")
 
-    def _update_gisinfo_label(
-        self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
-    ):
+    def _update_gisinfo_label(self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second):
         """Update labels in GISINFO block if unit is renamed"""
 
         start, end = next(
