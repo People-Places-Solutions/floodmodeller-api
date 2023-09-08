@@ -29,17 +29,13 @@ class UNSUPPORTED(Unit):
         self.comment = block[0].replace(self._unit, "").strip()
 
         if self._subtype is False:
-            self.labels = split_n_char(
-                f"{block[1]:<{2*self._label_len}}", self._label_len
-            )
+            self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
 
         else:
             self._subtype = block[1].split(" ")[0].strip()
             if self._unit == "JUNCTION":
                 self.labels = split_n_char(block[2], self._label_len)
-            self.labels = split_n_char(
-                f"{block[2]:<{2*self._label_len}}", self._label_len
-            )
+            self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
 
         if self.labels[1] != "" and self._unit != "JUNCTION":
             self.ds_label = self.labels[1]

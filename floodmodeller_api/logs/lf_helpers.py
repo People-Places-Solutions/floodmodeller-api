@@ -56,9 +56,7 @@ class AllData(Data):
         self._value.append(data)
         self.no_values += 1
 
-    def get_value(
-        self, index_key: str = None, index_df: pd.DataFrame = None
-    ) -> pd.DataFrame:
+    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 
         # do nothing to empty dataframes
@@ -336,9 +334,7 @@ class TimeFloatMultParser(Parser):
         for header in self._subheaders:
             self._nan.append(float("nan"))
 
-        self.data = data_factory(
-            self.data_type, self._name, self._subheaders
-        )  # overwrite
+        self.data = data_factory(self.data_type, self._name, self._subheaders)  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""

@@ -77,9 +77,7 @@ class BackupControl:
         # Create the backup directory if it doesn't exist
         if not self.backup_dir.exists():
             self.backup_dir.mkdir()
-            print(
-                f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}"
-            )
+            print(f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}")
 
         # Create the backup CSV file if it doesn't exist
         if not self.backup_csv_path.exists():
@@ -243,9 +241,7 @@ class File(BackupControl):
         backup_files = list(self.backup_dir.glob(f"{self.file_id}*"))
         backup_files.sort(reverse=True)
         if len(backup_files) > 0:
-            return [
-                BackupFile(file_id=self.file_id, path=path) for path in backup_files
-            ]
+            return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
         else:
             return []
 
