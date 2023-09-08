@@ -240,14 +240,10 @@ class TuflowModelConverter:
         )
 
     def _create_network_cc_dat(self) -> NetworkConverterDAT:
-        networks = []
-        for path in self._ecf._dict["read gis network"]:
-            networks.append(str(self._ecf._folder) + "\\" + str(path))
-
         return NetworkConverterDAT(
             dat=self._dat,
             folder=self._processed_inputs_folder,
             parent_folder=str(self._ecf._folder),
-            nwk_paths=networks,
-            xs_path=str(self._ecf.get_path("read gis table links")),
+            nwk_paths=self._ecf.get_all_paths("read gis network"),
+            xs_paths=self._ecf.get_all_paths("read gis table links"),
         )

@@ -66,17 +66,17 @@ class NetworkConverterDAT(ComponentConverterDAT):
         dat: DAT,
         folder: Path,
         parent_folder: str,
-        nwk_paths: List[str],
-        xs_path: str,
+        nwk_paths: List[Path],
+        xs_paths: List[Path],
     ) -> None:
         super().__init__(dat, folder)
         self.parent_folder = parent_folder
         self.nwk_paths = nwk_paths
-        self.xs_path = xs_path
+        self.xs_paths = xs_paths
 
     def edit_fm_file(self) -> None:
         tuf2dat = TuflowToDat()
-        tuf2dat.convert(self.parent_folder, self.nwk_paths, self.xs_path, self._dat)
+        tuf2dat.convert(self.parent_folder, self.nwk_paths, self.xs_paths, self._dat)
 
 
 class ComponentConverterXML2D(ComponentConverter):
