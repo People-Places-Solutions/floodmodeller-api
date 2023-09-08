@@ -46,7 +46,9 @@ class Variables:
             if _type.upper() == "TIMER":
                 initial_status = line[40:50].strip()
             else:
-                initial_status = "n/a"  # unless the type is a timer, nothing else has an initial status
+                initial_status = (
+                    "n/a"  # unless the type is a timer, nothing else has an initial status
+                )
             data_list.append(
                 [
                     name,

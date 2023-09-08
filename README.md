@@ -23,7 +23,7 @@ You can install the floodmodeller_api package from PyPI with the following comma
 pip install floodmodeller-api
 ```
 
-Python 3.6 or greater is required, but we would recommend using a more recent version (3.9+).
+Python 3.9 or greater is required.
 
 Once you have installed floodmodeller_api to your python environment, you can import the package with:
 

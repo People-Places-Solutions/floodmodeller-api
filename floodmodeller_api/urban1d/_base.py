@@ -42,9 +42,7 @@ class UrbanUnit:
     # Update this bit
     def __repr__(self):
         if self._subtype is None:
-            return (
-                f"<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>"
-            )
+            return f"<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>"
 
     def _create_from_blank(self):
         raise NotImplementedError(
@@ -112,7 +110,6 @@ class UrbanSubsection:
         return "\n".join(self._write())
 
     def _read(self, block):
-
         setattr(self, self._attribute, {})
         units = getattr(self, self._attribute)
 
@@ -128,7 +125,6 @@ class UrbanSubsection:
                 self._struct.append(line)
 
     def _write(self):
-
         block = []
 
         if self._attribute == "raingauges":

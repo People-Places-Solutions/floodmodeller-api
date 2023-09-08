@@ -23,7 +23,6 @@ def _validate_unit(unit, urban=False):
     param_validation_dict = {}
     all_valid = True
     for param in dir(unit):
-
         options = (
             parameter_options if not urban else urban_parameter_options
         )  # define which dictionary to use
@@ -42,32 +41,29 @@ def _validate_unit(unit, urban=False):
                 if not value[0]
             ]
         )
-        raise ValueError(
-            f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}"
-        )
+        raise ValueError(f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}")
 
 
 def _validate_parameter(param, value):
     if param["type"] == "type-match":
         return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
-    
+
     elif param["type"] == "value-match":
         if isinstance(value, str):
             return value.upper() in param["options"], f'-> Expected: {param["options"]}'
         else:
             return value in param["options"], f'-> Expected: {param["options"]}'
-        
+
     elif param["type"] == "end-value-match":
-        if value.strip().upper().endswith(tuple(param['options'])):
+        if value.strip().upper().endswith(tuple(param["options"])):
             return (True, 0)
         else:
             return (
-                        False,
-                        f"-> Could not add rule: \n{value}\n     as it doesn't end with END or ENDIF.",
-                    )
+                False,
+                f"-> Could not add rule: \n{value}\n     as it doesn't end with END or ENDIF.",
+            )
 
     elif param["type"] == "type-value-match":
-
         new_rule = {"type": "type-match", "options": param["options"][0]}
         type_match_result = _validate_parameter(new_rule, value)[0]
 

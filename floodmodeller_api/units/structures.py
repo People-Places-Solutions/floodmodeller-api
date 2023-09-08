@@ -251,9 +251,7 @@ class BRIDGE(Unit):
 
             # Read flood relief culvert data
             self.culvert_nrows = int(
-                split_10_char(
-                    br_block[9 + self.section_nrows + self.opening_nrows + 1]
-                )[0]
+                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0]
             )
             data_list = []
             start_row = 9 + self.section_nrows + self.opening_nrows + 2
@@ -416,9 +414,7 @@ class BRIDGE(Unit):
                 if self.pier_use_calibration_coeff:
                     pier_params = f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.calibration_coefficient:>10.3f}'
                 else:
-                    pier_params = (
-                        f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
-                    )
+                    pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
                 pier_params = f"{0:>10}{self.soffit_shape}"
 
@@ -673,9 +669,7 @@ class SLUICE(Unit):
         """Function to write a valid SLUICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = "SLUICE " + self.comment
-        labels = join_n_char_ljust(
-            self._label_len, self.name, self.ds_label, self.remote_label
-        )
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.remote_label)
         block = [header, self.subtype, labels]
 
         # First parameter line
@@ -750,9 +744,7 @@ class SLUICE(Unit):
                 block.append(f"GATE {n}")
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
-                gate_data = [
-                    f"{join_10_char(t, m, o)}" for t, m, o in gate.itertuples()
-                ]
+                gate_data = [f"{join_10_char(t, m, o)}" for t, m, o in gate.itertuples()]
                 block.extend(gate_data)
                 n += 1
             block = self._write_rules(block)
@@ -981,9 +973,7 @@ class SPILL(Unit):
         # Section data
         nrows = len(self.data)
         block.append(join_10_char(nrows))
-        section_data = [
-            join_10_char(x, y, e, n) for _, x, y, e, n in self.data.itertuples()
-        ]
+        section_data = [join_10_char(x, y, e, n) for _, x, y, e, n in self.data.itertuples()]
         block.extend(section_data)
 
         return block
@@ -1009,9 +999,7 @@ class SPILL(Unit):
         self.data = (
             data
             if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"]
-            )
+            else pd.DataFrame([[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"])
         )
 
 
@@ -1375,9 +1363,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
 
         # Extends label line to be correct length before splitting to pick up blank labels
         num_labels = len(block[1]) // self._label_len
-        labels = split_n_char(
-            f"{block[1]:<{num_labels*self._label_len}}", self._label_len
-        )
+        labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.all_labels = labels[0 : len(labels)]
         self.comment = block[0].replace("RESERVOIR", "").strip()
@@ -1385,9 +1371,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         # Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
             # Lateral inflow labels
-            lateral_labels = split_n_char(
-                f"{block[2]:<{4*self._label_len}}", self._label_len
-            )
+            lateral_labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
             self.lat1 = lateral_labels[0]
             self.lat2 = lateral_labels[1]
             self.lat3 = lateral_labels[2]

@@ -104,18 +104,10 @@ class FMFile:
                 print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
                 if len(diff[1]) > 25 and not force_print:
                     print("[Showing first 25 differences...] ")
-                    print(
-                        "\n".join(
-                            [f"  {name}:  {reason}" for name, reason in diff[1][:25]]
-                        )
-                    )
-                    print(
-                        "\n...To see full list of all differences add force_print=True"
-                    )
+                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1][:25]]))
+                    print("\n...To see full list of all differences add force_print=True")
                 else:
-                    print(
-                        "\n".join([f"  {name}:  {reason}" for name, reason in diff[1]])
-                    )
+                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
         except Exception as e:
             self._handle_exception(e, when="compare")
 

@@ -77,9 +77,7 @@ class LF(FMFile):
         if not suppress_final_step:
             self._set_attributes()
 
-    def read(
-        self, force_reread: bool = False, suppress_final_step: bool = False
-    ) -> None:
+    def read(self, force_reread: bool = False, suppress_final_step: bool = False) -> None:
         """Reads log file
 
         Args:
@@ -104,9 +102,7 @@ class LF(FMFile):
         for key in self._data_to_extract:
             subdictionary = self._data_to_extract[key]
             subdictionary_class = subdictionary["class"]
-            subdictionary_kwargs = {
-                k: v for k, v in subdictionary.items() if k != "class"
-            }
+            subdictionary_kwargs = {k: v for k, v in subdictionary.items() if k != "class"}
             subdictionary_kwargs["name"] = key
             self._extracted_data[key] = subdictionary_class(**subdictionary_kwargs)
 
@@ -118,15 +114,12 @@ class LF(FMFile):
         # loop through lines that haven't already been read
         raw_lines = self._raw_data[self._no_lines :]
         for raw_line in raw_lines:
-
             # loop through parser types
             for key in self._data_to_extract:
-
                 parser = self._extracted_data[key]
 
                 # lines which start with prefix
                 if raw_line.startswith(parser.prefix):
-
                     # store everything after prefix
                     end_of_line = raw_line.split(parser.prefix)[1].lstrip()
                     parser.process_line(end_of_line)
@@ -145,7 +138,6 @@ class LF(FMFile):
         """Finds key and dataframe for variable that is the index"""
 
         for key in self._data_to_extract:
-
             try:
                 self._data_to_extract[key]["is_index"]
                 index_key = key
@@ -165,7 +157,6 @@ class LF(FMFile):
         info = {}
 
         for key in self._data_to_extract:
-
             data_type = self._data_to_extract[key]["data_type"]
             value = self._extracted_data[key].data.get_value(index_key, index_df)
 
@@ -196,9 +187,7 @@ class LF(FMFile):
         # TODO: make more like ZZN.to_dataframe
 
         data_type_all = {
-            k: getattr(self, k)
-            for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all"
+            k: getattr(self, k) for k, v in self._data_to_extract.items() if v["data_type"] == "all"
         }
 
         df = pd.concat(data_type_all, axis=1)
@@ -213,12 +202,10 @@ class LF(FMFile):
 
         # loop through parser types
         for key in self._data_to_extract:
-
             parser = self._extracted_data[key]
 
             # sync parser types that are not the index
             if parser.is_index == False:
-
                 # if their number of values is not in sync
                 if parser.data_type == "all" and parser.data.no_values < (
                     self._no_iters + int(parser.before_index)
@@ -275,7 +262,6 @@ class LF1(LF):
     _suffix: str = ".lf1"
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
-
         if steady == False:
             data_to_extract = lf1_unsteady_data_to_extract
         else:
@@ -314,7 +300,6 @@ class LF2(LF):
     _suffix: str = ".lf2"
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]]):
-
         data_to_extract = {
             **lf1_unsteady_data_to_extract,
             **lf2_data_to_extract,
