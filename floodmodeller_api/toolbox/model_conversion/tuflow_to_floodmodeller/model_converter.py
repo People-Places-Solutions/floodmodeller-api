@@ -40,6 +40,7 @@ class FMFileWrapper:
     def update(self) -> None:
         self.fm_file.update()
 
+
 class TuflowModelConverter:
     DOMAIN_NAME = "Domain 1"
 
@@ -147,7 +148,6 @@ class TuflowModelConverter:
     def convert_model(self) -> None:
         for fm_file_wrapper in self._fm_file_wrappers.values():
             for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
-
                 self._logger.info(f"converting {cc_display_name}...")
 
                 try:
@@ -185,7 +185,6 @@ class TuflowModelConverter:
             all_areas=all_areas,
         )
 
-
     def _create_topography_cc_xml2d(self) -> TopographyConverterXML2D:
         vectors = (
             self._tgc.get_all_geodataframes("read gis z shape")
@@ -199,7 +198,6 @@ class TuflowModelConverter:
             rasters=self._tgc.get_all_paths("read grid zpts"),
             vectors=vectors,
         )
-    
 
     def _create_roughness_cc_xml2d(self) -> RoughnessConverterXML2D:
         return RoughnessConverterXML2D(

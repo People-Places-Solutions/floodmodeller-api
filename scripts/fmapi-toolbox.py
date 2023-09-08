@@ -3,11 +3,16 @@ from pathlib import Path
 import os
 
 parser = argparse.ArgumentParser(
-    prog='Flood Modeller API Toolbox',
-    description='Utility for exploring installed api tools')
+    prog="Flood Modeller API Toolbox", description="Utility for exploring installed api tools"
+)
 
 parser.add_argument("-l", "-list", action="store_true", help="List all toolbox scripts installed")
-parser.add_argument("-ld", "-list-detailed", action="store_true", help="List all toolbox scripts installed including usage")
+parser.add_argument(
+    "-ld",
+    "-list-detailed",
+    action="store_true",
+    help="List all toolbox scripts installed including usage",
+)
 parser.add_argument("-r", "-register", help="Register a new tool to the fmapi-toolbox")
 args = parser.parse_args()
 if args.l:

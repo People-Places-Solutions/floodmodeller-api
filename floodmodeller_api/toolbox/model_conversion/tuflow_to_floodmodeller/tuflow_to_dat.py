@@ -32,7 +32,7 @@ class TuflowToDat:
             "Type.str.lower() == 'r' | Type.str.lower() == 'c'"
         )
         self._nwk_attributes = self._nwk_attributes.query("Type.str.lower() == 's'")
-        
+
         self._nwk_attributes = self._nwk_attributes.dropna(subset=["geometry"])
         self._xs_attributes = self._xs_attributes.dropna(subset=["geometry"])
         self._culvert_attributes = self._culvert_attributes.dropna(subset=["geometry"])
@@ -212,7 +212,6 @@ class TuflowToDat:
 
         self._xs_attributes["location"] = self._xs_attributes["location"].apply(wkt.loads)
         self._xs_attributes["end_point"] = self._xs_attributes["end_point"].apply(wkt.loads)
-        
 
     def _get_coordinates(self, point):
         #   take xs intersect, map to start point from nwk, set x as east, y as north
@@ -341,17 +340,16 @@ class TuflowToDat:
                     new_row = row.to_dict()
                     new_row["Name"] = f"{row['Name']}d"
                     new_row["dist_to_next"] = 0.0
-                    reach = LineString([new_row["location"], new_row["end_point"]]) 
+                    reach = LineString([new_row["location"], new_row["end_point"]])
                     new_point = reach.line_interpolate_point(0.9, normalized=True)
                     new_row["easting"] = new_point.coords[0][0]
-                    new_row["northing"] = new_point.coords[0][1]                   
+                    new_row["northing"] = new_point.coords[0][1]
 
                     rows_to_add.append(new_row)
                 self._dat.insert_unit(self._comment, add_at=-1)
 
         # Add extra cross section rows
         self._cross_sections = pd.concat([self._cross_sections, pd.DataFrame(rows_to_add)])
-
 
     def _add_culverts(self):
         self._culvert_comment = COMMENT(text="End of Culvert")

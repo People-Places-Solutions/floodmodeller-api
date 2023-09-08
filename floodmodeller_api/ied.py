@@ -91,15 +91,13 @@ class IED(FMFile):
                         unit_name = unit_data[1][:12].strip()
 
                     # Get unit object
-                    unit_group = getattr(
-                        self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                    )
+                    unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                     if unit_name in unit_group:
                         # block still exists
                         new_unit_data = unit_group[unit_name]._write()
-                        existing_units[
-                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                        ].append(unit_name)
+                        existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
+                            unit_name
+                        )
                     else:
                         # Bdy block has been deleted
                         new_unit_data = []
@@ -168,9 +166,7 @@ class IED(FMFile):
                     unit_name = unit_data[1][:12].strip()
 
                 # Create instance of unit and add to relevant group
-                unit_group = getattr(
-                    self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                )
+                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
@@ -235,9 +231,7 @@ class IED(FMFile):
                         ied_struct.append(bdy_block)
                         bdy_block = {}  # reset bdy block
                     in_block = True
-                    bdy_block["Type"] = " ".join(
-                        line.split(" ")[:2]
-                    )  # start new bdy block
+                    bdy_block["Type"] = " ".join(line.split(" ")[:2])  # start new bdy block
                     bdy_block["start"] = idx  # add starting index
                 else:
                     continue

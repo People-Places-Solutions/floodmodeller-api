@@ -4,6 +4,7 @@ from pathlib import Path
 from floodmodeller_api import DAT
 from floodmodeller_api.tool import FMTool, Parameter
 
+
 ## Define the function ----------------- #
 def raise_section_bed_levels(dat_input: Path, dat_output: Path, min_level_m: float):
     dat = DAT(dat_input)  # Initialise DAT class

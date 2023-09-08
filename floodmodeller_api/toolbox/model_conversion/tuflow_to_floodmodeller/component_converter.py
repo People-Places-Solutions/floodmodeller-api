@@ -8,7 +8,9 @@ import pandas as pd
 import numpy as np
 import math
 
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.tuflow_to_dat import TuflowToDat
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.tuflow_to_dat import (
+    TuflowToDat,
+)
 
 
 def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
@@ -168,9 +170,7 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
             theta_rad += 2 * math.pi
         rotation = round(math.degrees(theta_rad), 3)
 
-        super().__init__(
-            xml, folder, domain_name, x1, y1, dx, lx_ly, all_areas, rotation
-        )
+        super().__init__(xml, folder, domain_name, x1, y1, dx, lx_ly, all_areas, rotation)
 
 
 class TopographyConverterXML2D(ComponentConverterXML2D):
@@ -195,9 +195,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
             self.combine_layers(value).to_file(vector_path)
 
     def edit_fm_file(self) -> None:
-        self._xml.domains[self._domain_name]["topography"] = (
-            self._raster_paths + self._vector_paths
-        )
+        self._xml.domains[self._domain_name]["topography"] = self._raster_paths + self._vector_paths
 
     @classmethod
     def combine_layers(cls, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
@@ -239,7 +237,6 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
     def convert_lines_and_points(
         lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
     ) -> gpd.GeoDataFrame:
-        
         # split lines according to points
         segments = gpd.GeoDataFrame(
             list(split(lines.geometry.unary_union, points.geometry.unary_union).geoms),
