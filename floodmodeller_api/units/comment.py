@@ -15,14 +15,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 import pandas as pd
-import math 
+import math
 
 from ._base import Unit
 
 
-
 class COMMENT(Unit):
-    """Class to hold and process Comments within dat file 
+    """Class to hold and process Comments within dat file
 
     Args:
         text (str, optional): comment text.
@@ -34,27 +33,26 @@ class COMMENT(Unit):
 
     def _read(self, block):
         """Function to read a given COMMENT block and store data as class attributes"""
-        self.text = "\n".join(block[2:]) # join into text 
-
+        self.text = "\n".join(block[2:])  # join into text
 
     def _write(self):
         """Function to write a valid comments block"""
         block = [self._unit]
-    
+
         # Number of comment lines
         num_lines = len(self.text.split("\n"))
         block.append(f"{num_lines:>10}")
-    
+
         # Comment text lines
         block.extend(self.text.split("\n"))
-    
+
         return block
 
-    #def _create_from_blank(self, text = []):
-        #for param, val in {"text": text,}.items():setattr(self, param, val)
-        
+    # def _create_from_blank(self, text = []):
+    # for param, val in {"text": text,}.items():setattr(self, param, val)
+
     def _create_from_blank(self, text=None):
-        '''Function to create an empty comment unit. '''
+        """Function to create an empty comment unit."""
         if text is None:
             text = ""
         self.text = text

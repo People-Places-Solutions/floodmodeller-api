@@ -62,20 +62,19 @@ class RIVER(Unit):
         self,
         name="new_section",
         comment="",
-        spill1 ="",
-        spill2 ="",
-        lat1 ="",
-        lat2 ="",
-        lat3 ="",
-        lat4 ="",
-        dist_to_next = 0,
+        spill1="",
+        spill2="",
+        lat1="",
+        lat2="",
+        lat3="",
+        lat4="",
+        dist_to_next=0,
         slope=0.0001,
         density=1000.0,
-        data=None
+        data=None,
     ):
-
         # Initiate new SECTION (currently hardcoding this as default)
-        self._subtype = 'SECTION'
+        self._subtype = "SECTION"
 
         for param, val in {
             "name": name,
@@ -89,7 +88,7 @@ class RIVER(Unit):
             "dist_to_next": dist_to_next,
             "slope": slope,
             "density": density,
-            "data": data
+            "data": data,
         }.items():
             setattr(self, param, val)
 
@@ -109,7 +108,8 @@ class RIVER(Unit):
                     "Northing",
                     "Deactivation",
                     "SP. Marker",
-                ],)
+                ],
+            )
         )
 
     def _read(self, riv_block):
@@ -119,9 +119,7 @@ class RIVER(Unit):
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(
-                f"{riv_block[2]:<{7*self._label_len}}", self._label_len
-            )
+            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
             self.name = labels[0]
             self.spill1 = labels[1]
             self.spill2 = labels[2]
@@ -327,7 +325,6 @@ class INTERPOLATE(Unit):
         easting=0,
         northing=0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -432,7 +429,6 @@ class REPLICATE(Unit):
         easting=0,
         northing=0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,

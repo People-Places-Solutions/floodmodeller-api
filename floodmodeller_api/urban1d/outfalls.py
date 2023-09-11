@@ -44,7 +44,6 @@ class OUTFALL(UrbanUnit):
     _unit = "OUTFALL"
 
     def _read(self, line):
-
         unit_data = line.split()
 
         # TODO: add functionality to read comments
@@ -55,7 +54,6 @@ class OUTFALL(UrbanUnit):
         self.type = str(unit_data[2])
 
         if self.type == "FREE" or self.type == "NORMAL":
-
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 5:
                 unit_data.append("")
@@ -64,7 +62,6 @@ class OUTFALL(UrbanUnit):
             self.routeto = _to_str(unit_data[4], "")
 
         elif self.type == "FIXED" or self.type == "NORMAL" or self.type == "TIMESERIES":
-
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 6:
                 unit_data.append("")
