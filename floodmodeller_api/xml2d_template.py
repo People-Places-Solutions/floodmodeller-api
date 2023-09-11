@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 xml2d_template = """<?xml version="1.0" standalone="yes"?>
-<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/6.1/2d.xsd" name="2d_simulation_blank" description="">
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/6.2/2d.xsd" name="2d_simulation_blank" description="">
     <domain domain_id="Domain 1">
         <topography>0</topography>
     <time>

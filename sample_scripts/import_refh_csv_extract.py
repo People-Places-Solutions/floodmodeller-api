@@ -27,7 +27,13 @@ for csv_file in csv_folder.glob("*"):
 
         if storm_duration not in ied_files[return_period]:
             ied = IED()  # Create new ied file
-            ied.save(Path(csv_folder.parent, "output", f"Q{return_period}_{storm_duration}.ied"))
+            ied.save(
+                Path(
+                    csv_folder.parent,
+                    "output",
+                    f"Q{return_period}_{storm_duration}.ied",
+                )
+            )
             ied_files[return_period][storm_duration] = ied
 
         ied = ied_files[return_period][storm_duration]
