@@ -97,9 +97,8 @@ class StructureLogBuilder:
         x_list = conduit.coords.x.tolist()
         width = (max(x_list) - min(x_list)) * 2
         y_list = conduit.coords.y.tolist()
-        height = max(y_list) - min(
-            y_list
-        )  # currently this means that height goes to the top of the spike,
+        height = max(y_list) - min(y_list)
+        # currently this means that height goes to the top of the spike,
         # it is only meant to go up to the height of the majority of the area
         dimensions = f"h: {height:.2f} x w: {width:.2f} x l: {length:.2f}"
         all_cw_frictions = conduit.coords.cw_friction.tolist()
