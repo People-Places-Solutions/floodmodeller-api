@@ -1,8 +1,8 @@
 from floodmodeller_api import DAT
 import csv
 
-class StructureLog:
 
+class StructureLog:
     def _add_fields(self):
         field = [
             "Unit Name",
@@ -32,7 +32,7 @@ class StructureLog:
         if hasattr(next, "subtype"):
             if next.subtype == "OUTLET":
                 outlet = next.loss_coefficient
-        
+
         return [length, inlet, outlet]
 
     def _culvert_loss_data(self, inlet, outlet):
@@ -56,7 +56,7 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
 
     def _sprungarch_data(self, conduit, length):
@@ -71,7 +71,7 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
 
     def _rectangular_data(self, conduit, length):
@@ -86,9 +86,9 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
-    
+
     def _section_data(self, conduit, length):
         x_list = conduit.coords.x.tolist()
         width = (max(x_list) - min(x_list)) * 2
@@ -103,8 +103,10 @@ class StructureLog:
         if len(cw_frictions_set) == 1:
             friction = f"Colebrook-White: {cw_frictions_set.pop()}"
         else:
-            friction = f"Colebrook-White: [min: {cw_frictions_set.pop()}, max: {cw_frictions_set.pop()}]"
-        
+            friction = (
+                f"Colebrook-White: [min: {cw_frictions_set.pop()}, max: {cw_frictions_set.pop()}]"
+            )
+
         return [friction, dimensions]
 
     def _sprung_data(self, conduit, length):
@@ -119,12 +121,11 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
-    
+
     def _add_conduits(self):
         for conduit in self._dat.conduits.values():
-            
             conduit_data = self._conduit_data(conduit)
             length = conduit_data[0]
             inlet = conduit_data[1]
@@ -193,13 +194,8 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        height = structure.opening_data.values[0][3] - min(
-            structure.section_data.Y.tolist()
-        )
-        width = (
-            structure.opening_data.values[0][1]
-            - structure.opening_data.values[0][0]
-        )
+        height = structure.opening_data.values[0][3] - min(structure.section_data.Y.tolist())
+        width = structure.opening_data.values[0][1] - structure.opening_data.values[0][0]
         dimensions = f"h: {height:.2f} x w: {width:.2f}"
         return [friction, dimensions]
 
@@ -225,7 +221,7 @@ class StructureLog:
                 bridge_data = self._bridge_data(structure)
                 friction = bridge_data[0]
                 dimensions = bridge_data[1]
-                
+
             self._write(
                 structure.name,
                 structure._unit,
@@ -249,17 +245,17 @@ class StructureLog:
         culvert_loss,
     ):
         self.writer.writerow(
-    [
-        name,
-        unit,
-        subtype,
-        comment,
-        friction,
-        dimensions,
-        weir_coefficient,
-        culvert_loss,
-    ]
-)
+            [
+                name,
+                unit,
+                subtype,
+                comment,
+                friction,
+                dimensions,
+                weir_coefficient,
+                culvert_loss,
+            ]
+        )
 
     def create(self, dat_file_path, csv_output_path):
         # Read in the .dat file

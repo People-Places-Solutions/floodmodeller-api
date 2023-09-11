@@ -1,6 +1,7 @@
 from floodmodeller_api.tool import FMTool, Parameter
 from .structure_log.structure_log import StructureLogBuilder
 
+
 class StructureLog(FMTool):
     name = "Structure Log"
     description = "Creates a structure log"

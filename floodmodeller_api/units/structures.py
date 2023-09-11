@@ -1103,6 +1103,7 @@ class RNWEIR(Unit):
         }.items():
             setattr(self, param, val)
 
+
 class WEIR(Unit):
     """Class to hold and process WEIR unit type
 
