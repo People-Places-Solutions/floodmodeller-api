@@ -293,7 +293,8 @@ class FMTool:
         # And then construct a dictionary of them that can be passed to the run function as keyword arguments
         input_kwargs = {}
         for input_param in self.parameters:
-            input_kwargs[input_param.name] = getattr(args, input_param.name)
+            value = getattr(args, input_param.name)
+            input_kwargs[input_param.name] = input_param.dtype(value)
 
         print(f"Running {self.name}")
         self.run(**input_kwargs)
