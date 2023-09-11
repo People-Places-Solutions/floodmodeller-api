@@ -23,7 +23,9 @@ def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float
 ## Wrap the FMTool class ---------------- #
 class AddSiltation(FMTool):
     name = "Add Siltation"
-    description = "Tool to add a set amount of siltation to raise bed levels of river sections in a DAT file"
+    description = (
+        "Tool to add a set amount of siltation to raise bed levels of river sections in a DAT file"
+    )
     parameters = [
         Parameter(
             name="dat_input",
@@ -48,5 +50,3 @@ class AddSiltation(FMTool):
         ),
     ]
     tool_function = raise_section_bed_levels
-
-
