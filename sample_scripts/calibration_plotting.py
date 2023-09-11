@@ -1,26 +1,23 @@
-import plotly.express as px
+import plotly.graph_objects as go
 import pandas as pd
 from floodmodeller_api import ZZN
 import os
 
 from dash import Dash, dcc, html, Input, Output
-from flask import Flask
 import webbrowser
-from threading import Timer, Thread
+from threading import Thread
 import time
-from wsgiref.simple_server import make_server
+import keyboard
 
 
 def test():
-    #gauge_locations_path = r""
-    #node = "B16800"  # Acle Bridge
-    #variable = "Stage"
-    #model_zzn_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults\BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn"
-    #event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
-    #c = Calibration(gauge_locations_path)
-    #c.calibrate_node(node, variable, model_zzn_path, event_data_folder_path)
-    my_app = DashApp()
-    my_app.run()
+    gauge_locations_path = r""
+    node = "B16800"  # Acle Bridge
+    variable = "Stage"
+    model_zzn_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults\BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn"
+    event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
+    c = Calibration(gauge_locations_path)
+    c.calibrate_node(node, variable, model_zzn_path, event_data_folder_path)
 
 
 class Calibration:
@@ -42,7 +39,6 @@ class Calibration:
         return model_data
 
     def _event_data(self, node, event_data_path):
-
         xlsx_file_paths = []
         line_names = []
 
@@ -79,17 +75,51 @@ class Calibration:
 
     def _plot(self, node, combined_data):
         name = self._node_dict[node]
-        fig = px.line(
-            combined_data,
-            x=combined_data.index,
-            y=self._line_names,
-            title=f"{name} - {node}",
-        ).update_layout(
-            xaxis_title="Time from start (hr)",
-            yaxis_title="Water Level (m)",
+        fig = go.Figure()
+        for column in self._line_names:
+            fig.add_trace(go.Scatter(x=combined_data.index, y=combined_data[column], name=column, mode="lines"))
+
+        buttons = self._line_names
+        #for col in df.columns:
+        #    buttons.append(
+        #        dict(
+        #            method='restyle',
+        #            label=col,
+        #            visible=True,
+        #            args=[{'y':[df[col]]}],
+        #        )
+        #    )
+
+        fig.update_layout(
+            title={
+                'text' : f"{name} - {node}",
+                'y' : 0.95,
+                'x' : 0.5
+                },
+            xaxis_title="Time from start (hrs)",
+            yaxis_title="Water level (m)",
+            #updatemenus = [
+            #    dict(
+            #        buttons = buttons,
+            #        direction = 'down',
+            #        name = 'Node'
+            #    )]
         )
-        fig.for_each_trace()
-        fig.show()
+
+        fig.write_html(r"C:\FloodModellerJacobs\Calibration Data\html\test.html")#Path(zzn_file.parent, f'{zzn_file.stem}_interactive_flow.html'))
+
+        # !!!for old plotly.express!!!
+        #fig = px.line(
+        #    combined_data,
+        #    x=combined_data.index,
+        #    y=self._line_names,
+        #    title=f"{name} - {node}",
+        #).update_layout(
+        #    xaxis_title="Time from start (hr)",
+        #    yaxis_title="Water Level (m)",
+        #)
+        ##fig.for_each_trace(None)
+        #fig.show()
 
     def _set_nodes(self):
         self._nodes = [
@@ -159,70 +189,6 @@ class Calibration:
         self._stage_df = df
 
 
-class DashApp:
-    def __init__(self) -> None:
-        self.server = Flask(__name__)
-        self.app = Dash(__name__, server=self.server)
-        self.app.layout = html.Div([
-            html.H4('Life expentancy progression of countries per continents'),
-            dcc.Graph(id="graph"),
-            dcc.Checklist(
-                id="checklist",
-                options=["Asia", "Europe", "Africa","Americas","Oceania"],
-                value=["Americas", "Oceania"],
-                inline=True
-            ),
-        ])
 
-        self.register_callbacks()
-    
-    def register_callbacks(self):
-        @self.app.callback(
-            Output("graph", "figure"), 
-            Input("checklist", "value")
-        )
 
-        def update_line_chart(continents):
-            df = px.data.gapminder() # replace with your own data source
-            mask = df.continent.isin(continents)
-            fig = px.line(df[mask], 
-                x="year", y="lifeExp", color='country')
-            return fig
-    
-    def run(self):
-        if __name__ == "__main__":
-            self.keepPlot=True
-            self.server = make_server("localhost",850,self.server)
-            self.server_thread = Thread(target=self.server.serve_forever)
-            self.server_thread.start()
-            Timer(1, self._open_browser).start()
-            dash_thread = Thread(target=self._run_server)
-            dash_thread.start()
-            index=0
-            while self.keepPlot:
-                if index > 15:
-                    exit()
-                time.sleep(1)
-                print(index)
-                index += 1
-        else:
-            print("ISSUE: __name__ != __main__")
-    
-    def _open_browser(self):
-        if not os.environ.get("WERKZEUG_RUN_MAIN"):
-            webbrowser.open(r"http://127.0.0.1:8050/")
-        
-    def _run_server(self):
-        self.app.run_server(debug=True,port=8050,use_reloader=False)
-    
-    def _stop_server(self):
-        #stream.stop_stream()
-        self.keepPlot=False
-        # stop the Flask server
-        self.server.shutdown()
-        self.server_thread.join()
-        print("Dash app stopped gracefully.")
-    
-        
-    
 test()
