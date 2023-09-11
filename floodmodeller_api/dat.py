@@ -41,7 +41,7 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
             self._filepath = dat_filepath
             if self._filepath != None:
@@ -49,7 +49,7 @@ class DAT(FMFile):
                 self._read()
 
             else:
-                self._create_from_blank()
+                self._create_from_blank(with_gxy)
 
             self._get_general_parameters()
             self._get_unit_definitions()
@@ -59,6 +59,7 @@ class DAT(FMFile):
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
         self._update()
+        self._write_gxy(self._gxy_filepath)
 
     def save(self, filepath: Union[str, Path]) -> None:
         """Saves the DAT to the given location, if pointing to an existing file it will be overwritten.
@@ -73,6 +74,9 @@ class DAT(FMFile):
         """
         filepath = Path(filepath).absolute()
         self._save(filepath)
+        self._write_gxy(filepath)
+
+    def _write_gxy(self, filepath):
         if not self._gxy_data == None:
             gxy_string = self._gxy_data
             new_gxy_path = filepath.with_suffix(".gxy")
@@ -324,7 +328,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="write")
 
-    def _create_from_blank(self):
+    def _create_from_blank(self, with_gxy=False):
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
         self._dat_struct = [
@@ -342,7 +346,12 @@ class DAT(FMFile):
             "INITIAL CONDITIONS",
             " label   ?      flow     stage froude no  velocity     umode    ustate         z",
         ]
+
         self._gxy_filepath = None
+        if with_gxy:
+            self._gxy_data = ""
+        else:
+            self._gxy_data = None
 
     def _get_general_parameters(self):
         # ** Get general parameters here
@@ -442,6 +451,8 @@ class DAT(FMFile):
 
     def _update_raw_data(self):
         block_shift = 0
+        comment_tracker = 0
+        comment_units = [unit for unit in self._all_units if unit._unit == "COMMENT"]
         prev_block_end = self._dat_struct[0]["end"]
         existing_units = {
             "boundaries": [],
@@ -471,6 +482,10 @@ class DAT(FMFile):
 
                     if block["Type"] == "INITIAL CONDITIONS":
                         new_unit_data = self.initial_conditions._write()
+                    elif block["Type"] == "COMMENT":
+                        comment = comment_units[comment_tracker]
+                        new_unit_data = comment._write()
+                        comment_tracker += 1
 
                     elif block["Type"] == "VARIABLES":
                         new_unit_data = self.variables._write()
@@ -520,6 +535,10 @@ class DAT(FMFile):
                 # Deal with initial conditions block
                 if block["Type"] == "INITIAL CONDITIONS":
                     self.initial_conditions = units.IIC(unit_data, n=self._label_len)
+                    continue
+
+                if block["Type"] == "COMMENT":
+                    self._all_units.append(units.COMMENT(unit_data, n=self._label_len))
                     continue
 
                 if block["Type"] == "VARIABLES":
@@ -724,14 +743,16 @@ class DAT(FMFile):
                     "add_before or add_after argument must be a Flood Modeller Unit type"
                 )
 
-            _validate_unit(unit)
-            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
-            unit_group = getattr(self, unit_group_name)
             unit_class = unit._unit
-            if unit.name in unit_group:
-                raise NameError(
-                    "Name already appears in unit group. Cannot have two units with same name in same group"
-                )
+            if unit_class != "COMMENT":
+                _validate_unit(unit)
+                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]  # get rid
+                unit_group = getattr(self, unit_group_name)
+                # unit_class = unit._unit
+                if unit.name in unit_group:
+                    raise NameError(
+                        "Name already appears in unit group. Cannot have two units with same name in same group"
+                    )
 
             # positional argument
             if add_at is not None:
@@ -754,15 +775,22 @@ class DAT(FMFile):
 
             unit_data = unit._write()
             self._all_units.insert(insert_index, unit)
-            unit_group[unit.name] = unit
-            self._dat_struct.insert(insert_index + 1, {"Type": unit_class, "new_insert": unit_data})
+            if unit._unit != "COMMENT":
+                unit_group[unit.name] = unit
+            self._dat_struct.insert(
+                insert_index + 1, {"Type": unit_class, "new_insert": unit_data}
+            )  # add to dat struct without unit.name
 
-            # update the iic's tables
-            iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data
+            if unit._unit != "COMMENT":
+                # update the iic's tables
+                iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+                self.initial_conditions.data.loc[
+                    len(self.initial_conditions.data)
+                ] = iic_data  # flaged
 
             # update all
-            self.general_parameters["Node Count"] += 1
+            if unit._unit != "COMMENT":
+                self.general_parameters["Node Count"] += 1  # flag no update for comments
             self._update_raw_data()
             self._update_dat_struct()
 

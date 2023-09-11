@@ -32,6 +32,7 @@ from .structures import (
 from .losses import BLOCKAGE, CULVERT
 from .conduits import CONDUIT
 from .unsupported import UNSUPPORTED
+from .comment import COMMENT
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {
@@ -56,6 +57,7 @@ SUPPORTED_UNIT_TYPES = {
     "INTERPOLATE": {"group": "sections", "has_subtype": False},
     "REPLICATE": {"group": "sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
+    "COMMENT": {"group": "comments", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -65,7 +67,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "BERNOULLI": {"has_subtype": False},
     "BREACH": {"has_subtype": False},  # breach
     # "CES": RIVER
-    "COMMENT": {"group": "other", "has_subtype": False},
+    # "COMMENT": {"group": "other", "has_subtype": False},
     # "CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
     # "CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
     "FEHBDY": {

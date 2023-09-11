@@ -214,7 +214,7 @@ class File(BackupControl):
         self.file_id = sha1(fp_bytes).hexdigest()
 
     def _generate_file_name(self) -> None:
-        """ "
+        """
         Generate the name of the file, constructed from the unique file id, the datetime it was loaded and the extension.
         This allows the file to be backed up as a unique version of a particular file at a particular time.
         """

@@ -21,6 +21,7 @@ from .version import __version__
 from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
+from .units.comment import COMMENT
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .backup import File
 
@@ -52,7 +53,7 @@ class FMFile:
             if not self._filetype == "ZZN":
                 file = File(path=self._filepath)
                 file.backup()
-                # Add the file object as a property to expose the resore method
+                # Add the file object as a property to expose the restore method
                 self.file = file
 
     def __repr__(self):
