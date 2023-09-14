@@ -4,15 +4,23 @@ from floodmodeller_api import ZZN
 import csv
 from pathlib import Path
 import numpy as np
+import os
+import shutil
+
 
 def test():
-    gauge_locations_path = r"C:\FloodModellerJacobs\Calibration Data\GaugeList"
+    gauge_locations_path = r"C:\FloodModellerJacobs\Calibration Data\GaugeList\GaugeListLocation.xlsx"
     variable = "Stage"
     models_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults"
     event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
+    output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
     c = Calibration()
     c.calibrate_node(
-        gauge_locations_path, variable, models_path, event_data_folder_path
+        gauge_locations_path,
+        variable,
+        models_path,
+        event_data_folder_path,
+        output_folder,
     )
 
 
@@ -21,9 +29,14 @@ class Calibration:
         pass
 
     def calibrate_node(
-        self, gauge_locations_path, variable, models_path, event_data_path
+        self,
+        gauge_locations_path,
+        variable,
+        models_path,
+        event_data_path,
+        output_folder,
     ):
-        self._read_nodes()
+        self._read_nodes(gauge_locations_path)
         print("Read in node names")
         self._link_models_events()
         print("Linked models to events")
@@ -35,39 +48,18 @@ class Calibration:
         print("Read in + cleaned event data")
         combined = self._combine_df(event_data, model_data_list)
         print("Combined all data")
-        self._output_data(combined)
+        self._output_data(combined, output_folder)
         print("Finished")
 
-    def _read_nodes(self):
-        self._node_dict = {
-            "B16800": "Acle Bridge",
-            "A7316U": "Barton Broad",
-            "W28757b": "Beccles Quay (Bridge)",
-            "W28757t": "Beccles Quay (Tide)",
-            "Y200": "Berney Arms",
-            "Y4900M": "Breydon Bridge",
-            "Y22800": "Brundall",
-            "B200M": "Bure Bridge",
-            "W1200": "Burgh Castle",
-            "W17800": "Burgh St Peter",
-            "Y13800": "Cantley",
-            "WE1227d": "Carrow Bridge",
-            "Y0M": "Great Yarmouth T.S.",
-            "W9000U": "Haddiscoe",
-            "Y770D": "Haven Bridge",
-            "CD35RU": "Hickling Broad",
-            "BA19113": "Hoveton Broad",
-            "WENF1_0d": "New Mills Norwich Sluice (downstream)",
-            "WENF1_0u": "New Mills Norwich Sluice (upstream)",
-            "OD3580": "Oulton Broad",
-            "BA9511": "Ranworth Broad",
-            "Y7600": "Reedham",
-            "T3600": "Repps",
-            "HB_0269": "Rockland St Mary",
-            "B2800U": "Three Mile House",
-            "YARE00988": "Trowse (upstream)",
-            "A12206d": "Wayford Bridge",
-        }
+    def _read_nodes(self, gauge_locations_path):
+        gauges_nodes = pd.read_excel(gauge_locations_path)
+        tabs = list(gauges_nodes["Tab"])
+        nodes = list(gauges_nodes["Node"])
+
+        self._node_dict = {}
+        for i in range (0,len(nodes)):
+            self._node_dict[nodes[i]] = tabs[i]
+
         self._nodes = list(self._node_dict.keys())
 
     def _link_models_events(self):
@@ -184,7 +176,7 @@ class Calibration:
 
         return [model_df, event_df]
 
-    def _output_data(self, combined_data):
+    def _output_data(self, combined_data, output_folder):
         model_df = combined_data[0]
         event_df = combined_data[1]
         csv_list = [
@@ -199,6 +191,10 @@ class Calibration:
                 "Peak Time Difference",
             ],
         ]
+        if os.path.exists(output_folder):
+            shutil.rmtree(output_folder)
+        os.makedirs(output_folder)
+        os.makedirs(Path(output_folder,"plots"))
 
         for node in self._nodes:
             node_model_mask = [col for col in model_df.columns if node in col]
@@ -212,24 +208,22 @@ class Calibration:
             ):
                 continue
 
-            self._plot(node, node_filtered_model, node_filtered_event)
+            self._plot(node, node_filtered_model, node_filtered_event, output_folder)
             self._fill_csv_list(
-                node, node_filtered_model, node_filtered_event, csv_list
+                node, node_filtered_model, node_filtered_event, csv_list,
             )
         print("Plotted data")
-        self._outputs_csv(csv_list)
+        self._outputs_csv(csv_list, output_folder)
         print("Filled out csv data")
 
-    def _plot(self, node, node_filtered_model, node_filtered_event):
+    def _plot(self, node, node_filtered_model, node_filtered_event, output_folder):
         fig = go.Figure()
 
         links = self._model_event_links
         fig.add_trace(
             go.Scatter(
                 x=node_filtered_model.index,
-                y=node_filtered_model[
-                    f"{node}_{links[0]['model results']}"[:-4]
-                ],
+                y=node_filtered_model[node_filtered_model.columns[0]],
                 name="Model Data",
                 mode="lines",
             )
@@ -237,7 +231,7 @@ class Calibration:
         fig.add_trace(
             go.Scatter(
                 x=node_filtered_event.index,
-                y=node_filtered_event[f"{node}_{links[0]['event name']}"],
+                y=node_filtered_event[node_filtered_event.columns[0]],
                 name="Event Data",
                 mode="lines",
             )
@@ -245,16 +239,19 @@ class Calibration:
 
         links_dropdown = []
         for link in self._model_event_links:
-            model_data = node_filtered_model[f"{node}_{link['model results']}"[:-4]]
-            event_data = node_filtered_event[f"{node}_{link['event name']}"]
-            links_dropdown.append(
-                dict(
-                    method="update",
-                    label=link["event name"],
-                    visible=True,
-                    args=[{"y": [model_data, event_data]}],
+            model_col_name = f"{node}_{link['model results']}"[:-4]
+            event_col_name = f"{node}_{link['event name']}"
+            if (model_col_name) in node_filtered_model.columns and (event_col_name) in node_filtered_event.columns:
+                model_data = node_filtered_model[f"{node}_{link['model results']}"[:-4]]
+                event_data = node_filtered_event[f"{node}_{link['event name']}"]
+                links_dropdown.append(
+                    dict(
+                        method="update",
+                        label=link["event name"],
+                        visible=True,
+                        args=[{"y": [model_data, event_data]}],
+                    )
                 )
-            )
 
         # dropdown
         fig.update_layout(
@@ -275,32 +272,37 @@ class Calibration:
             yaxis_title="Water level (m)",
         )
 
-        output_folder = r"C:\FloodModellerJacobs\Calibration Data\output\html"
-        fig.write_html(Path(output_folder, f"{self._node_dict[node]}.html"))
+        fig.write_html(Path(output_folder, f"plots\\{self._node_dict[node]}.html"))
 
     def _fill_csv_list(self, node, node_filtered_model, node_filtered_event, csv_list):
         for link in self._model_event_links:
-            model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace("---",np.nan)
-            event_col = (node_filtered_event[f"{node}_{link['event name']}"]).replace("---",np.nan)
-            model_peak = model_col.max()
-            event_peak = event_col.max()
-            model_time_peak = model_col.idxmax()
-            event_time_peak = event_col.idxmax()
-            csv_list.append(
-                [
-                    self._node_dict[node],
-                    link["event name"],
-                    model_peak,
-                    event_peak,
-                    f"{abs(model_peak - event_peak):.3f}",
-                    model_time_peak,
-                    event_time_peak,
-                    f"{abs(model_time_peak - event_time_peak):.3f}",
-                ]
-            )
+            model_col_name = f"{node}_{link['model results']}"[:-4]
+            event_col_name = f"{node}_{link['event name']}"
+            if (model_col_name) in node_filtered_model.columns and (event_col_name) in node_filtered_event.columns:
+                model_col = (
+                    node_filtered_model[f"{node}_{link['model results']}"[:-4]]
+                ).replace("---", np.nan)
+                event_col = (node_filtered_event[f"{node}_{link['event name']}"]).replace(
+                    "---", np.nan
+                )
+                model_peak = model_col.max()
+                event_peak = event_col.max()
+                model_time_peak = model_col.idxmax()
+                event_time_peak = event_col.idxmax()
+                csv_list.append(
+                    [
+                        self._node_dict[node],
+                        link["event name"],
+                        model_peak,
+                        event_peak,
+                        f"{abs(model_peak - event_peak):.3f}",
+                        model_time_peak,
+                        event_time_peak,
+                        f"{abs(model_time_peak - event_time_peak):.3f}",
+                    ]
+                )
 
-    def _outputs_csv(self, csv_list):
-        output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
+    def _outputs_csv(self, csv_list, output_folder):
         with open(
             Path(output_folder, "Gauge_Peak_Data.csv"), "w", newline=""
         ) as csvfile:
