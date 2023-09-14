@@ -1,163 +1,49 @@
 import plotly.graph_objects as go
 import pandas as pd
 from floodmodeller_api import ZZN
-import os
-
-from dash import Dash, dcc, html, Input, Output
-import webbrowser
-from threading import Thread
-import time
-import keyboard
-
+import csv
+from pathlib import Path
+import numpy as np
 
 def test():
-    gauge_locations_path = r""
-    node = "B16800"  # Acle Bridge
+    gauge_locations_path = r"C:\FloodModellerJacobs\Calibration Data\GaugeList"
     variable = "Stage"
-    model_zzn_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults\BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn"
+    models_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults"
     event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
-    c = Calibration(gauge_locations_path)
-    c.calibrate_node(node, variable, model_zzn_path, event_data_folder_path)
+    c = Calibration()
+    c.calibrate_node(
+        gauge_locations_path, variable, models_path, event_data_folder_path
+    )
 
 
 class Calibration:
-    def __init__(self, gauge_locations_path) -> None:
-        # in the nodes one if the node isnt in the data frame dont add it from the csv file
-        self._set_nodes()  # add gauge locations path input
-        self._set_node_dict()  # + stick in a method together
+    def __init__(self) -> None:
+        pass
 
-    def calibrate_node(self, node, variable, zzn_path, event_data_path):
-        self._set_zzn_stage(zzn_path, variable)
-        model_data = self._model_data(node)
-        real_data = self._event_data(node, event_data_path)
-        combined = self._combine_df(real_data, model_data)
-        self._plot(node, combined)
+    def calibrate_node(
+        self, gauge_locations_path, variable, models_path, event_data_path
+    ):
+        self._read_nodes()
+        print("Read in node names")
+        self._link_models_events()
+        print("Linked models to events")
+        self._set_zzn_stage(models_path, variable)
+        print("Read in zzn files")
+        model_data_list = self._model_data()
+        print("Cleaned model data")
+        event_data = self._event_data(event_data_path)
+        print("Read in + cleaned event data")
+        combined = self._combine_df(event_data, model_data_list)
+        print("Combined all data")
+        self._output_data(combined)
+        print("Finished")
 
-    def _model_data(self, node):
-        model_data = self._stage_df[node].to_frame()
-        model_data.rename(columns={node: "Model Data"}, inplace=True)
-        return model_data
-
-    def _event_data(self, node, event_data_path):
-        xlsx_file_paths = []
-        line_names = []
-
-        folders = os.listdir(event_data_path)
-        for folder in folders:
-            folder_path = event_data_path + r"\\" + folder
-            files = os.listdir(folder_path)
-            for file in files:
-                if "Levels" in file:
-                    file_path = folder_path + r"\\" + file
-                    xlsx_file_paths.append(file_path)
-                    line_names.append(folder)
-
-        real_data_list = []
-        index = 0
-        for file_path in xlsx_file_paths:
-            sheet = pd.read_excel(file_path, sheet_name=self._node_dict[node])
-            time = list(filter(lambda x: x is not None, (list(sheet.iloc[:, 0])[13:])))
-            values = list(filter(lambda x: x is not None, (list(sheet.iloc[:, 2])[13:])))
-            file_path.split()
-            real_data_list.append(pd.DataFrame(
-                {line_names[index]: values},
-                index=pd.Index(time, name="Time (hr)"),
-            ))
-            index += 1
-        real_data = pd.concat(real_data_list,axis=1)
-        self._line_names = line_names
-        return real_data
-
-    def _combine_df(self, real_data, model_data):
-        combined = model_data.join(real_data, how="right")
-        self._line_names.append("Model Data")
-        return combined
-
-    def _plot(self, node, combined_data):
-        name = self._node_dict[node]
-        fig = go.Figure()
-        for column in self._line_names:
-            fig.add_trace(go.Scatter(x=combined_data.index, y=combined_data[column], name=column, mode="lines"))
-
-        buttons = self._line_names
-        #for col in df.columns:
-        #    buttons.append(
-        #        dict(
-        #            method='restyle',
-        #            label=col,
-        #            visible=True,
-        #            args=[{'y':[df[col]]}],
-        #        )
-        #    )
-
-        fig.update_layout(
-            title={
-                'text' : f"{name} - {node}",
-                'y' : 0.95,
-                'x' : 0.5
-                },
-            xaxis_title="Time from start (hrs)",
-            yaxis_title="Water level (m)",
-            #updatemenus = [
-            #    dict(
-            #        buttons = buttons,
-            #        direction = 'down',
-            #        name = 'Node'
-            #    )]
-        )
-
-        fig.write_html(r"C:\FloodModellerJacobs\Calibration Data\html\test.html")#Path(zzn_file.parent, f'{zzn_file.stem}_interactive_flow.html'))
-
-        # !!!for old plotly.express!!!
-        #fig = px.line(
-        #    combined_data,
-        #    x=combined_data.index,
-        #    y=self._line_names,
-        #    title=f"{name} - {node}",
-        #).update_layout(
-        #    xaxis_title="Time from start (hr)",
-        #    yaxis_title="Water Level (m)",
-        #)
-        ##fig.for_each_trace(None)
-        #fig.show()
-
-    def _set_nodes(self):
-        self._nodes = [
-            "B16800",
-            "A7316U",
-            "W28757",
-            "W28757",
-            "Y200",
-            "Y4900M",
-            "Y22800",
-            "B200M",
-            "W1200",
-            "W17800",
-            "Y13800",
-            "WE1227d",
-            "Y0M",
-            "W9000U",
-            "Y770D",
-            "CD35RU",
-            "BA19113",
-            "WENF1_0d",
-            "WENF1_0u",
-            "OD3580",
-            "BA9511",
-            "Y7600",
-            "T3600",
-            "HB_0269",
-            "B2800U",
-            "YARE00988",
-            "A12206d",
-        ]
-
-    def _set_node_dict(self):
+    def _read_nodes(self):
         self._node_dict = {
             "B16800": "Acle Bridge",
             "A7316U": "Barton Broad",
-            "W28757": "Beccles Quay (Bridge)",
-            "W28757": "Beccles Quay (Tide)",
+            "W28757b": "Beccles Quay (Bridge)",
+            "W28757t": "Beccles Quay (Tide)",
             "Y200": "Berney Arms",
             "Y4900M": "Breydon Bridge",
             "Y22800": "Brundall",
@@ -182,13 +68,245 @@ class Calibration:
             "YARE00988": "Trowse (upstream)",
             "A12206d": "Wayford Bridge",
         }
+        self._nodes = list(self._node_dict.keys())
 
-    def _set_zzn_stage(self, zzn_path, variable):
-        z = ZZN(zzn_path)
-        df = z.to_dataframe(variable=variable)
-        self._stage_df = df
+    def _link_models_events(self):
+        self._model_event_links = [
+            {
+                "event name": "2007 November tidal",
+                "event data": "November_2007_All_Levels.xlsx",
+                "model results": "BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn",
+            },
+            {
+                "event name": "2010 March fluvial",
+                "event data": "March_2010_All_Levels.xlsx",
+                "model results": "BROADLANDS_BECCLES_51_V01_MHWS_5PCT_1080HRS.zzn",
+            },
+            {
+                "event name": "2013 December tidal",
+                "event data": "December_2013_All_Levels.xlsx",
+                "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_50_MHWS_1PCT.zzn",
+            },
+            {
+                "event name": "2013 March fluvial",
+                "event data": "March_2013_All_Levels.xlsx",
+                "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_51_MHWS_0_5PCT_1080HRS.zzn",
+            },
+        ]
 
+    def _set_zzn_stage(self, models_path, variable):
+        self._model_names = []
+        self._model_dfs = []
+        for link in self._model_event_links:
+            file = link["model results"]
+            zzn = ZZN(Path(models_path, file))
+            df = zzn.to_dataframe(variable=variable)
+            self._model_names.append(file[:-4])
+            self._model_dfs.append(df)
 
+    def _model_data(self):
+        model_data_list = []
+        node_name_list = []
+        for i, model_df in enumerate(self._model_dfs):
+            model_nodes_list = []
+            name_list = []
+            for node in self._nodes:
+                if node in model_df:
+                    model_nodes_list.append(model_df[node])
+                    name_list.append(f"{node}_{self._model_names[i]}")
+            node_name_list.append(name_list)
+            model_nodes_df = pd.concat(model_nodes_list, axis=1)
+            model_data_list.append(model_nodes_df)
+        return [model_data_list, node_name_list]
+
+    def _event_data(self, event_data_path):
+        xlsx_file_paths = []
+        self._event_names = []
+        for link in self._model_event_links:
+            folder = link["event name"]
+            file = link["event data"]
+            file_path = str(Path(event_data_path, folder, file))
+            xlsx_file_paths.append(file_path)
+            self._event_names.append(folder)
+
+        print("Found event data path")
+
+        event_data_list = []
+        index = 1
+        for i, event in enumerate(self._event_names):
+            for node in self._nodes:
+                try:
+                    sheet = pd.read_excel(
+                        xlsx_file_paths[i], sheet_name=self._node_dict[node]
+                    )
+                    time = list(
+                        filter(lambda x: x is not None, (list(sheet.iloc[:, 0])[13:]))
+                    )
+                    values = list(
+                        filter(lambda x: x is not None, (list(sheet.iloc[:, 2])[13:]))
+                    )
+                    event_data_list.append(
+                        pd.DataFrame(
+                            {f"{node}_{event}": values},
+                            index=pd.Index(time, name="Time (hr)"),
+                        )
+                    )
+                    print(
+                        f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                    )
+                except:
+                    print(
+                        f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                    )
+                index += 1
+                # workbook file can't be found, or node sheet can't be found
+        return event_data_list
+
+    def _combine_df(self, event_data, model_data):
+        model_data_dfs = model_data[0]
+        model_data_cols = model_data[1]
+        for i, df in enumerate(model_data_dfs):
+            df.columns = model_data_cols[i]
+
+        model_df = pd.concat(model_data_dfs, axis=1)
+        event_df = pd.concat(event_data, axis=1)
+
+        # make them the dataframes the same length
+        num_model_rows = len(model_df)
+        num_event_rows = len(event_df)
+        if num_model_rows != num_event_rows:
+            if num_model_rows < num_event_rows:
+                num_rows = num_model_rows
+                event_df = event_df.head(num_rows)
+            else:
+                num_rows = num_event_rows
+                model_df = model_df.head(num_rows)
+
+        return [model_df, event_df]
+
+    def _output_data(self, combined_data):
+        model_df = combined_data[0]
+        event_df = combined_data[1]
+        csv_list = [
+            [
+                "Gauge",
+                "Event",
+                "Model Peak",
+                "Event Peak",
+                "Peak Difference",
+                "Model Peak Time",
+                "Event Peak Time",
+                "Peak Time Difference",
+            ],
+        ]
+
+        for node in self._nodes:
+            node_model_mask = [col for col in model_df.columns if node in col]
+            node_filtered_model = model_df[node_model_mask]
+            node_event_mask = [col for col in event_df.columns if node in col]
+            node_filtered_event = event_df[node_event_mask]
+
+            if (
+                len(node_filtered_model.columns) == 0
+                or len(node_filtered_event.columns) == 0
+            ):
+                continue
+
+            self._plot(node, node_filtered_model, node_filtered_event)
+            self._fill_csv_list(
+                node, node_filtered_model, node_filtered_event, csv_list
+            )
+        print("Plotted data")
+        self._outputs_csv(csv_list)
+        print("Filled out csv data")
+
+    def _plot(self, node, node_filtered_model, node_filtered_event):
+        fig = go.Figure()
+
+        links = self._model_event_links
+        fig.add_trace(
+            go.Scatter(
+                x=node_filtered_model.index,
+                y=node_filtered_model[
+                    f"{node}_{links[0]['model results']}"[:-4]
+                ],
+                name="Model Data",
+                mode="lines",
+            )
+        )
+        fig.add_trace(
+            go.Scatter(
+                x=node_filtered_event.index,
+                y=node_filtered_event[f"{node}_{links[0]['event name']}"],
+                name="Event Data",
+                mode="lines",
+            )
+        )
+
+        links_dropdown = []
+        for link in self._model_event_links:
+            model_data = node_filtered_model[f"{node}_{link['model results']}"[:-4]]
+            event_data = node_filtered_event[f"{node}_{link['event name']}"]
+            links_dropdown.append(
+                dict(
+                    method="update",
+                    label=link["event name"],
+                    visible=True,
+                    args=[{"y": [model_data, event_data]}],
+                )
+            )
+
+        # dropdown
+        fig.update_layout(
+            updatemenus=[
+                dict(
+                    buttons=links_dropdown,
+                    direction="down",
+                    name="Node",
+                    x=-0.05,
+                    y=1.1,
+                ),
+            ]
+        )
+
+        fig.update_layout(
+            title={"text": f"{self._node_dict[node]}", "y": 0.95, "x": 0.5},
+            xaxis_title="Time from start (hrs)",
+            yaxis_title="Water level (m)",
+        )
+
+        output_folder = r"C:\FloodModellerJacobs\Calibration Data\output\html"
+        fig.write_html(Path(output_folder, f"{self._node_dict[node]}.html"))
+
+    def _fill_csv_list(self, node, node_filtered_model, node_filtered_event, csv_list):
+        for link in self._model_event_links:
+            model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace("---",np.nan)
+            event_col = (node_filtered_event[f"{node}_{link['event name']}"]).replace("---",np.nan)
+            model_peak = model_col.max()
+            event_peak = event_col.max()
+            model_time_peak = model_col.idxmax()
+            event_time_peak = event_col.idxmax()
+            csv_list.append(
+                [
+                    self._node_dict[node],
+                    link["event name"],
+                    model_peak,
+                    event_peak,
+                    f"{abs(model_peak - event_peak):.3f}",
+                    model_time_peak,
+                    event_time_peak,
+                    f"{abs(model_time_peak - event_time_peak):.3f}",
+                ]
+            )
+
+    def _outputs_csv(self, csv_list):
+        output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
+        with open(
+            Path(output_folder, "Gauge_Peak_Data.csv"), "w", newline=""
+        ) as csvfile:
+            writer = csv.writer(csvfile, delimiter=",")
+            for line in csv_list:
+                writer.writerow(line)
 
 
 test()
