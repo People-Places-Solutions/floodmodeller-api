@@ -192,7 +192,7 @@ class Calibration:
                 "Peak Time Difference",
             ],
         ]
-        
+
         if not (os.path.exists(output_folder)):
             os.makedirs(output_folder)
 
@@ -226,6 +226,8 @@ class Calibration:
         print("Plotted data")
         self._outputs_csv(csv_list, output_folder)
         print("Filled out csv data")
+        self._dump_df(model_df, event_df, output_folder)
+        print("Dumped dataframe to csv")
     
     def _filter_by_node(self, model_df, event_df, node):
         node_model_mask = [col for col in model_df.columns if node in col]
@@ -246,25 +248,27 @@ class Calibration:
         show = True
         for count, event in enumerate(self._event_names):
             if count > 0: show = False
-            fig.add_trace(
-                go.Scatter(
-                    x=index,
-                    y=model_y_coords[count],
-                    visible=show,
-                    name="Model Data",
-                    mode="lines",
+            if count < len (model_y_coords): 
+                fig.add_trace(
+                    go.Scatter(
+                        x=index,
+                        y=model_y_coords[count],
+                        visible=show,
+                        name="Model Data",
+                        mode="lines",
+                    )
                 )
-            )
-            trace_events.append(event)
-            fig.add_trace(
-                go.Scatter(
-                    x=index,
-                    y=event_y_coords[count],
-                    visible=show,
-                    name="Event Data",
-                    mode="lines",
+                trace_events.append(event)
+            if count < len (event_y_coords): 
+                fig.add_trace(
+                    go.Scatter(
+                        x=index,
+                        y=event_y_coords[count],
+                        visible=show,
+                        name="Event Data",
+                        mode="lines",
+                    )
                 )
-            )
             trace_events.append(event)
 
         return [fig, trace_events]
@@ -371,5 +375,8 @@ class Calibration:
             for line in csv_list:
                 writer.writerow(line)
 
+    def _dump_df(self, model_df, event_df, output_folder):
+        combined = model_df.join(event_df)
+        combined.to_excel(Path(output_folder, "Full_Dataframe.xlsx"), index=True)
 
 test()
