@@ -8,39 +8,47 @@ import os
 import shutil
 
 
-def test():
+def run():
+    # Manually link an event to a model 
+    # event folder - The name of the folder in which the event data is in. The folder will be used as the name for the event on the plot dropdown.
+    # event data - The event/real data (.xlsx file).
+    # model results - The model data (.zzn file).
     model_event_links = [
         {
-            "event name": "2007 November tidal",
+            "event folder": "2007 November tidal",
             "event data": "November_2007_All_Levels.xlsx",
             "model results": "BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn",
         },
         {
-            "event name": "2010 March fluvial",
+            "event folder": "2010 March fluvial",
             "event data": "March_2010_All_Levels.xlsx",
             "model results": "BROADLANDS_BECCLES_51_V01_MHWS_5PCT_1080HRS.zzn",
         },
         {
-            "event name": "2013 December tidal",
+            "event folder": "2013 December tidal",
             "event data": "December_2013_All_Levels.xlsx",
             "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_50_MHWS_1PCT.zzn",
         },
         {
-            "event name": "2013 March fluvial",
-            "event data": "March_2013_All_Levels.xlsx",
+            "event folder": "2017 January tidal NEW",
+            "event data": "Jan_2017_All_Levels.xlsx",
             "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_51_MHWS_0_5PCT_1080HRS.zzn",
         },
-    ]
+    ] # NB: If you want to add more model & event links copy and paste the { ... }, inside the square brackets (array) as many times as you need.
+    # Full path to the list of gauge locations and their node names.
     gauge_locations_path = r"C:\FloodModellerJacobs\Calibration Data\GaugeList\GaugeListLocation.xlsx"
-    variable = "Stage"
+    # Full path to folder which the model files are in.
     models_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults"
+    # Full path to the folder in which the event folders are in.
     event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
+    # Full path to the folder where you want to put your output data into.
     output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
+
+    # All data needed has been entered you should be able to run the file now.
     c = Calibration()
     c.calibrate_node(
         model_event_links,
         gauge_locations_path,
-        variable,
         models_path,
         event_data_folder_path,
         output_folder,
@@ -56,7 +64,6 @@ class Calibration:
         self,
         model_event_links,
         gauge_locations_path,
-        variable,
         models_path,
         event_data_path,
         output_folder,
@@ -65,7 +72,7 @@ class Calibration:
         print("Linked models to events")
         self._read_nodes(gauge_locations_path)
         print("Read in node names")
-        self._set_zzn_stage(models_path, variable)
+        self._set_zzn_stage(models_path)
         print("Read in zzn files")
         model_data_list = self._model_data()
         print("Cleaned model data")
@@ -87,13 +94,13 @@ class Calibration:
 
         self._nodes = list(self._node_dict.keys())
 
-    def _set_zzn_stage(self, models_path, variable):
+    def _set_zzn_stage(self, models_path):
         self._model_names = []
         self._model_dfs = []
         for link in self._model_event_links:
             file = link["model results"]
             zzn = ZZN(Path(models_path, file))
-            df = zzn.to_dataframe(variable=variable)
+            df = zzn.to_dataframe(variable="Stage")
             self._model_names.append(file[:-4])
             self._model_dfs.append(df)
 
@@ -116,7 +123,7 @@ class Calibration:
         xlsx_file_paths = []
         self._event_names = []
         for link in self._model_event_links:
-            folder = link["event name"]
+            folder = link["event folder"]
             file = link["event data"]
             file_path = str(Path(event_data_path, folder, file))
             xlsx_file_paths.append(file_path)
@@ -342,12 +349,12 @@ class Calibration:
     def _fill_csv_list(self, node, node_filtered_model, node_filtered_event, csv_list):
         for link in self._model_event_links:
             model_col_name = f"{node}_{link['model results']}"[:-4]
-            event_col_name = f"{node}_{link['event name']}"
+            event_col_name = f"{node}_{link['event folder']}"
             if (model_col_name) in node_filtered_model.columns and (event_col_name) in node_filtered_event.columns:
                 model_col = (
                     node_filtered_model[f"{node}_{link['model results']}"[:-4]]
                 ).replace("---", np.nan)
-                event_col = (node_filtered_event[f"{node}_{link['event name']}"]).replace(
+                event_col = (node_filtered_event[f"{node}_{link['event folder']}"]).replace(
                     "---", np.nan
                 )
                 model_peak = model_col.max()
@@ -357,7 +364,7 @@ class Calibration:
                 csv_list.append(
                     [
                         self._node_dict[node],
-                        link["event name"],
+                        link["event folder"],
                         model_peak,
                         event_peak,
                         f"{abs(model_peak - event_peak):.3f}",
@@ -379,4 +386,4 @@ class Calibration:
         combined = model_df.join(event_df)
         combined.to_excel(Path(output_folder, "Full_Dataframe.xlsx"), index=True)
 
-test()
+run()
