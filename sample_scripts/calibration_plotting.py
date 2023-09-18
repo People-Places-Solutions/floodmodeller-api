@@ -44,7 +44,7 @@ def run():
     # Full path to the folder where you want to put your output data into.
     output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
 
-    # All data needed has been entered you should be able to run the file now.
+    # All data needed has been added you should be able to run the file now.
     c = Calibration()
     c.calibrate_node(
         model_event_links,
