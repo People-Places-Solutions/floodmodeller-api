@@ -18,9 +18,8 @@ class StructureLogBuilder:
             "Weir Coefficient",
             "Culvert Inlet/Outlet Loss",
         ]
-        self.writer.writerow(field)
+        self._writer.writerow(field)
 
-    @classmethod
     def _conduit_data(self, conduit):
         length = 0.0
         inlet = ""
@@ -37,10 +36,8 @@ class StructureLogBuilder:
         if hasattr(next, "subtype"):
             if next.subtype == "OUTLET":
                 outlet = next.loss_coefficient
-
         return [length, inlet, outlet]
 
-    @classmethod
     def _culvert_loss_data(self, inlet, outlet):
         culvert_loss = ""
         if inlet != "" and outlet != "":
@@ -51,7 +48,6 @@ class StructureLogBuilder:
             culvert_loss = f"Ko: {outlet}"
         return culvert_loss
 
-    @classmethod
     def _circular_data(self, conduit, length):
         dimensions = f"dia: {conduit.diameter:.2f} x l: {length:.2f}"
         all_mannings = [
@@ -66,7 +62,6 @@ class StructureLogBuilder:
 
         return [friction, dimensions]
 
-    @classmethod
     def _sprungarch_data(self, conduit, length):
         dimensions = f"(Springing: {conduit.height_crown:.2f}, Crown: {conduit.height_springing:.2f}) x w: {conduit.width:.2f} x l: {length:.2f}"
         all_mannings = [
@@ -82,7 +77,6 @@ class StructureLogBuilder:
 
         return [friction, dimensions]
 
-    @classmethod
     def _rectangular_data(self, conduit, length):
         dimensions = f"h: {conduit.height:.2f} x w: {conduit.width:.2f} x l: {length:.2f}"
         all_mannings = [
@@ -98,7 +92,6 @@ class StructureLogBuilder:
 
         return [friction, dimensions]
 
-    @classmethod
     def _section_data(self, conduit, length):
         x_list = conduit.coords.x.tolist()
         width = (max(x_list) - min(x_list)) * 2
@@ -118,7 +111,6 @@ class StructureLogBuilder:
 
         return [friction, dimensions]
 
-    @classmethod
     def _sprung_data(self, conduit, length):
         dimensions = f"(Springing: {conduit.height_crown:.2f}, Crown: {conduit.height_springing:.2f}) x w: {conduit.width:.2f} x l: {length:.2f}"
         all_mannings = [
@@ -134,7 +126,6 @@ class StructureLogBuilder:
 
         return [friction, dimensions]
 
-    @classmethod
     def _add_conduits(self):
         for conduit in self._dat.conduits.values():
             if conduit.subtype not in [
@@ -190,7 +181,6 @@ class StructureLogBuilder:
                 culvert_loss,
             )
 
-    @classmethod
     def _orifice_dimensions(self, structure):
         if structure.shape == "RECTANGLE":
             height = structure.soffit - structure.invert
@@ -201,7 +191,6 @@ class StructureLogBuilder:
             dimensions = f"dia: {diameter:.2f}"
         return dimensions
 
-    @classmethod
     def _spill_data(self, structure):
         elevation = min(structure.data.Y.tolist())
         x_list = structure.data.X.tolist()
@@ -210,7 +199,6 @@ class StructureLogBuilder:
         weir_coefficient = structure.weir_coefficient
         return [dimensions, weir_coefficient]
 
-    @classmethod
     def _bridge_data(self, structure):
         all_mannings = structure.section_data["Mannings n"].tolist()
         mannings_set = set([min(all_mannings), max(all_mannings)])
@@ -223,7 +211,6 @@ class StructureLogBuilder:
         dimensions = f"h: {height:.2f} x w: {width:.2f}"
         return [friction, dimensions]
 
-    @classmethod
     def _add_structures(self):
         for structure in self._dat.structures.values():
             friction = ""
@@ -262,7 +249,6 @@ class StructureLogBuilder:
                 "",
             )
 
-    @classmethod
     def _write(
         self,
         name,
@@ -274,7 +260,7 @@ class StructureLogBuilder:
         weir_coefficient="",
         culvert_loss="",
     ):
-        self.writer.writerow(
+        self._writer.writerow(
             [
                 name,
                 unit,
@@ -293,7 +279,7 @@ class StructureLogBuilder:
 
         # Create a new .csv file
         with open(self.csv_output_path, "w", newline="") as file:
-            self.writer = csv.writer(file)
+            self._writer = csv.writer(file)
 
             self._add_fields()
 
