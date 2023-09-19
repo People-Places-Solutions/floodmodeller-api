@@ -161,9 +161,7 @@ def test_spill_data(slb, structure):
 
 
 def test_bridge_data(slb, structure):
-    structure.section_data = pd.DataFrame(
-        data={"X": [0, 0], "Y": [0, 0], "Mannings n": [0, 0]}
-    )
+    structure.section_data = pd.DataFrame(data={"X": [0, 0], "Y": [0, 0], "Mannings n": [0, 0]})
     structure.opening_data = pd.DataFrame(
         data={"Start": 0, "Finish": 0, "Springing Level": 0, "Soffit Level": 0},
         index=[0],
