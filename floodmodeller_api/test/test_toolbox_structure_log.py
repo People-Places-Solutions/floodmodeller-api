@@ -1,7 +1,6 @@
 import copy
 import csv
 import os
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 
 import pandas as pd

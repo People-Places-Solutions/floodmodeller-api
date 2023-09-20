@@ -15,7 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 import webbrowser
-from pathlib import Path
 
 
 def open_docs():

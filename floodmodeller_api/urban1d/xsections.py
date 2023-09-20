@@ -17,9 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from floodmodeller_api.units.helpers import (
     _to_float,
     _to_int,
-    _to_str,
     join_n_char_ljust,
-    split_n_char,
 )
 from floodmodeller_api.validation import _validate_unit
 

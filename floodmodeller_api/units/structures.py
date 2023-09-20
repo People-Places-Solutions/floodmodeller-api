@@ -21,7 +21,6 @@ from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
 from .helpers import (
-    _to_data_list,
     _to_float,
     _to_int,
     _to_str,
@@ -29,7 +28,6 @@ from .helpers import (
     join_12_char_ljust,
     join_n_char_ljust,
     split_10_char,
-    split_12_char,
     split_n_char,
 )
 

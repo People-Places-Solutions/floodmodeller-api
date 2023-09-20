@@ -15,6 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 ### UNIT CLASSES ###
+# pylint: disable=W0611
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .comment import COMMENT
 from .conduits import CONDUIT
@@ -24,6 +25,7 @@ from .sections import INTERPOLATE, REPLICATE, RIVER
 from .structures import BRIDGE, CRUMP, FLAT_V_WEIR, ORIFICE, OUTFALL, RNWEIR, SLUICE, SPILL, WEIR
 from .unsupported import UNSUPPORTED
 from .variables import Variables
+# pylint: enable=W0611
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {

@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
-from .helpers import join_10_char, join_n_char_ljust
+from .helpers import join_10_char
 
 ### Variables, Rules & Varrules Classes ###
 
