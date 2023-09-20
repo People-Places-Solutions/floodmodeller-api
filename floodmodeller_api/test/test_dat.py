@@ -1,9 +1,10 @@
+import os
+from pathlib import Path
+
+import pytest
+
 from floodmodeller_api import DAT
 from floodmodeller_api.units import QTBDY
-
-from pathlib import Path
-import os
-import pytest
 
 
 @pytest.fixture

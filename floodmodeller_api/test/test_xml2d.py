@@ -1,5 +1,9 @@
-import pytest, sys, os, copy
+import copy
+import os
+import sys
 from pathlib import Path
+
+import pytest
 
 from floodmodeller_api import XML2D
 

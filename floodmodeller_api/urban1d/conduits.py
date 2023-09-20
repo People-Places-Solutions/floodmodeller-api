@@ -13,14 +13,15 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
-from ._base import UrbanSubsection, UrbanUnit
 from floodmodeller_api.units.helpers import (
-    split_n_char,
     _to_float,
     _to_str,
     join_n_char_ljust,
+    split_n_char,
 )
 from floodmodeller_api.validation import _validate_unit
+
+from ._base import UrbanSubsection, UrbanUnit
 
 
 class CONDUIT(UrbanUnit):

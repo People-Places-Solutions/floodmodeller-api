@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 from . import units  # Import for using as package
-from .units._base import Unit
 from ._base import FMFile
+from .units._base import Unit
 from .units.helpers import _to_float, _to_int
 from .validation.validation import _validate_unit
 

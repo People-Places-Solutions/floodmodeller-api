@@ -1,5 +1,6 @@
-from floodmodeller_api import DAT
 import csv
+
+from floodmodeller_api import DAT
 
 
 class StructureLog:

@@ -1,14 +1,15 @@
-from floodmodeller_api import IEF, XML2D, DAT
+from itertools import zip_longest
+from pathlib import Path
+
+import geopandas as gpd
+import pytest
+from shapely.geometry import LineString, Point
 from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter,
 )
 
-from pathlib import Path
-from shapely.geometry import Point, LineString
-from itertools import zip_longest
-import geopandas as gpd
-import pytest
+from floodmodeller_api import DAT, IEF, XML2D
 
 
 @pytest.fixture

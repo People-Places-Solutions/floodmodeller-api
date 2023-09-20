@@ -1,17 +1,18 @@
-from floodmodeller_api.toolbox.model_build.structure_log.structure_log import (
-    StructureLogBuilder,
-)
-from floodmodeller_api.units.structures import ORIFICE
-from floodmodeller_api.units.conduits import CONDUIT
-from floodmodeller_api import DAT
+import copy
+import csv
+import os
+from pathlib import Path
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
 import pytest
-from tempfile import NamedTemporaryFile
-import csv
-import os
-import copy
-from pathlib import Path
+
+from floodmodeller_api import DAT
+from floodmodeller_api.toolbox.model_build.structure_log.structure_log import (
+    StructureLogBuilder,
+)
+from floodmodeller_api.units.conduits import CONDUIT
+from floodmodeller_api.units.structures import ORIFICE
 
 
 @pytest.fixture

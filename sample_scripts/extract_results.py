@@ -1,8 +1,8 @@
 """ This sample script shows how to extract max results from a zzn file into a pandas dataframe """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:

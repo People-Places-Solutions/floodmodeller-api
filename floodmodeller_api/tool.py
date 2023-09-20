@@ -1,7 +1,7 @@
 import argparse
 import sys
-from dataclasses import dataclass
 import tkinter as tk
+from dataclasses import dataclass
 
 
 @dataclass()
@@ -91,7 +91,12 @@ class Gui:
     """
 
     def __init__(
-        self, master: tk.Tk, title: str, description: str, parameters: list[Parameter], run_function
+        self,
+        master: tk.Tk,
+        title: str,
+        description: str,
+        parameters: list[Parameter],
+        run_function,
     ):
         self.master = master
         self.master.title(title)
@@ -286,7 +291,9 @@ class FMTool:
         # Parse the aruments from the commandline
         for input_param in self.parameters:
             parser.add_argument(
-                f"--{input_param.name}", required=input_param.required, help=input_param.help_text
+                f"--{input_param.name}",
+                required=input_param.required,
+                help=input_param.help_text,
             )
 
         args = parser.parse_args()

@@ -16,24 +16,24 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 ### UNIT CLASSES ###
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
+from .comment import COMMENT
+from .conduits import CONDUIT
 from .iic import IIC
-from .variables import Variables
-from .sections import RIVER, INTERPOLATE, REPLICATE
+from .losses import BLOCKAGE, CULVERT
+from .sections import INTERPOLATE, REPLICATE, RIVER
 from .structures import (
     BRIDGE,
-    SLUICE,
-    ORIFICE,
-    SPILL,
-    RNWEIR,
-    WEIR,
     CRUMP,
     FLAT_V_WEIR,
+    ORIFICE,
     OUTFALL,
+    RNWEIR,
+    SLUICE,
+    SPILL,
+    WEIR,
 )
-from .losses import BLOCKAGE, CULVERT
-from .conduits import CONDUIT
 from .unsupported import UNSUPPORTED
-from .comment import COMMENT
+from .variables import Variables
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {

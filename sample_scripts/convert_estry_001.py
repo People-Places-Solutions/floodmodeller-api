@@ -1,13 +1,14 @@
 #   Import necessary packages
 
 import sys
+
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry import Point
-from floodmodeller_api import DAT
-from floodmodeller_api.units.sections import RIVER
-from floodmodeller_api.units.comment import COMMENT
 
+from floodmodeller_api import DAT
+from floodmodeller_api.units.comment import COMMENT
+from floodmodeller_api.units.sections import RIVER
 
 #   File paths for model, xs and nwk, read in
 model_path = r"C:\FloodModellerJacobs\TUFLOW_data\TUFLOW\model"

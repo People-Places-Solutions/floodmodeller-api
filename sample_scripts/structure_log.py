@@ -1,5 +1,6 @@
-from floodmodeller_api import DAT
 import csv
+
+from floodmodeller_api import DAT
 
 dat_file_path = r"C:\FloodModellerJacobs\Structure Log\DAT_for_API\Bourn_Rea_OBC_BLN_DEF_006.dat"
 csv_output_path = r"C:\FloodModellerJacobs\Structure Log\output\structure_log.csv"

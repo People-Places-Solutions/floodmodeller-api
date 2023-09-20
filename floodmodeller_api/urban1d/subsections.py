@@ -14,14 +14,14 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from .conduits import CONDUITS
+
 ### UNIT CLASSES ###
 from .junctions import JUNCTIONS
+from .losses import LOSSES
 from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
-from .conduits import CONDUITS
-from .losses import LOSSES
 from .xsections import XSECTIONS
-
 
 ### UNIT TYPES AND SUPPORT ###
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed

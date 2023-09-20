@@ -2,8 +2,8 @@
     package based on a ZZN file """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:

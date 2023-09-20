@@ -2,15 +2,13 @@
     to maintain a minimum flow of 50% of the peak throughout the falling limb. """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:
     from floodmodeller_api import IED
-    from floodmodeller_api.units import (
-        QTBDY,
-    )  # importing the QTBDY Unit class to enable checking unit type
+    from floodmodeller_api.units import QTBDY  # to enable checking unit type
 except ImportError:
     print(
         "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment"

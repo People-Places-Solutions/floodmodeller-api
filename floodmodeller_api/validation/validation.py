@@ -14,8 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from .urban_parameters import urban_parameter_options
 from .parameters import parameter_options
+from .urban_parameters import urban_parameter_options
 
 
 def _validate_unit(unit, urban=False):

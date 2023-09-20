@@ -17,13 +17,14 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base file class for API file classes """
 
 from pathlib import Path
-from .version import __version__
+
+from .backup import File
 from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
-from .units.iic import IIC
 from .units.comment import COMMENT
+from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-from .backup import File
+from .version import __version__
 
 
 class FMFile:

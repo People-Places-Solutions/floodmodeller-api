@@ -1,7 +1,9 @@
-from floodmodeller_api.tool import FMTool, Parameter, Gui
-import pytest
-from unittest.mock import patch, MagicMock
 import tkinter as tk
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from floodmodeller_api.tool import FMTool, Gui, Parameter
 
 
 # ------ Define function ----- #

@@ -18,8 +18,8 @@ import ctypes as ct
 from pathlib import Path
 from typing import Optional, Union
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from ._base import FMFile
 

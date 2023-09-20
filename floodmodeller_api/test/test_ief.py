@@ -1,5 +1,7 @@
-import pytest
 import os
+
+import pytest
+
 from floodmodeller_api import IEF
 
 
