@@ -7,6 +7,11 @@ from floodmodeller_api import DAT
 
 import pandas as pd
 import pytest
+from tempfile import NamedTemporaryFile
+import csv
+import os
+import copy
+from pathlib import Path
 
 
 @pytest.fixture
@@ -168,3 +173,68 @@ def test_bridge_data(slb, structure):
     )
     output = slb._bridge_data(structure)
     assert output == ["Mannings: 0", "h: 0.00 x w: 0.00"]
+
+
+def test_add_conduits(slb, conduit_filled):
+    slb._dat = DAT()
+    prev_c = copy.deepcopy(conduit_filled)
+    prev_c.dist_to_next = 0
+    prev_c.name = "prev"
+    slb._dat.conduits["prev"] = prev_c
+    conduit_filled.dist_to_next = 5 
+    slb._dat.conduits["test_conduit"] = conduit_filled
+    next_c = copy.deepcopy(conduit_filled)
+    next_c.dist_to_next = 0
+    slb._dat.conduits["next"] = next_c
+    slb._dat._all_units = [prev_c, conduit_filled, next_c]
+    conduit_non_subtype = copy.deepcopy(conduit_filled)
+    conduit_non_subtype.subtype = "NON_SUBTYPE"
+    slb._dat.conduits["test_conduit_NON_SUBTYPE"] = conduit_non_subtype
+    tmp = NamedTemporaryFile(suffix=".csv", delete=False)
+    with open(tmp.name, "w") as temp:
+        slb._writer = csv.writer(temp)
+        slb._add_conduits()
+    tmp.close()
+    os.unlink(tmp.name)
+
+def test_add_structures(slb, structure):
+    slb._dat = DAT()
+    structure.soffit = 3
+    structure.weir_coefficient = 1
+    structure.data = pd.DataFrame(data={"X": [0, 0], "Y": [0, 0]})
+    structure.section_data = pd.DataFrame(data={"X": [0, 0], "Y": [0, 0], "Mannings n": [0, 0]})
+    structure.opening_data = pd.DataFrame(
+        data={"Start": 0, "Finish": 0, "Springing Level": 0, "Soffit Level": 0},
+        index=[0],
+    )
+    structure.crest_elevation = 1
+    structure.weir_breadth = 1
+    structure.weir_length = 1
+    structure.weir_elevation = 1
+    slb._dat.structures["test_structure_orifice"] = structure
+    struc_spill = copy.deepcopy(structure)
+    struc_spill._unit = "SPILL"
+    slb._dat.structures["test_structure_spill"] = struc_spill
+    struc_sluice = copy.deepcopy(structure)
+    struc_sluice._unit = "SLUICE"
+    slb._dat.structures["test_structure_sluice"] = struc_sluice
+    struc_rnweir = copy.deepcopy(structure)
+    struc_rnweir._unit = "RNWEIR"
+    slb._dat.structures["test_structure_rnweir"] = struc_rnweir
+    struc_weir = copy.deepcopy(structure)
+    struc_weir._unit = "WEIR"
+    slb._dat.structures["test_structure_weir"] = struc_weir
+    struc_bridge = copy.deepcopy(structure)
+    struc_bridge._unit = "BRIDGE"
+    slb._dat.structures["test_structure_bridge"] = struc_bridge
+    struc_none = copy.deepcopy(structure)
+    struc_none._unit = "NONE"
+    slb._dat.structures["test_structure_none"] = struc_none
+    
+    with open((NamedTemporaryFile(suffix=".csv", delete=True)).name, "w") as tmp:
+        slb._writer = csv.writer(tmp)
+        slb._add_structures()
+    #with open(tmp.name, "w") as temp:
+    #    
+    #tmp.close()
+    #os.unlink(tmp.name)
