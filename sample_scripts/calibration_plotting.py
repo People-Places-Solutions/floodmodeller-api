@@ -5,8 +5,6 @@ import csv
 from pathlib import Path
 import numpy as np
 import os
-import shutil
-
 
 def run():
     # Manually link an event to a model 
