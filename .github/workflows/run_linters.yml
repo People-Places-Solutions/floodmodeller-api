@@ -20,4 +20,4 @@ jobs:
           use-flake8: false
           use-mypy: false
           extra-black-options: "--line-length 100"
-          extra-isort-options: ""
+          extra-isort-options: "--profile black --line-length 100"
