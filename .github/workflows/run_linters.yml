@@ -18,6 +18,6 @@ jobs:
           use-pylint: false
           use-pycodestyle: false
           use-flake8: false
-          use-isort: false
+          use-mypy: false
           extra-black-options: "--line-length 100"
-          extra-mypy-options: "--ignore-missing-imports"
+          extra-isort-options: ""
