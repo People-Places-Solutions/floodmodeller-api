@@ -8,7 +8,7 @@ on:
 
 jobs:
   lint:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2  
 
@@ -20,4 +20,3 @@ jobs:
           pylint-options: "--rcfile=setup.cfg"
           isort-options: "-w 100"
           black-options: "--check --line-length 100"
-          django: true
