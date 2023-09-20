@@ -1,4 +1,4 @@
-from .model_build import AddSiltation
+from .model_build import AddSiltation, StructureLog
 from .model_conversion import TuflowToFloodModeller
 
 # from .visualisation import ...

@@ -1,1 +1,2 @@
 from .add_siltation_definition import AddSiltation
+from .structure_log_definition import StructureLog
