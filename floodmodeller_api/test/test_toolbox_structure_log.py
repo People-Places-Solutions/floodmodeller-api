@@ -235,7 +235,5 @@ def test_add_structures(slb, structure):
     with open((NamedTemporaryFile(suffix=".csv", delete=True)).name, "w") as tmp:
         slb._writer = csv.writer(tmp)
         slb._add_structures()
-    # with open(tmp.name, "w") as temp:
-    #
-    # tmp.close()
-    # os.unlink(tmp.name)
+    tmp.close()
+    os.unlink(tmp.name)
