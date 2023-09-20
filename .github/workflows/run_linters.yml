@@ -15,9 +15,10 @@ jobs:
       - name: Python Linter
         uses: ricardochaves/python-lint@v1.4.0
         with:
-          use-pylint: false
+          python-root-list: "floodmodeller_api sample_scripts scripts setup.py"
           use-pycodestyle: false
           use-flake8: false
           use-mypy: false
           extra-black-options: "--line-length 100"
           extra-isort-options: "--profile black --line-length 100"
+          extra-pylint-options: "--disable=all --enable=unused-import"
