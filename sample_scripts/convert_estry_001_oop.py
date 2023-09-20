@@ -1,6 +1,5 @@
 #   Import necessary packages
 
-import sys
 from typing import List
 
 import geopandas as gpd
