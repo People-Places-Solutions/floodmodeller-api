@@ -181,7 +181,7 @@ def test_add_conduits(slb, conduit_filled):
     prev_c.dist_to_next = 0
     prev_c.name = "prev"
     slb._dat.conduits["prev"] = prev_c
-    conduit_filled.dist_to_next = 5 
+    conduit_filled.dist_to_next = 5
     slb._dat.conduits["test_conduit"] = conduit_filled
     next_c = copy.deepcopy(conduit_filled)
     next_c.dist_to_next = 0
@@ -196,6 +196,7 @@ def test_add_conduits(slb, conduit_filled):
         slb._add_conduits()
     tmp.close()
     os.unlink(tmp.name)
+
 
 def test_add_structures(slb, structure):
     slb._dat = DAT()
@@ -230,11 +231,11 @@ def test_add_structures(slb, structure):
     struc_none = copy.deepcopy(structure)
     struc_none._unit = "NONE"
     slb._dat.structures["test_structure_none"] = struc_none
-    
+
     with open((NamedTemporaryFile(suffix=".csv", delete=True)).name, "w") as tmp:
         slb._writer = csv.writer(tmp)
         slb._add_structures()
-    #with open(tmp.name, "w") as temp:
-    #    
-    #tmp.close()
-    #os.unlink(tmp.name)
+    # with open(tmp.name, "w") as temp:
+    #
+    # tmp.close()
+    # os.unlink(tmp.name)
