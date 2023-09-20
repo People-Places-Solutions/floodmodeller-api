@@ -25,6 +25,7 @@ from .sections import INTERPOLATE, REPLICATE, RIVER
 from .structures import BRIDGE, CRUMP, FLAT_V_WEIR, ORIFICE, OUTFALL, RNWEIR, SLUICE, SPILL, WEIR
 from .unsupported import UNSUPPORTED
 from .variables import Variables
+
 # pylint: enable=W0611
 
 ### UNIT TYPES AND SUPPORT ###
