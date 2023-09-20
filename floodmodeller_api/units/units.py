@@ -21,17 +21,7 @@ from .conduits import CONDUIT
 from .iic import IIC
 from .losses import BLOCKAGE, CULVERT
 from .sections import INTERPOLATE, REPLICATE, RIVER
-from .structures import (
-    BRIDGE,
-    CRUMP,
-    FLAT_V_WEIR,
-    ORIFICE,
-    OUTFALL,
-    RNWEIR,
-    SLUICE,
-    SPILL,
-    WEIR,
-)
+from .structures import BRIDGE, CRUMP, FLAT_V_WEIR, ORIFICE, OUTFALL, RNWEIR, SLUICE, SPILL, WEIR
 from .unsupported import UNSUPPORTED
 from .variables import Variables
 

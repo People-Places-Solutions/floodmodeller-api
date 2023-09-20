@@ -21,11 +21,7 @@ import pandas as pd
 
 from .._base import FMFile
 from .lf_helpers import state_factory
-from .lf_params import (
-    lf1_steady_data_to_extract,
-    lf1_unsteady_data_to_extract,
-    lf2_data_to_extract,
-)
+from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
 
 
 class LF(FMFile):
