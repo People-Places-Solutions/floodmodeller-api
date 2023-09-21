@@ -6,41 +6,42 @@ from pathlib import Path
 import numpy as np
 import os
 
+
 def run():
-    # Manually link an event to a model 
+    # Manually link an event to a model
     # event folder - The name of the folder in which the event data is in. The folder will be used as the name for the event on the plot dropdown.
     # event data - The event/real data (.xlsx file).
     # model results - The model data (.zzn file).
     model_event_links = [
         {
-            "event folder": "2007 November tidal",
-            "event data": "November_2007_All_Levels.xlsx",
-            "model results": "BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn",
+            "event folder": "",
+            "event data": ".xlsx",
+            "model results": ".zzn",
         },
         {
-            "event folder": "2010 March fluvial",
-            "event data": "March_2010_All_Levels.xlsx",
-            "model results": "BROADLANDS_BECCLES_51_V01_MHWS_5PCT_1080HRS.zzn",
+            "event folder": "",
+            "event data": ".xlsx",
+            "model results": ".zzn",
         },
         {
-            "event folder": "2013 December tidal",
-            "event data": "December_2013_All_Levels.xlsx",
-            "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_50_MHWS_1PCT.zzn",
+            "event folder": "",
+            "event data": ".xlsx",
+            "model results": ".zzn",
         },
         {
-            "event folder": "2017 January tidal NEW",
-            "event data": "Jan_2017_All_Levels.xlsx",
-            "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_51_MHWS_0_5PCT_1080HRS.zzn",
+            "event folder": "",
+            "event data": ".xlsx",
+            "model results": ".zzn",
         },
-    ] # NB: If you want to add more model & event links copy and paste the { ... }, inside the square brackets (array) as many times as you need.
+    ]  # NB: If you want to add more model & event links copy and paste the { ... }, inside the square brackets (array) as many times as you need.
     # Full path to the list of gauge locations and their node names.
-    gauge_locations_path = r"C:\FloodModellerJacobs\Calibration Data\GaugeList\GaugeListLocation.xlsx"
+    gauge_locations_path = r""
     # Full path to folder which the model files are in.
-    models_path = r"C:\FloodModellerJacobs\Calibration Data\1DResults"
+    models_path = r""
     # Full path to the folder in which the event folders are in.
-    event_data_folder_path = r"C:\FloodModellerJacobs\Calibration Data\EventData"
+    event_data_folder_path = r""
     # Full path to the folder where you want to put your output data into.
-    output_folder = r"C:\FloodModellerJacobs\Calibration Data\output"
+    output_folder = r""
 
     # All data needed has been added you should be able to run the file now.
     c = Calibration()
@@ -54,7 +55,6 @@ def run():
 
 
 class Calibration:
-
     def __init__(self) -> None:
         pass
 
@@ -87,7 +87,7 @@ class Calibration:
         nodes = list(gauges_nodes["Node"])
 
         self._node_dict = {}
-        for i in range (0,len(nodes)):
+        for i in range(0, len(nodes)):
             self._node_dict[nodes[i]] = tabs[i]
 
         self._nodes = list(self._node_dict.keys())
@@ -134,15 +134,9 @@ class Calibration:
         for i, event in enumerate(self._event_names):
             for node in self._nodes:
                 try:
-                    sheet = pd.read_excel(
-                        xlsx_file_paths[i], sheet_name=self._node_dict[node]
-                    )
-                    time = list(
-                        filter(lambda x: x is not None, (list(sheet.iloc[:, 0])[13:]))
-                    )
-                    values = list(
-                        filter(lambda x: x is not None, (list(sheet.iloc[:, 2])[13:]))
-                    )
+                    sheet = pd.read_excel(xlsx_file_paths[i], sheet_name=self._node_dict[node])
+                    time = list(filter(lambda x: x is not None, (list(sheet.iloc[:, 0])[13:])))
+                    values = list(filter(lambda x: x is not None, (list(sheet.iloc[:, 2])[13:])))
                     event_data_list.append(
                         pd.DataFrame(
                             {f"{node}_{event}": values},
@@ -209,20 +203,19 @@ class Calibration:
             node_filtered_model = filtered_dfs[0]
             node_filtered_event = filtered_dfs[1]
 
-            if (
-                len(node_filtered_model.columns) == 0
-                or len(node_filtered_event.columns) == 0
-            ):
+            if len(node_filtered_model.columns) == 0 or len(node_filtered_event.columns) == 0:
                 continue
-            
 
             self._add_node_dropdown(node, node_filtered_model, node_filtered_event, node_dropdown)
 
-            #self._plot(node, node_filtered_model, node_filtered_event, output_folder)
+            # self._plot(node, node_filtered_model, node_filtered_event, output_folder)
             self._fill_csv_list(
-                node, node_filtered_model, node_filtered_event, csv_list,
+                node,
+                node_filtered_model,
+                node_filtered_event,
+                csv_list,
             )
-        
+
         setup = self._setup_plot(model_df.index)
         fig = setup[0]
         trace_events = setup[1]
@@ -233,7 +226,7 @@ class Calibration:
         print("Filled out csv data")
         self._dump_df(model_df, event_df, output_folder)
         print("Dumped dataframe to csv")
-    
+
     def _filter_by_node(self, model_df, event_df, node):
         node_model_mask = [col for col in model_df.columns if node in col]
         node_filtered_model = model_df[node_model_mask]
@@ -252,8 +245,9 @@ class Calibration:
         trace_events = []
         show = True
         for count, event in enumerate(self._event_names):
-            if count > 0: show = False
-            if count < len (model_y_coords): 
+            if count > 0:
+                show = False
+            if count < len(model_y_coords):
                 fig.add_trace(
                     go.Scatter(
                         x=index,
@@ -264,7 +258,7 @@ class Calibration:
                     )
                 )
                 trace_events.append(event)
-            if count < len (event_y_coords): 
+            if count < len(event_y_coords):
                 fig.add_trace(
                     go.Scatter(
                         x=index,
@@ -285,11 +279,13 @@ class Calibration:
         for column in node_filtered_model.columns:
             model = list(node_filtered_model[column])
             y_coords.append(model)
-            if self._starting_y_coords == None: y_model.append(model)
+            if self._starting_y_coords == None:
+                y_model.append(model)
         for column in node_filtered_event.columns:
             event = list(node_filtered_event[column])
             y_coords.append(event)
-            if self._starting_y_coords == None: y_event.append(event)
+            if self._starting_y_coords == None:
+                y_event.append(event)
         if self._starting_y_coords == None:
             self._starting_y_coords = [y_model, y_event]
 
@@ -300,10 +296,9 @@ class Calibration:
                 visible=True,
                 args=[{"y": y_coords}],
             )
-    )
+        )
 
     def _create_html(self, fig, nodes_dropdown, trace_events, output_folder):
-
         events_dropdown = []
         for event in self._event_names:
             show_event = [True if event in x else False for x in trace_events]
@@ -348,10 +343,12 @@ class Calibration:
         for link in self._model_event_links:
             model_col_name = f"{node}_{link['model results']}"[:-4]
             event_col_name = f"{node}_{link['event folder']}"
-            if (model_col_name) in node_filtered_model.columns and (event_col_name) in node_filtered_event.columns:
-                model_col = (
-                    node_filtered_model[f"{node}_{link['model results']}"[:-4]]
-                ).replace("---", np.nan)
+            if (model_col_name) in node_filtered_model.columns and (
+                event_col_name
+            ) in node_filtered_event.columns:
+                model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace(
+                    "---", np.nan
+                )
                 event_col = (node_filtered_event[f"{node}_{link['event folder']}"]).replace(
                     "---", np.nan
                 )
@@ -373,9 +370,7 @@ class Calibration:
                 )
 
     def _outputs_csv(self, csv_list, output_folder):
-        with open(
-            Path(output_folder, "Gauge_Peak_Data.csv"), "w", newline=""
-        ) as csvfile:
+        with open(Path(output_folder, "Gauge_Peak_Data.csv"), "w", newline="") as csvfile:
             writer = csv.writer(csvfile, delimiter=",")
             for line in csv_list:
                 writer.writerow(line)
@@ -383,5 +378,6 @@ class Calibration:
     def _dump_df(self, model_df, event_df, output_folder):
         combined = model_df.join(event_df)
         combined.to_excel(Path(output_folder, "Full_Dataframe.xlsx"), index=True)
+
 
 run()

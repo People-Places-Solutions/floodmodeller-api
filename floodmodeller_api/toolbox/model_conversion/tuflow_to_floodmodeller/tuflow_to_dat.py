@@ -446,7 +446,13 @@ class TuflowToDat:
 
         self._dat._gxy_data = file_contents
 
-    def convert(self, model_path: str, nwk_paths: list[Path], xs_paths: list[Path], empty_dat: DAT):
+    def convert(
+        self,
+        model_path: str,
+        nwk_paths: list[Path],
+        xs_paths: list[Path],
+        empty_dat: DAT,
+    ):
         self._read_in(model_path, nwk_paths, xs_paths)
 
         self._clean_df_1()
