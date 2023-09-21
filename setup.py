@@ -18,7 +18,7 @@ setup(
         "floodmodeller_api.urban1d",
         "floodmodeller_api.logs",
         "floodmodeller_api.test",
-        "floodmodeller_api.test.test_data"
+        "floodmodeller_api.test.test_data",
     ],
     scripts=[str(path) for path in Path("scripts").glob("*")],
     project_urls={
@@ -32,5 +32,13 @@ setup(
     long_description=readme_txt,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    install_requires=["pandas>1,<3", "geopandas>0.10.1,<0.14","lxml==4.*", "tqdm==4.*", "pytest>4,<8", "pytest-mock==3.*", "plotly==5.*"],
+    install_requires=[
+        "pandas>1,<3",
+        "geopandas>0.10.1,<0.14",
+        "lxml==4.*",
+        "tqdm==4.*",
+        "pytest>4,<8",
+        "pytest-mock==3.*",
+        "plotly==5.*",
+    ],
 )

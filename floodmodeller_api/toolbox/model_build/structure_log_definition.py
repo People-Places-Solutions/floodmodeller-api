@@ -1,5 +1,6 @@
 from floodmodeller_api.tool import FMTool, Parameter
-from .structure_log.structure_log import StructureLog as StrucLg
+from .structure_log.structure_log import StructureLogBuilder
+
 
 class StructureLog(FMTool):
     name = "Structure Log"
@@ -20,4 +21,4 @@ class StructureLog(FMTool):
             required=True,
         ),
     ]
-    tool_function = lambda **kwargs: StrucLg(**kwargs).create()
+    tool_function = lambda **kwargs: StructureLogBuilder(**kwargs).create()

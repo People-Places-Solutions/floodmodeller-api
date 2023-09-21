@@ -1,8 +1,8 @@
 from floodmodeller_api import DAT
 import csv
 
-class StructureLog:
 
+class StructureLogBuilder:
     def __init__(self, input_path, output_path) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
@@ -18,7 +18,7 @@ class StructureLog:
             "Weir Coefficient",
             "Culvert Inlet/Outlet Loss",
         ]
-        self.writer.writerow(field)
+        self._writer.writerow(field)
 
     def _conduit_data(self, conduit):
         length = 0.0
@@ -36,7 +36,6 @@ class StructureLog:
         if hasattr(next, "subtype"):
             if next.subtype == "OUTLET":
                 outlet = next.loss_coefficient
-        
         return [length, inlet, outlet]
 
     def _culvert_loss_data(self, inlet, outlet):
@@ -60,7 +59,7 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
 
     def _sprungarch_data(self, conduit, length):
@@ -75,7 +74,7 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
 
     def _rectangular_data(self, conduit, length):
@@ -90,16 +89,15 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
-    
+
     def _section_data(self, conduit, length):
         x_list = conduit.coords.x.tolist()
         width = (max(x_list) - min(x_list)) * 2
         y_list = conduit.coords.y.tolist()
-        height = max(y_list) - min(
-            y_list
-        )  # currently this means that height goes to the top of the spike,
+        height = max(y_list) - min(y_list)
+        # currently this means that height goes to the top of the spike,
         # it is only meant to go up to the height of the majority of the area
         dimensions = f"h: {height:.2f} x w: {width:.2f} x l: {length:.2f}"
         all_cw_frictions = conduit.coords.cw_friction.tolist()
@@ -107,8 +105,10 @@ class StructureLog:
         if len(cw_frictions_set) == 1:
             friction = f"Colebrook-White: {cw_frictions_set.pop()}"
         else:
-            friction = f"Colebrook-White: [min: {cw_frictions_set.pop()}, max: {cw_frictions_set.pop()}]"
-        
+            friction = (
+                f"Colebrook-White: [min: {cw_frictions_set.pop()}, max: {cw_frictions_set.pop()}]"
+            )
+
         return [friction, dimensions]
 
     def _sprung_data(self, conduit, length):
@@ -123,12 +123,21 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        
+
         return [friction, dimensions]
-    
+
     def _add_conduits(self):
         for conduit in self._dat.conduits.values():
-            
+            if conduit.subtype not in [
+                "CIRCULAR",
+                "SPRUNGARCH",
+                "RECTANGULAR",
+                "SECTION",
+                "SPRUNG",
+            ]:
+                print(f"Conduit subtype: {conduit.subtype} not currently supported")
+                self._write(conduit.name, conduit._unit, conduit.subtype)
+                continue
             conduit_data = self._conduit_data(conduit)
             length = conduit_data[0]
             inlet = conduit_data[1]
@@ -197,13 +206,8 @@ class StructureLog:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        height = structure.opening_data.values[0][3] - min(
-            structure.section_data.Y.tolist()
-        )
-        width = (
-            structure.opening_data.values[0][1]
-            - structure.opening_data.values[0][0]
-        )
+        height = structure.opening_data.values[0][3] - min(structure.section_data.Y.tolist())
+        width = structure.opening_data.values[0][1] - structure.opening_data.values[0][0]
         dimensions = f"h: {height:.2f} x w: {width:.2f}"
         return [friction, dimensions]
 
@@ -229,7 +233,11 @@ class StructureLog:
                 bridge_data = self._bridge_data(structure)
                 friction = bridge_data[0]
                 dimensions = bridge_data[1]
-                
+            else:
+                print(f"Structure: {structure._unit} not currently supported in structure log")
+                self._write(structure.name, structure._unit, structure.subtype)
+                continue
+
             self._write(
                 structure.name,
                 structure._unit,
@@ -246,24 +254,24 @@ class StructureLog:
         name,
         unit,
         subtype,
-        comment,
-        friction,
-        dimensions,
-        weir_coefficient,
-        culvert_loss,
+        comment="",
+        friction="",
+        dimensions="",
+        weir_coefficient="",
+        culvert_loss="",
     ):
-        self.writer.writerow(
-    [
-        name,
-        unit,
-        subtype,
-        comment,
-        friction,
-        dimensions,
-        weir_coefficient,
-        culvert_loss,
-    ]
-)
+        self._writer.writerow(
+            [
+                name,
+                unit,
+                subtype,
+                comment,
+                friction,
+                dimensions,
+                weir_coefficient,
+                culvert_loss,
+            ]
+        )
 
     def create(self):
         # Read in the .dat file
@@ -271,7 +279,7 @@ class StructureLog:
 
         # Create a new .csv file
         with open(self.csv_output_path, "w", newline="") as file:
-            self.writer = csv.writer(file)
+            self._writer = csv.writer(file)
 
             self._add_fields()
 

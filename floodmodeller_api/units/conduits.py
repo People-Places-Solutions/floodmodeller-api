@@ -96,7 +96,7 @@ class CONDUIT(Unit):
         friction_on_invert (float): Friction value for conduit invert
         friction_on_walls (float): Friction value for conduit walls
         friction_on_soffit (float): Friction value for conduit soffit
-        
+
     **Sprungarch Type (``CONDUIT.subtype == 'SPRUNGARCH'``)**
 
     Args:
@@ -114,11 +114,11 @@ class CONDUIT(Unit):
         friction_on_invert (float): Friction value for conduit invert
         friction_on_walls (float): Friction value for conduit walls
         friction_on_soffit (float): Friction value for conduit soffit
-        
+
     **Section Type (``CONDUIT.subtype == 'SECTION'``)**
 
     Args:
-        None - common args attributes only 
+        None - common args attributes only
 
     Raises:
         NotImplementedError: Raised if class is initialised without existing Conduit block (i.e. if attempting to create new
@@ -131,49 +131,49 @@ class CONDUIT(Unit):
     _unit = "CONDUIT"
 
     def _create_from_blank(
-            self,
-            name="new_unit",
-            spill="",
-            comment="",
-            dist_to_next=0.0,
-            subtype="SECTION",
-            friction_eq="MANNING",
-            invert=0.0,
-            width=0.0,
-            height=0.0,
-            use_bottom_slot="GLOBAL",
-            bottom_slot_dist=0.0,
-            bottom_slot_depth=0.0,
-            use_top_slot="GLOBAL",
-            top_slot_dist=0.0,
-            top_slot_depth=0.0,
-            friction_on_invert=0.0,
-            friction_on_walls=0.0,
-            friction_on_soffit=0.0,
-            diameter=0.0,
-            friction_above_axis=0.0,
+        self,
+        name="new_unit",
+        spill="",
+        comment="",
+        dist_to_next=0.0,
+        subtype="SECTION",
+        friction_eq="MANNING",
+        invert=0.0,
+        width=0.0,
+        height=0.0,
+        use_bottom_slot="GLOBAL",
+        bottom_slot_dist=0.0,
+        bottom_slot_depth=0.0,
+        use_top_slot="GLOBAL",
+        top_slot_dist=0.0,
+        top_slot_depth=0.0,
+        friction_on_invert=0.0,
+        friction_on_walls=0.0,
+        friction_on_soffit=0.0,
+        diameter=0.0,
+        friction_above_axis=0.0,
     ):
         for param, val in {
-            "name" : name,
-            "spill" : spill,
-            "comment" : comment,
-            "dist_to_next" : dist_to_next,
-            "subtype" : subtype,
-            "friction_eq" : friction_eq,
-            "invert" : invert,
-            "width" : width,
-            "height" : height,
-            "use_bottom_slot" : use_bottom_slot,
-            "bottom_slot_dist" : bottom_slot_dist,
-            "bottom_slot_depth" : bottom_slot_depth,
-            "use_top_slot" : use_top_slot,
-            "top_slot_dist" : top_slot_dist,
-            "top_slot_depth" : top_slot_depth,
-            "friction_on_invert" : friction_on_invert,
-            "friction_on_walls" : friction_on_walls,
-            "friction_on_soffit" : friction_on_soffit,
-            "diameter" : diameter,
-            "friction_above_axis" : friction_above_axis,
+            "name": name,
+            "spill": spill,
+            "comment": comment,
+            "dist_to_next": dist_to_next,
+            "subtype": subtype,
+            "friction_eq": friction_eq,
+            "invert": invert,
+            "width": width,
+            "height": height,
+            "use_bottom_slot": use_bottom_slot,
+            "bottom_slot_dist": bottom_slot_dist,
+            "bottom_slot_depth": bottom_slot_depth,
+            "use_top_slot": use_top_slot,
+            "top_slot_dist": top_slot_dist,
+            "top_slot_depth": top_slot_depth,
+            "friction_on_invert": friction_on_invert,
+            "friction_on_walls": friction_on_walls,
+            "friction_on_soffit": friction_on_soffit,
+            "diameter": diameter,
+            "friction_above_axis": friction_above_axis,
         }.items():
             setattr(self, param, val)
 
@@ -267,7 +267,7 @@ class CONDUIT(Unit):
 
         elif self._subtype == "SECTION":
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            end_index = (5 + _to_int(c_block[4]))
+            end_index = 5 + _to_int(c_block[4])
             x = []
             y = []
             friction = []
@@ -276,11 +276,7 @@ class CONDUIT(Unit):
                 x.append(_to_float(row_data[0]))
                 y.append(_to_float(row_data[1]))
                 friction.append(_to_float(row_data[2]))
-            self.coords = pd.DataFrame({
-                "x": x,
-                "y": y,
-                "cw_friction": friction
-            })
+            self.coords = pd.DataFrame({"x": x, "y": y, "cw_friction": friction})
 
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
@@ -307,9 +303,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = (
-                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
-            )
+            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -342,7 +336,7 @@ class CONDUIT(Unit):
                 ]
             )
             return c_block
-        
+
         elif self._subtype == "SPRUNG":
             c_block.extend(
                 [
@@ -368,7 +362,7 @@ class CONDUIT(Unit):
                 ]
             )
             return c_block
-        
+
         elif self._subtype == "SPRUNGARCH":
             c_block.extend(
                 [
@@ -394,7 +388,7 @@ class CONDUIT(Unit):
                 ]
             )
             return c_block
-        
+
         elif self._subtype == "SECTION":
             c_block.extend(
                 [
@@ -403,8 +397,8 @@ class CONDUIT(Unit):
                 ]
             )
             for index, coord in self.coords.iterrows():
-                c_block.extend([join_10_char(coord.x,coord.y,coord.cw_friction)])
+                c_block.extend([join_10_char(coord.x, coord.y, coord.cw_friction)])
             return c_block
-        
+
         else:
             return self._raw_block

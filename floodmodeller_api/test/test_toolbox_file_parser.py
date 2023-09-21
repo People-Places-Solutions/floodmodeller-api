@@ -8,7 +8,6 @@ import pytest
 
 @pytest.fixture
 def tuflow_parser(tmpdir) -> TuflowParser:
-
     text = """
     VAR1 == folder1/file1.csv
     VAR1 == ../file2.tmf
@@ -109,7 +108,6 @@ def test_geodataframe(tuflow_parser, mocker, path2):
 
 
 def test_dataframe(tuflow_parser, mocker, path1, path2):
-
     read_csv = mocker.patch("pandas.read_csv", return_value="test")
 
     assert tuflow_parser.get_dataframe("var1") == "test"
@@ -126,7 +124,6 @@ def test_dataframe(tuflow_parser, mocker, path1, path2):
 
 
 def test_single_geometry(tuflow_parser, mocker, path1, path2):
-
     point1 = Point(0, 1)
     point2 = Point(1, 0)
     gdf = gpd.GeoDataFrame({"x": ["a", "b"], "geometry": [point1, point2]})
@@ -145,10 +142,7 @@ def test_all_paths(tuflow_parser, path1, path2):
     assert tuflow_parser.get_all_paths("var1") == [path1, path2]
 
 
-def test_all_geodataframes(
-    tuflow_parser, mocker, path1, path2, path3, path4, path5, path6
-):
-
+def test_all_geodataframes(tuflow_parser, mocker, path1, path2, path3, path4, path5, path6):
     read_gdf = mocker.patch("geopandas.read_file", return_value="test")
 
     assert tuflow_parser.get_all_geodataframes("var1") == ["test", "test"]

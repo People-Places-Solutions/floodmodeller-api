@@ -23,7 +23,9 @@ import geopandas as gpd
 import numpy as np
 import pytest
 
-path_to_cc = "floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
+path_to_cc = (
+    "floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
+)
 
 
 @pytest.fixture
@@ -112,7 +114,6 @@ def tuflow_r():
 
 
 def test_concat(polygon1, polygon2, point1, point2):
-
     gdf_list = [
         gpd.GeoDataFrame({"x": [0, 1], "geometry": [polygon1, polygon2]}),
         gpd.GeoDataFrame({"X": [2], "geometry": [point1]}),
@@ -133,7 +134,6 @@ def test_concat(polygon1, polygon2, point1, point2):
 
 
 def test_rename_and_select():
-
     df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
 
     df1 = rename_and_select(df, {"aa": "A", "b": "B"})
@@ -144,7 +144,6 @@ def test_rename_and_select():
 
 
 def test_filter(polygon1, polygon2):
-
     gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
 
     deactive = filter(gdf, column="code", value=0)
@@ -155,7 +154,6 @@ def test_filter(polygon1, polygon2):
 
 
 def test_abc():
-
     abc = ComponentConverter("test")
     with pytest.raises(NotImplementedError):
         abc.edit_fm_file()
@@ -174,7 +172,6 @@ def test_abc():
 
 
 def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
-
     active_area_path = Path.joinpath(Path(tmpdir), "active_area.shp")
     deactive_area_path = Path.joinpath(Path(tmpdir), "deactive_area.shp")
 
@@ -217,7 +214,6 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
     ],
 )
 def test_loc_line_converter(tmpdir, xml, gdf1, start, end, rotation):
-
     loc_line = LocLineConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
@@ -236,12 +232,11 @@ def test_loc_line_converter(tmpdir, xml, gdf1, start, end, rotation):
         "nrows": 12,
         "ncols": 16,
         "rotation": rotation,
-        "active_area": Path(tmpdir+"\\active_area.shp"),
+        "active_area": Path(tmpdir + "\\active_area.shp"),
     }
 
 
 def test_convert_points_and_lines(tuflow_p, tuflow_l):
-
     combined = TopographyConverterXML2D.combine_layers((tuflow_p, tuflow_l))
 
     assert combined.equals(
@@ -260,7 +255,6 @@ def test_convert_points_and_lines(tuflow_p, tuflow_l):
 
 
 def test_convert_polygons(tuflow_r):
-
     combined = TopographyConverterXML2D.combine_layers((tuflow_r,))
 
     assert combined.equals(
@@ -278,7 +272,6 @@ def test_convert_polygons(tuflow_r):
 
 
 def test_convert_unsupported_shape(tuflow_p, tuflow_l, tuflow_r):
-
     with pytest.raises(RuntimeError) as e:
         TopographyConverterXML2D.combine_layers((tuflow_l,))
     assert str(e.value) == "Combination not supported: lines"
@@ -302,7 +295,6 @@ def test_convert_unsupported_shape(tuflow_p, tuflow_l, tuflow_r):
 
 @pytest.mark.parametrize("tuple_input", [True, False])
 def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
-
     inputs = (gdf1, gdf2) if tuple_input else gdf1
     outputs = (gdf1, gdf2) if tuple_input else (gdf1,)
 
@@ -327,28 +319,20 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
 
 
 def test_material_to_roughness(point1, polygon1, polygon2):
-
     roughness = RoughnessConverterXML2D.material_to_roughness(
-        gpd.GeoDataFrame(
-            {"material_id": [7, 3, 5], "geometry": [polygon1, polygon2, point1]}
-        ),
+        gpd.GeoDataFrame({"material_id": [7, 3, 5], "geometry": [polygon1, polygon2, point1]}),
         pd.DataFrame({"material_id": [3, 5, 7], "value": [0.1, 0.9, 0.7]}),
     )
 
     assert roughness.equals(
-        gpd.GeoDataFrame(
-            {"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, point1]}
-        )
+        gpd.GeoDataFrame({"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, point1]})
     )
 
 
 def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
-
     roughness_path = Path.joinpath(Path(tmpdir), "roughness.shp")
     mapping = pd.DataFrame({"A": [3], "B": [0.1], "C": ["D"]})
-    standardised_material = gpd.GeoDataFrame(
-        {"material_id": [1, 0], "geometry": [point1, point2]}
-    )
+    standardised_material = gpd.GeoDataFrame({"material_id": [1, 0], "geometry": [point1, point2]})
     standardised_mapping = pd.DataFrame({"material_id": [3], "value": [0.1]})
 
     material_to_roughness = mocker.patch(
@@ -393,7 +377,6 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
     ],
 )
 def test_scheme_converter_2d(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_proc):
-
     scheme_converter = SchemeConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
@@ -418,7 +401,6 @@ def test_scheme_converter_2d(tmpdir, xml, in_scheme, in_hardware, fm_scheme, fm_
 
 
 def test_boundary_converter(tmpdir, xml, gdf1, gdf2):
-
     boundary_converter = BoundaryConverterXML2D(
         xml=xml,
         folder=Path(tmpdir),
@@ -430,7 +412,6 @@ def test_boundary_converter(tmpdir, xml, gdf1, gdf2):
 
 
 def test_scheme_converter_1d(tmpdir, ief):
-
     scheme_converter = SchemeConverterIEF(
         ief=ief,
         folder=Path(tmpdir),
@@ -439,4 +420,3 @@ def test_scheme_converter_1d(tmpdir, ief):
     scheme_converter.edit_fm_file()
 
     assert ief.Timestep == 3
-    

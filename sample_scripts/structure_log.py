@@ -1,9 +1,7 @@
 from floodmodeller_api import DAT
 import csv
 
-dat_file_path = (
-    r"C:\FloodModellerJacobs\Structure Log\DAT_for_API\Bourn_Rea_OBC_BLN_DEF_006.dat"
-)
+dat_file_path = r"C:\FloodModellerJacobs\Structure Log\DAT_for_API\Bourn_Rea_OBC_BLN_DEF_006.dat"
 csv_output_path = r"C:\FloodModellerJacobs\Structure Log\output\structure_log.csv"
 
 dat = DAT(dat_file_path)
@@ -60,9 +58,7 @@ with open(csv_output_path, "w", newline="") as file:
             if len(mannings_set) == 1:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
-                friction = (
-                    f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-                )
+                friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
         elif conduit.subtype == "SPRUNGARCH":
             dimensions = f"(Springing: {conduit.height_crown:.2f}, Crown: {conduit.height_springing:.2f}) x w: {conduit.width:.2f} x l: {length:.2f}"
             all_mannings = [
@@ -74,13 +70,9 @@ with open(csv_output_path, "w", newline="") as file:
             if len(mannings_set) == 1:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
-                friction = (
-                    f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-                )
+                friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
         elif conduit.subtype == "RECTANGULAR":
-            dimensions = (
-                f"h: {conduit.height:.2f} x w: {conduit.width:.2f} x l: {length:.2f}"
-            )
+            dimensions = f"h: {conduit.height:.2f} x w: {conduit.width:.2f} x l: {length:.2f}"
             all_mannings = [
                 conduit.friction_on_invert,
                 conduit.friction_on_soffit,
@@ -90,9 +82,7 @@ with open(csv_output_path, "w", newline="") as file:
             if len(mannings_set) == 1:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
-                friction = (
-                    f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-                )
+                friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
         elif conduit.subtype == "SECTION":
             x_list = conduit.coords.x.tolist()
             width = (max(x_list) - min(x_list)) * 2
@@ -119,9 +109,7 @@ with open(csv_output_path, "w", newline="") as file:
             if len(mannings_set) == 1:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
-                friction = (
-                    f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-                )
+                friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
 
         writer.writerow(
             [
@@ -159,7 +147,9 @@ with open(csv_output_path, "w", newline="") as file:
         elif structure._unit == "RNWEIR":
             dimensions = f"Crest Elevation: {structure.weir_elevation:.2f} x w: {structure.weir_breadth:.2f} x l: {structure.weir_length:.2f}"
         elif structure._unit == "WEIR":
-            dimensions = f"Crest Elevation: {structure.weir_elevation:.2f} x w: {structure.weir_breadth:.2f}"
+            dimensions = (
+                f"Crest Elevation: {structure.weir_elevation:.2f} x w: {structure.weir_breadth:.2f}"
+            )
             # Need weir coefficient (the velocity attribute??)
         elif structure._unit == "BRIDGE":
             all_mannings = structure.section_data["Mannings n"].tolist()
@@ -167,16 +157,9 @@ with open(csv_output_path, "w", newline="") as file:
             if len(mannings_set) == 1:
                 friction = f"Mannings: {mannings_set.pop()}"
             else:
-                friction = (
-                    f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-                )
-            height = structure.opening_data.values[0][3] - min(
-                structure.section_data.Y.tolist()
-            )
-            width = (
-                structure.opening_data.values[0][1]
-                - structure.opening_data.values[0][0]
-            )
+                friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
+            height = structure.opening_data.values[0][3] - min(structure.section_data.Y.tolist())
+            width = structure.opening_data.values[0][1] - structure.opening_data.values[0][0]
             dimensions = f"h: {height:.2f} x w: {width:.2f}"
 
         writer.writerow(

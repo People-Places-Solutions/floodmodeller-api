@@ -20,20 +20,22 @@ for csv_file in csv_folder.glob("*"):
     # Iterate through each return period
     for return_period in return_periods:
         flow_data = data[f"Total flow m3/s ({return_period} year)- urbanised model"]
-        qtbdy = QTBDY(name=node_label, data=flow_data) # Builds new QTBDY
+        qtbdy = QTBDY(name=node_label, data=flow_data)  # Builds new QTBDY
 
         if return_period not in ied_files:
             ied_files[return_period] = {}
-        
+
         if storm_duration not in ied_files[return_period]:
-            ied = IED() # Create new ied file
-            ied.save(Path(csv_folder.parent, "output", f"Q{return_period}_{storm_duration}.ied"))
+            ied = IED()  # Create new ied file
+            ied.save(
+                Path(
+                    csv_folder.parent,
+                    "output",
+                    f"Q{return_period}_{storm_duration}.ied",
+                )
+            )
             ied_files[return_period][storm_duration] = ied
-        
+
         ied = ied_files[return_period][storm_duration]
-        ied.boundaries[node_label] = qtbdy # Add qtbdy unit into IED
-        ied.update() # Update IED file on disk
-
-
-
-
+        ied.boundaries[node_label] = qtbdy  # Add qtbdy unit into IED
+        ied.update()  # Update IED file on disk

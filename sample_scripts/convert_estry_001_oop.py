@@ -50,9 +50,7 @@ class TuflowToDat:
         )
         self._nwk_attributes = self._nwk_attributes.dropna(subset=["geometry"])
         self._xs_attributes = self._xs_attributes.dropna(subset=["geometry"])
-        self._culvert_attributes = self._culvert_attributes.dropna(
-            subset=["geometry"]
-        )
+        self._culvert_attributes = self._culvert_attributes.dropna(subset=["geometry"])
         if not (self._nwk_attributes.unary_union == None):
             self._xs_attributes = self._xs_attributes[
                 self._xs_attributes.intersects(self._nwk_attributes.unary_union)
@@ -118,9 +116,7 @@ class TuflowToDat:
 
     def _find_ds_intersect(self):
         #   nwk find connected network line ds
-        self._nwk_attributes["end"] = self._nwk_attributes["end"].apply(
-            lambda x: Point(x)
-        )
+        self._nwk_attributes["end"] = self._nwk_attributes["end"].apply(lambda x: Point(x))
         self._nwk_attributes["connected"] = [[]] * len(self._nwk_attributes)
         self._nwk_attributes["Flag"] = ""
 
@@ -176,9 +172,9 @@ class TuflowToDat:
         ] = "start"
 
         non_empty_rows = self._nwk_attributes[self._nwk_attributes["Flag"].notna()]
-        id_flag_dict = non_empty_rows.set_index("ID")[
-            ["Flag", "n_nF_Cd", "length", "end"]
-        ].to_dict(orient="index")
+        id_flag_dict = non_empty_rows.set_index("ID")[["Flag", "n_nF_Cd", "length", "end"]].to_dict(
+            orient="index"
+        )
         self._full_flag_dict = self._nwk_attributes.set_index("ID")[
             ["Flag", "n_nF_Cd", "length", "start"]
         ].to_dict(orient="index")
@@ -187,19 +183,13 @@ class TuflowToDat:
             key: value for key, value in id_flag_dict.items() if value["Flag"] == "end"
         }
         self._start_dict = {
-            key: value
-            for key, value in id_flag_dict.items()
-            if value["Flag"] == "start"
+            key: value for key, value in id_flag_dict.items() if value["Flag"] == "start"
         }
         self._join_start_dict = {
-            key: value
-            for key, value in id_flag_dict.items()
-            if value["Flag"] == "join_start"
+            key: value for key, value in id_flag_dict.items() if value["Flag"] == "join_start"
         }
         self._join_end_dict = {
-            key: value
-            for key, value in id_flag_dict.items()
-            if value["Flag"] == "join_end"
+            key: value for key, value in id_flag_dict.items() if value["Flag"] == "join_end"
         }
 
     def _add_to_xs_data(self):
@@ -278,9 +268,7 @@ class TuflowToDat:
                 order_counter += 1
 
                 intersect_value = self._xs_attributes.at[next_row_index, "intersect"]
-                end_intersect_value = self._xs_attributes.at[
-                    next_row_index, "end_intersect"
-                ]
+                end_intersect_value = self._xs_attributes.at[next_row_index, "end_intersect"]
                 next_row_index = self._xs_attributes[
                     (self._xs_attributes["end_intersect"] == intersect_value)
                     & (self._xs_attributes["Flag"] == "")
@@ -338,9 +326,7 @@ class TuflowToDat:
         # iterate through adding xs
         for index, row in self._cross_sections.iterrows():
             unit_csv_name = str(row["Source"])  #'..\\csv\\1d_xs_M14_C99.csv' pulled out
-            unit_csv = pd.read_csv(
-                self._model_path + unit_csv_name.lstrip(".."), skiprows=[0]
-            )
+            unit_csv = pd.read_csv(self._model_path + unit_csv_name.lstrip(".."), skiprows=[0])
             unit_csv.columns = ["X", "Z"]
             unit_data = pd.DataFrame(columns=self._headings)
             unit_data["X"] = unit_csv["X"]
@@ -387,14 +373,14 @@ class TuflowToDat:
             dist_to_next = 0.0
             friction_eq = "MANNING"
             invert = 0.0
-            
-            for i in range (0,2):
+
+            for i in range(0, 2):
                 if i == 0:
-                    name_ud = name+"u"
+                    name_ud = name + "u"
                     next_dist = length
                     invert = _to_float(row["US_Invert"])
                 else:
-                    name_ud = name+"d"
+                    name_ud = name + "d"
                     next_dist = dist_to_next
                     invert = _to_float(row["DS_Invert"])
 
@@ -437,7 +423,7 @@ class TuflowToDat:
             file_contents += "[RIVER_SECTION_{}]\n".format(row["Name"])
             file_contents += "x={:.2f}\n".format(row["easting"])
             file_contents += "y={:.2f}\n\n".format(row["northing"])
-        
+
         for index, row in self._culvert_attributes.iterrows():
             if row["Type"] == "R":
                 subtype = "RECTANGULAR"
@@ -447,19 +433,17 @@ class TuflowToDat:
             else:
                 subtype = "SECTION"
             # upstream conduit for the culvert
-            file_contents += "[CONDUIT_{}_{}]\n".format(subtype,"UNIT{:03d}d".format(index))
+            file_contents += "[CONDUIT_{}_{}]\n".format(subtype, "UNIT{:03d}d".format(index))
             file_contents += "x={:.2f}\n".format(row["start"].x)
             file_contents += "y={:.2f}\n\n".format(row["start"].y)
             # downstream conduit for the culvert
-            file_contents += "[CONDUIT_{}_{}]\n".format(subtype,"UNIT{:03d}u".format(index))
+            file_contents += "[CONDUIT_{}_{}]\n".format(subtype, "UNIT{:03d}u".format(index))
             file_contents += "x={:.2f}\n".format(row["end"].x)
             file_contents += "y={:.2f}\n\n".format(row["end"].y)
 
         self._dat._gxy_data = file_contents
 
-    def convert(
-        self, model_path: str, nwk_paths: List[str], xs_path: str, empty_dat: DAT
-    ):
+    def convert(self, model_path: str, nwk_paths: List[str], xs_path: str, empty_dat: DAT):
         self._read_in(model_path, nwk_paths, xs_path)
 
         self._clean_df_1()
