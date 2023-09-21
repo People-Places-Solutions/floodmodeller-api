@@ -134,7 +134,7 @@ class SteadyState(State):
 
 
 def state_factory(steady: bool, extracted_data: Data) -> State:
-    if steady == True:
+    if steady is True:
         return SteadyState(extracted_data)
     else:
         return UnsteadyState(extracted_data)

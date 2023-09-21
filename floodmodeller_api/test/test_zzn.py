@@ -30,5 +30,5 @@ def test_load_zzn_using_dll(zzn_fp, tabCSV_output, test_workspace):
     # https://stackoverflow.com/questions/20274987/how-to-use-pytest-to-check-that-error-is-not-raised
     try:
         pd.testing.assert_frame_equal(output, tabCSV_output, rtol=0.0001)
-    except:
+    except Exception:
         pytest.fail("data frames not equal")

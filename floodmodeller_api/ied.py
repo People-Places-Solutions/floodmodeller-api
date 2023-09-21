@@ -40,7 +40,7 @@ class IED(FMFile):
     def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = ied_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
 
                 self._read()
@@ -226,7 +226,7 @@ class IED(FMFile):
 
             if line == "COMMENT":
                 in_comment = True
-                if in_block == True:
+                if in_block is True:
                     bdy_block["end"] = idx - 1  # add ending index
                     # append existing bdy block to the ied_struct
                     ied_struct.append(bdy_block)
@@ -238,7 +238,7 @@ class IED(FMFile):
 
             if len(line.split(" ")[0]) > 1:
                 if line.split(" ")[0] in units.ALL_UNIT_TYPES:
-                    if in_block == True:
+                    if in_block is True:
                         bdy_block["end"] = idx - 1  # add ending index
                         # append existing bdy block to the ief_struct
                         ied_struct.append(bdy_block)
@@ -248,7 +248,7 @@ class IED(FMFile):
                     bdy_block["start"] = idx  # add starting index
 
                 elif " ".join(line.split(" ")[:2]) in units.ALL_UNIT_TYPES:
-                    if in_block == True:
+                    if in_block is True:
                         bdy_block["end"] = idx - 1  # add ending index
                         # append existing bdy block to the ief_struct
                         ied_struct.append(bdy_block)
@@ -259,7 +259,7 @@ class IED(FMFile):
                 else:
                     continue
             elif line in units.ALL_UNIT_TYPES:
-                if in_block == True:
+                if in_block is True:
                     bdy_block["end"] = idx - 1  # add ending index
                     # append existing bdy block to the ief_struct
                     ied_struct.append(bdy_block)

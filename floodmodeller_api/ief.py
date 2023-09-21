@@ -51,7 +51,7 @@ class IEF(FMFile):
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = ief_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
 
                 self._read()
@@ -83,7 +83,7 @@ class IEF(FMFile):
                     if prev_comment is None:
                         try:
                             event_data_title = Path(value).stem
-                        except:
+                        except Exception:
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
@@ -199,7 +199,7 @@ class IEF(FMFile):
                     # defaults to inserting in last place
                     insert_index = len(self._ief_properties)
                     for idx, item in enumerate(self._ief_properties):
-                        if group_idx == True and item.startswith("["):
+                        if group_idx is True and item.startswith("["):
                             insert_index = idx
                             break
                         if item == group:
@@ -389,7 +389,7 @@ class IEF(FMFile):
         try:
             self._range_function = range_function
             self._range_settings = range_settings
-            if self._filepath == None:
+            if self._filepath is None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
                 )
@@ -526,8 +526,8 @@ class IEF(FMFile):
             return
 
         # ensure progress bar is supported for that type
-        if not (suffix == "lf1" and steady == False):
-            self._no_log_file(f"only 1D unsteady runs are supported")
+        if not (suffix == "lf1" and steady is False):
+            self._no_log_file("only 1D unsteady runs are supported")
             self._lf = None
             return
 

@@ -73,12 +73,12 @@ def test_dict(tuflow_parser):
 
 
 def test_check_key(tuflow_parser):
-    assert tuflow_parser.check_key("var1") == True
-    assert tuflow_parser.check_key("var2") == True
-    assert tuflow_parser.check_key("var3") == True
-    assert tuflow_parser.check_key("var4") == True
-    assert tuflow_parser.check_key("var5") == False
-    assert tuflow_parser.check_key("var6") == False
+    assert tuflow_parser.check_key("var1") is True
+    assert tuflow_parser.check_key("var2") is True
+    assert tuflow_parser.check_key("var3") is True
+    assert tuflow_parser.check_key("var4") is True
+    assert tuflow_parser.check_key("var5") is False
+    assert tuflow_parser.check_key("var6") is False
 
 
 def test_value(tuflow_parser):
@@ -117,7 +117,7 @@ def test_dataframe(tuflow_parser, mocker, path1, path2):
     assert read_csv.call_count == 1
     assert read_csv.call_args_list[0][0][0] == path2
     assert read_csv.call_args_list[0][1]["comment"] == "!"
-    assert read_csv.call_args_list[0][1]["header"] == None
+    assert read_csv.call_args_list[0][1]["header"] is None
 
     assert tuflow_parser.get_dataframe("var1", index=0) == "test"
     assert read_csv.call_count == 2

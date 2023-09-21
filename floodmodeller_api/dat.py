@@ -44,7 +44,7 @@ class DAT(FMFile):
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
             self._filepath = dat_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
                 self._read()
 
@@ -77,7 +77,7 @@ class DAT(FMFile):
         self._write_gxy(filepath)
 
     def _write_gxy(self, filepath):
-        if not self._gxy_data == None:
+        if self._gxy_data is not None:
             gxy_string = self._gxy_data
             new_gxy_path = filepath.with_suffix(".gxy")
             with open(new_gxy_path, "w") as gxy_file:
@@ -596,14 +596,13 @@ class DAT(FMFile):
         in_block = False
         in_general = True
         in_comment = False
-        in_variable = False
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
-            if in_general == True:
+            if in_general is True:
                 if line == "END GENERAL":
                     general_block["end"] = idx
                     dat_struct.append(general_block)
@@ -666,7 +665,7 @@ class DAT(FMFile):
 
     def _close_struct_block(self, dat_struct, unit_type, unit_block, in_block, idx):
         """Helper method to close block in dat struct"""
-        if in_block == True:
+        if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
             # append existing bdy block to the dat_struct
             dat_struct.append(unit_block)

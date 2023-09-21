@@ -62,7 +62,7 @@ class LF(FMFile):
             self._raw_data = [line.rstrip("\n") for line in lf_file.readlines()]
 
         # Force rereading from start of file
-        if force_reread == True:
+        if force_reread is True:
             self._del_attributes()
             self._init_counters()
             self._init_parsers()
@@ -121,7 +121,7 @@ class LF(FMFile):
                     parser.process_line(end_of_line)
 
                     # index marks the end of an iteration
-                    if parser.is_index == True:
+                    if parser.is_index is True:
                         self._sync_cols()
                         self._no_iters += 1
 
@@ -201,7 +201,7 @@ class LF(FMFile):
             parser = self._extracted_data[key]
 
             # sync parser types that are not the index
-            if parser.is_index == False:
+            if parser.is_index is False:
                 # if their number of values is not in sync
                 if parser.data_type == "all" and parser.data.no_values < (
                     self._no_iters + int(parser.before_index)
@@ -258,7 +258,7 @@ class LF1(LF):
     _suffix: str = ".lf1"
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
-        if steady == False:
+        if steady is False:
             data_to_extract = lf1_unsteady_data_to_extract
         else:
             data_to_extract = lf1_steady_data_to_extract

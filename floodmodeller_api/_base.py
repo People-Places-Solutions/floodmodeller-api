@@ -33,7 +33,7 @@ class FMFile:
     _suffix = None
 
     def __init__(self):
-        if self._filepath != None:
+        if self._filepath is not None:
             self._filepath = Path(self._filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
@@ -67,7 +67,7 @@ class FMFile:
 
     def _update(self):
         f"""Updates the existing {self._filetype} based on any altered attributes"""
-        if self._filepath == None:
+        if self._filepath is None:
             raise UserWarning(
                 f"{self._filetype} must be saved to a specific filepath before update() can be called."
             )

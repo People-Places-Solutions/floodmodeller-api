@@ -20,11 +20,11 @@ import pandas as pd
 def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):
     result = True
     try:
-        if type(item_a) == dict:
+        if isinstance(item_a, dict):
             result, diff = check_dict_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )
-        elif type(item_a) == list:
+        elif isinstance(item_a, dict):
             result, diff = check_list_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )
@@ -88,7 +88,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
             if key not in dict_a:
                 result = False
                 diff.append((name, f"Key: {key} missing from first object"))
-    except Exception as e:
+    except Exception:
         result = False
         diff.append((name, "Error encountered when comparing"))
 
@@ -111,8 +111,8 @@ def check_list_with_dataframe_equal(list_a, list_b, name, diff, special_types):
 
         if len(list_a) != len(list_b):
             result = False
-            diff.append((name, f"Mismatch in list length"))
-    except Exception as e:
+            diff.append((name, "Mismatch in list length"))
+    except Exception:
         result = False
         diff.append((name, "Error encountered when comparing"))
 

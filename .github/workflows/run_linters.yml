@@ -15,10 +15,14 @@ jobs:
       - name: Python Linter
         uses: ricardochaves/python-lint@v1.4.0
         with:
-          python-root-list: "floodmodeller_api sample_scripts scripts setup.py"
+          python-root-list: floodmodeller_api sample_scripts scripts setup.py
           use-pycodestyle: false
           use-pylint: false
           use-mypy: false
-          extra-black-options: "--line-length 100"
-          extra-isort-options: "--profile black --line-length 100"
-          extra-flake8-options: "--select F,E4,E6,E7,E9,W4,W6,W7,W9 --ignore E402 --max-line-length 100"
+          extra-black-options: --line-length 100
+          extra-isort-options: --profile black --line-length 100
+          extra-flake8-options: |
+            --select F,E4,E6,E7,E9,W4,W6,W7,W9
+            --ignore E402
+            --max-line-length 100
+            --per-file-ignores __init__.py:F401

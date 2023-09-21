@@ -44,7 +44,7 @@ class INP(FMFile):
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = inp_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
                 self._read()
 
@@ -96,7 +96,7 @@ class INP(FMFile):
                             ]
 
                             for param, value in self.options.items():
-                                if value != None:
+                                if value is not None:
                                     option_line = join_n_char_ljust(21, param.upper(), value)
                                     new_subsection_data.append(option_line)
 
@@ -139,7 +139,7 @@ class INP(FMFile):
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            f"Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
+            "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
         )
         pass
 
@@ -210,7 +210,7 @@ class INP(FMFile):
 
             # Check if subsection is known
             if line.upper() in subsections.ALL_SUBSECTIONS:
-                if in_block == True:
+                if in_block is True:
                     unit_block["end"] = idx - 1  # add ending index
                     inp_struct.append(unit_block)  # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
