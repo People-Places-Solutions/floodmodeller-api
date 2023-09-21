@@ -9,9 +9,8 @@ from shapely.geometry import LineString
 from shapely.ops import split
 
 from floodmodeller_api import DAT, IEF, XML2D
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.tuflow_to_dat import (
-    TuflowToDat,
-)
+
+from .tuflow_to_dat import TuflowToDat
 
 
 def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:

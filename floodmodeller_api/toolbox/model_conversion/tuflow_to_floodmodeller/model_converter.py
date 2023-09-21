@@ -3,9 +3,6 @@ from pathlib import Path
 from typing import Callable, Dict, Type, Union
 
 from floodmodeller_api import DAT, IEF, XML2D
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
-    ComponentConverter,
-)
 
 from .component_converter import (
     BoundaryConverterXML2D,
