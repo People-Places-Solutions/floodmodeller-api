@@ -4,12 +4,12 @@ from pathlib import Path
 import geopandas as gpd
 import pytest
 from shapely.geometry import LineString, Point
-from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
+
+from floodmodeller_api import DAT, IEF, XML2D
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter,
 )
-
-from floodmodeller_api import DAT, IEF, XML2D
 
 
 @pytest.fixture

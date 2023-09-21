@@ -3,7 +3,10 @@ from pathlib import Path
 import geopandas as gpd
 import pytest
 from shapely.geometry import Point
-from toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import TuflowParser
+
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import (
+    TuflowParser,
+)
 
 
 @pytest.fixture
