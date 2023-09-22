@@ -1294,7 +1294,7 @@ class CRUMP(Unit):
             setattr(self, param, val)
 
 
-class FLATVWEIR(Unit):
+class FLAT_V_WEIR(Unit):  # noqa: N801
     """Class to hold and process FLAT-V WEIR unit type
 
     Args:
@@ -1317,7 +1317,7 @@ class FLATVWEIR(Unit):
     bank_top_elevation (float, optional): Elevation of channel bank top/ limit of extent of sloping channel walls (m AD).
 
     Returns:
-        FLATVWEIR: Flood Modeller FLAT-V WEIR Unit class object"""
+        FLAT_V_WEIR: Flood Modeller FLAT-V WEIR Unit class object"""
 
     _unit = "FLAT-V WEIR"
 

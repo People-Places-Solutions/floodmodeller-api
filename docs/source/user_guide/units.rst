@@ -96,10 +96,10 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.CRUMP
 
-``FLATVWEIR()``
+``FLAT_V_WEIR()``
 ~~~~~~~~~~~~~~~~~
 
-.. autoclass:: floodmodeller_api.units.FLATVWEIR
+.. autoclass:: floodmodeller_api.units.FLAT_V_WEIR
 
 ``OUTFALL()``
 ~~~~~~~~~~~~~
