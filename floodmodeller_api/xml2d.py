@@ -218,7 +218,7 @@ class XML2D(FMFile):
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
-            if key in self._multi_value_keys and isinstance(item, list):
+            if key in self._multi_value_keys and not isinstance(item, list):
                 raise Exception(f"Element: '{key}' must be added as list")
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
