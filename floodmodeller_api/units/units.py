@@ -14,17 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-### UNIT CLASSES ###
-from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
-from .comment import COMMENT
-from .conduits import CONDUIT
-from .iic import IIC
-from .losses import BLOCKAGE, CULVERT
-from .sections import INTERPOLATE, REPLICATE, RIVER
-from .structures import BRIDGE, CRUMP, FLAT_V_WEIR, ORIFICE, OUTFALL, RNWEIR, SLUICE, SPILL, WEIR
-from .unsupported import UNSUPPORTED
-from .variables import Variables
-
 
 ### UNIT TYPES AND SUPPORT ###
 SUPPORTED_UNIT_TYPES = {
@@ -63,20 +52,11 @@ UNSUPPORTED_UNIT_TYPES = {
     # "COMMENT": {"group": "other", "has_subtype": False},
     # "CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
     # "CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
-    "FEHBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # RAINFALL RUNOFF METHOD boundary
+    "FEHBDY": {"group": "boundaries", "has_subtype": False},  # RAINFALL RUNOFF METHOD boundary
     "FLOOD RELIEF": {"has_subtype": True},  # found in dat file
-    "FLOOD RELIEF ARCH": {
-        "group": "structures",
-        "has_subtype": True,
-    },  # found in FM help
+    "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True},  # found in FM help
     "FLOODPLAIN": {"has_subtype": True},  # floodplain section culvert
-    "FRQSIM": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # flood FReQuency SIMulation
+    "FRQSIM": {"group": "boundaries", "has_subtype": False},  # flood FReQuency SIMulation
     "FSRBDY": {
         "group": "boundaries",
         "has_subtype": False,
@@ -98,22 +78,13 @@ UNSUPPORTED_UNIT_TYPES = {
     # "MUSK-RSEC": RIVER
     # "MUSK-VPMC": RIVER
     # "MUSK-XSEC": RIVER
-    "NCDBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # Normal/Critical Depth Boundary
+    "NCDBDY": {"group": "boundaries", "has_subtype": False},  # Normal/Critical Depth Boundary
     "NOTWEIR": {"group": "structures", "has_subtype": False},  # Notional Weir
     "OCPUMP": {"has_subtype": False},  # pump [junctions]
     "POND": {"has_subtype": True},  # Pond units, online pond etc [connector]
-    "QH CONTROL": {
-        "group": "structures",
-        "has_subtype": False,
-    },  # Flow-head control weir
+    "QH CONTROL": {"group": "structures", "has_subtype": False},  # Flow-head control weir
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
-    "REBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # Rainfall/Evaporation Boundary
+    "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
     "RESERVOIR": {"has_subtype": False},  # reservoir unit [connector]
     # "SECTION": CONDUIT
