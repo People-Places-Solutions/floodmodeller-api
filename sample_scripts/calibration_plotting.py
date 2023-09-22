@@ -1,10 +1,12 @@
-import plotly.graph_objects as go
-import pandas as pd
-from floodmodeller_api import ZZN
 import csv
-from pathlib import Path
-import numpy as np
 import os
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+
+from floodmodeller_api import ZZN
 
 
 def run():
