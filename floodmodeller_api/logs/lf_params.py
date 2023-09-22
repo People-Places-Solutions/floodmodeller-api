@@ -506,7 +506,7 @@ lf2_data_to_extract = {
     },
 }
 
-error_2D_dict = {
+error_2d_dict = {
     # format: Error code, 42 : Comment, "This has worked" ,
     100: "Successful completion",
     101: "Error at preprocessing stage",

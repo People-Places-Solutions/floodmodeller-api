@@ -28,7 +28,7 @@ from tqdm import trange
 
 from floodmodeller_api._base import FMFile
 
-from .logs import error_2D_dict, lf_factory
+from .logs import error_2d_dict, lf_factory
 from .xml2d_template import xml2d_template
 
 
@@ -674,7 +674,7 @@ class XML2D(FMFile):
             String that explains the exitcode - this might be too much!
         """
         try:
-            msg = f"Exit with {exitcode}: {error_2D_dict[exitcode]}"
+            msg = f"Exit with {exitcode}: {error_2d_dict[exitcode]}"
         except Exception:
             msg = f"Exit with {exitcode}: Unknown error occurred!"
 

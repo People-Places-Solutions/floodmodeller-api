@@ -124,7 +124,7 @@ def test_gui_run_callback(tool):
     assert tool.app.run_gui_callback() == 7
 
 
-def test_gui_without_FMTool():
+def test_gui_without_fm_tool():
     parameters = [
         Parameter(
             name="a",
