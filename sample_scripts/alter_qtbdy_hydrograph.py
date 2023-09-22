@@ -37,7 +37,7 @@ def update_hydrograph(qtbdy_unit):
 
 # Iterate through all QTBDY units
 for name, unit in ied.boundaries.items():
-    if type(unit) == QTBDY:  # check if unit is a QTBDY type
+    if isinstance(unit, QTBDY):  # check if unit is a QTBDY type
         update_hydrograph(unit)  # Call the custom function defined above to alter hydrograph
 
 ied.save("sample_data\\EX3_qt_adjusted.IED")  # Update the changes in the IED file

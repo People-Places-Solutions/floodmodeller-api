@@ -32,7 +32,7 @@ elif args.ld:
 
         try:
             os.system(f'python "{str(file)}" -h')
-        except:
+        except Exception:
             pass
         print("================================================\n")
 
