@@ -520,7 +520,7 @@ class DAT(FMFile):
                         block["end"] + block_shift
                     )  # add in to keep a record of the last block read in
 
-    def _get_unit_definitions(self):
+    def _get_unit_definitions(self):  # noqa: C901
         # Get unit definitions
         self.sections = {}
         self.boundaries = {}
@@ -586,7 +586,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):
+    def _update_dat_struct(self):  # noqa: C901
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -714,7 +714,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="remove unit")
 
-    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):
+    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):  # noqa: C901
         """Inserts a unit into the dat file.
 
         Args:

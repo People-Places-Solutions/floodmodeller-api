@@ -168,7 +168,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
         del blank_ief
 
-    def _update_ief_properties(self):
+    def _update_ief_properties(self):  # noqa: C901
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
@@ -227,7 +227,7 @@ class IEF(FMFile):
         if hasattr(self, "EventData"):
             self._update_eventdata_info()
 
-    def _update_eventdata_info(self):
+    def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
@@ -354,7 +354,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
-    def simulate(
+    def simulate(  # noqa: C901
         self,
         method: Optional[str] = "WAIT",
         raise_on_failure: Optional[bool] = True,

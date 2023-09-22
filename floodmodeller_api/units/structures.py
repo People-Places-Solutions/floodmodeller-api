@@ -125,7 +125,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block):
+    def _read(self, br_block):  # noqa: C901
         """Function to read a given BRIDGE block and store data as class attributes"""
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
@@ -346,7 +346,7 @@ class BRIDGE(Unit):
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self):
+    def _write(self):  # noqa: C901
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = "BRIDGE " + self.comment
@@ -1294,7 +1294,7 @@ class CRUMP(Unit):
             setattr(self, param, val)
 
 
-class FLAT_V_WEIR(Unit):
+class FLATVWEIR(Unit):
     """Class to hold and process FLAT-V WEIR unit type
 
     Args:
@@ -1317,7 +1317,7 @@ class FLAT_V_WEIR(Unit):
     bank_top_elevation (float, optional): Elevation of channel bank top/ limit of extent of sloping channel walls (m AD).
 
     Returns:
-        FLAT_V_WEIR: Flood Modeller FLAT-V WEIR Unit class object"""
+        FLATVWEIR: Flood Modeller FLAT-V WEIR Unit class object"""
 
     _unit = "FLAT-V WEIR"
 

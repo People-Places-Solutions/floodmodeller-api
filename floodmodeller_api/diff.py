@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 
-def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):
+def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):  # noqa: C901
     result = True
     try:
         if isinstance(item_a, dict):

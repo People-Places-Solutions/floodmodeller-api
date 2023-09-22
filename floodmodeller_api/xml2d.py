@@ -214,7 +214,7 @@ class XML2D(FMFile):
             )
             raise ValueError(msg)
 
-    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):
+    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
@@ -281,7 +281,7 @@ class XML2D(FMFile):
                     # New value/attribute added
                     self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):
+    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):  # noqa: C901
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
         if isinstance(add_item, dict):
@@ -452,7 +452,7 @@ class XML2D(FMFile):
         self._read()
         self._log_path = self._filepath.with_suffix(".lf2")
 
-    def simulate(
+    def simulate(  # noqa: C901
         self,
         method: Optional[str] = "WAIT",
         raise_on_failure: Optional[bool] = True,

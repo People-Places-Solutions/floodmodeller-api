@@ -63,7 +63,7 @@ class IED(FMFile):
         # Generate IED structure
         self._update_ied_struct()
 
-    def _write(self) -> str:
+    def _write(self) -> str:  # noqa: C901
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
@@ -197,7 +197,7 @@ class IED(FMFile):
 
         print()
 
-    def _update_ied_struct(self):
+    def _update_ied_struct(self):  # noqa: C901
         # Generate IED structure
         ied_struct = []
         in_block = False
