@@ -29,4 +29,6 @@ class TuflowToFloodModeller(FMTool):
             required=True,
         ),
     ]
-    tool_function = lambda **kwargs: TuflowModelConverter(**kwargs).convert_model()
+
+    def tool_function(self, **kwargs):
+        return TuflowModelConverter(**kwargs).convert_model()

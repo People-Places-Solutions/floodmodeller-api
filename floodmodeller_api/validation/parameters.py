@@ -502,10 +502,6 @@ parameter_options = {
         "type": "type-match",
         "options": (bool)
     },
-    "invert": {
-        "type": "type-match",
-        "options": (float, int)
-    },
     "soffit": {
         "type": "type-match",
         "options": (float, int)

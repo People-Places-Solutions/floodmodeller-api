@@ -943,7 +943,6 @@ class SPILL(Unit):
         self.modular_limit = _to_float(params[1], 0.9)
 
         # Spill section data
-        nrows = int(split_10_char(block[3])[0])
         data_list = []
         for row in block[4:]:
             row_split = split_10_char(f"{row:<40}")

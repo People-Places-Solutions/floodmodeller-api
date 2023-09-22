@@ -360,6 +360,6 @@ class ZZN(FMFile):
                     )
 
             for var in vars:
-                if not var in input_vars:
+                if var not in input_vars:
                     del output[var]
         return output

@@ -248,7 +248,6 @@ class TuflowToDat:
                 order_counter += 1
 
                 intersect_value = self._xs_attributes.at[next_row_index, "intersect"]
-                end_intersect_value = self._xs_attributes.at[next_row_index, "end_intersect"]
                 next_row_index = self._xs_attributes[
                     (self._xs_attributes["end_intersect"] == intersect_value)
                     & (self._xs_attributes["Flag"] == "")

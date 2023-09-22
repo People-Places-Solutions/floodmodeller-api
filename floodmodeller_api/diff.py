@@ -24,7 +24,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
             result, diff = check_dict_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )
-        elif isinstance(item_a, dict):
+        elif isinstance(item_a, list):
             result, diff = check_list_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )

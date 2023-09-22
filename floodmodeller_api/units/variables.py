@@ -29,7 +29,7 @@ class Variables:
         self._read(var_block)
 
     def __repr__(self):
-        return f"<floodmodeller_api Variables Class: Variables()>"
+        return "<floodmodeller_api Variables Class: Variables()>"
 
     def _read(self, var_block):
         header = [
@@ -84,6 +84,6 @@ class Variables:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name=f"Variables", diff=diff
+            self.__dict__, other.__dict__, name="Variables", diff=diff
         )
         return (result, diff) if return_diff else result

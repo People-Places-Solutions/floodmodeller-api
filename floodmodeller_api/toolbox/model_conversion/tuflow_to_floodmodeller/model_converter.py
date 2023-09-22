@@ -154,7 +154,7 @@ class TuflowModelConverter:
                     fm_file_wrapper.update()
                     self._logger.info("success")
 
-                except:
+                except Exception:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
 

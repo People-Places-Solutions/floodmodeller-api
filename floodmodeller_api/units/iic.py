@@ -30,7 +30,7 @@ class IIC:
         self._read(ic_block)
 
     def __repr__(self):
-        return f"<floodmodeller_api Initial Conditions Class: IIC()>"
+        return "<floodmodeller_api Initial Conditions Class: IIC()>"
 
     def _read(self, ic_block):
         header = [
@@ -96,6 +96,6 @@ class IIC:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name=f"Initial Conditions", diff=diff
+            self.__dict__, other.__dict__, name="Initial Conditions", diff=diff
         )
         return (result, diff) if return_diff else result

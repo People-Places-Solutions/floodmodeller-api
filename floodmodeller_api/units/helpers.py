@@ -35,7 +35,7 @@ def join_10_char(*itms, dp=3):
     """Joins a set of values with a 10 character buffer and right-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters
@@ -52,7 +52,7 @@ def join_12_char_ljust(*itms, dp=3):
     """Joins a set of values with a 12 character buffer and left-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters
@@ -69,7 +69,7 @@ def join_n_char_ljust(n, *itms, dp=3):
     """Joins a set of values with a n character buffer and left-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters

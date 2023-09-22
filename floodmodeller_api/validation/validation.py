@@ -91,7 +91,7 @@ def _validate_parameter(param, value):
 
     elif param["type"] == "dict-match":
         for key, rule in param["options"].items():
-            if not key in value:
+            if key not in value:
                 return False, f"-> Missing required dict key: {key}"
             else:
                 if not _validate_parameter(rule, value[key])[0]:
@@ -101,7 +101,7 @@ def _validate_parameter(param, value):
     elif param["type"] == "list-dict-match":
         for item in value:
             for key, rule in param["options"].items():
-                if not key in item:
+                if key not in item:
                     return (
                         False,
                         f"-> One or more items missing required dict key: {key}",

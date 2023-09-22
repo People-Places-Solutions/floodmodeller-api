@@ -190,7 +190,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         for i, value in enumerate(vectors):
             vector_path = str(Path.joinpath(folder, f"topography_{i}.shp"))
             self._vector_paths.append(vector_path)
-            if type(value) != tuple:
+            if not isinstance(value, tuple):
                 value = (value,)
             self.combine_layers(value).to_file(vector_path)
 

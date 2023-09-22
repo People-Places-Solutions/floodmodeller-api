@@ -25,7 +25,7 @@ class UrbanUnit:
     _name = None
 
     def __init__(self, unit_block=None, **kwargs):
-        if unit_block != None:
+        if unit_block is not None:
             self._read(unit_block)
             # TODO: add functionality to read description
         else:
@@ -85,7 +85,7 @@ class UrbanSubsection:
     _urban_unit_class = None
 
     def __init__(self, subsection_block=None, **kwargs):
-        if subsection_block != None:
+        if subsection_block is not None:
             self._read(subsection_block)
         else:
             self._create_from_blank(**kwargs)
