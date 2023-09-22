@@ -30,5 +30,6 @@ class TuflowToFloodModeller(FMTool):
         ),
     ]
 
-    def tool_function(self, **kwargs):
+    @classmethod
+    def tool_function(cls, **kwargs):
         return TuflowModelConverter(**kwargs).convert_model()

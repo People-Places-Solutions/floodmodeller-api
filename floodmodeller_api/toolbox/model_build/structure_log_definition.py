@@ -23,5 +23,6 @@ class StructureLog(FMTool):
         ),
     ]
 
-    def tool_function(self, **kwargs):
+    @classmethod
+    def tool_function(cls, **kwargs):
         return StructureLogBuilder(**kwargs).create()

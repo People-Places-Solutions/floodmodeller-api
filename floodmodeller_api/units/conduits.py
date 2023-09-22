@@ -173,15 +173,14 @@ class CONDUIT(Unit):
             "diameter": diameter,
             "friction_above_axis": friction_above_axis,
         }.items():
-            setattr(self, param, val)
-
-    def subtype(self, new_value):
-        pass
+            if param == "subtype":
+                self._subtype = val
+            else:
+                setattr(self, param, val)
 
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()
-        self.subtype = self._subtype
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]

@@ -186,7 +186,7 @@ def test_add_conduits(slb, conduit_filled):
     slb._dat.conduits["next"] = next_c
     slb._dat._all_units = [prev_c, conduit_filled, next_c]
     conduit_non_subtype = copy.deepcopy(conduit_filled)
-    conduit_non_subtype.subtype = "NON_SUBTYPE"
+    conduit_non_subtype._subtype = "NON_SUBTYPE"
     slb._dat.conduits["test_conduit_NON_SUBTYPE"] = conduit_non_subtype
     tmp = NamedTemporaryFile(suffix=".csv", delete=False)
     with open(tmp.name, "w") as temp:
