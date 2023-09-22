@@ -26,3 +26,4 @@ jobs:
             --ignore E402
             --max-line-length 100
             --per-file-ignores __init__.py:F401
+            --builtins __version__
