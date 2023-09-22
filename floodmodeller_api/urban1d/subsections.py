@@ -16,17 +16,17 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from .conduits import CONDUITS
 
-### UNIT CLASSES ###
+# Unit classes
 from .junctions import JUNCTIONS
 from .losses import LOSSES
 from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
 from .xsections import XSECTIONS
 
-### UNIT TYPES AND SUPPORT ###
+# Unit types and support
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed
 SUPPORTED_SUBSECTIONS = {
-    #'[TITLE]': {'attribute': 'Title', 'class': 'Title'}
+    # '[TITLE]': {'attribute': 'Title', 'class': 'Title'}
     "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
@@ -34,11 +34,11 @@ SUPPORTED_SUBSECTIONS = {
     "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
     "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES},
     "[XSECTIONS]": {"group": "units", "attribute": "_xsections", "class": XSECTIONS}
-    #'SPILL': {'group': 'structures', 'has_subtype': False},
-    #'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
-    #'[TITLE]' : {
-    #   'attribute' : 'title',
-    #    'class' : Title}
+    # 'SPILL': {'group': 'structures', 'has_subtype': False},
+    # 'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
+    # '[TITLE]' : {
+    #    'attribute' : 'title',
+    #     'class' : Title}
 }
 
 UNSUPPORTED_SUBSECTIONS = {

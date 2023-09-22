@@ -19,7 +19,7 @@ import pandas as pd
 from ..diff import check_item_with_dataframe_equal
 from .helpers import join_10_char
 
-### Variables, Rules & Varrules Classes ###
+# Variables, Rules & Varrules Classes
 
 
 class Variables:

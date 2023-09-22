@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 
-### UNIT TYPES AND SUPPORT ###
+# Unit types and support
 SUPPORTED_UNIT_TYPES = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},
     "HTBDY": {"group": "boundaries", "has_subtype": False},
