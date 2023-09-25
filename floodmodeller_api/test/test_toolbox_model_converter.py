@@ -167,5 +167,5 @@ def test_model_converter(tmpdir, model_name, tcf, mocker):
     assert_log_equals(log_path, expected_log)
 
 
-def test_model_converter_wrapper(tmpdir, model_name, tcf, mocker):
+def test_model_converter_wrapper(tmpdir, model_name, tcf):
     TuflowToFloodModeller.run(tcf_path=tcf, folder=tmpdir, name=model_name)
