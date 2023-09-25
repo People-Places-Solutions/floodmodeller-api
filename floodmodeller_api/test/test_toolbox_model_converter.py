@@ -10,6 +10,12 @@ from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.model_co
     FMFileWrapper,
     TuflowModelConverter,
 )
+from floodmodeller_api.toolbox import TuflowToFloodModeller
+
+
+@pytest.fixture
+def model_name() -> str:
+    return "test_name"
 
 
 @pytest.fixture
@@ -88,7 +94,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
     assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
 
-def test_model_converter(tmpdir, tcf, mocker):
+def test_model_converter(tmpdir, model_name, tcf, mocker):
     def assert_log_equals(log_path, expected):
         with open(log_path, "r") as file:
             for l1, l2 in zip_longest(file, expected):
@@ -159,3 +165,7 @@ def test_model_converter(tmpdir, tcf, mocker):
     assert tuflow_converter._ief == expected_ief
     assert tuflow_converter._dat == expected_dat
     assert_log_equals(log_path, expected_log)
+
+
+def test_model_converter_wrapper(tmpdir, model_name, tcf, mocker):
+    TuflowToFloodModeller.run(tcf_path=tcf, folder=tmpdir, name=model_name)
