@@ -6,11 +6,11 @@ import pytest
 from shapely.geometry import LineString, Point
 
 from floodmodeller_api import DAT, IEF, XML2D
+from floodmodeller_api.toolbox import TuflowToFloodModeller
 from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter,
 )
-from floodmodeller_api.toolbox import TuflowToFloodModeller
 
 
 @pytest.fixture
