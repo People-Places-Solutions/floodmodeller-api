@@ -7,6 +7,11 @@
     --pst-color-h3: 0,123,255;
 }
 
+html[data-theme="light"] {
+    --pst-color-primary: black;
+    --pst-color-link: #0A7DFF;
+}
+
 @font-face {
     font-family:'JCR' ;
     src: url("JacobsChronos_Rg.ttf");
@@ -36,6 +41,12 @@ body {
     color: #0A7DFF;
 }
 
+/*
+h1, h2 {
+    color: #0A7DFF;
+} works but only for single sections sections
+*/
+
 i.fas, i.fab {
     color: #0A7DFF
 }
@@ -44,8 +55,24 @@ footer .footer-item p {
     color: #ffffff;
 }
 
-footer {
+/* footer { */
+    /* background-color: white; */
+/* } */
+
+.bd-footer-article {
+    background-color: white;
+}
+
+.bd-footer {
     background-color: #333333;
+}
+
+.search-button__kbd-shortcut {
+    visibility: hidden;
+}
+
+.navbar-item.navbar-persistent--container {
+    visibility: hidden;
 }
 
 .col-md-3 { 
