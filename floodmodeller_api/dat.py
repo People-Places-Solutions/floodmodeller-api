@@ -2,15 +2,15 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 from . import units  # Import for using as package
-from .units._base import Unit
 from ._base import FMFile
+from .units._base import Unit
 from .units.helpers import _to_float, _to_int
 from .validation.validation import _validate_unit
 
@@ -44,7 +44,7 @@ class DAT(FMFile):
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
             self._filepath = dat_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
                 self._read()
 
@@ -77,7 +77,7 @@ class DAT(FMFile):
         self._write_gxy(filepath)
 
     def _write_gxy(self, filepath):
-        if not self._gxy_data == None:
+        if self._gxy_data is not None:
             gxy_string = self._gxy_data
             new_gxy_path = filepath.with_suffix(".gxy")
             with open(new_gxy_path, "w") as gxy_file:
@@ -520,7 +520,7 @@ class DAT(FMFile):
                         block["end"] + block_shift
                     )  # add in to keep a record of the last block read in
 
-    def _get_unit_definitions(self):
+    def _get_unit_definitions(self):  # noqa: C901
         # Get unit definitions
         self.sections = {}
         self.boundaries = {}
@@ -586,7 +586,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):
+    def _update_dat_struct(self):  # noqa: C901
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -596,14 +596,13 @@ class DAT(FMFile):
         in_block = False
         in_general = True
         in_comment = False
-        in_variable = False
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
-            if in_general == True:
+            if in_general is True:
                 if line == "END GENERAL":
                     general_block["end"] = idx
                     dat_struct.append(general_block)
@@ -666,7 +665,7 @@ class DAT(FMFile):
 
     def _close_struct_block(self, dat_struct, unit_type, unit_block, in_block, idx):
         """Helper method to close block in dat struct"""
-        if in_block == True:
+        if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
             # append existing bdy block to the dat_struct
             dat_struct.append(unit_block)
@@ -715,7 +714,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="remove unit")
 
-    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):
+    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):  # noqa: C901
         """Inserts a unit into the dat file.
 
         Args:

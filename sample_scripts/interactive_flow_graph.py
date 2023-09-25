@@ -1,9 +1,9 @@
-""" This sample script demonstrates simple way to produce an interactive chart using the plotly 
+""" This sample script demonstrates simple way to produce an interactive chart using the plotly
     package based on a ZZN file """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:

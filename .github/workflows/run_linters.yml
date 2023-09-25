@@ -1,0 +1,28 @@
+name: Lint
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2  
+
+      - name: Python Linter
+        uses: ricardochaves/python-lint@v1.4.0
+        with:
+          python-root-list: floodmodeller_api sample_scripts scripts setup.py
+          use-pycodestyle: false
+          use-pylint: false
+          use-mypy: false
+          extra-black-options: --line-length 100
+          extra-isort-options: --profile black --line-length 100
+          extra-flake8-options: |
+            --ignore E203,E402,E501,W503
+            --per-file-ignores __init__.py:F401
+            --builtins __version__
+            --max-complexity 10

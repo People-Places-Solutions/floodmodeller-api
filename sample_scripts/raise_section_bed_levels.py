@@ -1,8 +1,8 @@
 """ This sample script shows how you could raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation) """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:

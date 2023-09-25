@@ -1,7 +1,9 @@
-from floodmodeller_api import INP
-from pathlib import Path
 import os
+from pathlib import Path
+
 import pytest
+
+from floodmodeller_api import INP
 
 
 @pytest.fixture

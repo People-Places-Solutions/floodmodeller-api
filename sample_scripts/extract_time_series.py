@@ -1,8 +1,8 @@
 """ This sample script shows how to extract the flow time series for a single node from a zzn file """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:

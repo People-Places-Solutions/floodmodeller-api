@@ -2,22 +2,21 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 from typing import Optional
-import pandas as pd
 
-### Helper Functions ###
+# Helper Functions
 
 
 def split_10_char(line):
@@ -36,7 +35,7 @@ def join_10_char(*itms, dp=3):
     """Joins a set of values with a 10 character buffer and right-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters
@@ -53,7 +52,7 @@ def join_12_char_ljust(*itms, dp=3):
     """Joins a set of values with a 12 character buffer and left-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters
@@ -70,7 +69,7 @@ def join_n_char_ljust(n, *itms, dp=3):
     """Joins a set of values with a n character buffer and left-justified"""
     string = ""
     for itm in itms:
-        if type(itm) == float:
+        if isinstance(itm, float):
             # save to 3 dp
             if len(f"{itm:.{dp}f}") > 10:
                 # Use scientific notation if number greater than 10 characters

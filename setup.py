@@ -1,5 +1,6 @@
-from setuptools import setup
 from pathlib import Path
+
+from setuptools import setup
 
 with open("README.md") as f:
     readme_txt = f.read()

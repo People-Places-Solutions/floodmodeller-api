@@ -2,29 +2,24 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 """ Holds the base unit class for all FM Units """
 
-from ..diff import check_item_with_dataframe_equal
 import pandas as pd
-from .helpers import (
-    split_10_char,
-    _to_float,
-    _to_str,
-    join_n_char_ljust,
-    join_10_char,
-)
+
+from ..diff import check_item_with_dataframe_equal
+from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
 class Unit:
@@ -34,7 +29,7 @@ class Unit:
 
     def __init__(self, unit_block=None, n=12, **kwargs):
         self._label_len = n
-        if unit_block != None:
+        if unit_block is not None:
             self._read(unit_block, **kwargs)
         else:
             self._create_from_blank(**kwargs)

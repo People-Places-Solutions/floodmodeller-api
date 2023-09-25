@@ -1,16 +1,16 @@
-from floodmodeller_api import IEF, XML2D, DAT
+import math
 from pathlib import Path
+from typing import List, Tuple, Union
+
+import geopandas as gpd
+import numpy as np
+import pandas as pd
 from shapely.geometry import LineString
 from shapely.ops import split
-from typing import List, Tuple, Union
-import geopandas as gpd
-import pandas as pd
-import numpy as np
-import math
 
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.tuflow_to_dat import (
-    TuflowToDat,
-)
+from floodmodeller_api import DAT, IEF, XML2D
+
+from .tuflow_to_dat import TuflowToDat
 
 
 def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
@@ -190,7 +190,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         for i, value in enumerate(vectors):
             vector_path = str(Path.joinpath(folder, f"topography_{i}.shp"))
             self._vector_paths.append(vector_path)
-            if type(value) != tuple:
+            if not isinstance(value, tuple):
                 value = (value,)
             self.combine_layers(value).to_file(vector_path)
 

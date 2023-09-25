@@ -1,8 +1,8 @@
 """ This sample script shows how a single IEF can be simulated directly using python """
 
 # Import modules
-import sys
 import os
+import sys
 from glob import glob
 from pathlib import Path
 

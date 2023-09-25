@@ -1,8 +1,8 @@
 """ This sample script shows how all the river cross sections in a DAT file can be exported into csv format """
 
 # Import modules
-import sys
 import os
+import sys
 from glob import glob
 from pathlib import Path
 

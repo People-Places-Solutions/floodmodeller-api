@@ -2,29 +2,29 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import pandas as pd
 
 
-def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):
+def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):  # noqa: C901
     result = True
     try:
-        if type(item_a) == dict:
+        if isinstance(item_a, dict):
             result, diff = check_dict_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )
-        elif type(item_a) == list:
+        elif isinstance(item_a, list):
             result, diff = check_list_with_dataframe_equal(
                 item_a, item_b, name, diff, special_types
             )
@@ -88,7 +88,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
             if key not in dict_a:
                 result = False
                 diff.append((name, f"Key: {key} missing from first object"))
-    except Exception as e:
+    except Exception:
         result = False
         diff.append((name, "Error encountered when comparing"))
 
@@ -111,8 +111,8 @@ def check_list_with_dataframe_equal(list_a, list_b, name, diff, special_types):
 
         if len(list_a) != len(list_b):
             result = False
-            diff.append((name, f"Mismatch in list length"))
-    except Exception as e:
+            diff.append((name, "Mismatch in list length"))
+    except Exception:
         result = False
         diff.append((name, "Error encountered when comparing"))
 

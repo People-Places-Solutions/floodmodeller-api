@@ -2,12 +2,12 @@
     culvert width for the culvert 'T2' """
 
 # Import modules
-import sys
 import os
+import sys
 from pathlib import Path
 
 try:
-    from floodmodeller_api import IED, DAT
+    from floodmodeller_api import DAT, IED
 except ImportError:
     print(
         "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment"

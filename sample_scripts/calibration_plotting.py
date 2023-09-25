@@ -1,10 +1,12 @@
-import plotly.graph_objects as go
-import pandas as pd
-from floodmodeller_api import ZZN
 import csv
-from pathlib import Path
-import numpy as np
 import os
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import plotly.graph_objects as go
+
+from floodmodeller_api import ZZN
 
 
 def run():
@@ -146,7 +148,7 @@ class Calibration:
                     print(
                         f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
                     )
-                except:
+                except Exception:
                     print(
                         f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
                     )
@@ -279,14 +281,14 @@ class Calibration:
         for column in node_filtered_model.columns:
             model = list(node_filtered_model[column])
             y_coords.append(model)
-            if self._starting_y_coords == None:
+            if self._starting_y_coords is None:
                 y_model.append(model)
         for column in node_filtered_event.columns:
             event = list(node_filtered_event[column])
             y_coords.append(event)
-            if self._starting_y_coords == None:
+            if self._starting_y_coords is None:
                 y_event.append(event)
-        if self._starting_y_coords == None:
+        if self._starting_y_coords is None:
             self._starting_y_coords = [y_model, y_event]
 
         dropdown_buttons.append(

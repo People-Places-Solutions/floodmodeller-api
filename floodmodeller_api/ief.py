@@ -2,18 +2,19 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import datetime as dt
 import os
 import subprocess
 import time
@@ -21,15 +22,13 @@ from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
 
-from tqdm import trange
-
 import pandas as pd
-import datetime as dt
+from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .zzn import ZZN
 from .logs import lf_factory
+from .zzn import ZZN
 
 
 class IEF(FMFile):
@@ -52,7 +51,7 @@ class IEF(FMFile):
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = ief_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
 
                 self._read()
@@ -84,7 +83,7 @@ class IEF(FMFile):
                     if prev_comment is None:
                         try:
                             event_data_title = Path(value).stem
-                        except:
+                        except Exception:
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
@@ -169,7 +168,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
         del blank_ief
 
-    def _update_ief_properties(self):
+    def _update_ief_properties(self):  # noqa: C901
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
@@ -200,7 +199,7 @@ class IEF(FMFile):
                     # defaults to inserting in last place
                     insert_index = len(self._ief_properties)
                     for idx, item in enumerate(self._ief_properties):
-                        if group_idx == True and item.startswith("["):
+                        if group_idx is True and item.startswith("["):
                             insert_index = idx
                             break
                         if item == group:
@@ -228,7 +227,7 @@ class IEF(FMFile):
         if hasattr(self, "EventData"):
             self._update_eventdata_info()
 
-    def _update_eventdata_info(self):
+    def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
@@ -355,7 +354,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
-    def simulate(
+    def simulate(  # noqa: C901
         self,
         method: Optional[str] = "WAIT",
         raise_on_failure: Optional[bool] = True,
@@ -390,7 +389,7 @@ class IEF(FMFile):
         try:
             self._range_function = range_function
             self._range_settings = range_settings
-            if self._filepath == None:
+            if self._filepath is None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
                 )
@@ -527,8 +526,8 @@ class IEF(FMFile):
             return
 
         # ensure progress bar is supported for that type
-        if not (suffix == "lf1" and steady == False):
-            self._no_log_file(f"only 1D unsteady runs are supported")
+        if not (suffix == "lf1" and steady is False):
+            self._no_log_file("only 1D unsteady runs are supported")
             self._lf = None
             return
 

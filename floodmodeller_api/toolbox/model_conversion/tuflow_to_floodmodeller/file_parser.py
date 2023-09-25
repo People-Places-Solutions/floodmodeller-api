@@ -1,8 +1,9 @@
 from pathlib import Path
-from typing import Union, List, Tuple
-from shapely.geometry.base import BaseGeometry
+from typing import List, Tuple, Union
+
 import geopandas as gpd
 import pandas as pd
+from shapely.geometry.base import BaseGeometry
 
 
 class TuflowParser:

@@ -1,17 +1,15 @@
-from floodmodeller_api.toolbox.model_build.structure_log.structure_log import (
-    StructureLogBuilder,
-)
-from floodmodeller_api.units.structures import ORIFICE
-from floodmodeller_api.units.conduits import CONDUIT
-from floodmodeller_api import DAT
+import copy
+import csv
+import os
+from tempfile import NamedTemporaryFile
 
 import pandas as pd
 import pytest
-from tempfile import NamedTemporaryFile
-import csv
-import os
-import copy
-from pathlib import Path
+
+from floodmodeller_api import DAT
+from floodmodeller_api.toolbox.model_build.structure_log.structure_log import StructureLogBuilder
+from floodmodeller_api.units.conduits import CONDUIT
+from floodmodeller_api.units.structures import ORIFICE
 
 
 @pytest.fixture
@@ -188,7 +186,7 @@ def test_add_conduits(slb, conduit_filled):
     slb._dat.conduits["next"] = next_c
     slb._dat._all_units = [prev_c, conduit_filled, next_c]
     conduit_non_subtype = copy.deepcopy(conduit_filled)
-    conduit_non_subtype.subtype = "NON_SUBTYPE"
+    conduit_non_subtype._subtype = "NON_SUBTYPE"
     slb._dat.conduits["test_conduit_NON_SUBTYPE"] = conduit_non_subtype
     tmp = NamedTemporaryFile(suffix=".csv", delete=False)
     with open(tmp.name, "w") as temp:

@@ -2,20 +2,20 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from .urban_parameters import urban_parameter_options
 from .parameters import parameter_options
+from .urban_parameters import urban_parameter_options
 
 
 def _validate_unit(unit, urban=False):
@@ -44,7 +44,7 @@ def _validate_unit(unit, urban=False):
         raise ValueError(f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}")
 
 
-def _validate_parameter(param, value):
+def _validate_parameter(param, value):  # noqa: C901
     if param["type"] == "type-match":
         return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
 
@@ -91,7 +91,7 @@ def _validate_parameter(param, value):
 
     elif param["type"] == "dict-match":
         for key, rule in param["options"].items():
-            if not key in value:
+            if key not in value:
                 return False, f"-> Missing required dict key: {key}"
             else:
                 if not _validate_parameter(rule, value[key])[0]:
@@ -101,7 +101,7 @@ def _validate_parameter(param, value):
     elif param["type"] == "list-dict-match":
         for item in value:
             for key, rule in param["options"].items():
-                if not key in item:
+                if key not in item:
                     return (
                         False,
                         f"-> One or more items missing required dict key: {key}",

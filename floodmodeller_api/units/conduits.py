@@ -2,35 +2,33 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 
 import pandas as pd
 
+from floodmodeller_api.validation import _validate_unit
+
 from ._base import Unit
 from .helpers import (
+    _to_float,
+    _to_int,
+    _to_str,
     join_10_char,
-    join_12_char_ljust,
     join_n_char_ljust,
     split_10_char,
-    split_12_char,
     split_n_char,
-    _to_float,
-    _to_str,
-    _to_int,
-    _to_data_list,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class CONDUIT(Unit):
@@ -175,15 +173,14 @@ class CONDUIT(Unit):
             "diameter": diameter,
             "friction_above_axis": friction_above_axis,
         }.items():
-            setattr(self, param, val)
-
-    def subtype(self, new_value):
-        pass
+            if param == "subtype":
+                self._subtype = val
+            else:
+                setattr(self, param, val)
 
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()
-        self.subtype = self._subtype
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -397,7 +394,9 @@ class CONDUIT(Unit):
                 ]
             )
             for index, coord in self.coords.iterrows():
-                c_block.extend([join_10_char(coord.x, coord.y, coord.cw_friction)])
+                c_block.extend(
+                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)]
+                )
             return c_block
 
         else:

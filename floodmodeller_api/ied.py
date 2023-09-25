@@ -2,23 +2,20 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-import os
 from pathlib import Path
 from typing import Optional, Union
-
-import pandas as pd
 
 from . import units
 from ._base import FMFile
@@ -43,7 +40,7 @@ class IED(FMFile):
     def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = ied_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
 
                 self._read()
@@ -66,7 +63,7 @@ class IED(FMFile):
         # Generate IED structure
         self._update_ied_struct()
 
-    def _write(self) -> str:
+    def _write(self) -> str:  # noqa: C901
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
@@ -200,7 +197,7 @@ class IED(FMFile):
 
         print()
 
-    def _update_ied_struct(self):
+    def _update_ied_struct(self):  # noqa: C901
         # Generate IED structure
         ied_struct = []
         in_block = False
@@ -229,7 +226,7 @@ class IED(FMFile):
 
             if line == "COMMENT":
                 in_comment = True
-                if in_block == True:
+                if in_block is True:
                     bdy_block["end"] = idx - 1  # add ending index
                     # append existing bdy block to the ied_struct
                     ied_struct.append(bdy_block)
@@ -241,7 +238,7 @@ class IED(FMFile):
 
             if len(line.split(" ")[0]) > 1:
                 if line.split(" ")[0] in units.ALL_UNIT_TYPES:
-                    if in_block == True:
+                    if in_block is True:
                         bdy_block["end"] = idx - 1  # add ending index
                         # append existing bdy block to the ief_struct
                         ied_struct.append(bdy_block)
@@ -251,7 +248,7 @@ class IED(FMFile):
                     bdy_block["start"] = idx  # add starting index
 
                 elif " ".join(line.split(" ")[:2]) in units.ALL_UNIT_TYPES:
-                    if in_block == True:
+                    if in_block is True:
                         bdy_block["end"] = idx - 1  # add ending index
                         # append existing bdy block to the ief_struct
                         ied_struct.append(bdy_block)
@@ -262,7 +259,7 @@ class IED(FMFile):
                 else:
                     continue
             elif line in units.ALL_UNIT_TYPES:
-                if in_block == True:
+                if in_block is True:
                     bdy_block["end"] = idx - 1  # add ending index
                     # append existing bdy block to the ief_struct
                     ied_struct.append(bdy_block)

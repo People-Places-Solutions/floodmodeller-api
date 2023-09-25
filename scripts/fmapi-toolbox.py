@@ -1,6 +1,6 @@
 import argparse
-from pathlib import Path
 import os
+from pathlib import Path
 
 parser = argparse.ArgumentParser(
     prog="Flood Modeller API Toolbox",
@@ -32,7 +32,7 @@ elif args.ld:
 
         try:
             os.system(f'python "{str(file)}" -h')
-        except:
+        except Exception:
             pass
         print("================================================\n")
 

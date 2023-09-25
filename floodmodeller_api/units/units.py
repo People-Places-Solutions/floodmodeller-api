@@ -2,40 +2,20 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-### UNIT CLASSES ###
-from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
-from .iic import IIC
-from .variables import Variables
-from .sections import RIVER, INTERPOLATE, REPLICATE
-from .structures import (
-    BRIDGE,
-    SLUICE,
-    ORIFICE,
-    SPILL,
-    RNWEIR,
-    WEIR,
-    CRUMP,
-    FLAT_V_WEIR,
-    OUTFALL,
-)
-from .losses import BLOCKAGE, CULVERT
-from .conduits import CONDUIT
-from .unsupported import UNSUPPORTED
-from .comment import COMMENT
 
-### UNIT TYPES AND SUPPORT ###
+# Unit types and support
 SUPPORTED_UNIT_TYPES = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},
     "HTBDY": {"group": "boundaries", "has_subtype": False},
@@ -72,20 +52,11 @@ UNSUPPORTED_UNIT_TYPES = {
     # "COMMENT": {"group": "other", "has_subtype": False},
     # "CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
     # "CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
-    "FEHBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # RAINFALL RUNOFF METHOD boundary
+    "FEHBDY": {"group": "boundaries", "has_subtype": False},  # RAINFALL RUNOFF METHOD boundary
     "FLOOD RELIEF": {"has_subtype": True},  # found in dat file
-    "FLOOD RELIEF ARCH": {
-        "group": "structures",
-        "has_subtype": True,
-    },  # found in FM help
+    "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True},  # found in FM help
     "FLOODPLAIN": {"has_subtype": True},  # floodplain section culvert
-    "FRQSIM": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # flood FReQuency SIMulation
+    "FRQSIM": {"group": "boundaries", "has_subtype": False},  # flood FReQuency SIMulation
     "FSRBDY": {
         "group": "boundaries",
         "has_subtype": False,
@@ -107,22 +78,13 @@ UNSUPPORTED_UNIT_TYPES = {
     # "MUSK-RSEC": RIVER
     # "MUSK-VPMC": RIVER
     # "MUSK-XSEC": RIVER
-    "NCDBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # Normal/Critical Depth Boundary
+    "NCDBDY": {"group": "boundaries", "has_subtype": False},  # Normal/Critical Depth Boundary
     "NOTWEIR": {"group": "structures", "has_subtype": False},  # Notional Weir
     "OCPUMP": {"has_subtype": False},  # pump [junctions]
     "POND": {"has_subtype": True},  # Pond units, online pond etc [connector]
-    "QH CONTROL": {
-        "group": "structures",
-        "has_subtype": False,
-    },  # Flow-head control weir
+    "QH CONTROL": {"group": "structures", "has_subtype": False},  # Flow-head control weir
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
-    "REBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # Rainfall/Evaporation Boundary
+    "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
     "RESERVOIR": {"has_subtype": False},  # reservoir unit [connector]
     # "SECTION": CONDUIT

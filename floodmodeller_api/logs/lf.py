@@ -2,15 +2,15 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
@@ -20,12 +20,8 @@ from typing import Optional, Union
 import pandas as pd
 
 from .._base import FMFile
-from .lf_params import (
-    lf1_unsteady_data_to_extract,
-    lf1_steady_data_to_extract,
-    lf2_data_to_extract,
-)
 from .lf_helpers import state_factory
+from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
 
 
 class LF(FMFile):
@@ -66,7 +62,7 @@ class LF(FMFile):
             self._raw_data = [line.rstrip("\n") for line in lf_file.readlines()]
 
         # Force rereading from start of file
-        if force_reread == True:
+        if force_reread is True:
             self._del_attributes()
             self._init_counters()
             self._init_parsers()
@@ -125,7 +121,7 @@ class LF(FMFile):
                     parser.process_line(end_of_line)
 
                     # index marks the end of an iteration
-                    if parser.is_index == True:
+                    if parser.is_index is True:
                         self._sync_cols()
                         self._no_iters += 1
 
@@ -205,7 +201,7 @@ class LF(FMFile):
             parser = self._extracted_data[key]
 
             # sync parser types that are not the index
-            if parser.is_index == False:
+            if parser.is_index is False:
                 # if their number of values is not in sync
                 if parser.data_type == "all" and parser.data.no_values < (
                     self._no_iters + int(parser.before_index)
@@ -262,7 +258,7 @@ class LF1(LF):
     _suffix: str = ".lf1"
 
     def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
-        if steady == False:
+        if steady is False:
             data_to_extract = lf1_unsteady_data_to_extract
         else:
             data_to_extract = lf1_steady_data_to_extract

@@ -1,23 +1,21 @@
-from floodmodeller_api import IEF, XML2D, DAT
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
-    ComponentConverter,
-)
-from .file_parser import TuflowParser
+import logging
+from pathlib import Path
+from typing import Callable, Dict, Type, Union
+
+from floodmodeller_api import DAT, IEF, XML2D
+
 from .component_converter import (
+    BoundaryConverterXML2D,
     ComponentConverter,
-    SchemeConverterIEF,
-    NetworkConverterDAT,
     ComputationalAreaConverterXML2D,
     LocLineConverterXML2D,
-    TopographyConverterXML2D,
+    NetworkConverterDAT,
     RoughnessConverterXML2D,
+    SchemeConverterIEF,
     SchemeConverterXML2D,
-    BoundaryConverterXML2D,
+    TopographyConverterXML2D,
 )
-
-from pathlib import Path
-from typing import Union, Dict, Callable, Type
-import logging
+from .file_parser import TuflowParser
 
 
 class FMFileWrapper:
@@ -156,7 +154,7 @@ class TuflowModelConverter:
                     fm_file_wrapper.update()
                     self._logger.info("success")
 
-                except:
+                except Exception:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
 

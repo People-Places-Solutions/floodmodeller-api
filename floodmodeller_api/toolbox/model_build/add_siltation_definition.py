@@ -1,11 +1,12 @@
 """ This function allows you to raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation) """
 # Import modules
 from pathlib import Path
+
 from floodmodeller_api import DAT
 from floodmodeller_api.tool import FMTool, Parameter
 
 
-## Define the function ----------------- #
+# Define the function
 def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float):
     dat = DAT(dat_input)  # Initialise DAT class
 
@@ -20,7 +21,7 @@ def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float
     dat.save(dat_output)  # save updates
 
 
-## Wrap the FMTool class ---------------- #
+# Wrap the FMTool class
 class AddSiltation(FMTool):
     name = "Add Siltation"
     description = (

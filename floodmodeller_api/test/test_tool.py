@@ -1,7 +1,9 @@
-from floodmodeller_api.tool import FMTool, Parameter, Gui
-import pytest
-from unittest.mock import patch, MagicMock
 import tkinter as tk
+from unittest.mock import MagicMock, patch
+
+import pytest
+
+from floodmodeller_api.tool import FMTool, Gui, Parameter
 
 
 # ------ Define function ----- #
@@ -122,7 +124,7 @@ def test_gui_run_callback(tool):
     assert tool.app.run_gui_callback() == 7
 
 
-def test_gui_without_FMTool():
+def test_gui_without_fm_tool():
     parameters = [
         Parameter(
             name="a",

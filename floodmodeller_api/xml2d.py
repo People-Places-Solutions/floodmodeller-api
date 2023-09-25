@@ -2,21 +2,21 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import datetime as dt
-import os
 import io
+import os
 import time
 from copy import deepcopy
 from pathlib import Path
@@ -27,14 +27,15 @@ from lxml import etree
 from tqdm import trange
 
 from floodmodeller_api._base import FMFile
+
+from .logs import error_2d_dict, lf_factory
 from .xml2d_template import xml2d_template
-from .logs import error_2D_dict, lf_factory
 
 
 def value_from_string(value: Union[str, list[str]]):
     try:
         val = float(value)
-        if not "." in value:
+        if "." not in value:
             val = int(val)
         return val
     except ValueError:
@@ -46,7 +47,7 @@ def value_from_string(value: Union[str, list[str]]):
 def categorical_sort(itm, order, ns):
     try:
         return order[itm.tag.replace(ns, "")]
-    except:
+    except Exception:
         return 0
 
 
@@ -72,7 +73,7 @@ class XML2D(FMFile):
     def __init__(self, xml_filepath: Union[str, Path] = None):
         try:
             self._filepath = xml_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
                 self._read()
                 self._log_path = self._filepath.with_suffix(".lf2")
@@ -172,7 +173,7 @@ class XML2D(FMFile):
         parent[:] = self._sort_from_schema(parent)
 
         for child in parent:
-            if not type(child) == etree._Comment:
+            if not isinstance(child, etree._Comment):
                 self._recursive_reorder_xml(child)
 
     def _sort_from_schema(self, parent):
@@ -213,11 +214,11 @@ class XML2D(FMFile):
             )
             raise ValueError(msg)
 
-    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):
+    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
-            if key in self._multi_value_keys and type(item) != list:
+            if key in self._multi_value_keys and not isinstance(item, list):
                 raise Exception(f"Element: '{key}' must be added as list")
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
@@ -228,11 +229,11 @@ class XML2D(FMFile):
                 # New key added, add recursively
                 self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-            elif type(item) == dict:
+            elif isinstance(item, dict):
                 self._recursive_update_xml(item, orig_dict[key], key, list_idx)
-            elif type(item) == list and type(item[0]) == dict:
+            elif isinstance(item, list) and isinstance(item[0], dict):
                 for i, _item in enumerate(item):
-                    if type(_item) == dict:
+                    if isinstance(_item, dict):
                         try:
                             self._recursive_update_xml(_item, orig_dict[key][i], key, list_idx=i)
                         except IndexError:
@@ -255,7 +256,7 @@ class XML2D(FMFile):
                         else:
                             # Attribute has been updated
                             elems = parent.findall(f"{self._ns}{key}")
-                            if type(item) == list and key != "variables":
+                            if isinstance(item, list) and key != "variables":
                                 # Handle multiple similar elements
                                 if len(elems) < len(item):
                                     while len(elems) < len(item):
@@ -269,7 +270,7 @@ class XML2D(FMFile):
 
                             elif len(elems) == 1:
                                 elem = elems[0]
-                                if type(item) == list:
+                                if isinstance(item, list):
                                     elem.text = "\n".join(item)
                                 else:
                                     elem.text = str(item)
@@ -280,14 +281,14 @@ class XML2D(FMFile):
                     # New value/attribute added
                     self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):
-        if add_key in self._multi_value_keys and type(add_item) != list and not from_list:
+    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):  # noqa: C901
+        if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
-        if type(add_item) == dict:
+        if isinstance(add_item, dict):
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
                 self._recursive_add_element(parent=new_element, add_item=item, add_key=key)
-        elif type(add_item) == list:
+        elif isinstance(add_item, list):
             # new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             if add_key == "variables":
                 # Variables is special case where we have list but add to one element
@@ -387,7 +388,7 @@ class XML2D(FMFile):
             etree.indent(self._xmltree, space="    ")
             try:
                 self._validate()
-            except:
+            except Exception:
                 self._recursive_reorder_xml()
                 self._validate()
 
@@ -451,7 +452,7 @@ class XML2D(FMFile):
         self._read()
         self._log_path = self._filepath.with_suffix(".lf2")
 
-    def simulate(
+    def simulate(  # noqa: C901
         self,
         method: Optional[str] = "WAIT",
         raise_on_failure: Optional[bool] = True,
@@ -500,7 +501,7 @@ class XML2D(FMFile):
         self.range_settings = range_settings
 
         try:
-            if self._filepath == None:
+            if self._filepath is None:
                 raise UserWarning(
                     "xml2D must be saved to a specific filepath before simulate() can be called."
                 )
@@ -529,7 +530,7 @@ class XML2D(FMFile):
                     is_fast = False
                     break
 
-            if is_fast == True:
+            if is_fast is True:
                 isis2d_fp = str(Path(_enginespath, "FAST.exe"))
             elif precision.upper() == "SINGLE":
                 isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
@@ -673,8 +674,8 @@ class XML2D(FMFile):
             String that explains the exitcode - this might be too much!
         """
         try:
-            msg = f"Exit with {exitcode}: {error_2D_dict[exitcode]}"
-        except:
+            msg = f"Exit with {exitcode}: {error_2d_dict[exitcode]}"
+        except Exception:
             msg = f"Exit with {exitcode}: Unknown error occurred!"
 
         if raise_on_failure and exitcode != 100:

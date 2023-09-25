@@ -1,8 +1,9 @@
-import pytest
-from floodmodeller_api import LF1, IEF
 import os
-from pathlib import Path
+
 import pandas as pd
+import pytest
+
+from floodmodeller_api import IEF, LF1
 
 
 @pytest.fixture
@@ -46,5 +47,5 @@ def test_lf1_from_ief(lf1_fp, test_workspace):
     assert lf1.info == lf1_from_ief.info
     try:
         pd.testing.assert_frame_equal(lf1.to_dataframe(), lf1_from_ief.to_dataframe())
-    except:
+    except Exception:
         pytest.fail("Dataframes not equal")

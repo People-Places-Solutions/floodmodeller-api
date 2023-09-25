@@ -1,14 +1,15 @@
-from floodmodeller_api import DAT
 from pathlib import Path
+
 import geopandas as gpd
 import pandas as pd
+from shapely import wkt
+from shapely.geometry import LineString, Point
 
+from floodmodeller_api import DAT
+from floodmodeller_api.units.comment import COMMENT
+from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.helpers import _to_float
 from floodmodeller_api.units.sections import RIVER
-from floodmodeller_api.units.conduits import CONDUIT
-from floodmodeller_api.units.comment import COMMENT
-from shapely.geometry import Point, LineString
-from shapely import wkt
 
 
 class TuflowToDat:
@@ -247,7 +248,6 @@ class TuflowToDat:
                 order_counter += 1
 
                 intersect_value = self._xs_attributes.at[next_row_index, "intersect"]
-                end_intersect_value = self._xs_attributes.at[next_row_index, "end_intersect"]
                 next_row_index = self._xs_attributes[
                     (self._xs_attributes["end_intersect"] == intersect_value)
                     & (self._xs_attributes["Flag"] == "")
