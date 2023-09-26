@@ -2,7 +2,7 @@ import argparse
 import sys
 from dataclasses import dataclass
 import tkinter as tk
-from tkinter import ttk, filedialog as fd
+from tkinter import ttk, filedialog as fd, messagebox
 from pathlib import Path
 from PIL import Image, ImageTk
 import customtkinter as ctk
@@ -108,9 +108,9 @@ class Gui:
         self.master.resizable(False, False)
         self.parameters = parameters
         self.run_function = run_function
-        self.create_widgets(description)
+        self.create_input_widgets(description)
 
-    def create_widgets(self, description):
+    def create_input_widgets(self, description):
         # Icon
         path = Path(Path.cwd(), r"floodmodeller_api\toolbox\gui\icon.PNG")
         ico = Image.open(path)
@@ -126,13 +126,6 @@ class Gui:
             background="#f0f0f0",
         )
         border.place(x=0, y=-3)
-        # Background image
-        ##path = Path(Path.cwd(),r"floodmodeller_api\toolbox\gui\bg.PNG")
-        ##img = Image.open(path)
-        ##img = img.resize((int(img.width / 2.2), int(img.height / 2.2)))
-        ##self.bg_image = ImageTk.PhotoImage(img)
-        ##self.body_label = tk.Label(self.master, image=self.bg_image, bg="#f0f0f0")
-        ##self.body_label.place(x=0, y=0)
 
         # Body
         # Description
@@ -175,14 +168,20 @@ class Gui:
         )
         self.button.place(x=200, y=347)
 
-    def load_path(self, entry: ctk.CTkEntry):
-        # Get file path
-        file = fd.askopenfilename()  # .askdirectory()
+    def load_file_path(self, entry: ctk.CTkEntry):
+        file = fd.askopenfilename()
         path = file.title()
-        # Set entry text
-        # entry.configure(textvariable=path)
         entry.delete(0, tk.END)
         entry.insert(0, path)
+
+    def load_folder_path(self, entry: ctk.CTkEntry):
+        folder = fd.askdirectory()
+        path = folder.title()
+        entry.delete(0, tk.END)
+        entry.insert(0, path)
+
+    def show_help(self, name, text):
+        messagebox.showinfo(f"Input Help: {name}", text)
 
     def add_inputs(self):
         """
@@ -191,7 +190,7 @@ class Gui:
         This method adds an input widget to the app for each parameter.
         """
         # Extract the parameters to a list to iterate through
-        parameters = [(param.name, param.dtype) for param in self.parameters]
+        parameters = [[param.name, param.dtype, param.help_text] for param in self.parameters]
 
         # Create a label and entry box for each parameter
         # Adding the input boxes as a class attribute dictionary
@@ -199,7 +198,7 @@ class Gui:
         # the run function. It also makes it easier to debug since you can create an instance, generate the GUI
         # and then inspect the attributes.
         self.root_entries = {}
-        for name, data_type in parameters:
+        for name, data_type, help_text in parameters:
             set = ctk.CTkFrame(
                 master=self.inputs,
                 fg_color="#f0f0f0",
@@ -208,14 +207,34 @@ class Gui:
                 corner_radius=0,
             )
             set.pack(pady=(3, 12))
+            set_top = tk.Frame(master=set, background="#f0f0f0", width=600)
+            set_top.pack(side=tk.TOP, pady=(3, 0), padx=(1, 3), fill="both", expand=True)
             label = ctk.CTkLabel(
-                set,
+                set_top,
                 text=f"{name}:",
                 anchor="w",
                 font=("Tahoma", 18),
                 bg_color="#f0f0f0",
             )
-            label.pack(side=tk.TOP, padx=(5, 0), pady=1, anchor="nw")
+            label.pack(side=tk.LEFT, padx=(5, 0), pady=1, anchor="nw")
+            image = Image.open(Path(Path.cwd(), r"floodmodeller_api\toolbox\gui\help.PNG"))
+            image = image.resize((int(image.width / 1), int(image.height / 1)))
+            folder = ImageTk.PhotoImage(image)
+            self.help_button = ctk.CTkButton(
+                master=set_top,
+                text="",
+                image=folder,
+                font=("Tahoma", 20, "bold"),
+                width=image.width,
+                height=image.height,
+                compound="left",
+                fg_color="#f0f0f0",
+                bg_color="#f0f0f0",
+                hover_color="#999",
+                text_color="#f0f0f0",
+                command=lambda name=name, help_text=help_text: self.show_help(name, help_text),
+            )
+            self.help_button.pack(side=tk.RIGHT, anchor="ne")
 
             set_bottom = tk.Frame(
                 master=set,
@@ -229,10 +248,10 @@ class Gui:
                     set_bottom,
                     width=400,
                     font=("Tahoma", 14),
-                    border_color="#666666",
+                    border_color="#000",
                     border_width=1,
                     corner_radius=0,
-                    fg_color="#f0f0f0",
+                    fg_color="#fff",
                 )
             elif data_type == int:
                 entry = ctk.CTkEntry(
@@ -240,10 +259,10 @@ class Gui:
                     validate="key",
                     width=400,
                     font=("Tahoma", 12),
-                    border_color="#919191",
+                    border_color="#000",
                     border_width=1,
                     corner_radius=0,
-                    fg_color="#f0f0f0",
+                    fg_color="#fff",
                 )
                 entry.config(validatecommand=(entry.register(validate_int), "%P"))
             elif data_type == float:
@@ -252,10 +271,10 @@ class Gui:
                     validate="key",
                     width=400,
                     font=("Tahoma", 12),
-                    border_color="#919191",
+                    border_color="#000",
                     border_width=1,
                     corner_radius=0,
-                    fg_color="#f0f0f0",
+                    fg_color="#fff",
                 )
                 entry.config(validatecommand=(entry.register(validate_float), "%P"))
             else:
@@ -263,7 +282,7 @@ class Gui:
             entry.pack(side=tk.LEFT)
             self.root_entries[name] = entry
 
-            # Add the folder button
+            # Add the file button
             image = Image.open(Path(Path.cwd(), r"floodmodeller_api\toolbox\gui\folder.PNG"))
             image = image.resize((int(image.width / 1), int(image.height / 1)))
             folder = ImageTk.PhotoImage(image)
@@ -279,9 +298,27 @@ class Gui:
                 bg_color="#f0f0f0",
                 hover_color="#999",
                 text_color="#f0f0f0",
-                command=lambda entry=entry: self.load_path(entry),
+                command=lambda entry=entry: self.load_folder_path(entry),
             )
-            self.folder_button.pack(side=tk.RIGHT, padx=(3,1))
+            self.folder_button.pack(side=tk.RIGHT, padx=(0, 1))
+            image = Image.open(Path(Path.cwd(), r"floodmodeller_api\toolbox\gui\file.PNG"))
+            image = image.resize((int(image.width / 1), int(image.height / 1)))
+            folder = ImageTk.PhotoImage(image)
+            self.file_button = ctk.CTkButton(
+                master=set_bottom,
+                text="",
+                image=folder,
+                font=("Tahoma", 20, "bold"),
+                width=image.width,
+                height=image.height,
+                compound="left",
+                fg_color="#f0f0f0",
+                bg_color="#f0f0f0",
+                hover_color="#999",
+                text_color="#f0f0f0",
+                command=lambda entry=entry: self.load_file_path(entry),
+            )
+            self.file_button.pack(side=tk.RIGHT, padx=(6, 1))
         # TODO: Add a progress bar if appropriate
         # TODO: Present some useful information: either tool outputs or logs
 
@@ -293,12 +330,6 @@ class Gui:
         the run button in the GUI.
         """
 
-        # hide elements when showing the progress bar
-        # self.button.place(x=-250,y=352)
-        # self.inputs.place(x=-250,y=120)
-        # self.loading_bar.place(x=10,y=360)
-        # self.loading_bar.start()
-
         input_kwargs = {}
         for input_param in self.parameters:
             # Get the parameter value but subsetting the dictionary of GUI entry points (text boxes)
@@ -307,13 +338,13 @@ class Gui:
             # insert the value to the input_kwargs dictionary to pass to the run function
             input_kwargs[input_param.name] = input_param.dtype(input_var)
         # Run the callback function
-
-        # show elements after the progress bar/process is finished - needs to be after run_function
-        # self.loading_bar.place()
-        # self.button.place(x=552,y=352)
-        # self.inputs.place(x=20,y=120)
-        # self.loading_bar.place(x=621,y=360)
-        return self.run_function(**input_kwargs)
+        self.clear_input_widgets()
+        self.run_function(**input_kwargs) # return?
+    
+    def clear_input_widgets(self):
+        self.desc_label.place_forget()
+        self.inputs.place_forget()
+        self.button.place_forget()
 
 
 class FMTool:
@@ -473,7 +504,3 @@ class FMTool:
     def testing(self):
         print("test!!!!!!!!!!!!")
         self.app.master.after(100, self.testing)
-
-
-# g = Gui(tk.Tk(), "d", "d", [], "")
-# g.create_widgets()
