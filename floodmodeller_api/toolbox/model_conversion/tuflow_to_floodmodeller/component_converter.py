@@ -298,7 +298,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
         self._mapping = self.standardise_mapping(mapping)
 
         is_global = self._mapping["material_id"] == global_material
-        self._global_value = float(self._mapping.loc[is_global, "value"])
+        self._global_value = float(self._mapping.loc[is_global, "value"].iloc[0])
 
         self._file_material_path = Path.joinpath(folder, "roughness.shp")
 
