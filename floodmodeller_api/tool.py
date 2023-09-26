@@ -339,12 +339,24 @@ class Gui:
             input_kwargs[input_param.name] = input_param.dtype(input_var)
         # Run the callback function
         self.clear_input_widgets()
+        temp = ctk.CTkButton(
+            self.master,
+            text="Comeback",
+            command=self.show_input_widgets,
+        )
+        temp.place(x=0,y=0)
         self.run_function(**input_kwargs) # return?
+        
     
     def clear_input_widgets(self):
         self.desc_label.place_forget()
         self.inputs.place_forget()
         self.button.place_forget()
+    
+    def show_input_widgets(self):
+        self.desc_label.place(x=3, y=15)
+        self.inputs.place(x=3, y=45)
+        self.button.place(x=200, y=347)
 
 
 class FMTool:
