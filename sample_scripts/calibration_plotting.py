@@ -223,9 +223,8 @@ class Calibration:
                 node, node_filtered_model, node_filtered_event, csv_list,
             )
         
-        setup = self._setup_plot(model_df.index)
-        fig = setup[0]
-        trace_events = setup[1]
+        fig = self._setup_plot(model_df.index)
+        trace_events = self._event_names * 2
 
         self._create_html(fig, node_dropdown, trace_events, output_folder)
         print("Plotted data")
@@ -249,7 +248,6 @@ class Calibration:
         event_y_coords = self._starting_y_coords[1]
 
         # Add a model and event line for all events
-        trace_events = []
         show = True
         for count, event in enumerate(self._event_names):
             if count > 0: show = False
@@ -263,7 +261,9 @@ class Calibration:
                         mode="lines",
                     )
                 )
-                trace_events.append(event)
+        show = True
+        for count, event in enumerate(self._event_names):
+            if count > 0: show = False
             if count < len (event_y_coords): 
                 fig.add_trace(
                     go.Scatter(
@@ -274,9 +274,8 @@ class Calibration:
                         mode="lines",
                     )
                 )
-            trace_events.append(event)
 
-        return [fig, trace_events]
+        return fig
 
     def _add_node_dropdown(self, node, node_filtered_model, node_filtered_event, dropdown_buttons):
         y_coords = []
