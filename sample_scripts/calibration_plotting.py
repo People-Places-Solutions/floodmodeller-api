@@ -13,24 +13,24 @@ def run():
     # model results - The model data (.zzn file).
     model_event_links = [
         {
-            "event folder": "2007 November tidal",
-            "event data": "November_2007_All_Levels.xlsx",
-            "model results": "BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn",
+            "event folder": r"2007 November tidal",
+            "event data": r"November_2007_All_Levels.xlsx",
+            "model results": r"BROADLANDS_BECCLES_51_V01_MHWS_0_1PCT_W0_05_1080HRS.zzn",
         },
         {
-            "event folder": "2010 March fluvial",
-            "event data": "March_2010_All_Levels.xlsx",
-            "model results": "BROADLANDS_BECCLES_51_V01_MHWS_5PCT_1080HRS.zzn",
+            "event folder": r"2010 March fluvial",
+            "event data": r"March_2010_All_Levels.xlsx",
+            "model results": r"BROADLANDS_BECCLES_51_V01_MHWS_5PCT_1080HRS.zzn",
         },
         {
-            "event folder": "2013 December tidal",
-            "event data": "December_2013_All_Levels.xlsx",
-            "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_50_MHWS_1PCT.zzn",
+            "event folder": r"2013 December tidal",
+            "event data": r"December_2013_All_Levels.xlsx",
+            "model results": r"BROADLANDS_DESIGN_JACOBS_UPDATE_50_MHWS_1PCT.zzn",
         },
         {
-            "event folder": "2017 January tidal NEW",
-            "event data": "Jan_2017_All_Levels.xlsx",
-            "model results": "BROADLANDS_DESIGN_JACOBS_UPDATE_51_MHWS_0_5PCT_1080HRS.zzn",
+            "event folder": r"2017 January tidal NEW",
+            "event data": r"Jan_2017_All_Levels.xlsx",
+            "model results": r"BROADLANDS_DESIGN_JACOBS_UPDATE_51_MHWS_0_5PCT_1080HRS.zzn",
         },
     ] # NB: If you want to add more model & event links copy and paste the { ... }, inside the square brackets (array) as many times as you need.
     # Full path to the list of gauge locations and their node names.
