@@ -330,13 +330,6 @@ class Gui:
         self.clear_input_widgets()
         self.show_running_page()
         self.running = True
-        # self.run_gui_callback()
-        # self.temp = ctk.CTkButton(
-        #    self.master,
-        #    text="Comeback",
-        #    command=self.show_input_widgets,
-        # )
-        # self.temp.place(x=0,y=0)
 
     def run_gui_callback(self):
         """
@@ -379,6 +372,8 @@ class Gui:
             scrollbar_button_color="#e1e1e1",
             scrollbar_button_hover_color="#b8b9bd",
         )
+        self.buffer_text = ""
+        self.buffer_label = ctk.CTkLabel(master=self.buffer_outputs, width=570, text=self.buffer_text, font=("Tahoma", 16,), wraplength=570, justify="left")
         self.buffer_outputs.place(x=5, y=45)
 
     def finished_running(self):
@@ -567,27 +562,28 @@ class FMTool:
         if self.app.running:
             self.app.running = False
             old_stdout = sys.stdout
-            sys.stdout = scroll = TextRedirector(self.app.buffer_outputs)
+            buffer = TextRedirector("START")#self.app.buffer_text, self.app.buffer_label)
+            sys.stdout = buffer # buffer = TextRedirector(self.app.buffer_text, self.app.buffer_label)
             try:
                 self.app.run_gui_callback()
             except Exception as error:
                 print(traceback.format_exc())
             sys.stdout = old_stdout
-            what_was_printed = scroll.get_console_output()
-            print(what_was_printed)
+            #what_was_printed = buffer.get_console_output()
+            print("@@@@@@@@@@")
+            print(buffer.get_console_output() + "###")
             self.app.finished_running()
         self.app.master.after(200, self.run_tool)
 
 
 class TextRedirector(object):
-    def __init__(self, scroll: ctk.CTkScrollableFrame) -> None:
-        self.scroll = scroll
-        self.console_output = ""
+    def __init__(self, buffer_text):#, buffer_label: ctk.CTkLabel) -> None:
+        #self.label = buffer_label
+        self.buffer_text = buffer_text
 
     def write(self, str_input):
-        self.console_output += f"{str_input}\n"
-        output = ctk.CTkLabel(master=self.scroll, text=str_input, anchor="e")
-        output.pack()
+        self.buffer_text += f"{str_input}"
+        #self.label.configure(text=self.buffer_text)
 
     def get_console_output(self):
-        return self.console_output
+        return self.buffer_text
