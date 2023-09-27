@@ -372,8 +372,9 @@ class Gui:
             scrollbar_button_color="#e1e1e1",
             scrollbar_button_hover_color="#b8b9bd",
         )
-        self.buffer_text = ""
+        self.buffer_text = "START: "
         self.buffer_label = ctk.CTkLabel(master=self.buffer_outputs, width=570, text=self.buffer_text, font=("Tahoma", 16,), wraplength=570, justify="left")
+        self.buffer_label.pack()
         self.buffer_outputs.place(x=5, y=45)
 
     def finished_running(self):
@@ -583,7 +584,7 @@ class TextRedirector(object):
 
     def write(self, str_input):
         self.buffer_text += f"{str_input}"
-        self.label["text"] = self.buffer_text
+        self.label.configure(text=self.buffer_text)
 
     def get_console_output(self):
         return self.buffer_text
