@@ -562,7 +562,7 @@ class FMTool:
         if self.app.running:
             self.app.running = False
             old_stdout = sys.stdout
-            buffer = TextRedirector("START")#self.app.buffer_text, self.app.buffer_label)
+            buffer = TextRedirector(self.app.buffer_text, self.app.buffer_label)#self.app.buffer_text, self.app.buffer_label)
             sys.stdout = buffer # buffer = TextRedirector(self.app.buffer_text, self.app.buffer_label)
             try:
                 self.app.run_gui_callback()
@@ -577,13 +577,13 @@ class FMTool:
 
 
 class TextRedirector(object):
-    def __init__(self, buffer_text):#, buffer_label: ctk.CTkLabel) -> None:
-        #self.label = buffer_label
+    def __init__(self, buffer_text, buffer_label: ctk.CTkLabel):#, buffer_label: ctk.CTkLabel) -> None:
+        self.label = buffer_label
         self.buffer_text = buffer_text
 
     def write(self, str_input):
         self.buffer_text += f"{str_input}"
-        #self.label.configure(text=self.buffer_text)
+        self.label["text"] = self.buffer_text
 
     def get_console_output(self):
         return self.buffer_text
