@@ -2,28 +2,27 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-import tempfile
-from hashlib import sha1
 import filecmp
+import re
+import tempfile
+from datetime import datetime
+from hashlib import sha1
 from pathlib import Path
 from shutil import copy
-from datetime import datetime
-import re
-import pandas as pd
 
-# import configparser
+import pandas as pd
 
 
 class BackupControl:
@@ -77,9 +76,7 @@ class BackupControl:
         # Create the backup directory if it doesn't exist
         if not self.backup_dir.exists():
             self.backup_dir.mkdir()
-            print(
-                f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}"
-            )
+            print(f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}")
 
         # Create the backup CSV file if it doesn't exist
         if not self.backup_csv_path.exists():
@@ -243,9 +240,7 @@ class File(BackupControl):
         backup_files = list(self.backup_dir.glob(f"{self.file_id}*"))
         backup_files.sort(reverse=True)
         if len(backup_files) > 0:
-            return [
-                BackupFile(file_id=self.file_id, path=path) for path in backup_files
-            ]
+            return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
         else:
             return []
 

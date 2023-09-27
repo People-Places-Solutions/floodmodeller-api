@@ -2,29 +2,24 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 """ Holds the base unit class for all FM Units """
 
-from ..diff import check_item_with_dataframe_equal
 import pandas as pd
-from .helpers import (
-    split_10_char,
-    _to_float,
-    _to_str,
-    join_n_char_ljust,
-    join_10_char,
-)
+
+from ..diff import check_item_with_dataframe_equal
+from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
 class Unit:
@@ -34,7 +29,7 @@ class Unit:
 
     def __init__(self, unit_block=None, n=12, **kwargs):
         self._label_len = n
-        if unit_block != None:
+        if unit_block is not None:
             self._read(unit_block, **kwargs)
         else:
             self._create_from_blank(**kwargs)
@@ -53,9 +48,7 @@ class Unit:
                 )
             self._name = new_name
         except Exception as e:
-            raise Exception(
-                f'Failed to set unit name to "{new_name}" due to error: {e}'
-            )
+            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}')
 
     @property
     def subtype(self):
@@ -63,9 +56,7 @@ class Unit:
 
     @subtype.setter
     def subtype(self, new_value):
-        raise ValueError(
-            "You cannot changed the subtype of a unit once it has been instantiated"
-        )
+        raise ValueError("You cannot changed the subtype of a unit once it has been instantiated")
 
     def __repr__(self):
         if self._subtype is None:
@@ -116,9 +107,7 @@ class Unit:
         self.rule_sample_time = _to_float(rule_params[1])
         self.timeunit = _to_str(rule_params[2], "SECONDS", check_float=False)
         self.extendmethod = _to_str(rule_params[3], "EXTEND")
-        self.rules = self._get_logical_rules(
-            self.nrules, block, self._last_gate_row + 2
-        )
+        self.rules = self._get_logical_rules(self.nrules, block, self._last_gate_row + 2)
         # Get time rule data set
         nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
         data_list = []
@@ -146,17 +135,13 @@ class Unit:
                 # Get time rule data set
                 var_nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
                 data_list = []
-                for row in block[
-                    self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows
-                ]:
+                for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows]:
                     row_split = split_10_char(f"{row:<20}")
                     x = _to_float(row_split[0])  # time
                     y = row[10:].strip()  # operating rules
                     data_list.append([x, y])
 
-                varrule_data = pd.DataFrame(
-                    data_list, columns=["Time", "Operating Rules"]
-                )
+                varrule_data = pd.DataFrame(data_list, columns=["Time", "Operating Rules"])
                 varrule_data = varrule_data.set_index("Time")
                 varrule_data = varrule_data["Operating Rules"]
                 self.time_varrule_data = varrule_data
@@ -175,9 +160,7 @@ class Unit:
         # ADD TIME RULE DATA SET
         block.append("TIME RULE DATA SET")
         block.append(join_10_char(len(self.time_rule_data)))
-        time_rule_data = [
-            f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()
-        ]
+        time_rule_data = [f"{join_10_char(t)}{o_r:<10}" for t, o_r in self.time_rule_data.items()]
         block.extend(time_rule_data)
 
         # ADD VARRULES (IF THEY ARE THERE)

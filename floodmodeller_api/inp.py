@@ -2,24 +2,25 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 from pathlib import Path
 from typing import Optional, Union
+
+from . import units
+from ._base import FMFile
+from .units.helpers import _to_str, join_n_char_ljust
 from .urban1d import subsections
 from .urban1d.general_parameters import DEFAULT_OPTIONS
-from ._base import FMFile
-from . import units
-from .units.helpers import join_n_char_ljust, _to_str
 from .validation import _validate_unit
 
 
@@ -41,10 +42,9 @@ class INP(FMFile):
     _suffix: str = ".inp"
 
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
-
         try:
             self._filepath = inp_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
                 self._read()
 
@@ -70,7 +70,6 @@ class INP(FMFile):
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
         try:
-
             _validate_unit(self, urban=True)
 
             block_shift = 0  # Used to allow changes in the length of subsections.
@@ -83,9 +82,7 @@ class INP(FMFile):
                     prev_block_len = len(subsection_data)
 
                     if (
-                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
-                            "group"
-                        ]
+                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
                         == "general"
                     ):
                         # General parameters
@@ -99,16 +96,11 @@ class INP(FMFile):
                             ]
 
                             for param, value in self.options.items():
-
-                                if value != None:
-                                    option_line = join_n_char_ljust(
-                                        21, param.upper(), value
-                                    )
+                                if value is not None:
+                                    option_line = join_n_char_ljust(21, param.upper(), value)
                                     new_subsection_data.append(option_line)
 
-                            new_subsection_data.append(
-                                ""
-                            )  # blank line before next section
+                            new_subsection_data.append("")  # blank line before next section
 
                     else:  # Of unit type
                         subsection = getattr(
@@ -147,7 +139,7 @@ class INP(FMFile):
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            f"Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
+            "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
         )
         pass
 
@@ -157,7 +149,6 @@ class INP(FMFile):
         # Loop through all blocks (subsections) within INP  and process if of a supported type.
         for block in self._inp_struct:
             if block["Subsection_Type"] in subsections.SUPPORTED_SUBSECTIONS:
-
                 raw_subsection_data = self._raw_data[
                     block["start"] : block["end"] + 1
                 ]  # Raw data for subsection block of INP file
@@ -167,7 +158,6 @@ class INP(FMFile):
                     subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
                     == "general"
                 ):
-
                     if block["Subsection_Type"] == "[OPTIONS]":
                         self.options = DEFAULT_OPTIONS.copy()
                         for line in raw_subsection_data:
@@ -185,12 +175,11 @@ class INP(FMFile):
 
                 # Create appropriate sub-class instences for supported units
                 elif (
-                    subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
-                    == "units"
+                    subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"] == "units"
                 ):
-                    subsection_class = subsections.SUPPORTED_SUBSECTIONS[
-                        block["Subsection_Type"]
-                    ]["class"]
+                    subsection_class = subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
+                        "class"
+                    ]
 
                     subsection_attribute = subsections.SUPPORTED_SUBSECTIONS[
                         block["Subsection_Type"]
@@ -217,17 +206,13 @@ class INP(FMFile):
         in_block = False
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
-
             # TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
 
             # Check if subsection is known
             if line.upper() in subsections.ALL_SUBSECTIONS:
-
-                if in_block == True:
+                if in_block is True:
                     unit_block["end"] = idx - 1  # add ending index
-                    inp_struct.append(
-                        unit_block
-                    )  # append existing block bdy to the inp_struct
+                    inp_struct.append(unit_block)  # append existing block bdy to the inp_struct
                     unit_block = {}  # reset bdy block
 
                 unit_block["Subsection_Type"] = line.upper()

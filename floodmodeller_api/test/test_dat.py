@@ -1,9 +1,10 @@
+import os
+from pathlib import Path
+
+import pytest
+
 from floodmodeller_api import DAT
 from floodmodeller_api.units import QTBDY
-
-from pathlib import Path
-import os
-import pytest
 
 
 @pytest.fixture
@@ -42,7 +43,7 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     dat = DAT(dat_fp)
     prev_qt = {}
     for name, unit in dat.boundaries.items():
-        if type(unit) == QTBDY:
+        if isinstance(unit, QTBDY):
             prev_qt[name] = unit.data.copy()
             unit.data *= 2  # Multiply QT flow data by 2
     assert dat._write() != data_before

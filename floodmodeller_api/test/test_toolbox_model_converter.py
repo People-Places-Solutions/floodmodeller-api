@@ -1,19 +1,19 @@
-from floodmodeller_api import IEF, XML2D, DAT
-from toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
+from itertools import zip_longest
+from pathlib import Path
+
+import geopandas as gpd
+import pytest
+from shapely.geometry import LineString, Point
+
+from floodmodeller_api import DAT, IEF, XML2D
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.model_converter import (
     FMFileWrapper,
     TuflowModelConverter,
 )
 
-from pathlib import Path
-from shapely.geometry import Point, LineString
-from itertools import zip_longest
-import geopandas as gpd
-import pytest
-
 
 @pytest.fixture
 def tcf(tmpdir) -> Path:
-
     tcf_name = "test_tcf.tcf"
     tgc_name = "test_tgc.tgc"
     tbc_name = "test_tbc.tbc"
@@ -37,9 +37,7 @@ def tcf(tmpdir) -> Path:
     ecf_str = ""
 
     code_gpd = gpd.GeoDataFrame({"CODE": [1], "geometry": [Point(0, 0)]})
-    line_gpd = gpd.GeoDataFrame(
-        {"Comment": [""], "geometry": [LineString([(0, 0), (1, 1)])]}
-    )
+    line_gpd = gpd.GeoDataFrame({"Comment": [""], "geometry": [LineString([(0, 0), (1, 1)])]})
 
     for name, contents in zip(
         [tcf_name, tgc_name, tbc_name, ecf_name, code_name, line_name],
@@ -140,9 +138,7 @@ def test_model_converter(tmpdir, tcf, mocker):
         "nrows": 2,
         "ncols": 3,
         "rotation": 45,
-        "active_area": str(
-            Path.joinpath(Path(tmpdir), model_name, "gis", "active_area.shp")
-        ),
+        "active_area": str(Path.joinpath(Path(tmpdir), model_name, "gis", "active_area.shp")),
     }
     expected_log += [
         "INFO - converting computational area...",

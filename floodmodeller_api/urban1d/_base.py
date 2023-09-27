@@ -2,15 +2,15 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
@@ -25,7 +25,7 @@ class UrbanUnit:
     _name = None
 
     def __init__(self, unit_block=None, **kwargs):
-        if unit_block != None:
+        if unit_block is not None:
             self._read(unit_block)
             # TODO: add functionality to read description
         else:
@@ -42,9 +42,7 @@ class UrbanUnit:
     # Update this bit
     def __repr__(self):
         if self._subtype is None:
-            return (
-                f"<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>"
-            )
+            return f"<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>"
 
     def _create_from_blank(self):
         raise NotImplementedError(
@@ -87,7 +85,7 @@ class UrbanSubsection:
     _urban_unit_class = None
 
     def __init__(self, subsection_block=None, **kwargs):
-        if subsection_block != None:
+        if subsection_block is not None:
             self._read(subsection_block)
         else:
             self._create_from_blank(**kwargs)
@@ -112,7 +110,6 @@ class UrbanSubsection:
         return "\n".join(self._write())
 
     def _read(self, block):
-
         setattr(self, self._attribute, {})
         units = getattr(self, self._attribute)
 
@@ -128,7 +125,6 @@ class UrbanSubsection:
                 self._struct.append(line)
 
     def _write(self):
-
         block = []
 
         if self._attribute == "raingauges":

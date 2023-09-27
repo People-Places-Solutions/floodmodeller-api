@@ -3,7 +3,8 @@
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/floodmodeller-api.svg)](https://pypi.org/project/floodmodeller-api/)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/People-Places-Solutions/floodmodeller-api/blob/main/LICENSE.txt)
-![example workflow](https://github.com/People-Places-Solutions/floodmodeller-api/actions/workflows/run_tests.yml/badge.svg)
+![Unit Tests](https://github.com/People-Places-Solutions/floodmodeller-api/actions/workflows/run_tests.yml/badge.svg)
+![Lint](https://github.com/People-Places-Solutions/floodmodeller-api/actions/workflows/run_linters.yml/badge.svg)
 [![Downloads](https://static.pepy.tech/personalized-badge/floodmodeller-api?period=month&units=international_system&left_color=black&right_color=orange&left_text=PyPI%20downloads%20per%20month)](https://pepy.tech/project/floodmodeller-api)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -23,7 +24,7 @@ You can install the floodmodeller_api package from PyPI with the following comma
 pip install floodmodeller-api
 ```
 
-Python 3.6 or greater is required, but we would recommend using a more recent version (3.9+).
+Python 3.9 or greater is required.
 
 Once you have installed floodmodeller_api to your python environment, you can import the package with:
 
@@ -49,7 +50,15 @@ These videos give you a quick overview of some of the basics of using the Flood 
 
 **Running a simulation**
 
-<a href="https://www.youtube.com/watch?v=WfCNkC44shI?vq=1080p" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/56606086/253010465-8a714e5b-9364-4073-9af5-679dab0a8249.png" width="500"></a>
+<a href="https://www.youtube.com/watch?v=WfCNkC44shI?vq=1080p" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/56606086/253010465-8a714e5b-9364-4073-9af5-679dab0a8249.png" width="400"></a>
+
+**Using the codespace**
+
+<a href="https://www.youtube.com/watch?v=BWV3A7R0fbM?vq=1080p" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/56606086/257823093-545e0b61-4252-4ed3-8870-405fa869461d.png" width="400"></a>
+
+**Extract ReFH2 csv data into IEDs and QTBDYs**
+
+<a href="https://www.youtube.com/watch?v=E9JMQ2DKr0c?vq=1080p" target="_blank"><img src="https://github-production-user-asset-6210df.s3.amazonaws.com/56606086/257824500-39c991cd-8bad-4e08-bd39-0f26981d173b.png" width="400"></a>
 
 
 

@@ -8,6 +8,7 @@ Tools will sit under the following categories:
 |[Model Build](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/model_build)| Details
 |[Model Conversion](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/model_conversion)| Details
 |[Visualisation](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/visualisation)| Details
+|[Model Review](https://github.com/People-Places-Solutions/floodmodeller-api/tree/main/toolbox/model_review)| Details
 
 These tools act as standalone scripts. To run them, please read the available documentation for each tool. 
 

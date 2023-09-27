@@ -1,14 +1,16 @@
-from toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import TuflowParser
-
 from pathlib import Path
-from shapely.geometry import Point
+
 import geopandas as gpd
 import pytest
+from shapely.geometry import Point
+
+from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import (
+    TuflowParser,
+)
 
 
 @pytest.fixture
 def tuflow_parser(tmpdir) -> TuflowParser:
-
     text = """
     VAR1 == folder1/file1.csv
     VAR1 == ../file2.tmf
@@ -71,12 +73,12 @@ def test_dict(tuflow_parser):
 
 
 def test_check_key(tuflow_parser):
-    assert tuflow_parser.check_key("var1") == True
-    assert tuflow_parser.check_key("var2") == True
-    assert tuflow_parser.check_key("var3") == True
-    assert tuflow_parser.check_key("var4") == True
-    assert tuflow_parser.check_key("var5") == False
-    assert tuflow_parser.check_key("var6") == False
+    assert tuflow_parser.check_key("var1") is True
+    assert tuflow_parser.check_key("var2") is True
+    assert tuflow_parser.check_key("var3") is True
+    assert tuflow_parser.check_key("var4") is True
+    assert tuflow_parser.check_key("var5") is False
+    assert tuflow_parser.check_key("var6") is False
 
 
 def test_value(tuflow_parser):
@@ -109,14 +111,13 @@ def test_geodataframe(tuflow_parser, mocker, path2):
 
 
 def test_dataframe(tuflow_parser, mocker, path1, path2):
-
     read_csv = mocker.patch("pandas.read_csv", return_value="test")
 
     assert tuflow_parser.get_dataframe("var1") == "test"
     assert read_csv.call_count == 1
     assert read_csv.call_args_list[0][0][0] == path2
     assert read_csv.call_args_list[0][1]["comment"] == "!"
-    assert read_csv.call_args_list[0][1]["header"] == None
+    assert read_csv.call_args_list[0][1]["header"] is None
 
     assert tuflow_parser.get_dataframe("var1", index=0) == "test"
     assert read_csv.call_count == 2
@@ -126,7 +127,6 @@ def test_dataframe(tuflow_parser, mocker, path1, path2):
 
 
 def test_single_geometry(tuflow_parser, mocker, path1, path2):
-
     point1 = Point(0, 1)
     point2 = Point(1, 0)
     gdf = gpd.GeoDataFrame({"x": ["a", "b"], "geometry": [point1, point2]})
@@ -145,10 +145,7 @@ def test_all_paths(tuflow_parser, path1, path2):
     assert tuflow_parser.get_all_paths("var1") == [path1, path2]
 
 
-def test_all_geodataframes(
-    tuflow_parser, mocker, path1, path2, path3, path4, path5, path6
-):
-
+def test_all_geodataframes(tuflow_parser, mocker, path1, path2, path3, path4, path5, path6):
     read_gdf = mocker.patch("geopandas.read_file", return_value="test")
 
     assert tuflow_parser.get_all_geodataframes("var1") == ["test", "test"]

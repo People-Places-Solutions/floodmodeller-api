@@ -2,15 +2,15 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
@@ -18,8 +18,8 @@ import ctypes as ct
 from pathlib import Path
 from typing import Optional, Union
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 from ._base import FMFile
 
@@ -59,12 +59,8 @@ class ZZN(FMFile):
             self.data = {}  # Dict object to hold all data
 
             # PROCESS_ZZL
-            self.meta["zzl_name"] = ct.create_string_buffer(
-                bytes(str(zzl), "utf-8"), 255
-            )
-            self.meta["zzn_name"] = ct.create_string_buffer(
-                bytes(str(zzn), "utf-8"), 255
-            )
+            self.meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
+            self.meta["zzn_name"] = ct.create_string_buffer(bytes(str(zzn), "utf-8"), 255)
             self.meta["model_title"] = ct.create_string_buffer(b"", 128)
             self.meta["nnodes"] = ct.c_int(0)
             self.meta["label_length"] = ct.c_int(0)
@@ -203,11 +199,8 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-
             arr = np.array(self.data["all_results"])
-            time_index = np.linspace(
-                self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz
-            )
+            time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
             vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
             if multilevel_header:
                 col_names = [vars, self.meta["labels"]]
@@ -221,17 +214,11 @@ class ZZN(FMFile):
                     return df[variable.capitalize()]
 
             else:
-                col_names = [
-                    f"{node}_{var}" for var in vars for node in self.meta["labels"]
-                ]
-                df = pd.DataFrame(
-                    arr.reshape(nz, nx * ny), index=time_index, columns=col_names
-                )
+                col_names = [f"{node}_{var}" for var in vars for node in self.meta["labels"]]
+                df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
                 df.index.name = "Time (hr)"
                 if not variable == "all":
-                    use_cols = [
-                        col for col in df.columns if col.endswith(variable.capitalize())
-                    ]
+                    use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
                     return df[use_cols]
             return df
 
@@ -260,9 +247,7 @@ class ZZN(FMFile):
                 time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
                 time_df.index.name = "Node Label"
                 df = pd.concat([df, time_df], axis=1)
-                new_col_order = [
-                    x for y in list(zip(col_names, time_col_names)) for x in y
-                ]
+                new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
                 df = df[new_col_order]
                 if not variable == "all":
                     return df[
@@ -352,9 +337,7 @@ class ZZN(FMFile):
         output = {}
 
         arr = np.array(self.data["all_results"])
-        time_index = np.linspace(
-            self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz
-        )
+        time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
 
         vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
 
@@ -362,9 +345,7 @@ class ZZN(FMFile):
         temp_arr = np.reshape(arr, (nz, ny, nx))
 
         for i, var in enumerate(vars):
-            output[var] = pd.DataFrame(
-                temp_arr[:, i, :], index=time_index, columns=col_names
-            )
+            output[var] = pd.DataFrame(temp_arr[:, i, :], index=time_index, columns=col_names)
             output[var].index.name = "Time (hr)"
 
         output["Time (hr)"] = time_index
@@ -379,6 +360,6 @@ class ZZN(FMFile):
                     )
 
             for var in vars:
-                if not var in input_vars:
+                if var not in input_vars:
                     del output[var]
         return output

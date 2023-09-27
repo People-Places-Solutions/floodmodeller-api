@@ -2,32 +2,31 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import pandas as pd
 
+from floodmodeller_api.validation import _validate_unit
+
 from ._base import Unit
 from .helpers import (
-    join_10_char,
-    join_12_char_ljust,
-    join_n_char_ljust,
-    split_10_char,
-    split_12_char,
-    split_n_char,
     _to_float,
     _to_int,
+    join_10_char,
+    join_n_char_ljust,
+    split_10_char,
+    split_n_char,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class RIVER(Unit):
@@ -62,20 +61,19 @@ class RIVER(Unit):
         self,
         name="new_section",
         comment="",
-        spill1 ="",
-        spill2 ="",
-        lat1 ="",
-        lat2 ="",
-        lat3 ="",
-        lat4 ="",
-        dist_to_next = 0,
+        spill1="",
+        spill2="",
+        lat1="",
+        lat2="",
+        lat3="",
+        lat4="",
+        dist_to_next=0,
         slope=0.0001,
         density=1000.0,
-        data=None
+        data=None,
     ):
-
         # Initiate new SECTION (currently hardcoding this as default)
-        self._subtype = 'SECTION'
+        self._subtype = "SECTION"
 
         for param, val in {
             "name": name,
@@ -89,7 +87,7 @@ class RIVER(Unit):
             "dist_to_next": dist_to_next,
             "slope": slope,
             "density": density,
-            "data": data
+            "data": data,
         }.items():
             setattr(self, param, val)
 
@@ -109,7 +107,8 @@ class RIVER(Unit):
                     "Northing",
                     "Deactivation",
                     "SP. Marker",
-                ],)
+                ],
+            )
         )
 
     def _read(self, riv_block):
@@ -119,9 +118,7 @@ class RIVER(Unit):
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(
-                f"{riv_block[2]:<{7*self._label_len}}", self._label_len
-            )
+            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
             self.name = labels[0]
             self.spill1 = labels[1]
             self.spill2 = labels[2]
@@ -327,7 +324,6 @@ class INTERPOLATE(Unit):
         easting=0,
         northing=0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,
@@ -432,7 +428,6 @@ class REPLICATE(Unit):
         easting=0,
         northing=0,
     ):
-
         for param, val in {
             "name": name,
             "comment": comment,

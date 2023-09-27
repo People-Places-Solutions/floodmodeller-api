@@ -2,24 +2,24 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import pandas as pd
 
-from .helpers import join_10_char, join_n_char_ljust
 from ..diff import check_item_with_dataframe_equal
+from .helpers import join_10_char
 
-### Variables, Rules & Varrules Classes ###
+# Variables, Rules & Varrules Classes
 
 
 class Variables:
@@ -29,7 +29,7 @@ class Variables:
         self._read(var_block)
 
     def __repr__(self):
-        return f"<floodmodeller_api Variables Class: Variables()>"
+        return "<floodmodeller_api Variables Class: Variables()>"
 
     def _read(self, var_block):
         header = [
@@ -46,7 +46,9 @@ class Variables:
             if _type.upper() == "TIMER":
                 initial_status = line[40:50].strip()
             else:
-                initial_status = "n/a"  # unless the type is a timer, nothing else has an initial status
+                initial_status = (
+                    "n/a"  # unless the type is a timer, nothing else has an initial status
+                )
             data_list.append(
                 [
                     name,
@@ -82,6 +84,6 @@ class Variables:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name=f"Variables", diff=diff
+            self.__dict__, other.__dict__, name="Variables", diff=diff
         )
         return (result, diff) if return_diff else result

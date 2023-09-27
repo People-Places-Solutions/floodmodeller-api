@@ -2,24 +2,24 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import pandas as pd
 
-from .helpers import join_10_char, split_10_char
 from ..diff import check_item_with_dataframe_equal
+from .helpers import join_10_char, split_10_char
 
-### Initial Conditions Class ###
+# Initial Conditions Class
 
 
 class IIC:
@@ -30,7 +30,7 @@ class IIC:
         self._read(ic_block)
 
     def __repr__(self):
-        return f"<floodmodeller_api Initial Conditions Class: IIC()>"
+        return "<floodmodeller_api Initial Conditions Class: IIC()>"
 
     def _read(self, ic_block):
         header = [
@@ -96,6 +96,6 @@ class IIC:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name=f"Initial Conditions", diff=diff
+            self.__dict__, other.__dict__, name="Initial Conditions", diff=diff
         )
         return (result, diff) if return_diff else result

@@ -20,7 +20,7 @@ fmapi-toolbox
 
 A tool to use in the command line to interact with all the API toolbox scripts.
 
-You can use these command line arguements:
+You can use these command line arguments:
 
 - *-l* or *-list* : list all toolbox scripts installed
 - *-ld* or *-list-detailed* : list all toolbox scripts installed including usage

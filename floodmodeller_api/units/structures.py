@@ -2,36 +2,34 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 
 import pandas as pd
 
-from ._base import Unit
+from floodmodeller_api.validation import _validate_unit
 
+from ._base import Unit
 from .helpers import (
+    _to_float,
+    _to_int,
+    _to_str,
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
     split_10_char,
-    split_12_char,
     split_n_char,
-    _to_float,
-    _to_str,
-    _to_int,
-    _to_data_list,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class BRIDGE(Unit):
@@ -127,7 +125,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block):
+    def _read(self, br_block):  # noqa: C901
         """Function to read a given BRIDGE block and store data as class attributes"""
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
@@ -251,9 +249,7 @@ class BRIDGE(Unit):
 
             # Read flood relief culvert data
             self.culvert_nrows = int(
-                split_10_char(
-                    br_block[9 + self.section_nrows + self.opening_nrows + 1]
-                )[0]
+                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0]
             )
             data_list = []
             start_row = 9 + self.section_nrows + self.opening_nrows + 2
@@ -350,7 +346,7 @@ class BRIDGE(Unit):
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self):
+    def _write(self):  # noqa: C901
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = "BRIDGE " + self.comment
@@ -416,9 +412,7 @@ class BRIDGE(Unit):
                 if self.pier_use_calibration_coeff:
                     pier_params = f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.calibration_coefficient:>10.3f}'
                 else:
-                    pier_params = (
-                        f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
-                    )
+                    pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
                 pier_params = f"{0:>10}{self.soffit_shape}"
 
@@ -577,6 +571,9 @@ class SLUICE(Unit):
         rules (List[dict]): List of logical rules to use. Each rule is represented as a Dictionary with keys 'name' and 'logic'.
         time_rule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
             dataseries for 'Operating Rules'
+        varrules (List[dict]): List of logical variable rules to use. Each varrule is represented as a Dictionary with keys 'name' and 'logic'.
+        time_varrule_data (pandas.Series): Series containing data on which operating rules to apply, with index of 'Time' and
+            dataseries for 'Operating Rules'
 
 
     **Radial Type (``SLUICE.subtype == 'RADIAL'``)**
@@ -670,9 +667,7 @@ class SLUICE(Unit):
         """Function to write a valid SLUICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = "SLUICE " + self.comment
-        labels = join_n_char_ljust(
-            self._label_len, self.name, self.ds_label, self.remote_label
-        )
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.remote_label)
         block = [header, self.subtype, labels]
 
         # First parameter line
@@ -747,9 +742,7 @@ class SLUICE(Unit):
                 block.append(f"GATE {n}")
                 nrows = len(gate)
                 block.append(f"{nrows:>10}")
-                gate_data = [
-                    f"{join_10_char(t, m, o)}" for t, m, o in gate.itertuples()
-                ]
+                gate_data = [f"{join_10_char(t, m, o)}" for t, m, o in gate.itertuples()]
                 block.extend(gate_data)
                 n += 1
             block = self._write_rules(block)
@@ -950,7 +943,6 @@ class SPILL(Unit):
         self.modular_limit = _to_float(params[1], 0.9)
 
         # Spill section data
-        nrows = int(split_10_char(block[3])[0])
         data_list = []
         for row in block[4:]:
             row_split = split_10_char(f"{row:<40}")
@@ -978,9 +970,7 @@ class SPILL(Unit):
         # Section data
         nrows = len(self.data)
         block.append(join_10_char(nrows))
-        section_data = [
-            join_10_char(x, y, e, n) for _, x, y, e, n in self.data.itertuples()
-        ]
+        section_data = [join_10_char(x, y, e, n) for _, x, y, e, n in self.data.itertuples()]
         block.extend(section_data)
 
         return block
@@ -1006,9 +996,7 @@ class SPILL(Unit):
         self.data = (
             data
             if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"]
-            )
+            else pd.DataFrame([[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"])
         )
 
 
@@ -1106,6 +1094,96 @@ class RNWEIR(Unit):
             "modular_limit": modular_limit,
             "upstream_crest_height": upstream_crest_height,
             "downstream_crest_height": downstream_crest_height,
+            "weir_length": weir_length,
+            "wier_breadth": weir_breadth,
+            "weir_elevation": weir_elevation,
+        }.items():
+            setattr(self, param, val)
+
+
+class WEIR(Unit):
+    """Class to hold and process WEIR unit type
+
+    Args:
+        name (str, optional): Upstream label name.
+        comment (str, optional): Comment included in unit.
+        ds_label (str, optional): Downstream label.
+        exponent (float, optional): Coefficient of discharge for the weir,
+        discharge_coefficeient (float, optional): Exponent used in the weir flow equation,
+        velocity_coefficient (float, optional): Coefficient of approach velocity.
+        weir_length (float, optional): Length of weir crest in the direction of flow (m).
+        weir_breadth (float, optional): Breadth of weir at control section (normal to the flow direction)(m).
+        weir_elevation (float, optional): Elevation of weir crest (m AD).
+        modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode.
+
+    Returns:
+        WEIR: Flood Modeller WEIR Unit class object"""
+
+    _unit = "WEIR"
+
+    def _read(self, block):
+        """Function to read a given WEIR block and store data as class attributes"""
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = block[0].replace("WEIR", "").strip()
+
+        # Exponent
+        self.exponent = _to_float(block[2].strip())
+
+        # Parameters line
+        params = split_10_char(f"{block[3]:<50}")
+        self.discharge_coefficient = _to_float(params[0])
+        self.velocity_coefficient = _to_float(params[1])
+        self.weir_breadth = _to_float(params[2])
+        self.weir_elevation = _to_float(params[3])
+        self.modular_limit = _to_float(params[4])
+
+    def _write(self):
+        """Function to write a valid WEIR block"""
+        _validate_unit(self)
+        header = "WEIR " + self.comment
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+        block = [header, labels]
+
+        # Exponent line
+        exp_line = join_10_char(self.exponent)
+        block.append(exp_line)
+
+        # Parameter line
+        params = join_10_char(
+            self.discharge_coefficient,
+            self.velocity_coefficient,
+            self.weir_breadth,
+            self.weir_elevation,
+            self.modular_limit,
+        )
+        block.append(params)
+
+        return block
+
+    def _create_from_blank(
+        self,
+        name="new_weir",
+        comment="",
+        ds_label="",
+        exponent=1.5,
+        discharge_coefficeient=1.0,
+        velocity_coefficient=1.0,
+        modular_limit=0.7,
+        weir_length=0.0,
+        weir_breadth=0.0,
+        weir_elevation=0.0,
+    ):
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "ds_label": ds_label,
+            "exponent": exponent,
+            "discharge_coefficeient": discharge_coefficeient,
+            "velocity_coefficient": velocity_coefficient,
+            "modular_limit": modular_limit,
             "weir_length": weir_length,
             "wier_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
@@ -1216,7 +1294,7 @@ class CRUMP(Unit):
             setattr(self, param, val)
 
 
-class FLAT_V_WEIR(Unit):
+class FLAT_V_WEIR(Unit):  # noqa: N801
     """Class to hold and process FLAT-V WEIR unit type
 
     Args:
@@ -1372,9 +1450,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
 
         # Extends label line to be correct length before splitting to pick up blank labels
         num_labels = len(block[1]) // self._label_len
-        labels = split_n_char(
-            f"{block[1]:<{num_labels*self._label_len}}", self._label_len
-        )
+        labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.all_labels = labels[0 : len(labels)]
         self.comment = block[0].replace("RESERVOIR", "").strip()
@@ -1382,9 +1458,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         # Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
             # Lateral inflow labels
-            lateral_labels = split_n_char(
-                f"{block[2]:<{4*self._label_len}}", self._label_len
-            )
+            lateral_labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
             self.lat1 = lateral_labels[0]
             self.lat2 = lateral_labels[1]
             self.lat3 = lateral_labels[2]

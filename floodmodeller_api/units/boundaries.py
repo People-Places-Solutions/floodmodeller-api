@@ -2,34 +2,32 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 import pandas as pd
 
+from floodmodeller_api.validation import _validate_unit
+
 from ._base import Unit
 from .helpers import (
-    join_10_char,
-    join_12_char_ljust,
-    join_n_char_ljust,
-    split_10_char,
-    split_12_char,
-    split_n_char,
-    _to_str,
+    _to_data_list,
     _to_float,
     _to_int,
-    _to_data_list,
+    _to_str,
+    join_10_char,
+    join_n_char_ljust,
+    split_10_char,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class QTBDY(Unit):
@@ -67,7 +65,6 @@ class QTBDY(Unit):
         _something=0.0,
         data=None,
     ):
-
         # Initiate new QTBDY
 
         for param, val in {
@@ -111,9 +108,7 @@ class QTBDY(Unit):
         self.interpmethod = _to_str(qtbdy_params[5], "LINEAR")
         self.flowmultiplier = _to_float(qtbdy_params[6])
         self.minflow = _to_float(qtbdy_params[7])
-        self.allow_override = _to_str(
-            qtbdy_params[8], "OVERRIDE"
-        )  # ''/OVERRIDE or NOOVERRIDE
+        self.allow_override = _to_str(qtbdy_params[8], "OVERRIDE")  # ''/OVERRIDE or NOOVERRIDE
         data_list = (
             _to_data_list(qtbdy_block[3:], date_col=1)
             if self.timeunit == "DATES"
@@ -255,9 +250,7 @@ class QHBDY(Unit):
 
     _unit = "QHBDY"
 
-    def _create_from_blank(
-        self, name="new_qhbdy", comment="", interpmethod="LINEAR", data=None
-    ):
+    def _create_from_blank(self, name="new_qhbdy", comment="", interpmethod="LINEAR", data=None):
         # Initiate new QHBDY
         for param, val in {
             "name": name,
@@ -370,13 +363,9 @@ class REFHBDY(Unit):
         self.timestep = _to_float(refhbdy_opts[1])
         # '' : Full hydrograph, 'pfonly' : peak flow, 'bfonly' : baseflow only
         self.sim_type = refhbdy_opts[2]
-        self.scale_method = _to_str(
-            refhbdy_opts[3], "SCALEFACT"
-        )  # PEAKVALUE or SCALEFACT
+        self.scale_method = _to_str(refhbdy_opts[3], "SCALEFACT")  # PEAKVALUE or SCALEFACT
         self.scale_value = _to_float(refhbdy_opts[4], 1.0)
-        self.boundary_type = _to_str(
-            refhbdy_opts[5], "HYDROGRAPH"
-        )  # HYDROGRAPH or HYETOGRAPH
+        self.boundary_type = _to_str(refhbdy_opts[5], "HYDROGRAPH")  # HYDROGRAPH or HYETOGRAPH
         self.scale_type = _to_str(refhbdy_opts[6], "FULL")  # FULL or RUNOFF
         self.minflow = _to_float(refhbdy_opts[7])
         self.allow_override = refhbdy_opts[8]  # ''/OVERRIDE or NOOVERRIDE
@@ -390,9 +379,7 @@ class REFHBDY(Unit):
         except ValueError:
             self.saar = float(refhbdy_params2[1])
         self.urbext = _to_float(refhbdy_params2[2])
-        self.season = _to_str(
-            refhbdy_params2[3], "DEFAULT"
-        )  # DEFAULT, SUMMER or WINTER
+        self.season = _to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
         self.calc_source = _to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
         self.use_urban_subdivisions = False if refhbdy_params2[5] == "" else True
         if self.use_urban_subdivisions:

@@ -2,28 +2,28 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 """ Holds the base file class for API file classes """
 
 from pathlib import Path
-from .version import __version__
+
+from .backup import File
 from .diff import check_item_with_dataframe_equal
 from .units._base import Unit
 from .units.iic import IIC
-from .units.comment import COMMENT 
 from .urban1d._base import UrbanSubsection, UrbanUnit
-from .backup import File
+from .version import __version__
 
 
 class FMFile:
@@ -33,7 +33,7 @@ class FMFile:
     _suffix = None
 
     def __init__(self):
-        if self._filepath != None:
+        if self._filepath is not None:
             self._filepath = Path(self._filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
@@ -67,7 +67,7 @@ class FMFile:
 
     def _update(self):
         f"""Updates the existing {self._filetype} based on any altered attributes"""
-        if self._filepath == None:
+        if self._filepath is None:
             raise UserWarning(
                 f"{self._filetype} must be saved to a specific filepath before update() can be called."
             )
@@ -105,18 +105,10 @@ class FMFile:
                 print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
                 if len(diff[1]) > 25 and not force_print:
                     print("[Showing first 25 differences...] ")
-                    print(
-                        "\n".join(
-                            [f"  {name}:  {reason}" for name, reason in diff[1][:25]]
-                        )
-                    )
-                    print(
-                        "\n...To see full list of all differences add force_print=True"
-                    )
+                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1][:25]]))
+                    print("\n...To see full list of all differences add force_print=True")
                 else:
-                    print(
-                        "\n".join([f"  {name}:  {reason}" for name, reason in diff[1]])
-                    )
+                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
         except Exception as e:
             self._handle_exception(e, when="compare")
 

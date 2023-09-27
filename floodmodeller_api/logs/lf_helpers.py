@@ -2,20 +2,21 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from abc import ABC, abstractmethod
 import datetime as dt
+from abc import ABC, abstractmethod
+
 import pandas as pd
 
 
@@ -56,10 +57,7 @@ class AllData(Data):
         self._value.append(data)
         self.no_values += 1
 
-    def get_value(
-        self, index_key: str = None, index_df: pd.DataFrame = None
-    ) -> pd.DataFrame:
-
+    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 
         # do nothing to empty dataframes
@@ -79,7 +77,6 @@ class AllData(Data):
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
             if index_duplicate in df.columns:
-
                 index_df = df[index_duplicate].round("1s")
 
                 df.drop(index_duplicate, axis=1, inplace=True)
@@ -137,7 +134,7 @@ class SteadyState(State):
 
 
 def state_factory(steady: bool, extracted_data: Data) -> State:
-    if steady == True:
+    if steady is True:
         return SteadyState(extracted_data)
     else:
         return UnsteadyState(extracted_data)
@@ -338,9 +335,7 @@ class TimeFloatMultParser(Parser):
         for header in self._subheaders:
             self._nan.append(float("nan"))
 
-        self.data = data_factory(
-            self.data_type, self._name, self._subheaders
-        )  # overwrite
+        self.data = data_factory(self.data_type, self._name, self._subheaders)  # overwrite
 
     def _process_line(self, raw: str):
         """Converts string to list of floats"""

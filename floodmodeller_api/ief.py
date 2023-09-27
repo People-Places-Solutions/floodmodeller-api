@@ -2,18 +2,19 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import datetime as dt
 import os
 import subprocess
 import time
@@ -21,15 +22,13 @@ from pathlib import Path
 from subprocess import Popen
 from typing import Optional, Union
 
-from tqdm import trange
-
 import pandas as pd
-import datetime as dt
+from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .zzn import ZZN
 from .logs import lf_factory
+from .zzn import ZZN
 
 
 class IEF(FMFile):
@@ -52,7 +51,7 @@ class IEF(FMFile):
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = ief_filepath
-            if self._filepath != None:
+            if self._filepath is not None:
                 FMFile.__init__(self)
 
                 self._read()
@@ -84,7 +83,7 @@ class IEF(FMFile):
                     if prev_comment is None:
                         try:
                             event_data_title = Path(value).stem
-                        except:
+                        except Exception:
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
@@ -92,7 +91,6 @@ class IEF(FMFile):
                         # Append event data to list so multiple can be specified
                         self.EventData[event_data_title] = value
                     else:
-
                         self.EventData = {event_data_title: value}
                     self._ief_properties.append("EventData")
 
@@ -170,15 +168,11 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
         del blank_ief
 
-    def _update_ief_properties(self):
+    def _update_ief_properties(self):  # noqa: C901
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
-            if (
-                (prop not in self._ief_properties)
-                and (not prop.startswith("_"))
-                and prop != "file"
-            ):
+            if (prop not in self._ief_properties) and (not prop.startswith("_")) and prop != "file":
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
@@ -189,7 +183,7 @@ class IEF(FMFile):
                 if prop.upper() == "EVENTDATA":
                     # This will be triggered in special case where eventdata has been added with different case, but case
                     # needs to be kept as 'EventData', to allow dealing wiht multiple IEDs
-                    if prop != "EventData":  
+                    if prop != "EventData":
                         # In case of EventData being added with correct case where it doesn't already
                         # exist, this stops it being deleted
                         # Add new values to EventData flag
@@ -197,7 +191,6 @@ class IEF(FMFile):
                         setattr(self, "EventData", val)
                         prop = "EventData"
 
-                
                 # Check ief group header
                 group = f"[{flags[prop.upper()]}]"
                 if group in self._ief_properties:
@@ -206,7 +199,7 @@ class IEF(FMFile):
                     # defaults to inserting in last place
                     insert_index = len(self._ief_properties)
                     for idx, item in enumerate(self._ief_properties):
-                        if group_idx == True and item.startswith("["):
+                        if group_idx is True and item.startswith("["):
                             insert_index = idx
                             break
                         if item == group:
@@ -223,11 +216,7 @@ class IEF(FMFile):
         self._ief_properties = [
             line
             for line in self._ief_properties
-            if (
-                line.startswith("[")
-                or (line in dir(self))
-                or line.lstrip().startswith(";")
-            )
+            if (line.startswith("[") or (line in dir(self)) or line.lstrip().startswith(";"))
         ]
 
         # Rearrange order of Flow Time Profiles group if present * Currently assuming all relevent flags included
@@ -238,7 +227,7 @@ class IEF(FMFile):
         if hasattr(self, "EventData"):
             self._update_eventdata_info()
 
-    def _update_eventdata_info(self):
+    def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
@@ -273,11 +262,7 @@ class IEF(FMFile):
                 if itm == "EventData":
                     del self._ief_properties[num_props - 1 - idx]
                     # Also remove event data title comment if present
-                    if (
-                        self._ief_properties[num_props - 2 - idx]
-                        .lstrip()
-                        .startswith(";")
-                    ):
+                    if self._ief_properties[num_props - 2 - idx].lstrip().startswith(";"):
                         del self._ief_properties[num_props - 2 - idx]
                     removed += 1
                     if removed == to_remove:
@@ -369,7 +354,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
-    def simulate(
+    def simulate(  # noqa: C901
         self,
         method: Optional[str] = "WAIT",
         raise_on_failure: Optional[bool] = True,
@@ -404,24 +389,20 @@ class IEF(FMFile):
         try:
             self._range_function = range_function
             self._range_settings = range_settings
-            if self._filepath == None:
+            if self._filepath is None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # Defaults to single...
                 for attr in dir(self):
-                    if (
-                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"
-                    ):  # Unless DP specified
+                    if attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION":  # Unless DP specified
                         if getattr(self, attr) == "1":
                             precision = "DOUBLE"
                             break
 
             if enginespath == "":
-                _enginespath = (
-                    r"C:\Program Files\Flood Modeller\bin"  # Default location
-                )
+                _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
             else:
                 _enginespath = enginespath
                 if not Path(_enginespath).exists:
@@ -435,9 +416,7 @@ class IEF(FMFile):
                 isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
             if not Path(isis32_fp).exists:
-                raise Exception(
-                    f"Flood Modeller engine not found! Expected location: {isis32_fp}"
-                )
+                raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
 
             run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
@@ -475,7 +454,6 @@ class IEF(FMFile):
             self._handle_exception(e, when="simulate")
 
     def _get_result_filepath(self, suffix):
-
         if hasattr(self, "Results"):
             path = Path(self.Results).with_suffix("." + suffix)
             if not path.is_absolute():
@@ -548,8 +526,8 @@ class IEF(FMFile):
             return
 
         # ensure progress bar is supported for that type
-        if not (suffix == "lf1" and steady == False):
-            self._no_log_file(f"only 1D unsteady runs are supported")
+        if not (suffix == "lf1" and steady is False):
+            self._no_log_file("only 1D unsteady runs are supported")
             self._lf = None
             return
 
@@ -561,7 +539,6 @@ class IEF(FMFile):
         max_time = time.time() + 10
 
         while not log_file_exists:
-
             time.sleep(0.1)
 
             log_file_exists = lf_filepath.is_file()
@@ -577,7 +554,6 @@ class IEF(FMFile):
         max_time = time.time() + 10
 
         while old_log_file:
-
             time.sleep(0.1)
 
             # difference between now and when log file was last modified
@@ -611,10 +587,8 @@ class IEF(FMFile):
 
         # tqdm progress bar
         for i in self._range_function(100, **self._range_settings):
-
             # Process still running
             while process.poll() is None:
-
                 time.sleep(0.1)
 
                 # Find progress
@@ -627,7 +601,6 @@ class IEF(FMFile):
 
             # Process stopped
             if process.poll() is not None:
-
                 # Find final progress
                 self._lf.read(suppress_final_step=True)
                 progress = self._lf.report_progress()

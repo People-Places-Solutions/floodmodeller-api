@@ -2,35 +2,34 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 
 import pandas as pd
 
+from floodmodeller_api.validation import _validate_unit
+
 from ._base import Unit
 from .helpers import (
+    _to_data_list,
+    _to_float,
+    _to_int,
+    _to_str,
     join_10_char,
-    join_12_char_ljust,
     join_n_char_ljust,
     split_10_char,
-    split_12_char,
     split_n_char,
-    _to_float,
-    _to_str,
-    _to_int,
-    _to_data_list,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class CULVERT(Unit):
@@ -141,9 +140,7 @@ class CULVERT(Unit):
         c_block = [header, self.subtype, labels]
 
         if self.subtype == "INLET":
-            params = join_10_char(
-                self.k, self.m, self.c, self.y, self.ki, self.type_code, dp=4
-            )
+            params = join_10_char(self.k, self.m, self.c, self.y, self.ki, self.type_code, dp=4)
             params1 = join_10_char(
                 self.screen_width,
                 self.bar_proportion,
@@ -160,9 +157,7 @@ class CULVERT(Unit):
             return c_block
 
         elif self.subtype == "OUTLET":
-            params = join_10_char(
-                self.loss_coefficient, self.reverse_flow_mode, self.headloss_type
-            )
+            params = join_10_char(self.loss_coefficient, self.reverse_flow_mode, self.headloss_type)
 
             c_block.append(params)
             return c_block
@@ -260,9 +255,7 @@ class BLOCKAGE(Unit):
         )
         params = join_10_char(self.inlet_loss, self.outlet_loss)
         self.nrows = len(self.data)
-        params1 = join_10_char(
-            self.nrows, self.timeoffset, self.timeunit, self.extendmethod
-        )
+        params1 = join_10_char(self.nrows, self.timeoffset, self.timeunit, self.extendmethod)
 
         blockage_block = [header, labels, params, params1]
 
@@ -291,7 +284,6 @@ class BLOCKAGE(Unit):
         extendmethod="EXTEND",
         data=None,
     ):
-
         # Initiate new BLOCKAGE unit
         for param, val in {
             "name": name,
@@ -312,7 +304,5 @@ class BLOCKAGE(Unit):
             setattr(self, param, val)
 
         self.data = (
-            data
-            if isinstance(data, pd.Series)
-            else pd.Series([0.0], index=[0.0], name="Blockage")
+            data if isinstance(data, pd.Series) else pd.Series([0.0], index=[0.0], name="Blockage")
         )

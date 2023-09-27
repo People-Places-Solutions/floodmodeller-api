@@ -1,23 +1,21 @@
-from floodmodeller_api import IEF, XML2D, DAT
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
-    ComponentConverter,
-)
-from .file_parser import TuflowParser
+import logging
+from pathlib import Path
+from typing import Callable, Dict, Type, Union
+
+from floodmodeller_api import DAT, IEF, XML2D
+
 from .component_converter import (
+    BoundaryConverterXML2D,
     ComponentConverter,
-    SchemeConverterIEF,
-    NetworkConverterDAT,
     ComputationalAreaConverterXML2D,
     LocLineConverterXML2D,
-    TopographyConverterXML2D,
+    NetworkConverterDAT,
     RoughnessConverterXML2D,
+    SchemeConverterIEF,
     SchemeConverterXML2D,
-    BoundaryConverterXML2D,
+    TopographyConverterXML2D,
 )
-
-from pathlib import Path
-from typing import Union, Dict, Callable, Type
-import logging
+from .file_parser import TuflowParser
 
 
 class FMFileWrapper:
@@ -39,6 +37,7 @@ class FMFileWrapper:
 
     def update(self) -> None:
         self.fm_file.update()
+
 
 class TuflowModelConverter:
     DOMAIN_NAME = "Domain 1"
@@ -147,7 +146,6 @@ class TuflowModelConverter:
     def convert_model(self) -> None:
         for fm_file_wrapper in self._fm_file_wrappers.values():
             for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
-
                 self._logger.info(f"converting {cc_display_name}...")
 
                 try:
@@ -156,7 +154,7 @@ class TuflowModelConverter:
                     fm_file_wrapper.update()
                     self._logger.info("success")
 
-                except:
+                except Exception:
                     self._logger.exception("failure")
                     fm_file_wrapper.rollback()
 
@@ -185,7 +183,6 @@ class TuflowModelConverter:
             all_areas=all_areas,
         )
 
-
     def _create_topography_cc_xml2d(self) -> TopographyConverterXML2D:
         vectors = (
             self._tgc.get_all_geodataframes("read gis z shape")
@@ -199,7 +196,6 @@ class TuflowModelConverter:
             rasters=self._tgc.get_all_paths("read grid zpts"),
             vectors=vectors,
         )
-    
 
     def _create_roughness_cc_xml2d(self) -> RoughnessConverterXML2D:
         return RoughnessConverterXML2D(
@@ -240,14 +236,10 @@ class TuflowModelConverter:
         )
 
     def _create_network_cc_dat(self) -> NetworkConverterDAT:
-        networks = []
-        for path in self._ecf._dict["read gis network"]:
-            networks.append(str(self._ecf._folder) + "\\" + str(path))
-
         return NetworkConverterDAT(
             dat=self._dat,
             folder=self._processed_inputs_folder,
             parent_folder=str(self._ecf._folder),
-            nwk_paths=networks,
-            xs_path=str(self._ecf.get_path("read gis table links")),
+            nwk_paths=self._ecf.get_all_paths("read gis network"),
+            xs_paths=self._ecf.get_all_paths("read gis table links"),
         )

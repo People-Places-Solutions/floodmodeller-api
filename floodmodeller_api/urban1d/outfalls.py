@@ -2,26 +2,22 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from ._base import UrbanSubsection, UrbanUnit
-from floodmodeller_api.units.helpers import (
-    split_n_char,
-    _to_float,
-    _to_str,
-    join_n_char_ljust,
-)
+from floodmodeller_api.units.helpers import _to_float, _to_str, join_n_char_ljust
 from floodmodeller_api.validation import _validate_unit
+
+from ._base import UrbanSubsection, UrbanUnit
 
 
 class OUTFALL(UrbanUnit):
@@ -44,7 +40,6 @@ class OUTFALL(UrbanUnit):
     _unit = "OUTFALL"
 
     def _read(self, line):
-
         unit_data = line.split()
 
         # TODO: add functionality to read comments
@@ -55,7 +50,6 @@ class OUTFALL(UrbanUnit):
         self.type = str(unit_data[2])
 
         if self.type == "FREE" or self.type == "NORMAL":
-
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 5:
                 unit_data.append("")
@@ -64,7 +58,6 @@ class OUTFALL(UrbanUnit):
             self.routeto = _to_str(unit_data[4], "")
 
         elif self.type == "FIXED" or self.type == "NORMAL" or self.type == "TIMESERIES":
-
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 6:
                 unit_data.append("")

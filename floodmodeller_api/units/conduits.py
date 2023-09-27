@@ -2,35 +2,33 @@
 Flood Modeller Python API
 Copyright (C) 2023 Jacobs U.K. Limited
 
-This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License 
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty 
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details. 
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
 
-If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following 
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
 
 import pandas as pd
 
+from floodmodeller_api.validation import _validate_unit
+
 from ._base import Unit
 from .helpers import (
+    _to_float,
+    _to_int,
+    _to_str,
     join_10_char,
-    join_12_char_ljust,
     join_n_char_ljust,
     split_10_char,
-    split_12_char,
     split_n_char,
-    _to_float,
-    _to_str,
-    _to_int,
-    _to_data_list,
 )
-from floodmodeller_api.validation import _validate_unit
 
 
 class CONDUIT(Unit):
@@ -79,6 +77,46 @@ class CONDUIT(Unit):
         friction_below_axis (float): Friction value for conduit below axis
         friction_above_axis (float): Friction value for conduit above axis
 
+    **Sprung Type (``CONDUIT.subtype == 'SPRUNG'``)**
+
+    Args:
+        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        elevation_invert (float): Height of the conduit above datum (m)
+        width (float): Width of conduit (m)
+        height_springing (float): Height of conduit's springing (m)
+        height_crown (float): Height of conduit's crown (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_walls (float): Friction value for conduit walls
+        friction_on_soffit (float): Friction value for conduit soffit
+
+    **Sprungarch Type (``CONDUIT.subtype == 'SPRUNGARCH'``)**
+
+    Args:
+        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        elevation_invert (float): Height of the conduit above datum (m)
+        width (float): Width of conduit (m)
+        height_springing (float): Height of conduit's springing (m)
+        height_crown (float): Height of conduit's crown (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_walls (float): Friction value for conduit walls
+        friction_on_soffit (float): Friction value for conduit soffit
+
+    **Section Type (``CONDUIT.subtype == 'SECTION'``)**
+
+    Args:
+        None - common args attributes only
 
     Raises:
         NotImplementedError: Raised if class is initialised without existing Conduit block (i.e. if attempting to create new
@@ -91,54 +129,54 @@ class CONDUIT(Unit):
     _unit = "CONDUIT"
 
     def _create_from_blank(
-            self,
-            name="new_unit",
-            spill="",
-            comment="",
-            dist_to_next=0.0,
-            subtype="SECTION",
-            friction_eq="MANNING",
-            invert=0.0,
-            width=0.0,
-            height=0.0,
-            use_bottom_slot="GLOBAL",
-            bottom_slot_dist=0.0,
-            bottom_slot_depth=0.0,
-            use_top_slot="GLOBAL",
-            top_slot_dist=0.0,
-            top_slot_depth=0.0,
-            friction_on_invert=0.0,
-            friction_on_walls=0.0,
-            friction_on_soffit=0.0,
-            diameter=0.0,
-            friction_above_axis=0.0,
+        self,
+        name="new_unit",
+        spill="",
+        comment="",
+        dist_to_next=0.0,
+        subtype="SECTION",
+        friction_eq="MANNING",
+        invert=0.0,
+        width=0.0,
+        height=0.0,
+        use_bottom_slot="GLOBAL",
+        bottom_slot_dist=0.0,
+        bottom_slot_depth=0.0,
+        use_top_slot="GLOBAL",
+        top_slot_dist=0.0,
+        top_slot_depth=0.0,
+        friction_on_invert=0.0,
+        friction_on_walls=0.0,
+        friction_on_soffit=0.0,
+        diameter=0.0,
+        friction_above_axis=0.0,
     ):
         for param, val in {
-            "name" : name,
-            "spill" : spill,
-            "comment" : comment,
-            "dist_to_next" : dist_to_next,
-            "subtype" : subtype,
-            "friction_eq" : friction_eq,
-            "invert" : invert,
-            "width" : width,
-            "height" : height,
-            "use_bottom_slot" : use_bottom_slot,
-            "bottom_slot_dist" : bottom_slot_dist,
-            "bottom_slot_depth" : bottom_slot_depth,
-            "use_top_slot" : use_top_slot,
-            "top_slot_dist" : top_slot_dist,
-            "top_slot_depth" : top_slot_depth,
-            "friction_on_invert" : friction_on_invert,
-            "friction_on_walls" : friction_on_walls,
-            "friction_on_soffit" : friction_on_soffit,
-            "diameter" : diameter,
-            "friction_above_axis" : friction_above_axis,
+            "name": name,
+            "spill": spill,
+            "comment": comment,
+            "dist_to_next": dist_to_next,
+            "subtype": subtype,
+            "friction_eq": friction_eq,
+            "invert": invert,
+            "width": width,
+            "height": height,
+            "use_bottom_slot": use_bottom_slot,
+            "bottom_slot_dist": bottom_slot_dist,
+            "bottom_slot_depth": bottom_slot_depth,
+            "use_top_slot": use_top_slot,
+            "top_slot_dist": top_slot_dist,
+            "top_slot_depth": top_slot_depth,
+            "friction_on_invert": friction_on_invert,
+            "friction_on_walls": friction_on_walls,
+            "friction_on_soffit": friction_on_soffit,
+            "diameter": diameter,
+            "friction_above_axis": friction_above_axis,
         }.items():
-            setattr(self, param, val)
-
-    def subtype(self, new_value):
-        pass
+            if param == "subtype":
+                self._subtype = val
+            else:
+                setattr(self, param, val)
 
     def _read(self, c_block):
         """Function to read a given CONDUIT block and store data as class attributes"""
@@ -150,7 +188,7 @@ class CONDUIT(Unit):
         self.comment = c_block[0].replace("CONDUIT", "").strip()
 
         # Read CIRCULAR type unit
-        if self.subtype == "CIRCULAR":
+        if self._subtype == "CIRCULAR":
             # Read Params
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
@@ -167,7 +205,7 @@ class CONDUIT(Unit):
             self.friction_below_axis = _to_float(friction_params[0])
             self.friction_above_axis = _to_float(friction_params[1])
 
-        elif self.subtype == "RECTANGULAR":
+        elif self._subtype == "RECTANGULAR":
             # Read Params
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
@@ -186,10 +224,61 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
+        elif self._subtype == "SPRUNG":
+            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            self.equation = _to_str(c_block[4], "MANNING")
+            params = split_10_char(f"{c_block[5]:<100}")
+            self.elevation_invert = _to_float(params[0])
+            self.width = _to_float(params[1])
+            self.height_springing = _to_float(params[2])
+            self.height_crown = _to_float(params[3])
+            self.use_bottom_slot = _to_str(params[4], "GLOBAL")
+            self.bottom_slot_dist = _to_float(params[5])
+            self.bottom_slot_depth = _to_float(params[6])
+            self.use_top_slot = _to_str(params[7], "GLOBAL")
+            self.top_slot_dist = _to_float(params[8])
+            self.top_slot_depth = _to_float(params[9])
+            friction_params = split_10_char(f"{c_block[6]:<30}")
+            self.friction_on_invert = _to_float(friction_params[0])
+            self.friction_on_walls = _to_float(friction_params[1])
+            self.friction_on_soffit = _to_float(friction_params[2])
+
+        elif self._subtype == "SPRUNGARCH":
+            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            self.equation = _to_str(c_block[4], "MANNING")
+            params = split_10_char(f"{c_block[5]:<100}")
+            self.elevation_invert = _to_float(params[0])
+            self.width = _to_float(params[1])
+            self.height_springing = _to_float(params[2])
+            self.height_crown = _to_float(params[3])
+            self.use_bottom_slot = _to_str(params[4], "GLOBAL")
+            self.bottom_slot_dist = _to_float(params[5])
+            self.bottom_slot_depth = _to_float(params[6])
+            self.use_top_slot = _to_str(params[7], "GLOBAL")
+            self.top_slot_dist = _to_float(params[8])
+            self.top_slot_depth = _to_float(params[9])
+            friction_params = split_10_char(f"{c_block[6]:<30}")
+            self.friction_on_invert = _to_float(friction_params[0])
+            self.friction_on_walls = _to_float(friction_params[1])
+            self.friction_on_soffit = _to_float(friction_params[2])
+
+        elif self._subtype == "SECTION":
+            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            end_index = 5 + _to_int(c_block[4])
+            x = []
+            y = []
+            friction = []
+            for i in range(5, end_index):
+                row_data = split_10_char(f"{c_block[i]:<30}")
+                x.append(_to_float(row_data[0]))
+                y.append(_to_float(row_data[1]))
+                friction.append(_to_float(row_data[2]))
+            self.coords = pd.DataFrame({"x": x, "y": y, "cw_friction": friction})
+
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
             print(
-                f'This Conduit sub-type: "{self.subtype}" is currently unsupported for reading/editing'
+                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing'
             )
             self._raw_block = c_block
 
@@ -198,9 +287,9 @@ class CONDUIT(Unit):
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = "CONDUIT " + self.comment
         labels = join_n_char_ljust(self._label_len, self.name, self.spill)
-        c_block = [header, self.subtype, labels]
+        c_block = [header, self._subtype, labels]
 
-        if self.subtype == "CIRCULAR":
+        if self._subtype == "CIRCULAR":
             params = join_10_char(
                 self.invert,
                 self.diameter,
@@ -211,9 +300,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = (
-                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
-            )
+            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -224,7 +311,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self.subtype == "RECTANGULAR":
+        elif self._subtype == "RECTANGULAR":
             params = join_10_char(
                 self.invert,
                 self.width,
@@ -245,6 +332,71 @@ class CONDUIT(Unit):
                     friction_params,
                 ]
             )
+            return c_block
+
+        elif self._subtype == "SPRUNG":
+            c_block.extend(
+                [
+                    str(self.dist_to_next),
+                    self.equation,
+                    join_10_char(
+                        self.elevation_invert,
+                        self.width,
+                        self.height_springing,
+                        self.height_crown,
+                        self.use_bottom_slot,
+                        self.bottom_slot_dist,
+                        self.bottom_slot_depth,
+                        self.use_top_slot,
+                        self.top_slot_dist,
+                        self.top_slot_depth,
+                    ),
+                    join_10_char(
+                        self.friction_on_invert,
+                        self.friction_on_walls,
+                        self.friction_on_soffit,
+                    ),
+                ]
+            )
+            return c_block
+
+        elif self._subtype == "SPRUNGARCH":
+            c_block.extend(
+                [
+                    str(self.dist_to_next),
+                    self.equation,
+                    join_10_char(
+                        self.elevation_invert,
+                        self.width,
+                        self.height_springing,
+                        self.height_crown,
+                        self.use_bottom_slot,
+                        self.bottom_slot_dist,
+                        self.bottom_slot_depth,
+                        self.use_top_slot,
+                        self.top_slot_dist,
+                        self.top_slot_depth,
+                    ),
+                    join_10_char(
+                        self.friction_on_invert,
+                        self.friction_on_walls,
+                        self.friction_on_soffit,
+                    ),
+                ]
+            )
+            return c_block
+
+        elif self._subtype == "SECTION":
+            c_block.extend(
+                [
+                    join_10_char(self.dist_to_next),
+                    join_10_char(len(self.coords)),
+                ]
+            )
+            for index, coord in self.coords.iterrows():
+                c_block.extend(
+                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)]
+                )
             return c_block
 
         else:

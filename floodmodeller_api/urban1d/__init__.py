@@ -1,1 +1,11 @@
-from .subsections import *
+from .subsections import (
+    ALL_SUBSECTIONS,
+    CONDUITS,
+    JUNCTIONS,
+    LOSSES,
+    OUTFALLS,
+    RAINGAUGES,
+    SUPPORTED_SUBSECTIONS,
+    UNSUPPORTED_SUBSECTIONS,
+    XSECTIONS,
+)

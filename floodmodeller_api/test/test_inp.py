@@ -1,12 +1,15 @@
-from floodmodeller_api import INP 
-from pathlib import Path
 import os
-import pytest 
+from pathlib import Path
+
+import pytest
+
+from floodmodeller_api import INP
 
 
 @pytest.fixture
 def inp_fp(test_workspace):
-    return  os.path.join(test_workspace, "network.inp")
+    return os.path.join(test_workspace, "network.inp")
+
 
 @pytest.fixture
 def data_before(inp_fp):
@@ -17,6 +20,7 @@ def test_inp_open_does_not_change_data(inp_fp, data_before):
     """INP: Test str representation equal to inp file with no changes"""
     inp = INP(inp_fp)
     assert inp._write() == data_before
+
 
 def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     """INP: Test changing and reverting section name and snow catch factor makes no changes"""
@@ -31,6 +35,7 @@ def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     inp.raingauges["check"].snow_catch_factor = prev_scf
 
     assert inp._write() == data_before
+
 
 def test_all_inp_files_in_folder_have_same_output(test_workspace):
     """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""

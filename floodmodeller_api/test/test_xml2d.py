@@ -1,13 +1,17 @@
-import pytest, sys, os, copy
+import os
 from pathlib import Path
+
+import pytest
 
 from floodmodeller_api import XML2D
 
-@pytest.fixture 
+
+@pytest.fixture
 def xml_fp(test_workspace):
     return os.path.join(test_workspace, "Domain1_Q.xml")
 
-@pytest.fixture 
+
+@pytest.fixture
 def data_before(xml_fp):
     return XML2D(xml_fp)._write()
 
@@ -16,6 +20,7 @@ def test_xml2d_str_representation(xml_fp, data_before):
     """XML2D: Test str representation equal to xml file with no changes"""
     x2d = XML2D(xml_fp)
     assert x2d._write() == data_before
+
 
 def test_xml2d_link_dtm_changes(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
@@ -32,6 +37,7 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
     x2d.domains[domain]["topography"] = prev_dtm
     assert x2d._write() == data_before
 
+
 def test_xml2d_all_files(test_workspace):
     """XML2D: Check all '.xml' files in folder by reading the _write() output into a
     new XML2D instance and checking it stays the same."""
@@ -44,6 +50,7 @@ def test_xml2d_all_files(test_workspace):
         second_output = second_x2d._write()
         assert first_output == second_output
         os.remove("__temp.xml")
+
 
 # New tests being added for the add/remove functionalility
 def test_xml2d_change_revert_elem_topography():
@@ -63,8 +70,9 @@ def test_xml2d_change_revert_elem_topography():
     assert x2d._write() == orig_xml
     assert "my/new/topography" not in x2d._write()
 
+
 def test_xml2d_add_remove_branch_roughness():
-    """XML2D: Check that we can actually add a branch and that 
+    """XML2D: Check that we can actually add a branch and that
     it is being added and passes validation (i.e write)"""
     x2d = XML2D()
     domain = list(x2d.domains)[0]
@@ -75,9 +83,10 @@ def test_xml2d_add_remove_branch_roughness():
     )
     assert x2d._write() != orig_xml
     assert "my/roughness/file.shp" in x2d._write()
-    del x2d.domains[domain]["roughness"] 
+    del x2d.domains[domain]["roughness"]
     assert x2d._write() == orig_xml
     assert "my/roughness/file.shp" not in x2d._write()
+
 
 def test_xml2d_append_remove_branch_roughness():
     """XML2D: Check that we can append an extra branch to preexisting branch
@@ -100,30 +109,32 @@ def test_xml2d_append_remove_branch_roughness():
 
     assert "new/roughness/file.shp" not in x2d._write()
 
+
 # validation/reordering tests
+
 
 def test_xml2d_reorder_elem_computational_area_wrong_position():
     """XML2D: Check that if we add ??? in the wrong position does it reorder"""
     x2d = XML2D()
     domain = list(x2d.domains)[0]
     x2d.domains[domain]["computational_area"] = {
-            "yll": ...,
-            "xll": ...,
-            "dx": ...,
-            "active_area": ...,
-            "ncols": ...,
-            "nrows": ...,
-            "rotation": ...
+        "yll": ...,
+        "xll": ...,
+        "dx": ...,
+        "active_area": ...,
+        "ncols": ...,
+        "nrows": ...,
+        "rotation": ...,
     }
     x2d.domains[domain]["computational_area"]["yll"] = float(1.1)
     x2d.domains[domain]["computational_area"]["xll"] = float(2.6)
     x2d.domains[domain]["computational_area"]["dx"] = float(2)
-    x2d.domains[domain]["computational_area"]["active_area"] = 'path/to/asc/file.asc'
+    x2d.domains[domain]["computational_area"]["active_area"] = "path/to/asc/file.asc"
     x2d.domains[domain]["computational_area"]["ncols"] = int(12)
     x2d.domains[domain]["computational_area"]["nrows"] = int(42)
     x2d.domains[domain]["computational_area"]["rotation"] = float(3.14159)
 
-    x2d.domains[domain]["run_data"]["upwind"] =  "upwind value"
+    x2d.domains[domain]["run_data"]["upwind"] = "upwind value"
     x2d.domains[domain]["run_data"]["wall"] = "Humpty Dumpty"
 
     # TODO: Add check that this should fail validation if in the wrong order
@@ -131,22 +142,15 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
     # with pytest.raises(Exception) as e_info:
     #     x2d._validate()
 
-    # assert "XML Validation Error for" in e_info 
+    # assert "XML Validation Error for" in e_info
 
     assert x2d._write()
+
 
 def test_xml2d_update_value(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
     x2d = XML2D(xml_fp)
     domain = list(x2d.domains)[0]
-    prev_dtm = x2d.domains[domain]['run_data']['scheme'] = 'TVD'
+    x2d.domains[domain]["run_data"]["scheme"] = "TVD"
 
     assert x2d._write()
-
-# # debugging function
-# if __name__== '__main__':
-#     # test_xml2d_reorder_elem_computational_area_wrong_position()
-#     # test_xml2d_force_fail_incorrect_run_data_variable()
-#     # test_xml2d_append_remove_branch_roughness()
-#     # test_xml2d_add_remove_branch_roughness()
-

@@ -1,6 +1,5 @@
 import argparse
 import sys
-from dataclasses import dataclass
 import tkinter as tk
 from tkinter import ttk, filedialog as fd, messagebox
 from pathlib import Path
@@ -9,6 +8,7 @@ import customtkinter as ctk
 import traceback
 import io
 import threading
+from dataclasses import dataclass
 
 
 @dataclass()
@@ -534,7 +534,8 @@ class FMTool:
         # And then construct a dictionary of them that can be passed to the run function as keyword arguments
         input_kwargs = {}
         for input_param in self.parameters:
-            input_kwargs[input_param.name] = getattr(args, input_param.name)
+            value = getattr(args, input_param.name)
+            input_kwargs[input_param.name] = input_param.dtype(value)
 
         print(f"Running {self.name}")
         self.run(**input_kwargs)
