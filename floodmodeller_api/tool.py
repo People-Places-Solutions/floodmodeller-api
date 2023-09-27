@@ -6,6 +6,9 @@ from tkinter import ttk, filedialog as fd, messagebox
 from pathlib import Path
 from PIL import Image, ImageTk
 import customtkinter as ctk
+import traceback
+import io
+import threading
 
 
 @dataclass()
@@ -151,6 +154,7 @@ class Gui:
             scrollbar_button_hover_color="#b8b9bd",
         )
         self.inputs.place(x=3, y=45)
+        self.running = False
         self.add_inputs()
         # Create and place the button
         self.button = ctk.CTkButton(
@@ -164,7 +168,7 @@ class Gui:
             bg_color="#f0f0f0",
             hover_color="#6c757d",
             text_color="#f0f0f0",
-            command=self.run_gui_callback,
+            command=self.button_pressed,
         )
         self.button.place(x=200, y=347)
 
@@ -322,6 +326,18 @@ class Gui:
         # TODO: Add a progress bar if appropriate
         # TODO: Present some useful information: either tool outputs or logs
 
+    def button_pressed(self):
+        self.clear_input_widgets()
+        self.show_running_page()
+        self.running = True
+        # self.run_gui_callback()
+        # self.temp = ctk.CTkButton(
+        #    self.master,
+        #    text="Comeback",
+        #    command=self.show_input_widgets,
+        # )
+        # self.temp.place(x=0,y=0)
+
     def run_gui_callback(self):
         """
         Method to run the gui callback function.
@@ -329,7 +345,6 @@ class Gui:
         This extracts the parameter values from the GUI and passes them to the run function. It is triggered using
         the run button in the GUI.
         """
-
         input_kwargs = {}
         for input_param in self.parameters:
             # Get the parameter value but subsetting the dictionary of GUI entry points (text boxes)
@@ -338,21 +353,56 @@ class Gui:
             # insert the value to the input_kwargs dictionary to pass to the run function
             input_kwargs[input_param.name] = input_param.dtype(input_var)
         # Run the callback function
-        self.clear_input_widgets()
-        temp = ctk.CTkButton(
-            self.master,
-            text="Comeback",
-            command=self.show_input_widgets,
-        )
-        temp.place(x=0,y=0)
-        self.run_function(**input_kwargs) # return?
-        
-    
+        self.run_function(**input_kwargs)  # return?
+
     def clear_input_widgets(self):
         self.desc_label.place_forget()
         self.inputs.place_forget()
         self.button.place_forget()
-    
+
+    def show_running_page(self):
+        self.running_label = ctk.CTkLabel(
+            master=self.master,
+            text="Running...",
+            font=("Tahoma", 20),
+            bg_color="#f0f0f0",
+        )
+        self.running_label.place(x=260, y=10)
+        self.buffer_outputs = ctk.CTkScrollableFrame(
+            self.master,
+            width=587,
+            height=275,
+            fg_color="#fff", # "#f0f0f0",
+            border_width=1,
+            border_color="#000",
+            scrollbar_fg_color="#f0f0f0",
+            scrollbar_button_color="#e1e1e1",
+            scrollbar_button_hover_color="#b8b9bd",
+        )
+        self.buffer_outputs.place(x=5, y=45)
+
+    def finished_running(self):
+        self.return_button = ctk.CTkButton(
+            master=self.master,
+            text="Return",
+            font=("Tahoma", 20, "bold"),
+            width=200,
+            height=40,
+            compound="left",
+            fg_color="#0ad287",
+            bg_color="#f0f0f0",
+            hover_color="#6c757d",
+            text_color="#f0f0f0",
+            command=self.clear_running_page,
+        )
+        self.return_button.place(x=200, y=347)
+
+    def clear_running_page(self):
+        self.running_label.place_forget()
+        self.buffer_outputs.place_forget()
+        self.return_button.place_forget()
+        self.show_input_widgets()
+
     def show_input_widgets(self):
         self.desc_label.place(x=3, y=15)
         self.inputs.place(x=3, y=45)
@@ -509,10 +559,34 @@ class FMTool:
         Method to run the GUI
         """
         self.generate_gui()
-        # self.app.master.after(100,self.testing)
-        # self.app.master.
+        self.app.master.after(100, self.run_tool)
         self.app.master.mainloop()
 
-    def testing(self):
-        print("test!!!!!!!!!!!!")
-        self.app.master.after(100, self.testing)
+    def run_tool(self):
+        if self.app.running:
+            self.app.running = False
+            old_stdout = sys.stdout
+            sys.stdout = scroll = TextRedirector(self.app.buffer_outputs)
+            try:
+                self.app.run_gui_callback()
+            except Exception as error:
+                print(traceback.format_exc())
+            sys.stdout = old_stdout
+            what_was_printed = scroll.get_console_output()
+            print(what_was_printed)
+            self.app.finished_running()
+        self.app.master.after(200, self.run_tool)
+
+
+class TextRedirector(object):
+    def __init__(self, scroll: ctk.CTkScrollableFrame) -> None:
+        self.scroll = scroll
+        self.console_output = ""
+
+    def write(self, str_input):
+        self.console_output += f"{str_input}\n"
+        output = ctk.CTkLabel(master=self.scroll, text=str_input, anchor="e")
+        output.pack()
+
+    def get_console_output(self):
+        return self.console_output
