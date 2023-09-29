@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import geopandas as gpd
 import numpy as np
@@ -99,7 +99,7 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
         dx: float,
         lx_ly: Tuple[float],
         all_areas: List[gpd.GeoDataFrame],
-        rotation: float = None,
+        rotation: Optional[float] = None,
     ) -> None:
         super().__init__(xml, folder, domain_name)
 

@@ -70,7 +70,7 @@ class XML2D(FMFile):
     _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
     # _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
-    def __init__(self, xml_filepath: Union[str, Path] = None):
+    def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
             self._filepath = xml_filepath
             if self._filepath is not None:

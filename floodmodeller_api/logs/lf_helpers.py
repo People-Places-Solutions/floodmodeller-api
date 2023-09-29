@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import datetime as dt
 from abc import ABC, abstractmethod
+from typing import Optional
 
 import pandas as pd
 
@@ -57,7 +58,9 @@ class AllData(Data):
         self._value.append(data)
         self.no_values += 1
 
-    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None) -> pd.DataFrame:
+    def get_value(
+        self, index_key: Optional[str] = None, index_df: Optional[pd.DataFrame] = None
+    ) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 
         # do nothing to empty dataframes
@@ -95,7 +98,7 @@ class AllData(Data):
         return df
 
 
-def data_factory(data_type: str, header: str, subheaders: list = None):
+def data_factory(data_type: str, header: str, subheaders: Optional[list] = None):
     if data_type == "last":
         return LastData(header, subheaders)
     elif data_type == "all":
@@ -157,9 +160,9 @@ class Parser(ABC):
         name: str,
         prefix: str,
         data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
+        exclude: Optional[str] = None,
+        is_index: Optional[bool] = False,
+        before_index: Optional[bool] = False,
     ):
         self._name = name
 
