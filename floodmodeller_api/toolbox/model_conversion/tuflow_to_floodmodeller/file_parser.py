@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Dict, List, Literal, Tuple, Union
 
 import geopandas as gpd
 import pandas as pd
@@ -13,7 +13,7 @@ class TuflowParser:
 
     def __init__(self, file: Union[str, Path]) -> None:
         self._folder = Path(file).parents[0]
-        self._dict = {}
+        self._dict: Dict[str, List[str]] = {}
 
         with open(file) as f:
             for line in f:
@@ -35,7 +35,7 @@ class TuflowParser:
                 else:
                     self._dict[k].append(v)
 
-    def _resolve_path(self, relative_path: Path) -> Path:
+    def _resolve_path(self, relative_path: str) -> Path:
         return Path.joinpath(self._folder, relative_path).resolve()
 
     def check_key(self, name: str) -> bool:
@@ -55,7 +55,8 @@ class TuflowParser:
 
     def get_dataframe(self, name: str, index: int = -1) -> pd.DataFrame:
         filepath = self.get_path(name, index)
-        header = "infer" if filepath.suffix == ".csv" else None
+        infer: Literal["infer"] = "infer"  # for mypy
+        header = infer if filepath.suffix == ".csv" else None
         return pd.read_csv(filepath, comment=self.COMMENT_SYMBOL, header=header)
 
     def get_single_geometry(self, name: str, index: int = -1, geom_index: int = 0) -> BaseGeometry:
