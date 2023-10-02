@@ -80,7 +80,7 @@ class AllData(Data):
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
             if index_duplicate in df.columns:
-                index_df = df[index_duplicate].round("1s")
+                index_df = df[index_duplicate].dt.round("1s")
 
                 df.drop(index_duplicate, axis=1, inplace=True)
                 # self._subheaders.remove(index_duplicate)
