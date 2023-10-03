@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base file class for API file classes """
 
 from pathlib import Path
+from typing import Optional
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
@@ -29,8 +30,8 @@ from .version import __version__
 class FMFile:
     """Base class for all Flood Modeller File types"""
 
-    _filetype = None
-    _suffix = None
+    _filetype: Optional[str] = None
+    _suffix: Optional[str] = None
 
     def __init__(self):
         if self._filepath is not None:

@@ -21,7 +21,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from subprocess import DEVNULL, Popen
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from lxml import etree
 from tqdm import trange
@@ -459,8 +459,8 @@ class XML2D(FMFile):
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
         console_output: Optional[str] = "simple",
-        range_function: Optional[callable] = trange,
-        range_settings: Optional[dict] = {},
+        range_function: Callable = trange,
+        range_settings: dict = {},
     ) -> Optional[Popen]:
         """Simulate the XML2D file directly as a subprocess.
 

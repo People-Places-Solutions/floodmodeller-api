@@ -20,7 +20,7 @@ import subprocess
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from tqdm import trange
@@ -360,8 +360,8 @@ class IEF(FMFile):
         raise_on_failure: Optional[bool] = True,
         precision: Optional[str] = "DEFAULT",
         enginespath: Optional[str] = "",
-        range_function: Optional[callable] = trange,
-        range_settings: Optional[dict] = {},
+        range_function: Callable = trange,
+        range_settings: dict = {},
     ) -> Optional[subprocess.Popen]:
         """Simulate the IEF file directly as a subprocess
 

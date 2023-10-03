@@ -17,15 +17,16 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base unit class for all FM Units """
 
 import pandas as pd
+from typing import Optional
 
 from ..diff import check_item_with_dataframe_equal
 from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
 class Unit:
-    _unit = None
-    _subtype = None
-    _name = None
+    _unit: Optional[str] = None
+    _subtype: Optional[str] = None
+    _name: Optional[str] = None
 
     def __init__(self, unit_block=None, n=12, **kwargs):
         self._label_len = n
@@ -72,7 +73,7 @@ class Unit:
     def __str__(self):
         return "\n".join(self._write())
 
-    def _read(self):
+    def _read(self, block: list[str]):
         raise NotImplementedError
 
     def _write(self):
