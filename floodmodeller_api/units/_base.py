@@ -16,11 +16,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM Units """
 
-import pandas as pd
 from typing import Optional
 
+import pandas as pd
+
 from ..diff import check_item_with_dataframe_equal
-from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
+from .helpers import (_to_float, _to_str, join_10_char, join_n_char_ljust,
+                      split_10_char)
 
 
 class Unit:
