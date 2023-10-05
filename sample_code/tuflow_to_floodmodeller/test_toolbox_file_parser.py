@@ -4,9 +4,7 @@ import geopandas as gpd
 import pytest
 from shapely.geometry import Point
 
-from .file_parser import (
-    TuflowParser,
-)
+from .file_parser import TuflowParser
 
 
 @pytest.fixture
