@@ -4,7 +4,7 @@ import geopandas as gpd
 import pytest
 from shapely.geometry import Point
 
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.file_parser import (
+from .file_parser import (
     TuflowParser,
 )
 

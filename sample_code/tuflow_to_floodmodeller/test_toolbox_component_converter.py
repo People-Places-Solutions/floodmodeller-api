@@ -7,7 +7,7 @@ import pytest
 from shapely.geometry import LineString, Point, Polygon
 
 from floodmodeller_api import DAT, IEF, XML2D
-from floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter import (
+from .component_converter import (
     BoundaryConverterXML2D,
     ComponentConverter,
     ComponentConverterDAT,

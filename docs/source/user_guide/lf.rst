@@ -54,7 +54,7 @@ The ``LF1`` class can be used to read a .lf1 file and return the changing parame
 
     from floodmodeller_api import LF1
 
-    lf1 = LF1("..\\sample_scripts\\sample_data\\ex3.lf1")
+    lf1 = LF1("..\\sample_code\\sample_data\\ex3.lf1")
 
     print(lf1.to_dataframe())
 
@@ -85,7 +85,7 @@ The ``LF1`` class can also be used to directly access the fixed data stored with
 
     from floodmodeller_api import LF1
 
-    lf1 = LF1("..\\sample_scripts\\sample_data\\ex3.lf1")
+    lf1 = LF1("..\\sample_code\\sample_data\\ex3.lf1")
 
     print(lf1.info)
 
@@ -133,7 +133,7 @@ The dataframe attributes of ``LF1`` can be easily plotted.
     from floodmodeller_api import LF1
     import matplotlib.pyplot as plt
 
-    lf1 = LF1("..\\sample_scripts\\sample_data\\ex3.lf1")
+    lf1 = LF1("..\\sample_code\\sample_data\\ex3.lf1")
 
     lf.convergence.plot()
     plt.savefig("convergence.png")
