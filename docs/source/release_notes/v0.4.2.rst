@@ -1,0 +1,27 @@
+**************************************
+What's new in 0.4.2 (October 2023)
+**************************************
+
+This page details the changes for version 0.4.2 of Flood Modeller Python API
+
+New features
+--------------
+- Integration with GitHub codespace
+- Flood Modeller API Toolbox - run and develop custom tools that use the API
+
+Updates
+--------------
+- Lots of improvements behind the scenes
+- Support for rules and varrules
+- Supports latest Flood Modeller 2D XML schema
+- Full support for CONDUIT units
+- Unsupported units now included in IED class
+- COMMENT unit class added
+- WEIR unit class added
+
+Bug fixes
+--------------
+- Fix missing default general parameters in DAT class (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/61>`_)
+- Fix XML2D multi-value key issue (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/52>`_)
+
+

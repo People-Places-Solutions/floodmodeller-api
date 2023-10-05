@@ -77,6 +77,7 @@ For example to add a brand new blank ``HTBDY`` into an ied, you could run:
 You can get all of the units currently unsupported by the api that have been read in from the ied file:
 
 .. code:: python
+
     ied._unsupported
     >>> { 
             <floodmodeller_api Unit Class: FSSR16BDY(name=resin, type=False)>
@@ -85,6 +86,7 @@ You can get all of the units currently unsupported by the api that have been rea
 Or if you want to get both supported & unsupported units:
 
 .. code:: python
+    
     ied._all_units
     >>> { 
             <floodmodeller_api Unit Class: FSSR16BDY(name=resin, type=False)>,

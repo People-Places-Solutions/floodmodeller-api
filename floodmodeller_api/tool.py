@@ -9,7 +9,7 @@ class Parameter:
     """Class to represent an FM Tool parameter.
     There should be one parameter for each argument of the tool_function function
 
-    Attributes:
+    Args:
         name (str): The name of the parameter.
         dtype (type): The expected data type of the parameter.
         description (str): A description of the parameter.
@@ -187,25 +187,26 @@ class FMTool:
 
     We plan to add more extensions in the future.
 
-    Attributes:
+    Args:
         name (str): The name of the tool to display in the GUI or cmd line
         description (str): A description of the tool and what it does.
         parameters (list[Parameter]): the Tool parameters, one per input function
         tool_function (function): The function to be called by the tool
 
-    ```
-    # concatenates strings
-    def concat(str1, str2):
-        return str1 + str2
-    class MyTool(FMTool):
-        name = "Name"
-        description = "Tool description"
-        parameters = [
-            Parameter("str1", str),
-            Parameter("str2", str)
-        ]
-        tool_function = concat
-    ```
+    .. code:: python
+
+        # concatenates strings
+        def concat(str1, str2):
+            return str1 + str2
+        class MyTool(FMTool):
+            name = "Name"
+            description = "Tool description"
+            parameters = [
+                Parameter("str1", str),
+                Parameter("str2", str)
+            ]
+            tool_function = concat
+
     """
 
     parameters = []

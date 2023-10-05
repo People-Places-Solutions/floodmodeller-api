@@ -2,6 +2,10 @@
 
 ## `tuflow_to_floodmodeller`
 ### Overview
+*The tuflow_to_floodmodeller tool is simply an example of how you could use the Flood Modeller API
+to interface between Tuflow and Flood Modeller. It has been built based on some example Tuflow data
+and is not developed to work on any model without changes*
+
 The tool defined in this file converts models from TUFLOW to Flood Modeller.
 It is intended to be a first step in the conversion process.
 
