@@ -24,7 +24,7 @@ def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float
 # Wrap the FMTool class
 class AddSiltation(FMTool):
     """
-    This tool allows you to add a set amount of siltation to raise the minimum bed levels of all 
+    This tool allows you to add a set amount of siltation to raise the minimum bed levels of all
     river sections in a DAT file
 
     Args:
@@ -44,12 +44,12 @@ class AddSiltation(FMTool):
     Or as a gui:
 
     .. code::
-    
+
         fmapi-add_siltation gui
 
     Or you can use it from your code:
 
-    .. code:: python 
+    .. code:: python
 
         from floodmodeller_api.toolbox import AddSiltation
 
@@ -59,6 +59,7 @@ class AddSiltation(FMTool):
             dat_output="path/to/output_dat.dat",
         )
     """
+
     name = "Add Siltation"
     description = (
         "Tool to add a set amount of siltation to raise bed levels of river sections in a DAT file"

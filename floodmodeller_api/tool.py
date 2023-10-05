@@ -206,7 +206,7 @@ class FMTool:
                 Parameter("str2", str)
             ]
             tool_function = concat
-    
+
     """
 
     parameters = []
