@@ -21,6 +21,7 @@ setup(
         "floodmodeller_api.toolbox",
         "floodmodeller_api.toolbox.gui",
         "floodmodeller_api.toolbox.model_build",
+        "floodmodeller_api.toolbox.model_build.structure_log",
         "floodmodeller_api.toolbox.model_conversion",
         "floodmodeller_api.toolbox.model_review",
         "floodmodeller_api.toolbox.results_analysis",
