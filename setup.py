@@ -19,6 +19,7 @@ setup(
         "floodmodeller_api.urban1d",
         "floodmodeller_api.logs",
         "floodmodeller_api.toolbox",
+        "floodmodeller_api.toolbox.gui",
         "floodmodeller_api.toolbox.model_build",
         "floodmodeller_api.toolbox.model_conversion",
         "floodmodeller_api.toolbox.model_review",
@@ -40,11 +41,9 @@ setup(
     include_package_data=True,
     install_requires=[
         "pandas>1,<3",
-        "geopandas>0.10.1,<0.14",
         "lxml==4.*",
         "tqdm==4.*",
         "pytest>4,<8",
         "pytest-mock==3.*",
-        "plotly==5.*",
     ],
 )
