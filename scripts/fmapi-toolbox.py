@@ -18,14 +18,14 @@ parser.add_argument(
 args = parser.parse_args()
 if args.l:
     print("API Toolbox scripts installed:")
-    for file in Path(__file__).parent.glob("*.bat"):
+    for file in Path(__file__).parent.glob("fmapi-*.bat"):
         if file.stem == "fmapi-toolbox":
             continue
         print(f"    -> {file.stem}")
 
 elif args.ld:
     print("API Toolbox scripts installed:")
-    for file in Path(__file__).parent.glob("*.py"):
+    for file in Path(__file__).parent.glob("fmapi-*.py"):
         if file.stem == "fmapi-toolbox":
             continue
         print(f"    -> {file.stem}\n")

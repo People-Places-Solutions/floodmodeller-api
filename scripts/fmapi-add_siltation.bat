@@ -1,2 +1,2 @@
 @echo off
-python "%~dp0\add_siltation.py" %*
+python "%~dp0\fmapi-add_siltation.py" %*

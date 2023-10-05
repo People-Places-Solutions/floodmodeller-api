@@ -1,2 +1,2 @@
 @echo off
-python "%~dp0\structure_log.py" %*
+python "%~dp0\fmapi-structure_log.py" %*
