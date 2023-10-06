@@ -163,24 +163,17 @@ class TuflowModelConverter:
         lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
         all_areas = self._tgc.get_all_geodataframes("read gis code")
 
-        if self._tgc.check_key("read gis location"):
-            return LocLineConverterXML2D(
-                xml=self._xml,
-                folder=self._processed_inputs_folder,
-                domain_name=self.DOMAIN_NAME,
-                dx=dx,
-                lx_ly=lx_ly,
-                all_areas=all_areas,
-                loc_line=self._tgc.get_single_geometry("read gis location"),
-            )
+        if not self._tgc.check_key("read gis location"):
+            raise RuntimeError("Only loc lines supported for computational area conversion")
 
-        return ComputationalAreaConverterXML2D(
+        return LocLineConverterXML2D(
             xml=self._xml,
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
             dx=dx,
             lx_ly=lx_ly,
             all_areas=all_areas,
+            loc_line=self._tgc.get_single_geometry("read gis location"),
         )
 
     def _create_topography_cc_xml2d(self) -> TopographyConverterXML2D:

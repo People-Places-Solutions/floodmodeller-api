@@ -34,7 +34,7 @@ from .helpers import (
 
 class CULVERT(Unit):
     """The CULVERT class supports two culvert sub-types in Flood Modeller: INLET and OUTLET. Each of these sub-types forms
-    a unique instance of the class which is differentiated by the `CULVERT.subtype` attribute. Physical culvert types (e.g. rectangualr, circular etc)
+    a unique instance of the class which is differentiated by the ``CULVERT.subtype`` attribute. Physical culvert types (e.g. rectangualr, circular etc)
     are provided under the CONDUIT class for consistency with Flood Modeller.
 
     **Common attributes**

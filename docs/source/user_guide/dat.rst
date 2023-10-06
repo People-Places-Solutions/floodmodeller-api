@@ -158,9 +158,11 @@ DAT settings and can be edited by assigning them new values.
 Within a unit, there is also support for logical RULES & VARRULES. There is also support for VARIABLES in the DAT file as well.
 
 .. warning:: 
+    
     You can only use RULES, VARRULES & VARIABLES if your unit/file actually has them.
 
 .. code:: python
+
     dat.structures["MINT_SLu"].rules
     >>> {
             {"name": "Rule 1", "logic": "IF (LEVEL(KENT06_036...mer=ON\nEND"},
