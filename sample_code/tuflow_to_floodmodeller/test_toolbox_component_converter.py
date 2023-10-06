@@ -25,9 +25,7 @@ from .component_converter import (
     rename_and_select,
 )
 
-path_to_cc = (
-    "floodmodeller_api.toolbox.model_conversion.tuflow_to_floodmodeller.component_converter"
-)
+path_to_cc = "sample_code.tuflow_to_floodmodeller.component_converter"
 
 
 @pytest.fixture
