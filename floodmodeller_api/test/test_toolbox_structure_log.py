@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.toolbox.model_build.structure_log.structure_log import StructureLogBuilder
+from floodmodeller_api.toolbox.model_build.structure_log import StructureLogBuilder
 from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.structures import ORIFICE
 

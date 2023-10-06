@@ -4,6 +4,7 @@ from pathlib import Path
 
 from floodmodeller_api import DAT
 from floodmodeller_api.tool import FMTool, Parameter
+from floodmodeller_api.units import RIVER
 
 
 # Define the function
@@ -11,6 +12,9 @@ def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float
     dat = DAT(dat_input)  # Initialise DAT class
 
     for name, section in dat.sections.items():  # iterate through all river sections
+        if not isinstance(section, RIVER):
+            # Skip any non river type units (e.g. interpolates)
+            continue
         df = section.data  # get section data
         min_elevation = df["Y"].min()  # get minimum cross section elevation
         raised_bed = min_elevation + siltation  # define new lowest bed level

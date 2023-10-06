@@ -1,5 +1,5 @@
 # Flood Modeller Python API Toolbox
-The API toolbox served as a place to store and maintain tools that integrate with the Flood Modeller 
+The API toolbox serves as a place to store and maintain tools that integrate with the Flood Modeller 
 Python API, and by using a common class to define tools (`FMTool`), allows for a single tool to be used
 in multiple ways e.g. from command line, imported into python code, as a simple gui or any other method
 you can implement.
