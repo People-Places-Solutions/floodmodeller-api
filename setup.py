@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from setuptools import setup
 
 with open("README.md") as f:
