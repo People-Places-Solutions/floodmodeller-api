@@ -28,7 +28,12 @@ setup(
         "floodmodeller_api.test",
         "floodmodeller_api.test.test_data",
     ],
-    scripts=[str(path) for path in Path("scripts").glob("*")],
+    entry_points={
+        "console_scripts": [
+            "fmapi-add_siltation = floodmodeller_api.toolbox.model_build.add_siltation_definition:main",
+            "fmapi-structure_log = floodmodeller_api.toolbox.model_build.structure_log_definition:main",
+        ],
+    },
     project_urls={
         "API Documentation": "https://api.floodmodeller.com/api/",
         "Flood Modeller Homepage": "https://www.floodmodeller.com/",

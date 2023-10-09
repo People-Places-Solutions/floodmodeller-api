@@ -70,3 +70,7 @@ class StructureLog(FMTool):
     @classmethod
     def tool_function(cls, **kwargs):
         return StructureLogBuilder(**kwargs).create()
+
+
+def main():
+    StructureLog().run_from_command_line()
