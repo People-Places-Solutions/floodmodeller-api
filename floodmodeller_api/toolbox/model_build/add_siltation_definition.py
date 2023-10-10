@@ -92,3 +92,7 @@ class AddSiltation(FMTool):
         ),
     ]
     tool_function = raise_section_bed_levels
+
+
+def main():
+    AddSiltation().run_from_command_line()
