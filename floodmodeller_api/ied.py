@@ -39,9 +39,8 @@ class IED(FMFile):
 
     def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = ied_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if ied_filepath is not None:
+                FMFile.__init__(self, ied_filepath)
 
                 self._read()
 

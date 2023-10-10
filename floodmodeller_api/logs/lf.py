@@ -43,8 +43,7 @@ class LF(FMFile):
         steady: bool = False,
     ):
         try:
-            self._filepath = lf_filepath
-            FMFile.__init__(self)
+            FMFile.__init__(self, lf_filepath)
 
             self._data_to_extract = data_to_extract
             self._init_counters()

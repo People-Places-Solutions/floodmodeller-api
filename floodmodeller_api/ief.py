@@ -50,9 +50,8 @@ class IEF(FMFile):
 
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = ief_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if ief_filepath is not None:
+                FMFile.__init__(self, ief_filepath)
 
                 self._read()
 

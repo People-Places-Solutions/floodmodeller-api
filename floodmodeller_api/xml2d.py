@@ -72,9 +72,8 @@ class XML2D(FMFile):
 
     def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = xml_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if xml_filepath is not None:
+                FMFile.__init__(self, xml_filepath)
                 self._read()
                 self._log_path = self._filepath.with_suffix(".lf2")
             else:

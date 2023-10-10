@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import ctypes as ct
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -39,8 +39,7 @@ class ZZN(FMFile):
 
     def __init__(self, zzn_filepath: Optional[Union[str, Path]]):
         try:
-            self._filepath = zzn_filepath
-            FMFile.__init__(self)
+            FMFile.__init__(self, zzn_filepath)
 
             # Get zzn_dll path
             zzn_dll = Path(Path(__file__).resolve().parent, "zzn_read.dll")
@@ -55,7 +54,7 @@ class ZZN(FMFile):
                     "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name."
                 )
 
-            self.meta = {}  # Dict object to hold all metadata
+            self.meta: Dict[str, Any] = {}  # Dict object to hold all metadata
             self.data = {}  # Dict object to hold all data
 
             # PROCESS_ZZL
@@ -172,11 +171,11 @@ class ZZN(FMFile):
 
     def to_dataframe(
         self,
-        result_type: Optional[str] = "all",
-        variable: Optional[str] = "all",
-        include_time: Optional[bool] = False,
-        multilevel_header: Optional[bool] = True,
-    ) -> pd.DataFrame:
+        result_type: str = "all",
+        variable: str = "all",
+        include_time: bool = False,
+        multilevel_header: bool = True,
+    ) -> Union[pd.Series, pd.DataFrame]:
         """Loads zzn results to pandas dataframe object.
 
         Args:
@@ -267,10 +266,10 @@ class ZZN(FMFile):
 
     def export_to_csv(
         self,
-        save_location: Optional[Union[str, Path]] = "default",
-        result_type: Optional[str] = "all",
-        variable: Optional[str] = "all",
-        include_time: Optional[bool] = False,
+        save_location: Union[str, Path] = "default",
+        result_type: str = "all",
+        variable: str = "all",
+        include_time: bool = False,
     ) -> None:
         """Exports zzn results to CSV file.
 
@@ -320,7 +319,7 @@ class ZZN(FMFile):
         df.to_csv(save_location)
         print(f"CSV saved to {save_location}")
 
-    def to_dict_of_dataframes(self, variable: Optional[str] = "all") -> dict:
+    def to_dict_of_dataframes(self, variable: str = "all") -> dict:
         """Loads zzn results to a dictionary of pandas dataframe objects.
 
         Args:

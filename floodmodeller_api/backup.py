@@ -21,6 +21,7 @@ from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
 from shutil import copy
+from typing import Union
 
 import pandas as pd
 
@@ -187,7 +188,7 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: str, **args):
+    def __init__(self, path: Union[str, Path], **args):
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists

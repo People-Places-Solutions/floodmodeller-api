@@ -43,9 +43,8 @@ class DAT(FMFile):
 
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
-            self._filepath = dat_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if dat_filepath is not None:
+                FMFile.__init__(self, dat_filepath)
                 self._read()
 
             else:

@@ -43,9 +43,8 @@ class INP(FMFile):
 
     def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = inp_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if inp_filepath is not None:
+                FMFile.__init__(self, inp_filepath)
                 self._read()
 
             else:
