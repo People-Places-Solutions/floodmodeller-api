@@ -68,7 +68,6 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
-    # _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
     def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
@@ -453,11 +452,11 @@ class XML2D(FMFile):
 
     def simulate(  # noqa: C901
         self,
-        method: Optional[str] = "WAIT",
-        raise_on_failure: Optional[bool] = True,
-        precision: Optional[str] = "DEFAULT",
-        enginespath: Optional[str] = "",
-        console_output: Optional[str] = "simple",
+        method: str = "WAIT",
+        raise_on_failure: bool = True,
+        precision: str = "DEFAULT",
+        enginespath: str = "",
+        console_output: str = "simple",
         range_function: Callable = trange,
         range_settings: dict = {},
     ) -> Optional[Popen]:
@@ -516,7 +515,7 @@ class XML2D(FMFile):
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"
             else:
                 _enginespath = enginespath
-                if not Path(_enginespath).exists:
+                if not Path(_enginespath).exists():
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
                     )
@@ -536,7 +535,7 @@ class XML2D(FMFile):
             else:
                 isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
-            if not Path(isis2d_fp).exists:
+            if not Path(isis2d_fp).exists():
                 raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
 
             console_output = console_output.lower()
