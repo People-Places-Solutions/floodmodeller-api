@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from . import units
 from ._base import FMFile
@@ -46,8 +46,8 @@ class IED(FMFile):
 
             else:
                 # No filepath specified, create new 'blank' IED in memory
-                self._ied_struct = []
-                self._raw_data = []
+                self._ied_struct: List[Dict[str, Any]] = []
+                self._raw_data: List[str] = []
 
             self._get_unit_definitions()
 
@@ -66,7 +66,7 @@ class IED(FMFile):
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
-            existing_units = {
+            existing_units: Dict[str, List[str]] = {
                 "boundaries": [],
                 "structures": [],
                 "sections": [],
