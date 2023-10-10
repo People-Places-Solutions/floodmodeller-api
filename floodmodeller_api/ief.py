@@ -355,10 +355,10 @@ class IEF(FMFile):
 
     def simulate(  # noqa: C901
         self,
-        method: Optional[str] = "WAIT",
-        raise_on_failure: Optional[bool] = True,
-        precision: Optional[str] = "DEFAULT",
-        enginespath: Optional[str] = "",
+        method: str = "WAIT",
+        raise_on_failure: bool = True,
+        precision: str = "DEFAULT",
+        enginespath: str = "",
         range_function: Callable = trange,
         range_settings: dict = {},
     ) -> Optional[subprocess.Popen]:
@@ -404,7 +404,7 @@ class IEF(FMFile):
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
             else:
                 _enginespath = enginespath
-                if not Path(_enginespath).exists:
+                if not Path(_enginespath).exists():
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
                     )
@@ -414,7 +414,7 @@ class IEF(FMFile):
             else:
                 isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
-            if not Path(isis32_fp).exists:
+            if not Path(isis32_fp).exists():
                 raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
 
             run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
