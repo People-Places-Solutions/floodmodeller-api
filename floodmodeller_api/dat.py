@@ -134,7 +134,7 @@ class DAT(FMFile):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
             elif unit._unit == "JUNCTION":
-                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
             elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
                 return None
@@ -178,7 +178,7 @@ class DAT(FMFile):
                 return None
 
             elif unit._unit == "JUNCTION":
-                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
             prev_units = []
             _prev_in_dat = self._prev_in_dat_struct(unit)
@@ -191,7 +191,11 @@ class DAT(FMFile):
             ]
 
             # Case 2: Previous unit has positive distance to next
-            if hasattr(_prev_in_dat, "dist_to_next") and _prev_in_dat.dist_to_next != 0:
+            if (
+                _prev_in_dat
+                and hasattr(_prev_in_dat, "dist_to_next")
+                and _prev_in_dat.dist_to_next != 0
+            ):
                 prev_units.append(_prev_in_dat)
                 _name_match = None  # Name match does apply if upstream section exists
 
@@ -199,11 +203,8 @@ class DAT(FMFile):
             for match in [_name_match, _ds_label_match, _junction_match]:
                 if isinstance(match, list):
                     prev_units.extend(match)
-                else:
+                elif match:
                     prev_units.append(match)
-
-            # Filter out 'None' matches
-            prev_units = [_unit for _unit in prev_units if _unit is not None]
 
             if len(prev_units) == 0:
                 return None
