@@ -26,3 +26,5 @@ jobs:
             --builtins __version__
             --max-complexity 10
           extra-mypy-options: --ignore-missing-imports
+
+# lxml-stubs, pandas-stubs, tqdm-stubs
