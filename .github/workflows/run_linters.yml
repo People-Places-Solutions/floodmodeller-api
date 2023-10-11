@@ -31,30 +31,30 @@ jobs:
       - name: Run isort
         run: |
           isort
+          ${{ env.FILES_TO_CHECK }}
           --profile black
           --line-length ${{ env.LINE_LENGTH }}
-          ${{ env.FILES_TO_CHECK }}
           --check-only
           --diff
 
       - name: Run black
         run: |
           black
+          ${{ env.FILES_TO_CHECK }}
           --check
           --line-length ${{ env.LINE_LENGTH }}
-          ${{ env.FILES_TO_CHECK }}
 
       - name: Run Flake8
         run: |
           flake8
+          ${{ env.FILES_TO_CHECK }}
           --ignore E203,E402,E501,W503
           --per-file-ignores __init__.py:F401
           --builtins __version__
           --max-complexity 10
-          ${{ env.FILES_TO_CHECK }}
 
       - name: Run MyPy
         run: | 
           mypy
-          --ignore-missing-imports
           ${{ env.FILES_TO_CHECK }}
+          --ignore-missing-imports
