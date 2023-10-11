@@ -51,7 +51,7 @@ class TuflowParser:
     def get_value(self, name: str, cast: Type[T], index: int = -1) -> T:
         ...
 
-    def get_value(self, name, cast = str, index = -1):
+    def get_value(self, name, cast=str, index=-1):
         return cast(self._dict[name][index])
 
     @overload
