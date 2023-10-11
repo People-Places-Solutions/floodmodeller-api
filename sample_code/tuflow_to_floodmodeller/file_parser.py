@@ -1,9 +1,11 @@
 from pathlib import Path
-from typing import Dict, List, Literal, Tuple, Union
+from typing import Dict, List, Literal, Tuple, Type, TypeVar, Union, overload
 
 import geopandas as gpd
 import pandas as pd
 from shapely.geometry.base import BaseGeometry
+
+T = TypeVar("T")
 
 
 class TuflowParser:
@@ -41,10 +43,26 @@ class TuflowParser:
     def check_key(self, name: str) -> bool:
         return name in self._dict
 
-    def get_value(self, name: str, cast: type = str, index: int = -1) -> object:
+    @overload
+    def get_value(self, name: str, index: int = -1) -> str:
+        ...
+
+    @overload
+    def get_value(self, name: str, cast: Type[T], index: int = -1) -> T:
+        ...
+
+    def get_value(self, name, cast = str, index = -1):
         return cast(self._dict[name][index])
 
-    def get_tuple(self, name: str, sep: str, cast: type = str, index: int = -1) -> tuple:
+    @overload
+    def get_tuple(self, name: str, sep: str, index: int = -1) -> Tuple[str, ...]:
+        ...
+
+    @overload
+    def get_tuple(self, name: str, sep: str, cast: Type[T], index: int = -1) -> Tuple[T, ...]:
+        ...
+
+    def get_tuple(self, name, sep, cast=str, index=-1):
         return tuple([cast(x.strip()) for x in self._dict[name][index].split(sep)])
 
     def get_path(self, name: str, index: int = -1) -> Path:

@@ -160,7 +160,7 @@ class TuflowModelConverter:
 
     def _create_computational_area_cc_xml2d(self) -> ComputationalAreaConverterXML2D:
         dx = self._tgc.get_value("cell size", float)
-        lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
+        lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", float)
         all_areas = self._tgc.get_all_geodataframes("read gis code")
 
         if not self._tgc.check_key("read gis location"):
