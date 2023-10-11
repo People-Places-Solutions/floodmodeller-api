@@ -6,5 +6,5 @@ pytest==7.3.1
 pytest-cov==4.1.0
 pytest-mock==3.11.1
 lxml-stubs==0.4.0
-pandas-stubs==2.0.3
+pandas-stubs==2.0.3.230814
 tqdm-stubs==0.2.1
