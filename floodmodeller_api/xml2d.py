@@ -571,6 +571,8 @@ class XML2D(FMFile):
                 )  # execute simulation
                 return process
 
+            return None
+
         except Exception as e:
             self._handle_exception(e, when="simulate")
 

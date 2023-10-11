@@ -442,12 +442,12 @@ class IEF(FMFile):
                     print(summary)
 
             elif method.upper() == "RETURN_PROCESS":
-                # Executing simulation...
                 print("Executing simulation...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
                 return process
+
+            return None
 
         except Exception as e:
             self._handle_exception(e, when="simulate")
