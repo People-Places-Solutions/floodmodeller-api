@@ -215,7 +215,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def _next_in_dat_struct(self, current_unit) -> Unit:
+    def _next_in_dat_struct(self, current_unit) -> Optional[Unit]:
         """Finds next unit in the dat file using the index position.
 
         Returns:
@@ -230,7 +230,9 @@ class DAT(FMFile):
                 except IndexError:
                     return None
 
-    def _prev_in_dat_struct(self, current_unit) -> Unit:
+        return None
+
+    def _prev_in_dat_struct(self, current_unit) -> Optional[Unit]:
         """Finds previous unit in the dat file using the index position.
 
         Returns:
@@ -243,6 +245,8 @@ class DAT(FMFile):
                     return None
                 else:
                     return self._all_units[idx - 1]
+
+        return None
 
     def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
         """Pulls out all units with ds label that matches the input unit.

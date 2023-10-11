@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base file class for API file classes """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import NoReturn, Optional, Union
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
@@ -116,7 +116,7 @@ class FMFile:
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)
 
-    def _handle_exception(self, err, when):
+    def _handle_exception(self, err, when) -> NoReturn:
         tb = err.__traceback__
         while tb.tb_next is not None:
             tb = tb.tb_next
