@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import geopandas as gpd
 import pandas as pd
@@ -449,8 +450,8 @@ class TuflowToDat:
     def convert(
         self,
         model_path: str,
-        nwk_paths: list[Path],
-        xs_paths: list[Path],
+        nwk_paths: List[Path],
+        xs_paths: List[Path],
         empty_dat: DAT,
     ):
         self._read_in(model_path, nwk_paths, xs_paths)

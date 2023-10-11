@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 # Helper Functions
 
@@ -108,7 +108,7 @@ def _to_str(itm, default, check_float=False):
         return itm
 
 
-def _to_data_list(block: list[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
+def _to_data_list(block: List[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
     if num_cols is not None:
         num_cols += 1 if date_col is not None else 0
     data_list = []

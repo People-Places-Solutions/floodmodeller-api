@@ -98,7 +98,7 @@ class Gui:
         master: tk.Tk,
         title: str,
         description: str,
-        parameters: list[Parameter],
+        parameters: List[Parameter],
         run_function,
     ):
         self.master = master

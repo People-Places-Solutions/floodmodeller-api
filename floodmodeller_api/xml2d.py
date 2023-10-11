@@ -21,7 +21,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from subprocess import DEVNULL, Popen
-from typing import Callable, Optional, Union
+from typing import Callable, List, Optional, Union
 
 from lxml import etree
 from tqdm import trange
@@ -32,7 +32,7 @@ from .logs import error_2d_dict, lf_factory
 from .xml2d_template import xml2d_template
 
 
-def value_from_string(value: Union[str, list[str]]):
+def value_from_string(value: Union[str, List[str]]):
     try:
         if isinstance(value, list):
             return value

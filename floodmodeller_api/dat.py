@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from . import units  # Import for using as package
 from ._base import FMFile
@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -145,7 +145,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def prev(self, unit: Unit) -> Union[Unit, list[Unit], None]:  # noqa: C901
+    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:  # noqa: C901
         """Finds previous unit in the reach.
 
         Previous unit in reach can be infered by:
@@ -249,7 +249,7 @@ class DAT(FMFile):
 
         return None
 
-    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
+    def _ds_label_match(self, current_unit) -> Union[Unit, List[Unit], None]:
         """Pulls out all units with ds label that matches the input unit.
 
         Returns:
@@ -271,7 +271,7 @@ class DAT(FMFile):
         else:
             return _ds_list
 
-    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]:
+    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, List[Unit], None]:
         """Pulls out all units with same name as the input unit.
 
         Returns:

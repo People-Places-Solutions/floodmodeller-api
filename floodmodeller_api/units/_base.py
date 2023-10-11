@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM Units """
 
-from typing import Optional
+from typing import List, Optional
 
 import pandas as pd
 
@@ -74,7 +74,7 @@ class Unit:
     def __str__(self):
         return "\n".join(self._write())
 
-    def _read(self, block: list[str]):
+    def _read(self, block: List[str]):
         raise NotImplementedError
 
     def _write(self):

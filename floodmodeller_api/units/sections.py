@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from typing import List
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -362,7 +364,7 @@ class REPLICATE(Unit):
 
     _unit = "REPLICATE"
 
-    def _read(self, block: list[str]):
+    def _read(self, block: List[str]):
         """Function to read a given REPLICATE block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
