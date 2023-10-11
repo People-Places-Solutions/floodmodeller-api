@@ -18,7 +18,6 @@ jobs:
           python-root-list: floodmodeller_api sample_code scripts setup.py
           use-pycodestyle: false
           use-pylint: false
-          use-mypy: false
           extra-black-options: --line-length 100
           extra-isort-options: --profile black --line-length 100
           extra-flake8-options: |
@@ -26,3 +25,4 @@ jobs:
             --per-file-ignores __init__.py:F401
             --builtins __version__
             --max-complexity 10
+          extra-mypy-options: --ignore-missing-imports
