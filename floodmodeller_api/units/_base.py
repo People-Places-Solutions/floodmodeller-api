@@ -58,7 +58,7 @@ class Unit:
 
     @subtype.setter
     def subtype(self, new_value):
-        raise ValueError("You cannot changed the subtype of a unit once it has been instantiated")
+        raise ValueError("You cannot change the subtype of a unit once it has been instantiated")
 
     def __repr__(self):
         if self._subtype is None:
