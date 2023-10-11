@@ -115,7 +115,7 @@ class TuflowModelConverter:
         self._logger.info("initialising FM files...")
 
         self._fm_file_wrappers["ief"] = FMFileWrapper(
-            fm_file_class=IEF,
+            fm_file_class=IEF,  # type: ignore[arg-type]
             fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
             cc_dict={
                 "estry": self._create_scheme_cc_ief,
@@ -124,7 +124,7 @@ class TuflowModelConverter:
         self._logger.info("ief done")
 
         self._fm_file_wrappers["dat"] = FMFileWrapper(
-            fm_file_class=DAT,
+            fm_file_class=DAT,  # type: ignore[arg-type]
             fm_filepath=Path.joinpath(self._root, f"{self._name}.dat"),
             cc_dict={
                 "network and gxy": self._create_network_cc_dat,
@@ -139,11 +139,11 @@ class TuflowModelConverter:
 
     @property
     def _ief(self) -> IEF:
-        return self._fm_file_wrappers["ief"].fm_file
+        return self._fm_file_wrappers["ief"].fm_file  # type: ignore[return-value]
 
     @property
     def _dat(self) -> DAT:
-        return self._fm_file_wrappers["dat"].fm_file
+        return self._fm_file_wrappers["dat"].fm_file  # type: ignore[return-value]
 
     def convert_model(self) -> None:
         for fm_file_wrapper in self._fm_file_wrappers.values():
@@ -173,7 +173,7 @@ class TuflowModelConverter:
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
             dx=dx,
-            lx_ly=lx_ly,
+            lx_ly=lx_ly,  # type: ignore[arg-type]
             all_areas=all_areas,
             loc_line=self._tgc.get_single_geometry("read gis location"),
         )

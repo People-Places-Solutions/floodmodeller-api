@@ -17,7 +17,7 @@ for csv_file in csv_folder.glob("*"):
     storm_duration = stem_parts[1]
 
     data = pd.read_csv(csv_file, index_col=0)
-    data.index = pd.TimedeltaIndex(data.index) / pd.Timedelta("1h")
+    data.index = pd.TimedeltaIndex(data.index) / pd.Timedelta("1h")  # type: ignore[operator]
     return_periods = [int(col.split()[0]) for col in data.columns[::8]]
 
     # Iterate through each return period

@@ -314,7 +314,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
     @staticmethod
     def standardise_mapping(file: pd.DataFrame) -> pd.DataFrame:
         new_file = file.iloc[:, :2]
-        new_file.columns = ["material_id", "value"]
+        new_file.columns = ["material_id", "value"]  # type: ignore[assignment]
         return new_file
 
     @staticmethod
@@ -368,7 +368,8 @@ class SchemeConverterXML2D(ComponentConverterXML2D):
             "time_step": self._time_step,
             "scheme": self._scheme,
         }
-        self._xml.processor = {"type": self._processor}
+        if hasattr(self._xml, "processor"):
+            self._xml.processor = {"type": self._processor}
 
 
 class BoundaryConverterXML2D(ComponentConverterXML2D):
