@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Callable, Dict, Type, Union
+from typing import Callable, Dict, Generic, Type, TypeVar, Union
 
 from floodmodeller_api import DAT, IEF, XML2D
 
@@ -17,19 +17,21 @@ from .component_converter import (
 )
 from .file_parser import TuflowParser
 
+T = TypeVar("T", XML2D, IEF, DAT)
 
-class FMFileWrapper:
+
+class FMFileWrapper(Generic[T]):
     def __init__(
         self,
-        fm_file_class: Type[Union[XML2D, IEF, DAT]],
+        fm_file_class: Type[T],
         fm_filepath: Union[str, Path],
         cc_dict: Dict[str, Callable[..., ComponentConverter]],
         **kwargs,
     ) -> None:
-        self._fm_file_class = fm_file_class
+        self._fm_file_class: Type[T] = fm_file_class
         self._fm_filepath = fm_filepath
         self.cc_dict = cc_dict
-        self.fm_file = self._fm_file_class(**kwargs)
+        self.fm_file: T = self._fm_file_class(**kwargs)
         self.fm_file.save(self._fm_filepath)
 
     def rollback(self) -> None:

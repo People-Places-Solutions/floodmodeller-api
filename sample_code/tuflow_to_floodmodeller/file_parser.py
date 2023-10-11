@@ -5,7 +5,7 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry.base import BaseGeometry
 
-T = TypeVar("T")
+T = TypeVar("T", int, float)
 
 
 class TuflowParser:
