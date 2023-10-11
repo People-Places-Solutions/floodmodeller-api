@@ -34,13 +34,10 @@ from .xml2d_template import xml2d_template
 
 def value_from_string(value: Union[str, list[str]]):
     try:
-        val = float(value)
-        if "." not in value:
-            val = int(val)
-        return val
+        if isinstance(value, list):
+            return value
+        return float(value) if "." in value else int(value)
     except ValueError:
-        return value
-    except TypeError:
         return value
 
 
