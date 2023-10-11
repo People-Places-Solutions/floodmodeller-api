@@ -226,7 +226,7 @@ class IEF(FMFile):
         if hasattr(self, "EventData"):
             self._update_eventdata_info()
 
-    def _update_eventdata_info(self):
+    def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.EventData, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(

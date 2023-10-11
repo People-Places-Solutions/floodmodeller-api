@@ -134,7 +134,7 @@ class DAT(FMFile):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
             elif unit._unit == "JUNCTION":
-                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
 
             elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
                 return None
