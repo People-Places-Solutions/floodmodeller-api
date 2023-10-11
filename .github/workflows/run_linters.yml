@@ -2,29 +2,59 @@ name: Lint
 
 on:
   push:
-    branches: [ '*' ]
+    branches: [ "*" ]
   pull_request:
     branches: [ main ]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
+    env:
+      PYTHON_VERSION: "3.11"
+      FILES_TO_CHECK: floodmodeller_api sample_code scripts setup.py
+      LINE_LENGTH: "100"
+
     steps:
       - uses: actions/checkout@v2  
 
-      - name: Python Linter
-        uses: ricardochaves/python-lint@v1.4.0
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
         with:
-          python-root-list: floodmodeller_api sample_code scripts setup.py
-          use-pycodestyle: false
-          use-pylint: false
-          extra-black-options: --line-length 100
-          extra-isort-options: --profile black --line-length 100
-          extra-flake8-options: |
-            --ignore E203,E402,E501,W503
-            --per-file-ignores __init__.py:F401
-            --builtins __version__
-            --max-complexity 10
-          extra-mypy-options: --ignore-missing-imports
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-# lxml-stubs, pandas-stubs, tqdm-stubs
+      - name: Run isort
+        run: |
+          isort
+          --profile black
+          --line-length ${{ env.LINE_LENGTH }}
+          ${{ env.FILES_TO_CHECK }}
+          --check-only
+          --diff
+
+      - name: Run black
+        run: |
+          black
+          --check
+          --line-length ${{ env.LINE_LENGTH }}
+          ${{ env.FILES_TO_CHECK }}
+
+      - name: Run Flake8
+        run: |
+          flake8
+          --ignore E203,E402,E501,W503
+          --per-file-ignores __init__.py:F401
+          --builtins __version__
+          --max-complexity 10
+          ${{ env.FILES_TO_CHECK }}
+
+      - name: Run MyPy
+        run: | 
+          mypy
+          --ignore-missing-imports
+          ${{ env.FILES_TO_CHECK }}
