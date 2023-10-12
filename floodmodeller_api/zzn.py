@@ -209,14 +209,14 @@ class ZZN(FMFile):
                     columns=pd.MultiIndex.from_product(col_names),
                 )
                 df.index.name = "Time (hr)"
-                if not variable == "all":
+                if variable != "all":
                     return df[variable.capitalize()]
 
             else:
                 col_names = [f"{node}_{var}" for var in vars for node in self.meta["labels"]]
                 df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
                 df.index.name = "Time (hr)"
-                if not variable == "all":
+                if variable != "all":
                     use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
                     return df[use_cols]
             return df
@@ -248,7 +248,7 @@ class ZZN(FMFile):
                 df = pd.concat([df, time_df], axis=1)
                 new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
                 df = df[new_col_order]
-                if not variable == "all":
+                if variable != "all":
                     return df[
                         [
                             f"{result_type.capitalize()} {variable.capitalize()}",
@@ -257,7 +257,7 @@ class ZZN(FMFile):
                     ]
                 return df
 
-            if not variable == "all":
+            if variable != "all":
                 return df[f"{result_type.capitalize()} {variable.capitalize()}"]
             return df
 
@@ -294,7 +294,7 @@ class ZZN(FMFile):
                 # for if relative folder path given
                 save_location = Path(Path(self.meta["zzn_name"]).parent, save_location)
 
-        if not save_location.suffix == ".csv":  # Assumed to be pointing to a folder
+        if save_location.suffix != ".csv":  # Assumed to be pointing to a folder
             # Check if the folder exists, if not create it
             if not save_location.exists():
                 Path.mkdir(save_location)
@@ -308,7 +308,7 @@ class ZZN(FMFile):
 
         result_type = result_type.lower()
 
-        if not result_type.lower() in ["all", "max", "min"]:
+        if result_type.lower() not in ["all", "max", "min"]:
             raise Exception(
                 f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
             )
@@ -353,7 +353,7 @@ class ZZN(FMFile):
             input_vars = variable.split(",")
             for i, var in enumerate(input_vars):
                 input_vars[i] = var.strip().capitalize()
-                if not input_vars[i] in vars:
+                if input_vars[i] not in vars:
                     raise Exception(
                         f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars} "
                     )
