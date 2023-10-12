@@ -455,7 +455,7 @@ class XML2D(FMFile):
         enginespath: str = "",
         console_output: str = "simple",
         range_function: Callable = trange,
-        range_settings: dict = {},
+        range_settings: Optional[dict] = None,
     ) -> Optional[Popen]:
         """Simulate the XML2D file directly as a subprocess.
 
@@ -493,7 +493,7 @@ class XML2D(FMFile):
         # - Remove or sort out get results
 
         self.range_function = range_function
-        self.range_settings = range_settings
+        self.range_settings = range_settings if range_settings else {}
 
         try:
             if self._filepath is None:

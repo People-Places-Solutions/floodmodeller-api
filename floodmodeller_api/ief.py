@@ -360,7 +360,7 @@ class IEF(FMFile):
         precision: str = "DEFAULT",
         enginespath: str = "",
         range_function: Callable = trange,
-        range_settings: dict = {},
+        range_settings: Optional[dict] = None,
     ) -> Optional[subprocess.Popen]:
         """Simulate the IEF file directly as a subprocess
 
@@ -387,7 +387,7 @@ class IEF(FMFile):
         """
         try:
             self._range_function = range_function
-            self._range_settings = range_settings
+            self._range_settings = range_settings if range_settings else {}
             if self._filepath is None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
