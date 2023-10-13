@@ -68,7 +68,7 @@ class UrbanUnit:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
         result = True
@@ -168,7 +168,7 @@ class UrbanSubsection:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
         result = True

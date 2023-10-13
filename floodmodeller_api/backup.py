@@ -210,7 +210,7 @@ class File(BackupControl):
         """
         # hash the absolute path becuase the same file name / directroy structure may be mirrored across projects
         # TODO: Use a function that produces a shorter has to make interpretation of the directory easier
-        fp_bytes = self.path.absolute().__str__().encode()
+        fp_bytes = str(self.path.absolute()).encode()
         self.file_id = sha1(fp_bytes).hexdigest()
 
     def _generate_file_name(self) -> None:
@@ -230,7 +230,7 @@ class File(BackupControl):
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
         # TODO: Only log file_id and poath, don't log duplicate lines. Needs to be fast so it doesn't slow FMFile down
-        log_str = f"{self.path.__str__()},{self.file_id},{self.dttm_str}\n"
+        log_str = f"{str(self.path)},{self.file_id},{self.dttm_str}\n"
         with open(self.backup_csv_path, "a") as f:
             f.write(log_str)
 

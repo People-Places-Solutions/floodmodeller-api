@@ -201,7 +201,7 @@ class XML2D(FMFile):
             self._xsdschema.assert_(self._xmltree)
         except AssertionError as err:
             msg = (
-                f"XML Validation Error for {self.__repr__()}:\n"
+                f"XML Validation Error for {repr(self)}:\n"
                 f"     {err.args[0].replace(self._ns, '')}"
             )
             raise ValueError(msg)

@@ -77,4 +77,5 @@ jobs:
           unused-variable,
           unnecessary-pass,
           used-before-assignment,
-          superfluous-parens
+          superfluous-parens,
+          unnecessary-dunder-call

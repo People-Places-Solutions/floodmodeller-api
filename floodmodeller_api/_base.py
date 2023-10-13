@@ -114,7 +114,7 @@ class FMFile:
             self._handle_exception(e, when="compare")
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def _handle_exception(self, err, when) -> NoReturn:
         tb = err.__traceback__
