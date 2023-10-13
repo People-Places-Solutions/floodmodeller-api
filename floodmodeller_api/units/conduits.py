@@ -393,7 +393,7 @@ class CONDUIT(Unit):
                     join_10_char(len(self.coords)),
                 ]
             )
-            for index, coord in self.coords.iterrows():
+            for _, coord in self.coords.iterrows():
                 c_block.extend(
                     [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)]
                 )

@@ -248,7 +248,7 @@ class IEF(FMFile):
                     insert_index = len(self._ief_properties) - idx
                     break
 
-            for i in range(to_add):
+            for _ in range(to_add):
                 # Add in required number of extra EventData after last one.
                 self._ief_properties.insert(insert_index, "EventData")
 

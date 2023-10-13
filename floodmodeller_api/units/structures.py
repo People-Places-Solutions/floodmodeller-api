@@ -755,7 +755,7 @@ class SLUICE(Unit):
         gates = []
 
         if self.control_method == "TIME":
-            for gate in range(ngates):
+            for _ in range(ngates):
                 nrows = int(split_10_char(block[gate_row + 1])[0])
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
@@ -777,7 +777,7 @@ class SLUICE(Unit):
             return gates
 
         if self.control_method == "LOGICAL":
-            for gate in range(ngates):
+            for _ in range(ngates):
                 nrows = int(split_10_char(block[gate_row + 1])[0])
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:

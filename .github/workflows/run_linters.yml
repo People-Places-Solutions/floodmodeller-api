@@ -73,4 +73,5 @@ jobs:
           simplifiable-if-expression,
           unnecessary-comprehension,
           consider-using-in,
-          redefined-builtin
+          redefined-builtin,
+          unused-variable

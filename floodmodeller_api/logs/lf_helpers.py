@@ -338,7 +338,7 @@ class TimeFloatMultParser(Parser):
         super().__init__(*args, **kwargs)
 
         self._nan = []
-        for header in self._subheaders:
+        for _ in self._subheaders:
             self._nan.append(float("nan"))
 
         self.data = data_factory(self.data_type, self._name, self._subheaders)  # overwrite
