@@ -71,4 +71,5 @@ jobs:
           no-else-continue,
           simplifiable-if-statement,
           simplifiable-if-expression,
-          unnecessary-comprehension
+          unnecessary-comprehension,
+          consider-using-in

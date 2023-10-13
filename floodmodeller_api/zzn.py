@@ -221,7 +221,7 @@ class ZZN(FMFile):
                     return df[use_cols]
             return df
 
-        if (result_type == "max") or (result_type == "min"):
+        if result_type in ("max", "min"):
             arr = np.array(self.data[f"{result_type}_results"]).transpose()
             node_index = self.meta["labels"]
             col_names = [

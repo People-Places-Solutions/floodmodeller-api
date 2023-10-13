@@ -118,7 +118,7 @@ def _to_data_list(block: List[str], num_cols: Optional[int] = None, date_col: Op
             row_split = [
                 _to_float(itm)
                 for idx, itm in enumerate(row_split)
-                if idx != date_col and idx != date_col + 1
+                if idx not in (date_col, date_col + 1)
             ]
             row_split.insert(date_col, date_time)
         else:

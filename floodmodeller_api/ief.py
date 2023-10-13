@@ -244,7 +244,7 @@ class IEF(FMFile):
             # Used for if no existing eventdata exists
             insert_index = len(self._ief_properties)
             for idx, itm in enumerate(reversed(self._ief_properties)):
-                if itm == "EventData" or itm == "[ISIS Event Details]":
+                if itm in ("EventData", "[ISIS Event Details]"):
                     insert_index = len(self._ief_properties) - idx
                     break
 
