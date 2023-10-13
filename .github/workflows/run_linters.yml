@@ -70,4 +70,5 @@ jobs:
           no-else-return,
           no-else-continue,
           simplifiable-if-statement,
-          simplifiable-if-expression
+          simplifiable-if-expression,
+          unnecessary-comprehension
