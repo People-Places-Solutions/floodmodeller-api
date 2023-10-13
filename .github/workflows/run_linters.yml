@@ -76,4 +76,5 @@ jobs:
           redefined-builtin,
           unused-variable,
           unnecessary-pass,
-          used-before-assignment
+          used-before-assignment,
+          superfluous-parens

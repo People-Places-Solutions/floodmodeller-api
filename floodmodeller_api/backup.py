@@ -257,7 +257,7 @@ class File(BackupControl):
             self._make_backup()
         # If the file doesn't match the last backup then do a back up
         # TODO: Use FloodModeller API implemented equivalence testing. This is implemented at a higher level than FMFile where this method is called.
-        elif not (filecmp.cmp(self.path, backups[0].path)):
+        elif not filecmp.cmp(self.path, backups[0].path):
             self._make_backup()
         # TODO: Return the file path?
 
