@@ -190,9 +190,7 @@ class XML2D(FMFile):
         if seq is None:
             return parent.getchildren()
 
-        categorical_order = {
-            sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)
-        }
+        categorical_order = {sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)}
         return sorted(
             parent.getchildren(),
             key=lambda x: categorical_sort(x, categorical_order, self._ns),
