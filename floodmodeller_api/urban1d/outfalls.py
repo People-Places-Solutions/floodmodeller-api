@@ -97,6 +97,9 @@ class OUTFALL(UrbanUnit):
         elif self.type == "TIMESERIES":
             params2 = join_n_char_ljust(15, self.tseries, self.gated, self.routeto)
 
+        else:
+            raise RuntimeError(f"{self.type} not supported")
+
         return params1 + params2
 
 

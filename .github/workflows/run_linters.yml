@@ -75,4 +75,5 @@ jobs:
           consider-using-in,
           redefined-builtin,
           unused-variable,
-          unnecessary-pass
+          unnecessary-pass,
+          used-before-assignment
