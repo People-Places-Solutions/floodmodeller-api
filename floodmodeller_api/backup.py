@@ -240,10 +240,9 @@ class File(BackupControl):
         """
         backup_files = list(self.backup_dir.glob(f"{self.file_id}*"))
         backup_files.sort(reverse=True)
-        if len(backup_files) > 0:
-            return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
-        else:
+        if len(backup_files) <= 0:
             return []
+        return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
 
     def backup(self) -> None:
         """

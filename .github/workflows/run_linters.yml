@@ -44,7 +44,7 @@ jobs:
           --check
           --line-length ${{ env.LINE_LENGTH }}
 
-      - name: Run Flake8
+      - name: Run flake8
         run: >
           flake8
           ${{ env.FILES_TO_CHECK }}
@@ -53,8 +53,17 @@ jobs:
           --builtins __version__
           --max-complexity 10
 
-      - name: Run MyPy
+      - name: Run mypy
         run: >
           mypy
           ${{ env.FILES_TO_CHECK }}
           --ignore-missing-imports
+
+      - name: Run pylint
+        run: >
+          pylint
+          ${{ env.FILES_TO_CHECK }}
+          --disable=all
+          --enable=
+            dangerous-default-value,
+            unneeded-not

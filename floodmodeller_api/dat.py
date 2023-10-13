@@ -126,21 +126,19 @@ class DAT(FMFile):
                     return self._next_in_dat_struct(unit)
 
                 # Case 1b - distance to next = 0
-                else:
-                    return self._name_label_match(unit)
+                return self._name_label_match(unit)
 
             # Case 2: next unit is in ds_label
-            elif hasattr(unit, "ds_label"):
+            if hasattr(unit, "ds_label"):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
-            elif unit._unit == "JUNCTION":
+            if unit._unit == "JUNCTION":
                 return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
-            elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
+            if unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
                 return None
 
-            else:
-                return self._name_label_match(unit)
+            return self._name_label_match(unit)
 
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
@@ -177,7 +175,7 @@ class DAT(FMFile):
             ):
                 return None
 
-            elif unit._unit == "JUNCTION":
+            if unit._unit == "JUNCTION":
                 return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
             prev_units = []
@@ -208,10 +206,9 @@ class DAT(FMFile):
 
             if len(prev_units) == 0:
                 return None
-            elif len(prev_units) == 1:
+            if len(prev_units) == 1:
                 return prev_units[0]
-            else:
-                return prev_units
+            return prev_units
 
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
@@ -244,8 +241,7 @@ class DAT(FMFile):
             if unit.name == current_unit.name and unit == current_unit:
                 if idx == 0:
                     return None
-                else:
-                    return self._all_units[idx - 1]
+                return self._all_units[idx - 1]
 
         return None
 
@@ -266,10 +262,9 @@ class DAT(FMFile):
 
         if len(_ds_list) == 0:
             return None
-        elif len(_ds_list) == 1:
+        if len(_ds_list) == 1:
             return _ds_list[0]
-        else:
-            return _ds_list
+        return _ds_list
 
     def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, List[Unit], None]:
         """Pulls out all units with same name as the input unit.
@@ -288,10 +283,9 @@ class DAT(FMFile):
 
         if len(_name_list) == 0:
             return None
-        elif len(_name_list) == 1:
+        if len(_name_list) == 1:
             return _name_list[0]
-        else:
-            return _name_list
+        return _name_list
 
     def _read(self):
         # Read DAT data

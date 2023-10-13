@@ -474,11 +474,10 @@ class IEF(FMFile):
         # Get zzn location
         result_path = self._get_result_filepath(suffix="zzn")
 
-        if result_path.exists():
-            return ZZN(result_path)
-
-        else:
+        if not result_path.exists():
             raise FileNotFoundError("Simulation results file (zzn) not found")
+
+        return ZZN(result_path)
 
     def get_log(self):
         """If log files for the simulation exist, this function returns them as a LF1 class object
@@ -622,24 +621,22 @@ class IEF(FMFile):
         else:
             exy_path = self._filepath.with_suffix(".exy")
 
-        if exy_path.exists():
-            exy_data = pd.read_csv(
-                exy_path, names=["node", "timestep", "severity", "code", "summary"]
-            )
-            exy_data["type"] = exy_data["code"].apply(
-                lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
-            )
-            errors = len(exy_data[exy_data["type"] == "Error"])
-            warnings = len(exy_data[exy_data["type"] == "Warning"])
-            notes = len(exy_data[exy_data["type"] == "Note"])
-
-            details = f"({errors} Error(s), {warnings} Warning(s), {notes} Note(s) ) - Check ZZD for more details."
-
-            if errors > 0:
-                return 1, f"Simulation Failed! - {details}"
-
-            else:
-                return 0, f"Simulation Completed! - {details}"
-
-        else:
+        if not exy_path.exists():
             raise FileNotFoundError("Simulation results error log (.exy) not found")
+
+        exy_data = pd.read_csv(
+            exy_path, names=["node", "timestep", "severity", "code", "summary"]
+        )
+        exy_data["type"] = exy_data["code"].apply(
+            lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
+        )
+        errors = len(exy_data[exy_data["type"] == "Error"])
+        warnings = len(exy_data[exy_data["type"] == "Warning"])
+        notes = len(exy_data[exy_data["type"] == "Note"])
+
+        details = f"({errors} Error(s), {warnings} Warning(s), {notes} Note(s) ) - Check ZZD for more details."
+
+        if errors > 0:
+            return 1, f"Simulation Failed! - {details}"
+
+        return 0, f"Simulation Completed! - {details}"
