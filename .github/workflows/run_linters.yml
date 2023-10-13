@@ -67,4 +67,5 @@ jobs:
           --enable=
           dangerous-default-value,
           unneeded-not,
-          no-else-return
+          no-else-return,
+          no-else-continue

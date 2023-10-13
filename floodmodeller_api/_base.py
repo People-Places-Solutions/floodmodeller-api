@@ -150,16 +150,15 @@ class FMFile:
                         "_log_path",
                     ):
                         continue
-                    else:
-                        _result, diff = check_item_with_dataframe_equal(
-                            item,
-                            other.__dict__[key],
-                            name=f"{self._filetype}->{key}",
-                            diff=diff,
-                            special_types=(Unit, IIC, UrbanUnit, UrbanSubsection),
-                        )
-                        if not _result:
-                            result = False
+                    _result, diff = check_item_with_dataframe_equal(
+                        item,
+                        other.__dict__[key],
+                        name=f"{self._filetype}->{key}",
+                        diff=diff,
+                        special_types=(Unit, IIC, UrbanUnit, UrbanSubsection),
+                    )
+                    if not _result:
+                        result = False
                 except KeyError as ke:
                     result = False
                     diff.append(

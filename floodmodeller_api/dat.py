@@ -605,15 +605,13 @@ class DAT(FMFile):
                     general_block["end"] = idx
                     dat_struct.append(general_block)
                     in_general = False
-                    continue
-                else:
-                    continue
+                continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
-            elif in_comment:
+            if in_comment:
                 comment_n -= 1
                 if comment_n == 0:
                     unit_block["end"] = idx  # add ending index
@@ -623,9 +621,7 @@ class DAT(FMFile):
                     in_comment = False
                     in_block = False
                     comment_n = None
-                    continue
-                else:
-                    continue  # move onto next line as still in comment block
+                continue  # move onto next line as still in comment block
 
             if line == "COMMENT":
                 in_comment = True
