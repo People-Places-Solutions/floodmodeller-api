@@ -68,4 +68,6 @@ jobs:
           dangerous-default-value,
           unneeded-not,
           no-else-return,
-          no-else-continue
+          no-else-continue,
+          simplifiable-if-statement,
+          simplifiable-if-expression

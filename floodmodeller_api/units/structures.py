@@ -609,8 +609,8 @@ class SLUICE(Unit):
         self.gate_height_or_chord = _to_float(params1[4])
         self.weir_length = _to_float(params1[5])
         if self.subtype == "RADIAL":
-            self.use_degrees = True if params1[6] == "DEGREES" else False
-            self.allow_free_flow_under = True if params1[7] == "FREESLUICE" else False
+            self.use_degrees = params1[6] == "DEGREES"
+            self.allow_free_flow_under = params1[7] == "FREESLUICE"
 
         # Second parameter line
         params2 = split_10_char(f"{block[4]:<70}")
@@ -827,7 +827,7 @@ class ORIFICE(Unit):
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
         self._subtype = block[1].split(" ")[0].strip()
-        self.flapped = True if self.subtype == "FLAPPED" else False
+        self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
@@ -1600,7 +1600,7 @@ class OUTFALL(Unit):
     def _read(self, block):
         """Function to read a given OUTFALL block and store data as class attributes"""
         self._subtype = block[1].split(" ")[0].strip()
-        self.flapped = True if self.subtype == "FLAPPED" else False
+        self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)

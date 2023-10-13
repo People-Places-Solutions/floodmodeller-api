@@ -143,7 +143,7 @@ class RIVER(Unit):
                 n = _to_float(row_split[2])  # Mannings
                 try:
                     # panel marker
-                    panel = True if row_split[3][0] == "*" else False
+                    panel = row_split[3][0] == "*"
                 except IndexError:
                     panel = False
 
