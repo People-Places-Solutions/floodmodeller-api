@@ -311,7 +311,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self._subtype == "RECTANGULAR":
+        if self._subtype == "RECTANGULAR":
             params = join_10_char(
                 self.invert,
                 self.width,
@@ -334,7 +334,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self._subtype == "SPRUNG":
+        if self._subtype == "SPRUNG":
             c_block.extend(
                 [
                     str(self.dist_to_next),
@@ -360,7 +360,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self._subtype == "SPRUNGARCH":
+        if self._subtype == "SPRUNGARCH":
             c_block.extend(
                 [
                     str(self.dist_to_next),
@@ -386,7 +386,7 @@ class CONDUIT(Unit):
             )
             return c_block
 
-        elif self._subtype == "SECTION":
+        if self._subtype == "SECTION":
             c_block.extend(
                 [
                     join_10_char(self.dist_to_next),
@@ -399,5 +399,4 @@ class CONDUIT(Unit):
                 )
             return c_block
 
-        else:
-            return self._raw_block
+        return self._raw_block

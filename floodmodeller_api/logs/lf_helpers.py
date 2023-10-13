@@ -101,10 +101,9 @@ class AllData(Data):
 def data_factory(data_type: str, header: str, subheaders: Optional[list] = None):
     if data_type == "last":
         return LastData(header, subheaders)
-    elif data_type == "all":
+    if data_type == "all":
         return AllData(header, subheaders)
-    else:
-        raise ValueError(f'Unexpected data "{data_type}"')
+    raise ValueError(f'Unexpected data "{data_type}"')
 
 
 class State(ABC):
@@ -139,8 +138,7 @@ class SteadyState(State):
 def state_factory(steady: bool, extracted_data: Data) -> State:
     if steady is True:
         return SteadyState(extracted_data)
-    else:
-        return UnsteadyState(extracted_data)
+    return UnsteadyState(extracted_data)
 
 
 class Parser(ABC):

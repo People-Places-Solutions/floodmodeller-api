@@ -244,8 +244,7 @@ class RIVER(Unit):
 
             return riv_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class INTERPOLATE(Unit):

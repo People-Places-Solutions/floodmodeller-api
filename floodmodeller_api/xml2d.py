@@ -190,14 +190,13 @@ class XML2D(FMFile):
         if seq is None:
             return parent.getchildren()
 
-        else:
-            categorical_order = {
-                sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)
-            }
-            return sorted(
-                parent.getchildren(),
-                key=lambda x: categorical_sort(x, categorical_order, self._ns),
-            )
+        categorical_order = {
+            sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)
+        }
+        return sorted(
+            parent.getchildren(),
+            key=lambda x: categorical_sort(x, categorical_order, self._ns),
+        )
 
     def _validate(self):
         try:
@@ -542,11 +541,9 @@ class XML2D(FMFile):
             stdout = DEVNULL if console_output == "simple" else None
 
             if method.upper() == "WAIT":
-                # executing simulation
                 print("Executing simulation ... ")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
-                )  # execute
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
 
                 # progress bar based on log files:
                 if console_output == "simple":
@@ -561,11 +558,9 @@ class XML2D(FMFile):
                 self._interpret_exit_code(exitcode, raise_on_failure)
 
             elif method.upper() == "RETURN_PROCESS":
-                # executing simulation
                 print("Executing simulation ...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
                 return process
 
             return None

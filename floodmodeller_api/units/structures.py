@@ -395,7 +395,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        elif self.subtype == "USBPR1978":
+        if self.subtype == "USBPR1978":
             orifice = "ORIFICE" if self.orifice_flow else ""
             params = join_10_char(
                 self.calibration_coefficient,
@@ -462,7 +462,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        elif self.subtype == "PIERLOSS":
+        if self.subtype == "PIERLOSS":
             orifice = "ORIFICE" if self.orifice_flow else ""
             params = join_10_char(
                 self.calibration_coefficient,
@@ -518,8 +518,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class SLUICE(Unit):
@@ -777,7 +776,7 @@ class SLUICE(Unit):
 
             return gates
 
-        elif self.control_method == "LOGICAL":
+        if self.control_method == "LOGICAL":
             for gate in range(ngates):
                 nrows = int(split_10_char(block[gate_row + 1])[0])
                 data_list = []

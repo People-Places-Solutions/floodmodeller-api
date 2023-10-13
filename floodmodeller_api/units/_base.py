@@ -63,8 +63,7 @@ class Unit:
     def __repr__(self):
         if self._subtype is None:
             return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name})>"
-        else:
-            return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
+        return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
 
     def _create_from_blank(self):
         raise NotImplementedError(

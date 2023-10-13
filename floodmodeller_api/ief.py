@@ -420,11 +420,9 @@ class IEF(FMFile):
             run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
             if method.upper() == "WAIT":
-                # Executing simulation...
                 print("Executing simulation...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
                 # progress bar based on log files
                 self._init_log_file()

@@ -53,10 +53,9 @@ def validate_int(value):
     """
     if value.isdigit():
         return True
-    elif value == "":
+    if value == "":
         return True
-    else:
-        return False
+    return False
 
 
 def validate_float(value):
@@ -74,8 +73,7 @@ def validate_float(value):
     except ValueError:
         if value == "":
             return True
-        else:
-            return False
+        return False
 
 
 class Gui:

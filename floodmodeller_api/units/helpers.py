@@ -104,8 +104,7 @@ def _to_str(itm, default, check_float=False):
             pass
     if itm == "":
         return default
-    else:
-        return itm
+    return itm
 
 
 def _to_data_list(block: List[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):

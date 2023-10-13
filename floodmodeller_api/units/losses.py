@@ -156,14 +156,13 @@ class CULVERT(Unit):
 
             return c_block
 
-        elif self.subtype == "OUTLET":
+        if self.subtype == "OUTLET":
             params = join_10_char(self.loss_coefficient, self.reverse_flow_mode, self.headloss_type)
 
             c_block.append(params)
             return c_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class BLOCKAGE(Unit):
@@ -296,7 +295,6 @@ class BLOCKAGE(Unit):
             "inlet_loss": inlet_loss,
             "outlet_loss": outlet_loss,
             "timeoffset": timeoffset,
-            "timeunit": timeunit,
             "timeunit": timeunit,
             "extendmethod": extendmethod,
             "data": data,

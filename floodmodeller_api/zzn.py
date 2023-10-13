@@ -221,7 +221,7 @@ class ZZN(FMFile):
                     return df[use_cols]
             return df
 
-        elif (result_type == "max") or (result_type == "min"):
+        if (result_type == "max") or (result_type == "min"):
             arr = np.array(self.data[f"{result_type}_results"]).transpose()
             node_index = self.meta["labels"]
             col_names = [
@@ -261,8 +261,7 @@ class ZZN(FMFile):
                 return df[f"{result_type.capitalize()} {variable.capitalize()}"]
             return df
 
-        else:
-            raise ValueError(f'Result type: "{result_type}" not recognised')
+        raise ValueError(f'Result type: "{result_type}" not recognised')
 
     def export_to_csv(
         self,
