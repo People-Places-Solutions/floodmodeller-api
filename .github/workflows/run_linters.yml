@@ -74,4 +74,5 @@ jobs:
           unnecessary-comprehension,
           consider-using-in,
           redefined-builtin,
-          unused-variable
+          unused-variable,
+          unnecessary-pass

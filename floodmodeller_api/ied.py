@@ -274,7 +274,6 @@ class IED(FMFile):
             ied_struct.append(bdy_block)  # add final block
 
         self._ied_struct = ied_struct
-        pass
 
     def diff(self, other: "IED", force_print: bool = False) -> None:
         """Compares the IED class against another IED class to check whether they are

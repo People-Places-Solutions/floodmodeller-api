@@ -277,8 +277,6 @@ class QHBDY(Unit):
         self.data = self.data.set_index("Stage")
         self.data = self.data["Flow"]  # Convert to series
 
-        pass
-
     def _write(self):
         """Function to write a valid QHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QHBDY

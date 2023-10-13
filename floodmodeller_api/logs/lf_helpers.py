@@ -194,7 +194,6 @@ class Parser(ABC):
     @abstractmethod
     def _process_line(self, raw: str) -> object:
         """Converts string to meaningful data"""
-        pass
 
 
 class DateTimeParser(Parser):
