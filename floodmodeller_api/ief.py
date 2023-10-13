@@ -624,9 +624,7 @@ class IEF(FMFile):
         if not exy_path.exists():
             raise FileNotFoundError("Simulation results error log (.exy) not found")
 
-        exy_data = pd.read_csv(
-            exy_path, names=["node", "timestep", "severity", "code", "summary"]
-        )
+        exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
             lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
         )
