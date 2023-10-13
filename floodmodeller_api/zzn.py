@@ -200,9 +200,9 @@ class ZZN(FMFile):
         if result_type == "all":
             arr = np.array(self.data["all_results"])
             time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
-            vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+            vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
             if multilevel_header:
-                col_names = [vars, self.meta["labels"]]
+                col_names = [vars_list, self.meta["labels"]]
                 df = pd.DataFrame(
                     arr.reshape(nz, nx * ny),
                     index=time_index,
@@ -213,7 +213,7 @@ class ZZN(FMFile):
                     return df[variable.capitalize()]
 
             else:
-                col_names = [f"{node}_{var}" for var in vars for node in self.meta["labels"]]
+                col_names = [f"{node}_{var}" for var in vars_list for node in self.meta["labels"]]
                 df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
                 df.index.name = "Time (hr)"
                 if variable != "all":
@@ -337,12 +337,12 @@ class ZZN(FMFile):
         arr = np.array(self.data["all_results"])
         time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
 
-        vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+        vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
 
         col_names = self.meta["labels"]
         temp_arr = np.reshape(arr, (nz, ny, nx))
 
-        for i, var in enumerate(vars):
+        for i, var in enumerate(vars_list):
             output[var] = pd.DataFrame(temp_arr[:, i, :], index=time_index, columns=col_names)
             output[var].index.name = "Time (hr)"
 
@@ -352,12 +352,12 @@ class ZZN(FMFile):
             input_vars = variable.split(",")
             for i, var in enumerate(input_vars):
                 input_vars[i] = var.strip().capitalize()
-                if input_vars[i] not in vars:
+                if input_vars[i] not in vars_list:
                     raise Exception(
-                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars} "
+                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
                     )
 
-            for var in vars:
+            for var in vars_list:
                 if var not in input_vars:
                     del output[var]
         return output

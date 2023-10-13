@@ -72,4 +72,5 @@ jobs:
           simplifiable-if-statement,
           simplifiable-if-expression,
           unnecessary-comprehension,
-          consider-using-in
+          consider-using-in,
+          redefined-builtin
