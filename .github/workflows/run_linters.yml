@@ -65,5 +65,5 @@ jobs:
           ${{ env.FILES_TO_CHECK }}
           --disable=all
           --enable=
-            dangerous-default-value,
-            unneeded-not
+          dangerous-default-value,
+          unneeded-not
