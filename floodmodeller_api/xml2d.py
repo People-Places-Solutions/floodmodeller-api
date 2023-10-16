@@ -204,7 +204,7 @@ class XML2D(FMFile):
                 f"XML Validation Error for {repr(self)}:\n"
                 f"     {err.args[0].replace(self._ns, '')}"
             )
-            raise ValueError(msg)
+            raise ValueError(msg) from err
 
     def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
         # TODO: Handle removing params

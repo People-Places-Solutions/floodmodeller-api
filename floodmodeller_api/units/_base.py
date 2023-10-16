@@ -50,7 +50,7 @@ class Unit:
                 )
             self._name = new_name
         except Exception as e:
-            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}')
+            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}') from e
 
     @property
     def subtype(self):

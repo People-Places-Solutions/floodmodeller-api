@@ -79,4 +79,6 @@ jobs:
           used-before-assignment,
           superfluous-parens,
           unnecessary-dunder-call,
-          no-else-raise
+          no-else-raise,
+          consider-iterating-dictionary,
+          raise-missing-from
