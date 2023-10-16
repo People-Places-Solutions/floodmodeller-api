@@ -250,8 +250,7 @@ class FMTool:
         for parameter in self.parameters:
             if parameter.name in params:
                 raise ValueError("Parameter names must be unique")
-            else:
-                params.append(parameter.name)
+            params.append(parameter.name)
 
     # This is defined as a class method because of the use of **kwargs
     # When using this approach to pass around function arguments, the self object is appended to the **kwargs

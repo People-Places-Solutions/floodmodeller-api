@@ -555,13 +555,12 @@ class DAT(FMFile):
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
                     )
-                else:
-                    # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
-                    unit_type = block["Type"].replace(" ", "_").replace("-", "_")
-                    unit_group[unit_name] = eval(
-                        f"units.{unit_type}({unit_data}, {self._label_len})"  # append to our _all._units as well???
-                    )
-                    self._all_units.append(unit_group[unit_name])
+                # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
+                unit_type = block["Type"].replace(" ", "_").replace("-", "_")
+                unit_group[unit_name] = eval(
+                    f"units.{unit_type}({unit_data}, {self._label_len})"  # append to our _all._units as well???
+                )
+                self._all_units.append(unit_group[unit_name])
 
             elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned

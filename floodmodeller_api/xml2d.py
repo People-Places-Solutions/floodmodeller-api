@@ -670,5 +670,4 @@ class XML2D(FMFile):
 
         if raise_on_failure and exitcode != 100:
             raise Exception(msg)
-        else:
-            print(msg)
+        print(msg)

@@ -169,8 +169,7 @@ class IED(FMFile):
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
                     )
-                else:
-                    unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
+                unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 
                 self._all_units.append(unit_group[unit_name])
 

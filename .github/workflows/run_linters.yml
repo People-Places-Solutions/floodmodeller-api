@@ -78,4 +78,5 @@ jobs:
           unnecessary-pass,
           used-before-assignment,
           superfluous-parens,
-          unnecessary-dunder-call
+          unnecessary-dunder-call,
+          no-else-raise

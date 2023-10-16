@@ -436,8 +436,7 @@ class IEF(FMFile):
 
                 if result == 1 and raise_on_failure:
                     raise RuntimeError(summary)
-                else:
-                    print(summary)
+                print(summary)
 
             elif method.upper() == "RETURN_PROCESS":
                 print("Executing simulation...")
