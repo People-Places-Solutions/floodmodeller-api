@@ -464,7 +464,7 @@ class DAT(FMFile):
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
                 # clause for when unit has been inserted into the dat file
-                if "new_insert" in block.keys():
+                if "new_insert" in block:
                     block["start"] = prev_block_end + 1
                     block["end"] = block["start"] + len(block["new_insert"]) - 1
                     self._raw_data[block["start"] : block["start"]] = block["new_insert"]
