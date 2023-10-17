@@ -374,6 +374,14 @@ parameter_options = {
         "type": "type-match",
         "options": (float, int),
     },
+    "flood_return_period": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "rainfall_period": {
+        "type": "type-match",
+        "options": (float, int),
+    },
     "arf": {
         "type": "type-match",
         "options": (float, int),
@@ -656,5 +664,30 @@ parameter_options = {
     "bed_level_drop": {
         "type": "type-match",
         "options": (float, int),
+    },
+    "s100": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "snow_melt_rate": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "temp": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "antecedent_melt_rate": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "calcrates": {
+        "type": "value-match",
+        "options": ["CALCTRUE", "CALCFALSE"],
+    },
+    
+    "erflag": {
+        "type": "value-match",
+        "options": ["FEHER", "PMFER","OBSER"],
     },
 }

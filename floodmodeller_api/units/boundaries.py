@@ -467,3 +467,135 @@ class REFHBDY(Unit):
         refhbdy_block.extend([line6, line7, line8])
         refhbdy_block.extend(self._raw_extra_lines)
         return refhbdy_block
+
+
+class FEHBDY(Unit):
+    """Class to hold and process FEHBDY boundary type
+
+    Currently FEHBDY Units are read/edit only and cannot be created from scratch, therefore the
+    parameters below are only accessible upon instantiating a FEHBDY object from an existing
+    unit.
+
+    Args:
+        name (str): Unit name.
+        comment (str): Comment included in unit.
+        easting (int): Easting (m)
+        northing (int): Northing (m)
+        storm_area (float): Rainfall storm area (sq km)
+        storm_duration (float): Rainfall storm duration (hrs)
+        snow_melt_rate (float): Snow melt rate (mm/day)
+        s100 (float): 100-year snow depth water equivalent
+        temperature (float): Temperature
+        antecedent_melt_rate (float): Rate of snowmelt (mm/day) during the antecedent period
+        calcrates(str): Override of snowmelt rates provided with calculated values. Override on (CALCRATES = 'CALCTRUE'), Override off (CALCRATES = 'CALCFALSE')
+        erflag(str): Event rainfall flag. 'FEHER' (FEH),'PMFER' (PMF) or 'OBSER' (Observed)
+        flood_return_period (float): Flood return period (yrs)
+        rainfall_return_period (float): Rainfall return period (yrs)
+        arf (float): Areal reduction factor
+        ddf_c (float): DDF Parameter c
+        ddf_d1 (float): DDF Parameter d1
+        ddf_d2 (float): DDF Parameter d2
+        ddf_d3 (float): DDF Parameter d3
+        ddf_e (float): DDF Parameter e
+        ddf_f (float): DDF Parameter f
+        rainfall_depth(flaot): Rainfall depth
+
+    Returns:
+        FEHBDY: Flood Modeller FEHBDY Unit class object
+    """
+    _unit = "FEHBDY"
+    
+    def _read(self, fehbdy_block):
+        """Function to read a given REFHBDY block and store data as class attributes"""
+
+        #line 1 & 2
+        self.comment = fehbdy_block[0].replace("FEHBDY","").strip()
+        self.name = fehbdy_block[1][:self._label_len]
+
+        #line 3 
+        feh_params = split_10_char(fehbdy_block[2])
+        self._z = _to_float(feh_params[0]) # parameter referenced in Flood Modeller help but not exposed in UI
+        self.easting = int(float(feh_params[1]))
+        self.northing = int(float(feh_params[2]))
+
+        #line 4 - 6
+        self._line_4_to_6 = fehbdy_block[3:6]
+        #Line 7
+        feh_params1 = split_10_char(fehbdy_block[6])
+        self.storm_area = _to_float(feh_params1[0])
+        self.storm_duration = _to_float(feh_params1[1]) # TODO:Storm duration (hrs). Should be the nearest odd integer multiple of timestep - add validation
+        self.snow_melt_rate = _to_float(feh_params1[3])
+        self.s100 = _to_float(feh_params1[4])
+        self.temperature = _to_float(feh_params1[5])
+        self.antecedent_melt_rate = _to_float(feh_params1[6])
+        self.calcrates = _to_str(feh_params1[7],"CALCTRUE")
+        
+        #line 8
+        self._line_8 = fehbdy_block[7]
+
+        #Line 9
+        self.erflag = _to_str(fehbdy_block[8],"FEHER")
+        if self.erflag == "FSRER": self.erflag = "FEHER" # update the legacy default paramter of "FSRBDY" to FEHBDY.  FEHBDY is shown in UI when FSRBDY in ied file
+
+        #Line 10
+        if self.erflag == "FEHER":
+            feh_params2 = split_10_char(fehbdy_block[9])
+            self.flood_return_period = _to_float(feh_params2[0], 0.000)
+            self.rainfall_return_period = _to_float(feh_params2[1], 0.000)
+            self.arf = _to_float(feh_params2[2], 0.000) 
+            self.ddf_c = _to_float(feh_params2[3], 0.000)  #ddf model parameter
+            self.ddf_d1 = _to_float(feh_params2[4], 0.000) #ddf model parameter
+            self.ddf_d2 = _to_float(feh_params2[5], 0.000) #ddf model parameter
+            self.ddf_d3 = _to_float(feh_params2[6], 0.000) #ddf model parameter
+            self.ddf_e = _to_float(feh_params2[7], 0.000) #ddf model parameter
+            self.ddf_f = _to_float(feh_params2[8], 0.000) #ddf model parameter
+
+        elif self.erflag == "PMFER":
+            self.arf = _to_float(split_10_char(fehbdy_block[9])[2], 0.000)
+            
+            #TODO: Flood Modeller retains ddf parameters when erflag changed to PMFER.  Update to retain parameters  
+        
+        elif self.erflag == "OBSER":
+            self.rainfall_depth = _to_float(fehbdy_block[9][0], 0.000)
+            #TODO: Flood Modeller retains ddf parameters when erflag changed to PMFER.  Update to retain parameters
+        
+
+        #line 11 to end
+        self._line_11_to_end = fehbdy_block[10:]
+
+    def _write(self):
+        """Function to write a valid FEHBDY block"""
+        _validate_unit(self)  # Function to check the params are valid for FEHBDY
+
+        header = f"FEHBDY {self.comment}"
+        name = self.name[: self._label_len]
+        fehbdy_block = [header, name]
+
+        line3 = join_10_char(self._z,self.easting, self.northing)
+
+        #line7 = join_10_char(self.storm_area, self.storm_duration, 0.000, self.snow_melt_rate, self.s100, self.temperature, self.antecedent_melt_rate, self.calcrates)
+        empty = 0
+        line7 = join_10_char(self.storm_area, self.storm_duration, empty, self.snow_melt_rate, self.s100, self.temperature, self.antecedent_melt_rate, self.calcrates)
+
+        line9 = join_n_char_ljust(10,self.erflag)
+
+        #Line 10
+        if self.erflag == "FEHER": 
+            line10 = join_10_char(self.flood_return_period, self.rainfall_return_period, self.arf, self.ddf_c, self.ddf_d1, self.ddf_d2, self.ddf_d3, self.ddf_e, self.ddf_f)
+
+        elif self.erflag == "PMFER": 
+            line10 = join_10_char(0.000,0.000, self.arf)
+
+        elif self.erflag == "OBSER":
+            line10 = join_10_char(self.rainfall_depth)        
+
+        fehbdy_block.extend([line3])
+        fehbdy_block.extend(self._line_4_to_6)
+        fehbdy_block.extend([line7])
+        fehbdy_block.extend([self._line_8])
+        fehbdy_block.extend([line9])
+        fehbdy_block.extend([line10])
+        fehbdy_block.extend(self._line_11_to_end)
+
+        return fehbdy_block
+

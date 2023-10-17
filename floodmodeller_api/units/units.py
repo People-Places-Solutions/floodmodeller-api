@@ -21,6 +21,7 @@ SUPPORTED_UNIT_TYPES = {
     "HTBDY": {"group": "boundaries", "has_subtype": False},
     "QHBDY": {"group": "boundaries", "has_subtype": False},
     "REFHBDY": {"group": "boundaries", "has_subtype": False},
+    "FEHBDY": {"group": "boundaries", "has_subtype": False},
     "RIVER": {"group": "sections", "has_subtype": True},
     "BRIDGE": {"group": "structures", "has_subtype": True},
     "CONDUIT": {"group": "conduits", "has_subtype": True},
@@ -52,7 +53,6 @@ UNSUPPORTED_UNIT_TYPES = {
     # "COMMENT": {"group": "other", "has_subtype": False},
     # "CONPUMP": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
     # "CONVALVE": {"group": ,"has_subtype": }, ### Konrad Adams to confirm whether these are still used
-    "FEHBDY": {"group": "boundaries", "has_subtype": False},  # RAINFALL RUNOFF METHOD boundary
     "FLOOD RELIEF": {"has_subtype": True},  # found in dat file
     "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True},  # found in FM help
     "FLOODPLAIN": {"has_subtype": True},  # floodplain section culvert

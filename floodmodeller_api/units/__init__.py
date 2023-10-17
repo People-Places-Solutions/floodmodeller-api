@@ -1,4 +1,4 @@
-from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
+from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY, FEHBDY
 from .comment import COMMENT
 from .conduits import CONDUIT
 from .iic import IIC
