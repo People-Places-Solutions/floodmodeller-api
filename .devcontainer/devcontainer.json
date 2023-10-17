@@ -10,7 +10,8 @@
       // Python and jupyter
       "extensions": [
         "ms-python.python",
-        "ms-toolsai.jupyter"
+        "ms-toolsai.jupyter",
+        "ms-python.pylint"
       ],
       // VS Code settings
       "settings": {
@@ -18,7 +19,8 @@
           "*.md": "vscode.markdown.preview.editor",
           "*.ipynb": "jupyter-notebook"
         },
-        "notebook.compactView": false
+        "notebook.compactView": false,
+        "pylint.args": ["--ignore"]
       }
     },
     "codespaces": {
