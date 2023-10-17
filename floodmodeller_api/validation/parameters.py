@@ -685,9 +685,8 @@ parameter_options = {
         "type": "value-match",
         "options": ["CALCTRUE", "CALCFALSE"],
     },
-    
     "erflag": {
         "type": "value-match",
         "options": ["FEHER", "PMFER","OBSER"],
-    },
+    }, 
 }
