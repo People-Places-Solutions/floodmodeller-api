@@ -88,5 +88,5 @@ def test_remove_unit(test_workspace):
     dat_a.remove_unit(unit)
     assert "20" not in dat_a.sections
     assert unit not in dat_a._all_units
-    assert [u for u in dat_a._dat_struct]
+    assert dat_a._dat_struct
     assert (prev_dat_struct_len - len(dat_a._dat_struct)) == 1

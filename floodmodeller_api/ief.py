@@ -20,7 +20,7 @@ import subprocess
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 import pandas as pd
 from tqdm import trange
@@ -50,9 +50,8 @@ class IEF(FMFile):
 
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = ief_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if ief_filepath is not None:
+                FMFile.__init__(self, ief_filepath)
 
                 self._read()
 
@@ -245,11 +244,11 @@ class IEF(FMFile):
             # Used for if no existing eventdata exists
             insert_index = len(self._ief_properties)
             for idx, itm in enumerate(reversed(self._ief_properties)):
-                if itm == "EventData" or itm == "[ISIS Event Details]":
+                if itm in ("EventData", "[ISIS Event Details]"):
                     insert_index = len(self._ief_properties) - idx
                     break
 
-            for i in range(to_add):
+            for _ in range(to_add):
                 # Add in required number of extra EventData after last one.
                 self._ief_properties.insert(insert_index, "EventData")
 
@@ -356,12 +355,12 @@ class IEF(FMFile):
 
     def simulate(  # noqa: C901
         self,
-        method: Optional[str] = "WAIT",
-        raise_on_failure: Optional[bool] = True,
-        precision: Optional[str] = "DEFAULT",
-        enginespath: Optional[str] = "",
-        range_function: Optional[callable] = trange,
-        range_settings: Optional[dict] = {},
+        method: str = "WAIT",
+        raise_on_failure: bool = True,
+        precision: str = "DEFAULT",
+        enginespath: str = "",
+        range_function: Callable = trange,
+        range_settings: Optional[dict] = None,
     ) -> Optional[subprocess.Popen]:
         """Simulate the IEF file directly as a subprocess
 
@@ -388,7 +387,7 @@ class IEF(FMFile):
         """
         try:
             self._range_function = range_function
-            self._range_settings = range_settings
+            self._range_settings = range_settings if range_settings else {}
             if self._filepath is None:
                 raise UserWarning(
                     "IEF must be saved to a specific filepath before simulate() can be called."
@@ -405,7 +404,7 @@ class IEF(FMFile):
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
             else:
                 _enginespath = enginespath
-                if not Path(_enginespath).exists:
+                if not Path(_enginespath).exists():
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
                     )
@@ -415,17 +414,15 @@ class IEF(FMFile):
             else:
                 isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
-            if not Path(isis32_fp).exists:
+            if not Path(isis32_fp).exists():
                 raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
 
             run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
             if method.upper() == "WAIT":
-                # Executing simulation...
                 print("Executing simulation...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
                 # progress bar based on log files
                 self._init_log_file()
@@ -439,16 +436,15 @@ class IEF(FMFile):
 
                 if result == 1 and raise_on_failure:
                     raise RuntimeError(summary)
-                else:
-                    print(summary)
+                print(summary)
 
             elif method.upper() == "RETURN_PROCESS":
-                # Executing simulation...
                 print("Executing simulation...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath)
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
                 return process
+
+            return None
 
         except Exception as e:
             self._handle_exception(e, when="simulate")
@@ -475,11 +471,10 @@ class IEF(FMFile):
         # Get zzn location
         result_path = self._get_result_filepath(suffix="zzn")
 
-        if result_path.exists():
-            return ZZN(result_path)
-
-        else:
+        if not result_path.exists():
             raise FileNotFoundError("Simulation results file (zzn) not found")
+
+        return ZZN(result_path)
 
     def get_log(self):
         """If log files for the simulation exist, this function returns them as a LF1 class object
@@ -623,24 +618,20 @@ class IEF(FMFile):
         else:
             exy_path = self._filepath.with_suffix(".exy")
 
-        if exy_path.exists():
-            exy_data = pd.read_csv(
-                exy_path, names=["node", "timestep", "severity", "code", "summary"]
-            )
-            exy_data["type"] = exy_data["code"].apply(
-                lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
-            )
-            errors = len(exy_data[exy_data["type"] == "Error"])
-            warnings = len(exy_data[exy_data["type"] == "Warning"])
-            notes = len(exy_data[exy_data["type"] == "Note"])
-
-            details = f"({errors} Error(s), {warnings} Warning(s), {notes} Note(s) ) - Check ZZD for more details."
-
-            if errors > 0:
-                return 1, f"Simulation Failed! - {details}"
-
-            else:
-                return 0, f"Simulation Completed! - {details}"
-
-        else:
+        if not exy_path.exists():
             raise FileNotFoundError("Simulation results error log (.exy) not found")
+
+        exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
+        exy_data["type"] = exy_data["code"].apply(
+            lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
+        )
+        errors = len(exy_data[exy_data["type"] == "Error"])
+        warnings = len(exy_data[exy_data["type"] == "Warning"])
+        notes = len(exy_data[exy_data["type"] == "Note"])
+
+        details = f"({errors} Error(s), {warnings} Warning(s), {notes} Note(s) ) - Check ZZD for more details."
+
+        if errors > 0:
+            return 1, f"Simulation Failed! - {details}"
+
+        return 0, f"Simulation Completed! - {details}"

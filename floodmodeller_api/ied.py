@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from . import units
 from ._base import FMFile
@@ -39,16 +39,15 @@ class IED(FMFile):
 
     def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = ied_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if ied_filepath is not None:
+                FMFile.__init__(self, ied_filepath)
 
                 self._read()
 
             else:
                 # No filepath specified, create new 'blank' IED in memory
-                self._ied_struct = []
-                self._raw_data = []
+                self._ied_struct: List[Dict[str, Any]] = []
+                self._raw_data: List[str] = []
 
             self._get_unit_definitions()
 
@@ -67,7 +66,7 @@ class IED(FMFile):
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
-            existing_units = {
+            existing_units: Dict[str, List[str]] = {
                 "boundaries": [],
                 "structures": [],
                 "sections": [],
@@ -170,8 +169,7 @@ class IED(FMFile):
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
                     )
-                else:
-                    unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
+                unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 
                 self._all_units.append(unit_group[unit_name])
 
@@ -210,7 +208,7 @@ class IED(FMFile):
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
-            elif in_comment:
+            if in_comment:
                 comment_n -= 1
                 if comment_n == 0:
                     bdy_block["end"] = idx  # add ending index
@@ -220,9 +218,7 @@ class IED(FMFile):
                     in_comment = False
                     in_block = False
                     comment_n = None
-                    continue
-                else:
-                    continue  # move onto next line as still in comment block
+                continue  # move onto next line as still in comment block
 
             if line == "COMMENT":
                 in_comment = True
@@ -277,7 +273,6 @@ class IED(FMFile):
             ied_struct.append(bdy_block)  # add final block
 
         self._ied_struct = ied_struct
-        pass
 
     def diff(self, other: "IED", force_print: bool = False) -> None:
         """Compares the IED class against another IED class to check whether they are

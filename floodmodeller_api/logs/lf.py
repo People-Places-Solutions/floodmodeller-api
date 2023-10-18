@@ -43,8 +43,7 @@ class LF(FMFile):
         steady: bool = False,
     ):
         try:
-            self._filepath = lf_filepath
-            FMFile.__init__(self)
+            FMFile.__init__(self, lf_filepath)
 
             self._data_to_extract = data_to_extract
             self._init_counters()
@@ -307,8 +306,7 @@ class LF2(LF):
 def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
     if suffix == "lf1":
         return LF1(filepath, steady)
-    elif suffix == "lf2":
+    if suffix == "lf2":
         return LF2(filepath)
-    else:
-        flow_type = "steady" if steady else "unsteady"
-        raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
+    flow_type = "steady" if steady else "unsteady"
+    raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")

@@ -395,7 +395,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        elif self.subtype == "USBPR1978":
+        if self.subtype == "USBPR1978":
             orifice = "ORIFICE" if self.orifice_flow else ""
             params = join_10_char(
                 self.calibration_coefficient,
@@ -462,7 +462,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        elif self.subtype == "PIERLOSS":
+        if self.subtype == "PIERLOSS":
             orifice = "ORIFICE" if self.orifice_flow else ""
             params = join_10_char(
                 self.calibration_coefficient,
@@ -518,8 +518,7 @@ class BRIDGE(Unit):
 
             return br_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class SLUICE(Unit):
@@ -610,8 +609,8 @@ class SLUICE(Unit):
         self.gate_height_or_chord = _to_float(params1[4])
         self.weir_length = _to_float(params1[5])
         if self.subtype == "RADIAL":
-            self.use_degrees = True if params1[6] == "DEGREES" else False
-            self.allow_free_flow_under = True if params1[7] == "FREESLUICE" else False
+            self.use_degrees = params1[6] == "DEGREES"
+            self.allow_free_flow_under = params1[7] == "FREESLUICE"
 
         # Second parameter line
         params2 = split_10_char(f"{block[4]:<70}")
@@ -756,7 +755,7 @@ class SLUICE(Unit):
         gates = []
 
         if self.control_method == "TIME":
-            for gate in range(ngates):
+            for _ in range(ngates):
                 nrows = int(split_10_char(block[gate_row + 1])[0])
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
@@ -777,8 +776,8 @@ class SLUICE(Unit):
 
             return gates
 
-        elif self.control_method == "LOGICAL":
-            for gate in range(ngates):
+        if self.control_method == "LOGICAL":
+            for _ in range(ngates):
                 nrows = int(split_10_char(block[gate_row + 1])[0])
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
@@ -828,7 +827,7 @@ class ORIFICE(Unit):
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
         self._subtype = block[1].split(" ")[0].strip()
-        self.flapped = True if self.subtype == "FLAPPED" else False
+        self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
@@ -1601,7 +1600,7 @@ class OUTFALL(Unit):
     def _read(self, block):
         """Function to read a given OUTFALL block and store data as class attributes"""
         self._subtype = block[1].split(" ")[0].strip()
-        self.flapped = True if self.subtype == "FLAPPED" else False
+        self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)

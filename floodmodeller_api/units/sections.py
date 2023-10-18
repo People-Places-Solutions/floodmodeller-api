@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from typing import List
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -141,7 +143,7 @@ class RIVER(Unit):
                 n = _to_float(row_split[2])  # Mannings
                 try:
                     # panel marker
-                    panel = True if row_split[3][0] == "*" else False
+                    panel = row_split[3][0] == "*"
                 except IndexError:
                     panel = False
 
@@ -242,8 +244,7 @@ class RIVER(Unit):
 
             return riv_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class INTERPOLATE(Unit):
@@ -362,7 +363,7 @@ class REPLICATE(Unit):
 
     _unit = "REPLICATE"
 
-    def _read(self, block: list[str]):
+    def _read(self, block: List[str]):
         """Function to read a given REPLICATE block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels

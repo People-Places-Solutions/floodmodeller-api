@@ -49,7 +49,7 @@ class OUTFALL(UrbanUnit):
         self.elevation = _to_float(unit_data[1], 0.0)
         self.type = str(unit_data[2])
 
-        if self.type == "FREE" or self.type == "NORMAL":
+        if self.type in ("FREE", "NORMAL"):
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 5:
                 unit_data.append("")
@@ -57,7 +57,7 @@ class OUTFALL(UrbanUnit):
             self.gated = _to_str(unit_data[3], "NO")
             self.routeto = _to_str(unit_data[4], "")
 
-        elif self.type == "FIXED" or self.type == "NORMAL" or self.type == "TIMESERIES":
+        elif self.type in ("FIXED", "NORMAL", "TIMESERIES"):
             # Extend length of unit_data to account for missing optional arguments.
             while len(unit_data) < 6:
                 unit_data.append("")
@@ -85,7 +85,7 @@ class OUTFALL(UrbanUnit):
             15, self.elevation, self.type
         )
 
-        if self.type == "FREE" or self.type == "NORMAL":
+        if self.type in ("FREE", "NORMAL"):
             params2 = join_n_char_ljust(15, "", self.gated, self.routeto)
 
         elif self.type == "FIXED":
@@ -96,6 +96,9 @@ class OUTFALL(UrbanUnit):
 
         elif self.type == "TIMESERIES":
             params2 = join_n_char_ljust(15, self.tseries, self.gated, self.routeto)
+
+        else:
+            raise RuntimeError(f"{self.type} not supported")
 
         return params1 + params2
 

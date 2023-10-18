@@ -2,6 +2,7 @@ import argparse
 import sys
 import tkinter as tk
 from dataclasses import dataclass
+from typing import List, Optional
 
 
 @dataclass()
@@ -25,12 +26,14 @@ class Parameter:
 
     name: str
     dtype: type
-    description: str = None
-    help_text: str = None
+    description: Optional[str] = None
+    help_text: Optional[str] = None
     required: bool = True
 
     def __eq__(self, other: object) -> bool:
-        self.name == other.name
+        if not isinstance(other, Parameter):
+            return NotImplemented
+        return self.name == other.name
 
     def __hash__(self):
         return hash(self.name)
@@ -50,10 +53,9 @@ def validate_int(value):
     """
     if value.isdigit():
         return True
-    elif value == "":
+    if value == "":
         return True
-    else:
-        return False
+    return False
 
 
 def validate_float(value):
@@ -71,8 +73,7 @@ def validate_float(value):
     except ValueError:
         if value == "":
             return True
-        else:
-            return False
+        return False
 
 
 class Gui:
@@ -95,7 +96,7 @@ class Gui:
         master: tk.Tk,
         title: str,
         description: str,
-        parameters: list[Parameter],
+        parameters: List[Parameter],
         run_function,
     ):
         self.master = master
@@ -209,7 +210,7 @@ class FMTool:
 
     """
 
-    parameters = []
+    parameters: List[Parameter] = []
 
     @property
     def name(self):
@@ -249,10 +250,8 @@ class FMTool:
         for parameter in self.parameters:
             if parameter.name in params:
                 raise ValueError("Parameter names must be unique")
-            else:
-                params.append(parameter.name)
+            params.append(parameter.name)
 
-    # TODO: Explain why using a class method
     # This is defined as a class method because of the use of **kwargs
     # When using this approach to pass around function arguments, the self object is appended to the **kwargs
     # passed into the function and this results in the wrong number of arguments being passed to the tool_function function

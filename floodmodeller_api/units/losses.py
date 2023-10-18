@@ -156,14 +156,13 @@ class CULVERT(Unit):
 
             return c_block
 
-        elif self.subtype == "OUTLET":
+        if self.subtype == "OUTLET":
             params = join_10_char(self.loss_coefficient, self.reverse_flow_mode, self.headloss_type)
 
             c_block.append(params)
             return c_block
 
-        else:
-            return self._raw_block
+        return self._raw_block
 
 
 class BLOCKAGE(Unit):
@@ -241,7 +240,7 @@ class BLOCKAGE(Unit):
         # Custom validation for blockage percentage
         if self.data.max() > 1 or self.data.min() < 0:
             raise ValueError(
-                f"Parameter error with {self.__repr__()} - blockage percentage must be between 0 and 1"
+                f"Parameter error with {repr(self)} - blockage percentage must be between 0 and 1"
             )
 
         header = f"BLOCKAGE #revision#{self._revision} {self.comment}"
@@ -296,7 +295,6 @@ class BLOCKAGE(Unit):
             "inlet_loss": inlet_loss,
             "outlet_loss": outlet_loss,
             "timeoffset": timeoffset,
-            "timeunit": timeunit,
             "timeunit": timeunit,
             "extendmethod": extendmethod,
             "data": data,

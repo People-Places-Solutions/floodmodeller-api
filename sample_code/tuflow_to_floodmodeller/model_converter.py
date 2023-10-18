@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Callable, Dict, Type, Union
+from typing import Callable, Dict, Generic, Type, TypeVar, Union
 
 from floodmodeller_api import DAT, IEF, XML2D
 
@@ -17,19 +17,21 @@ from .component_converter import (
 )
 from .file_parser import TuflowParser
 
+T = TypeVar("T", XML2D, IEF, DAT)
 
-class FMFileWrapper:
+
+class FMFileWrapper(Generic[T]):
     def __init__(
         self,
-        fm_file_class: Type[Union[XML2D, IEF, DAT]],
+        fm_file_class: Type[T],
         fm_filepath: Union[str, Path],
         cc_dict: Dict[str, Callable[..., ComponentConverter]],
         **kwargs,
     ) -> None:
-        self._fm_file_class = fm_file_class
+        self._fm_file_class: Type[T] = fm_file_class
         self._fm_filepath = fm_filepath
         self.cc_dict = cc_dict
-        self.fm_file = self._fm_file_class(**kwargs)
+        self.fm_file: T = self._fm_file_class(**kwargs)
         self.fm_file.save(self._fm_filepath)
 
     def rollback(self) -> None:
@@ -113,7 +115,7 @@ class TuflowModelConverter:
         self._logger.info("initialising FM files...")
 
         self._fm_file_wrappers["ief"] = FMFileWrapper(
-            fm_file_class=IEF,
+            fm_file_class=IEF,  # type: ignore[arg-type]
             fm_filepath=Path.joinpath(self._root, f"{self._name}.ief"),
             cc_dict={
                 "estry": self._create_scheme_cc_ief,
@@ -122,7 +124,7 @@ class TuflowModelConverter:
         self._logger.info("ief done")
 
         self._fm_file_wrappers["dat"] = FMFileWrapper(
-            fm_file_class=DAT,
+            fm_file_class=DAT,  # type: ignore[arg-type]
             fm_filepath=Path.joinpath(self._root, f"{self._name}.dat"),
             cc_dict={
                 "network and gxy": self._create_network_cc_dat,
@@ -137,11 +139,11 @@ class TuflowModelConverter:
 
     @property
     def _ief(self) -> IEF:
-        return self._fm_file_wrappers["ief"].fm_file
+        return self._fm_file_wrappers["ief"].fm_file  # type: ignore[return-value]
 
     @property
     def _dat(self) -> DAT:
-        return self._fm_file_wrappers["dat"].fm_file
+        return self._fm_file_wrappers["dat"].fm_file  # type: ignore[return-value]
 
     def convert_model(self) -> None:
         for fm_file_wrapper in self._fm_file_wrappers.values():
@@ -160,7 +162,7 @@ class TuflowModelConverter:
 
     def _create_computational_area_cc_xml2d(self) -> ComputationalAreaConverterXML2D:
         dx = self._tgc.get_value("cell size", float)
-        lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", int)
+        lx_ly = self._tgc.get_tuple("grid size (x,y)", ",", float)
         all_areas = self._tgc.get_all_geodataframes("read gis code")
 
         if not self._tgc.check_key("read gis location"):
@@ -171,7 +173,7 @@ class TuflowModelConverter:
             folder=self._processed_inputs_folder,
             domain_name=self.DOMAIN_NAME,
             dx=dx,
-            lx_ly=lx_ly,
+            lx_ly=lx_ly,  # type: ignore[arg-type]
             all_areas=all_areas,
             loc_line=self._tgc.get_single_geometry("read gis location"),
         )
