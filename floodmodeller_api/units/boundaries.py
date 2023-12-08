@@ -74,7 +74,6 @@ class QTBDY(Unit):
             "extendmethod": extendmethod,
             "interpmethod": interpmethod,
             "timeoffset": timeoffset,
-            "timeunit": timeunit,
             "flowmultiplier": flowmultiplier,
             "minflow": minflow,
             "allow_override": allow_override,
@@ -279,8 +278,6 @@ class QHBDY(Unit):
         self.data = self.data.set_index("Stage")
         self.data = self.data["Flow"]  # Convert to series
 
-        pass
-
     def _write(self):
         """Function to write a valid QHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QHBDY
@@ -382,7 +379,7 @@ class REFHBDY(Unit):
         self.urbext = _to_float(refhbdy_params2[2])
         self.season = _to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
         self.calc_source = _to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
-        self.use_urban_subdivisions = False if refhbdy_params2[5] == "" else True
+        self.use_urban_subdivisions = not refhbdy_params2[5] == ""
         if self.use_urban_subdivisions:
             # Just keeping this raw for now as unlikely to be used.
             self._urban_refh_data = refhbdy_block[5:8]

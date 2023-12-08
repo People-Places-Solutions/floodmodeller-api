@@ -1,6 +1,6 @@
 import math
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import numpy as np
@@ -17,9 +17,9 @@ def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
 
 
-def rename_and_select(df: pd.DataFrame, mapper: dict) -> pd.DataFrame:
+def rename_and_select(df: pd.DataFrame, mapper: Dict[str, str]) -> pd.DataFrame:
     mapper_subset = {k: v for k, v in mapper.items() if k in df.columns}
-    return df.rename(columns=mapper_subset)[mapper_subset.values()]
+    return df.rename(columns=mapper_subset)[list(mapper_subset.values())]
 
 
 def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
@@ -97,9 +97,9 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
         xll: float,
         yll: float,
         dx: float,
-        lx_ly: Tuple[float],
+        lx_ly: Tuple[float, float],
         all_areas: List[gpd.GeoDataFrame],
-        rotation: float = None,
+        rotation: Optional[float] = None,
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
@@ -158,7 +158,7 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
         folder: Path,
         domain_name: str,
         dx: float,
-        lx_ly: tuple,
+        lx_ly: Tuple[float, float],
         all_areas: List[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
@@ -314,7 +314,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
     @staticmethod
     def standardise_mapping(file: pd.DataFrame) -> pd.DataFrame:
         new_file = file.iloc[:, :2]
-        new_file.columns = ["material_id", "value"]
+        new_file.columns = ["material_id", "value"]  # type: ignore[assignment]
         return new_file
 
     @staticmethod
@@ -368,7 +368,8 @@ class SchemeConverterXML2D(ComponentConverterXML2D):
             "time_step": self._time_step,
             "scheme": self._scheme,
         }
-        self._xml.processor = {"type": self._processor}
+        if hasattr(self._xml, "processor"):
+            self._xml.processor = {"type": self._processor}
 
 
 class BoundaryConverterXML2D(ComponentConverterXML2D):

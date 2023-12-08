@@ -16,12 +16,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import datetime as dt
 from abc import ABC, abstractmethod
+from typing import List, Optional, Union
 
 import pandas as pd
 
 
 class Data(ABC):
-    def __init__(self, header: str, subheaders: list):
+    def __init__(self, header: str, subheaders: Optional[list]):
         self.header = header
         self.no_values = 0
         self._subheaders = subheaders
@@ -36,7 +37,7 @@ class Data(ABC):
 
 
 class LastData(Data):
-    def __init__(self, header: str, subheaders: list):
+    def __init__(self, header: str, subheaders: Optional[list]):
         super().__init__(header, subheaders)
         self._value = None  # single value
 
@@ -49,15 +50,17 @@ class LastData(Data):
 
 
 class AllData(Data):
-    def __init__(self, header: str, subheaders: list):
+    def __init__(self, header: str, subheaders: Optional[list]):
         super().__init__(header, subheaders)
-        self._value = []  # list
+        self._value: List[object] = []  # list
 
     def update(self, data):
         self._value.append(data)
         self.no_values += 1
 
-    def get_value(self, index_key: str = None, index_df: pd.DataFrame = None) -> pd.DataFrame:
+    def get_value(
+        self, index_key: Optional[str] = None, index_df: Optional[pd.Series] = None
+    ) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 
         # do nothing to empty dataframes
@@ -68,7 +71,7 @@ class AllData(Data):
         if self._subheaders is None:
             df.rename(columns={df.columns[0]: self.header}, inplace=True)
 
-        else:
+        elif index_key is not None:
             # subheaders
             df = df.set_axis(self._subheaders, axis=1)
 
@@ -77,7 +80,7 @@ class AllData(Data):
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
             if index_duplicate in df.columns:
-                index_df = df[index_duplicate].round("1s")
+                index_df = df[index_duplicate].dt.round("1s")
 
                 df.drop(index_duplicate, axis=1, inplace=True)
                 # self._subheaders.remove(index_duplicate)
@@ -95,13 +98,12 @@ class AllData(Data):
         return df
 
 
-def data_factory(data_type: str, header: str, subheaders: list = None):
+def data_factory(data_type: str, header: str, subheaders: Optional[list] = None):
     if data_type == "last":
         return LastData(header, subheaders)
-    elif data_type == "all":
+    if data_type == "all":
         return AllData(header, subheaders)
-    else:
-        raise ValueError(f'Unexpected data "{data_type}"')
+    raise ValueError(f'Unexpected data "{data_type}"')
 
 
 class State(ABC):
@@ -136,8 +138,7 @@ class SteadyState(State):
 def state_factory(steady: bool, extracted_data: Data) -> State:
     if steady is True:
         return SteadyState(extracted_data)
-    else:
-        return UnsteadyState(extracted_data)
+    return UnsteadyState(extracted_data)
 
 
 class Parser(ABC):
@@ -152,14 +153,16 @@ class Parser(ABC):
         before_index
     """
 
+    _nan: object
+
     def __init__(
         self,
         name: str,
         prefix: str,
         data_type: str,
-        exclude: str = None,
-        is_index: bool = False,
-        before_index: bool = False,
+        exclude: Optional[str] = None,
+        is_index: Optional[bool] = False,
+        before_index: Optional[bool] = False,
     ):
         self._name = name
 
@@ -174,14 +177,14 @@ class Parser(ABC):
         self.data_type = data_type
         self.data = data_factory(data_type, name)
 
-    def process_line(self, raw_line: str):
+    def process_line(self, raw_line: str) -> None:
         """self._process_line with exception handling of expected nan values"""
 
         try:
             processed_line = self._process_line(raw_line)
 
         except ValueError as e:
-            if raw_line in self._exclude:
+            if self._exclude and raw_line in self._exclude:
                 processed_line = self._nan
             else:
                 raise e
@@ -189,9 +192,8 @@ class Parser(ABC):
         self.data.update(processed_line)
 
     @abstractmethod
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> object:
         """Converts string to meaningful data"""
-        pass
 
 
 class DateTimeParser(Parser):
@@ -202,7 +204,7 @@ class DateTimeParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.datetime:
         """Converts string to datetime"""
 
         processed = dt.datetime.strptime(raw, self._code)
@@ -210,18 +212,21 @@ class DateTimeParser(Parser):
         return processed
 
 
-class TimeParser(DateTimeParser):
+class TimeParser(Parser):
+    """Extra argument from superclass    code: str"""
+
     def __init__(self, *args, **kwargs):
+        self._code = kwargs.pop("code")
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.time:
         """Converts string to time"""
 
         raw, _, _ = raw.partition(" ")  # Temp fix to ignore '(+n d)' in EFT
-        processed = super()._process_line(raw)
+        processed = dt.datetime.strptime(raw, self._code).time()
 
-        return processed.time()
+        return processed
 
 
 class TimeDeltaHMSParser(Parser):
@@ -229,7 +234,7 @@ class TimeDeltaHMSParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.timedelta:
         """Converts string HH:MM:SS to timedelta"""
 
         h, m, s = raw.split(":")
@@ -243,7 +248,7 @@ class TimeDeltaHParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.timedelta:
         """Converts string H (with decimal place and "hrs") to timedelta"""
 
         h = raw.split("hrs")[0]
@@ -257,7 +262,7 @@ class TimeDeltaSParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.timedelta:
         """Converts string S (with decimal place and "s") to timedelta"""
 
         s = raw.split("s")[0]  # TODO: not necessary for simulation time
@@ -271,7 +276,7 @@ class FloatParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = float("nan")
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> float:
         """Converts string to float"""
 
         processed = float(raw)
@@ -287,7 +292,7 @@ class FloatSplitParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = float("nan")
 
-    def _process_line(self, raw: str):
+    def _process_line(self, raw: str) -> float:
         """Converts string to float, removing everything after split"""
 
         processed = float(raw.split(self._split)[0])
@@ -300,7 +305,7 @@ class StringParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = ""
 
-    def _process_line(self, raw: str):
+    def _process_line(self, raw: str) -> str:
         """No conversion necessary"""
 
         processed = raw
@@ -316,8 +321,8 @@ class StringSplitParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = ""
 
-    def _process_line(self, raw: str):
-        """Converts string to float, removing everything after split"""
+    def _process_line(self, raw: str) -> str:
+        """Removes everything after split"""
 
         processed = raw.split(self._split)[0]
 
@@ -332,15 +337,16 @@ class TimeFloatMultParser(Parser):
         super().__init__(*args, **kwargs)
 
         self._nan = []
-        for header in self._subheaders:
+        for _ in self._subheaders:
             self._nan.append(float("nan"))
 
         self.data = data_factory(self.data_type, self._name, self._subheaders)  # overwrite
 
-    def _process_line(self, raw: str):
-        """Converts string to list of floats"""
+    def _process_line(self, raw: str) -> List[Union[dt.timedelta, float]]:
+        """Converts string to list of one timedelta and then floats"""
 
-        processed = [float(x) for x in raw.split()]
-        processed[0] = dt.timedelta(hours=float(processed[0]))
+        as_float = [float(x) for x in raw.split()]
+        first_as_timedelta = dt.timedelta(hours=float(as_float[0]))
+        processed = [first_as_timedelta] + as_float[1:]
 
         return processed

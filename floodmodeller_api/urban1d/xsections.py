@@ -105,6 +105,9 @@ class XSECTION(UrbanUnit):
         elif self.shape == "IRREGULAR":
             params2 = join_n_char_ljust(15, self.shape, self.tsect)
 
+        else:
+            raise RuntimeError(f"{self.shape} not supported")
+
         return params1 + params2
 
 

@@ -112,9 +112,7 @@ def test_run_from_command_line():
 # def GUI ----------------
 def test_gui_input_widgets(tool):
     tool.generate_gui()
-    assert [param.name for param in tool.parameters] == [
-        name for name in tool.app.root_entries.keys()
-    ]
+    assert [param.name for param in tool.parameters] == list(tool.app.root_entries.keys())
 
 
 def test_gui_run_callback(tool):

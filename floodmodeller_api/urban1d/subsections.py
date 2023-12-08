@@ -14,20 +14,25 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from .conduits import CONDUITS
+from typing import Dict, Type, TypedDict
 
-# Unit classes
+from ._base import UrbanSubsection
+from .conduits import CONDUITS
 from .junctions import JUNCTIONS
 from .losses import LOSSES
 from .outfalls import OUTFALLS
 from .raingauges import RAINGAUGES
 from .xsections import XSECTIONS
 
+SupportedSubsections = TypedDict(
+    "SupportedSubsections", {"group": str, "attribute": str, "class": Type[UrbanSubsection]}
+)
+
 # Unit types and support
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed
-SUPPORTED_SUBSECTIONS = {
+SUPPORTED_SUBSECTIONS: Dict[str, SupportedSubsections] = {
     # '[TITLE]': {'attribute': 'Title', 'class': 'Title'}
-    "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
+    # "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},

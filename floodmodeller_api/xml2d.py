@@ -21,7 +21,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from subprocess import DEVNULL, Popen
-from typing import Optional, Union
+from typing import Callable, List, Optional, Union
 
 from lxml import etree
 from tqdm import trange
@@ -32,15 +32,12 @@ from .logs import error_2d_dict, lf_factory
 from .xml2d_template import xml2d_template
 
 
-def value_from_string(value: Union[str, list[str]]):
+def value_from_string(value: Union[str, List[str]]):
     try:
-        val = float(value)
-        if "." not in value:
-            val = int(val)
-        return val
+        if isinstance(value, list):
+            return value
+        return float(value) if "." in value else int(value)
     except ValueError:
-        return value
-    except TypeError:
         return value
 
 
@@ -68,13 +65,11 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
-    # _xsd_loc : str = r"C:\Program Files\Flood Modeller\bin\2d_test.xsd"
 
-    def __init__(self, xml_filepath: Union[str, Path] = None):
+    def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
-            self._filepath = xml_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if xml_filepath is not None:
+                FMFile.__init__(self, xml_filepath)
                 self._read()
                 self._log_path = self._filepath.with_suffix(".lf2")
             else:
@@ -195,24 +190,21 @@ class XML2D(FMFile):
         if seq is None:
             return parent.getchildren()
 
-        else:
-            categorical_order = {
-                sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)
-            }
-            return sorted(
-                parent.getchildren(),
-                key=lambda x: categorical_sort(x, categorical_order, self._ns),
-            )
+        categorical_order = {sub_element.attrib["name"]: idx for idx, sub_element in enumerate(seq)}
+        return sorted(
+            parent.getchildren(),
+            key=lambda x: categorical_sort(x, categorical_order, self._ns),
+        )
 
     def _validate(self):
         try:
             self._xsdschema.assert_(self._xmltree)
         except AssertionError as err:
             msg = (
-                f"XML Validation Error for {self.__repr__()}:\n"
+                f"XML Validation Error for {repr(self)}:\n"
                 f"     {err.args[0].replace(self._ns, '')}"
             )
-            raise ValueError(msg)
+            raise ValueError(msg) from err
 
     def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
         # TODO: Handle removing params
@@ -454,13 +446,13 @@ class XML2D(FMFile):
 
     def simulate(  # noqa: C901
         self,
-        method: Optional[str] = "WAIT",
-        raise_on_failure: Optional[bool] = True,
-        precision: Optional[str] = "DEFAULT",
-        enginespath: Optional[str] = "",
-        console_output: Optional[str] = "simple",
-        range_function: Optional[callable] = trange,
-        range_settings: Optional[dict] = {},
+        method: str = "WAIT",
+        raise_on_failure: bool = True,
+        precision: str = "DEFAULT",
+        enginespath: str = "",
+        console_output: str = "simple",
+        range_function: Callable = trange,
+        range_settings: Optional[dict] = None,
     ) -> Optional[Popen]:
         """Simulate the XML2D file directly as a subprocess.
 
@@ -498,7 +490,7 @@ class XML2D(FMFile):
         # - Remove or sort out get results
 
         self.range_function = range_function
-        self.range_settings = range_settings
+        self.range_settings = range_settings if range_settings else {}
 
         try:
             if self._filepath is None:
@@ -517,7 +509,7 @@ class XML2D(FMFile):
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"
             else:
                 _enginespath = enginespath
-                if not Path(_enginespath).exists:
+                if not Path(_enginespath).exists():
                     raise Exception(
                         f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
                     )
@@ -537,7 +529,7 @@ class XML2D(FMFile):
             else:
                 isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
-            if not Path(isis2d_fp).exists:
+            if not Path(isis2d_fp).exists():
                 raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
 
             console_output = console_output.lower()
@@ -547,11 +539,9 @@ class XML2D(FMFile):
             stdout = DEVNULL if console_output == "simple" else None
 
             if method.upper() == "WAIT":
-                # executing simulation
                 print("Executing simulation ... ")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
-                )  # execute
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
 
                 # progress bar based on log files:
                 if console_output == "simple":
@@ -566,12 +556,12 @@ class XML2D(FMFile):
                 self._interpret_exit_code(exitcode, raise_on_failure)
 
             elif method.upper() == "RETURN_PROCESS":
-                # executing simulation
                 print("Executing simulation ...")
-                process = Popen(
-                    run_command, cwd=os.path.dirname(self._filepath), stdout=stdout
-                )  # execute simulation
+                # execute simulation
+                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
                 return process
+
+            return None
 
         except Exception as e:
             self._handle_exception(e, when="simulate")
@@ -680,5 +670,4 @@ class XML2D(FMFile):
 
         if raise_on_failure and exitcode != 100:
             raise Exception(msg)
-        else:
-            print(msg)
+        print(msg)

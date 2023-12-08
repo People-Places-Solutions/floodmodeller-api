@@ -7,7 +7,7 @@ exec(open("floodmodeller_api/version.py").read())
 
 setup(
     name="floodmodeller_api",
-    version=__version__,
+    version=__version__,  # type: ignore[name-defined]
     author="Jacobs",
     author_email="joe.pierce@jacobs.com",
     packages=[

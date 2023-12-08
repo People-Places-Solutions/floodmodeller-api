@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Dict
 
 import pandas as pd
 
@@ -7,7 +8,7 @@ from floodmodeller_api.units import QTBDY
 
 csv_folder = Path("path/to/data/folder")
 
-ied_files = {}
+ied_files: Dict[int, Dict[str, IED]] = {}
 
 # Iterate through each csv export
 for csv_file in csv_folder.glob("*"):
@@ -16,7 +17,7 @@ for csv_file in csv_folder.glob("*"):
     storm_duration = stem_parts[1]
 
     data = pd.read_csv(csv_file, index_col=0)
-    data.index = pd.TimedeltaIndex(data.index) / pd.Timedelta("1h")
+    data.index = pd.TimedeltaIndex(data.index) / pd.Timedelta("1h")  # type: ignore[operator]
     return_periods = [int(col.split()[0]) for col in data.columns[::8]]
 
     # Iterate through each return period

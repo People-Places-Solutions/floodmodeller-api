@@ -41,29 +41,27 @@ def _validate_unit(unit, urban=False):
                 if not value[0]
             ]
         )
-        raise ValueError(f"One or more parameters in {unit.__repr__()} are invalid:\n     {errors}")
+        raise ValueError(f"One or more parameters in {repr(unit)} are invalid:\n     {errors}")
 
 
 def _validate_parameter(param, value):  # noqa: C901
     if param["type"] == "type-match":
         return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
 
-    elif param["type"] == "value-match":
+    if param["type"] == "value-match":
         if isinstance(value, str):
             return value.upper() in param["options"], f'-> Expected: {param["options"]}'
-        else:
-            return value in param["options"], f'-> Expected: {param["options"]}'
+        return value in param["options"], f'-> Expected: {param["options"]}'
 
-    elif param["type"] == "end-value-match":
+    if param["type"] == "end-value-match":
         if value.strip().upper().endswith(tuple(param["options"])):
             return (True, 0)
-        else:
-            return (
-                False,
-                f"-> Could not add rule: \n{value}\n     as it doesn't end with END or ENDIF.",
-            )
+        return (
+            False,
+            f"-> Could not add rule: \n{value}\n     as it doesn't end with END or ENDIF.",
+        )
 
-    elif param["type"] == "type-value-match":
+    if param["type"] == "type-value-match":
         new_rule = {"type": "type-match", "options": param["options"][0]}
         type_match_result = _validate_parameter(new_rule, value)[0]
 
@@ -75,7 +73,7 @@ def _validate_parameter(param, value):  # noqa: C901
             f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}',
         )
 
-    elif param["type"] == "value-range":
+    if param["type"] == "value-range":
         lower = param["options"][0]
         upper = param["options"][1]
         try:
@@ -83,22 +81,21 @@ def _validate_parameter(param, value):  # noqa: C901
         except TypeError:
             return False, f"-> Out of valid range: {lower} - {upper}"
 
-    elif param["type"] == "string-length":
+    if param["type"] == "string-length":
         return (
             len(value) <= param["max_length"],
             f'-> Exceeds {param["max_length"]} characters',
         )
 
-    elif param["type"] == "dict-match":
+    if param["type"] == "dict-match":
         for key, rule in param["options"].items():
             if key not in value:
                 return False, f"-> Missing required dict key: {key}"
-            else:
-                if not _validate_parameter(rule, value[key])[0]:
-                    return _validate_parameter(rule, value[key])
+            if not _validate_parameter(rule, value[key])[0]:
+                return _validate_parameter(rule, value[key])
         return True, 0
 
-    elif param["type"] == "list-dict-match":
+    if param["type"] == "list-dict-match":
         for item in value:
             for key, rule in param["options"].items():
                 if key not in item:
@@ -106,7 +103,6 @@ def _validate_parameter(param, value):  # noqa: C901
                         False,
                         f"-> One or more items missing required dict key: {key}",
                     )
-                else:
-                    if not _validate_parameter(rule, item[key])[0]:
-                        return _validate_parameter(rule, item[key])
+                if not _validate_parameter(rule, item[key])[0]:
+                    return _validate_parameter(rule, item[key])
         return True, 0

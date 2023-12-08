@@ -16,6 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM Units """
 
+from typing import List, Optional
+
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
@@ -23,9 +25,9 @@ from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_
 
 
 class Unit:
-    _unit = None
-    _subtype = None
-    _name = None
+    _unit: Optional[str] = None
+    _subtype: Optional[str] = None
+    _name: Optional[str] = None
 
     def __init__(self, unit_block=None, n=12, **kwargs):
         self._label_len = n
@@ -48,7 +50,7 @@ class Unit:
                 )
             self._name = new_name
         except Exception as e:
-            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}')
+            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}') from e
 
     @property
     def subtype(self):
@@ -56,13 +58,14 @@ class Unit:
 
     @subtype.setter
     def subtype(self, new_value):
-        raise ValueError("You cannot changed the subtype of a unit once it has been instantiated")
+        raise ValueError("You cannot change the subtype of a unit once it has been instantiated")
 
     def __repr__(self):
         if self._subtype is None:
             return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name})>"
-        else:
-            return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
+        return (
+            f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
+        )
 
     def _create_from_blank(self):
         raise NotImplementedError(
@@ -72,7 +75,7 @@ class Unit:
     def __str__(self):
         return "\n".join(self._write())
 
-    def _read(self):
+    def _read(self, block: List[str]):
         raise NotImplementedError
 
     def _write(self):
@@ -86,7 +89,7 @@ class Unit:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
         result = True

@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 from . import units  # Import for using as package
 from ._base import FMFile
@@ -43,9 +43,8 @@ class DAT(FMFile):
 
     def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
         try:
-            self._filepath = dat_filepath
-            if self._filepath is not None:
-                FMFile.__init__(self)
+            if dat_filepath is not None:
+                FMFile.__init__(self, dat_filepath)
                 self._read()
 
             else:
@@ -105,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -127,26 +126,24 @@ class DAT(FMFile):
                     return self._next_in_dat_struct(unit)
 
                 # Case 1b - distance to next = 0
-                else:
-                    return self._name_label_match(unit)
+                return self._name_label_match(unit)
 
             # Case 2: next unit is in ds_label
-            elif hasattr(unit, "ds_label"):
+            if hasattr(unit, "ds_label"):
                 return self._name_label_match(unit, name_override=unit.ds_label)
 
-            elif unit._unit == "JUNCTION":
-                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+            if unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
-            elif unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
+            if unit._unit in ("QHBDY", "NCDBDY", "TIDBDY"):
                 return None
 
-            else:
-                return self._name_label_match(unit)
+            return self._name_label_match(unit)
 
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def prev(self, unit: Unit) -> Union[Unit, list[Unit], None]:
+    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:  # noqa: C901
         """Finds previous unit in the reach.
 
         Previous unit in reach can be infered by:
@@ -178,8 +175,8 @@ class DAT(FMFile):
             ):
                 return None
 
-            elif unit._unit == "JUNCTION":
-                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]
+            if unit._unit == "JUNCTION":
+                return [self._name_label_match(unit, name_override=lbl) for lbl in unit.labels]  # type: ignore[misc, attr-defined]
 
             prev_units = []
             _prev_in_dat = self._prev_in_dat_struct(unit)
@@ -192,7 +189,11 @@ class DAT(FMFile):
             ]
 
             # Case 2: Previous unit has positive distance to next
-            if hasattr(_prev_in_dat, "dist_to_next") and _prev_in_dat.dist_to_next != 0:
+            if (
+                _prev_in_dat
+                and hasattr(_prev_in_dat, "dist_to_next")
+                and _prev_in_dat.dist_to_next != 0
+            ):
                 prev_units.append(_prev_in_dat)
                 _name_match = None  # Name match does apply if upstream section exists
 
@@ -200,23 +201,19 @@ class DAT(FMFile):
             for match in [_name_match, _ds_label_match, _junction_match]:
                 if isinstance(match, list):
                     prev_units.extend(match)
-                else:
+                elif match:
                     prev_units.append(match)
-
-            # Filter out 'None' matches
-            prev_units = [_unit for _unit in prev_units if _unit is not None]
 
             if len(prev_units) == 0:
                 return None
-            elif len(prev_units) == 1:
+            if len(prev_units) == 1:
                 return prev_units[0]
-            else:
-                return prev_units
+            return prev_units
 
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def _next_in_dat_struct(self, current_unit) -> Unit:
+    def _next_in_dat_struct(self, current_unit) -> Optional[Unit]:
         """Finds next unit in the dat file using the index position.
 
         Returns:
@@ -231,7 +228,9 @@ class DAT(FMFile):
                 except IndexError:
                     return None
 
-    def _prev_in_dat_struct(self, current_unit) -> Unit:
+        return None
+
+    def _prev_in_dat_struct(self, current_unit) -> Optional[Unit]:
         """Finds previous unit in the dat file using the index position.
 
         Returns:
@@ -242,10 +241,11 @@ class DAT(FMFile):
             if unit.name == current_unit.name and unit == current_unit:
                 if idx == 0:
                     return None
-                else:
-                    return self._all_units[idx - 1]
+                return self._all_units[idx - 1]
 
-    def _ds_label_match(self, current_unit) -> Union[Unit, list[Unit], None]:
+        return None
+
+    def _ds_label_match(self, current_unit) -> Union[Unit, List[Unit], None]:
         """Pulls out all units with ds label that matches the input unit.
 
         Returns:
@@ -262,12 +262,11 @@ class DAT(FMFile):
 
         if len(_ds_list) == 0:
             return None
-        elif len(_ds_list) == 1:
+        if len(_ds_list) == 1:
             return _ds_list[0]
-        else:
-            return _ds_list
+        return _ds_list
 
-    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, list[Unit], None]:
+    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, List[Unit], None]:
         """Pulls out all units with same name as the input unit.
 
         Returns:
@@ -284,10 +283,9 @@ class DAT(FMFile):
 
         if len(_name_list) == 0:
             return None
-        elif len(_name_list) == 1:
+        if len(_name_list) == 1:
             return _name_list[0]
-        else:
-            return _name_list
+        return _name_list
 
     def _read(self):
         # Read DAT data
@@ -466,7 +464,7 @@ class DAT(FMFile):
             # Check for all supported boundary types
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
                 # clause for when unit has been inserted into the dat file
-                if "new_insert" in block.keys():
+                if "new_insert" in block:
                     block["start"] = prev_block_end + 1
                     block["end"] = block["start"] + len(block["new_insert"]) - 1
                     self._raw_data[block["start"] : block["start"]] = block["new_insert"]
@@ -557,13 +555,12 @@ class DAT(FMFile):
                     raise Exception(
                         f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
                     )
-                else:
-                    # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
-                    unit_type = block["Type"].replace(" ", "_").replace("-", "_")
-                    unit_group[unit_name] = eval(
-                        f"units.{unit_type}({unit_data}, {self._label_len})"  # append to our _all._units as well???
-                    )
-                    self._all_units.append(unit_group[unit_name])
+                # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
+                unit_type = block["Type"].replace(" ", "_").replace("-", "_")
+                unit_group[unit_name] = eval(
+                    f"units.{unit_type}({unit_data}, {self._label_len})"  # append to our _all._units as well???
+                )
+                self._all_units.append(unit_group[unit_name])
 
             elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
@@ -607,15 +604,13 @@ class DAT(FMFile):
                     general_block["end"] = idx
                     dat_struct.append(general_block)
                     in_general = False
-                    continue
-                else:
-                    continue
+                continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
-            elif in_comment:
+            if in_comment:
                 comment_n -= 1
                 if comment_n == 0:
                     unit_block["end"] = idx  # add ending index
@@ -625,9 +620,7 @@ class DAT(FMFile):
                     in_comment = False
                     in_block = False
                     comment_n = None
-                    continue
-                else:
-                    continue  # move onto next line as still in comment block
+                continue  # move onto next line as still in comment block
 
             if line == "COMMENT":
                 in_comment = True

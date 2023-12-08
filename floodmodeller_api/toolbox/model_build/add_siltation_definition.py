@@ -11,7 +11,7 @@ from floodmodeller_api.units import RIVER
 def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float):
     dat = DAT(dat_input)  # Initialise DAT class
 
-    for name, section in dat.sections.items():  # iterate through all river sections
+    for _, section in dat.sections.items():  # iterate through all river sections
         if not isinstance(section, RIVER):
             # Skip any non river type units (e.g. interpolates)
             continue

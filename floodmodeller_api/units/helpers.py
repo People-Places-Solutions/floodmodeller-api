@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from typing import Optional
+from typing import List, Optional
 
 # Helper Functions
 
@@ -104,11 +104,10 @@ def _to_str(itm, default, check_float=False):
             pass
     if itm == "":
         return default
-    else:
-        return itm
+    return itm
 
 
-def _to_data_list(block: list[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
+def _to_data_list(block: List[str], num_cols: Optional[int] = None, date_col: Optional[int] = None):
     if num_cols is not None:
         num_cols += 1 if date_col is not None else 0
     data_list = []
@@ -119,14 +118,14 @@ def _to_data_list(block: list[str], num_cols: Optional[int] = None, date_col: Op
             row_split = [
                 _to_float(itm)
                 for idx, itm in enumerate(row_split)
-                if idx != date_col and idx != date_col + 1
+                if idx not in (date_col, date_col + 1)
             ]
             row_split.insert(date_col, date_time)
         else:
             row_split = [_to_float(itm) for itm in row_split]
 
-        row = []
+        row_list = []
         for var in row_split:
-            row.append(var)
-        data_list.append(row)
+            row_list.append(var)
+        data_list.append(row_list)
     return data_list

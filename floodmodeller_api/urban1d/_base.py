@@ -16,13 +16,15 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM 1D units Units """
 
+from typing import Optional, Type
+
 from ..diff import check_item_with_dataframe_equal
 
 
 class UrbanUnit:
-    _unit = None
-    _subtype = None
-    _name = None
+    _unit: Optional[str] = None
+    _subtype: Optional[str] = None
+    _name: Optional[str] = None
 
     def __init__(self, unit_block=None, **kwargs):
         if unit_block is not None:
@@ -66,7 +68,7 @@ class UrbanUnit:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
         result = True
@@ -81,8 +83,8 @@ class UrbanUnit:
 
 
 class UrbanSubsection:
-    _name = None
-    _urban_unit_class = None
+    _name: Optional[str] = None
+    _urban_unit_class: Optional[Type[UrbanUnit]] = None
 
     def __init__(self, subsection_block=None, **kwargs):
         if subsection_block is not None:
@@ -166,7 +168,7 @@ class UrbanSubsection:
             print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
         result = True

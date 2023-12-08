@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import ctypes as ct
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -39,8 +39,7 @@ class ZZN(FMFile):
 
     def __init__(self, zzn_filepath: Optional[Union[str, Path]]):
         try:
-            self._filepath = zzn_filepath
-            FMFile.__init__(self)
+            FMFile.__init__(self, zzn_filepath)
 
             # Get zzn_dll path
             zzn_dll = Path(Path(__file__).resolve().parent, "zzn_read.dll")
@@ -55,7 +54,7 @@ class ZZN(FMFile):
                     "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name."
                 )
 
-            self.meta = {}  # Dict object to hold all metadata
+            self.meta: Dict[str, Any] = {}  # Dict object to hold all metadata
             self.data = {}  # Dict object to hold all data
 
             # PROCESS_ZZL
@@ -172,11 +171,11 @@ class ZZN(FMFile):
 
     def to_dataframe(
         self,
-        result_type: Optional[str] = "all",
-        variable: Optional[str] = "all",
-        include_time: Optional[bool] = False,
-        multilevel_header: Optional[bool] = True,
-    ) -> pd.DataFrame:
+        result_type: str = "all",
+        variable: str = "all",
+        include_time: bool = False,
+        multilevel_header: bool = True,
+    ) -> Union[pd.Series, pd.DataFrame]:
         """Loads zzn results to pandas dataframe object.
 
         Args:
@@ -201,28 +200,28 @@ class ZZN(FMFile):
         if result_type == "all":
             arr = np.array(self.data["all_results"])
             time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
-            vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+            vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
             if multilevel_header:
-                col_names = [vars, self.meta["labels"]]
+                col_names = [vars_list, self.meta["labels"]]
                 df = pd.DataFrame(
                     arr.reshape(nz, nx * ny),
                     index=time_index,
                     columns=pd.MultiIndex.from_product(col_names),
                 )
                 df.index.name = "Time (hr)"
-                if not variable == "all":
+                if variable != "all":
                     return df[variable.capitalize()]
 
             else:
-                col_names = [f"{node}_{var}" for var in vars for node in self.meta["labels"]]
+                col_names = [f"{node}_{var}" for var in vars_list for node in self.meta["labels"]]
                 df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
                 df.index.name = "Time (hr)"
-                if not variable == "all":
+                if variable != "all":
                     use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
                     return df[use_cols]
             return df
 
-        elif (result_type == "max") or (result_type == "min"):
+        if result_type in ("max", "min"):
             arr = np.array(self.data[f"{result_type}_results"]).transpose()
             node_index = self.meta["labels"]
             col_names = [
@@ -249,7 +248,7 @@ class ZZN(FMFile):
                 df = pd.concat([df, time_df], axis=1)
                 new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
                 df = df[new_col_order]
-                if not variable == "all":
+                if variable != "all":
                     return df[
                         [
                             f"{result_type.capitalize()} {variable.capitalize()}",
@@ -258,19 +257,18 @@ class ZZN(FMFile):
                     ]
                 return df
 
-            if not variable == "all":
+            if variable != "all":
                 return df[f"{result_type.capitalize()} {variable.capitalize()}"]
             return df
 
-        else:
-            raise ValueError(f'Result type: "{result_type}" not recognised')
+        raise ValueError(f'Result type: "{result_type}" not recognised')
 
     def export_to_csv(
         self,
-        save_location: Optional[Union[str, Path]] = "default",
-        result_type: Optional[str] = "all",
-        variable: Optional[str] = "all",
-        include_time: Optional[bool] = False,
+        save_location: Union[str, Path] = "default",
+        result_type: str = "all",
+        variable: str = "all",
+        include_time: bool = False,
     ) -> None:
         """Exports zzn results to CSV file.
 
@@ -295,7 +293,7 @@ class ZZN(FMFile):
                 # for if relative folder path given
                 save_location = Path(Path(self.meta["zzn_name"]).parent, save_location)
 
-        if not save_location.suffix == ".csv":  # Assumed to be pointing to a folder
+        if save_location.suffix != ".csv":  # Assumed to be pointing to a folder
             # Check if the folder exists, if not create it
             if not save_location.exists():
                 Path.mkdir(save_location)
@@ -309,7 +307,7 @@ class ZZN(FMFile):
 
         result_type = result_type.lower()
 
-        if not result_type.lower() in ["all", "max", "min"]:
+        if result_type.lower() not in ["all", "max", "min"]:
             raise Exception(
                 f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
             )
@@ -320,7 +318,7 @@ class ZZN(FMFile):
         df.to_csv(save_location)
         print(f"CSV saved to {save_location}")
 
-    def to_dict_of_dataframes(self, variable: Optional[str] = "all") -> dict:
+    def to_dict_of_dataframes(self, variable: str = "all") -> dict:
         """Loads zzn results to a dictionary of pandas dataframe objects.
 
         Args:
@@ -339,12 +337,12 @@ class ZZN(FMFile):
         arr = np.array(self.data["all_results"])
         time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
 
-        vars = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+        vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
 
         col_names = self.meta["labels"]
         temp_arr = np.reshape(arr, (nz, ny, nx))
 
-        for i, var in enumerate(vars):
+        for i, var in enumerate(vars_list):
             output[var] = pd.DataFrame(temp_arr[:, i, :], index=time_index, columns=col_names)
             output[var].index.name = "Time (hr)"
 
@@ -354,12 +352,12 @@ class ZZN(FMFile):
             input_vars = variable.split(",")
             for i, var in enumerate(input_vars):
                 input_vars[i] = var.strip().capitalize()
-                if not input_vars[i] in vars:
+                if input_vars[i] not in vars_list:
                     raise Exception(
-                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars} "
+                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
                     )
 
-            for var in vars:
+            for var in vars_list:
                 if var not in input_vars:
                     del output[var]
         return output

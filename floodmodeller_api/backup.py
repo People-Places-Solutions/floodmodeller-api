@@ -21,6 +21,7 @@ from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
 from shutil import copy
+from typing import Union
 
 import pandas as pd
 
@@ -187,7 +188,7 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: str, **args):
+    def __init__(self, path: Union[str, Path], **args):
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists
@@ -209,7 +210,7 @@ class File(BackupControl):
         """
         # hash the absolute path becuase the same file name / directroy structure may be mirrored across projects
         # TODO: Use a function that produces a shorter has to make interpretation of the directory easier
-        fp_bytes = self.path.absolute().__str__().encode()
+        fp_bytes = str(self.path.absolute()).encode()
         self.file_id = sha1(fp_bytes).hexdigest()
 
     def _generate_file_name(self) -> None:
@@ -229,7 +230,7 @@ class File(BackupControl):
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
         # TODO: Only log file_id and poath, don't log duplicate lines. Needs to be fast so it doesn't slow FMFile down
-        log_str = f"{self.path.__str__()},{self.file_id},{self.dttm_str}\n"
+        log_str = f"{str(self.path)},{self.file_id},{self.dttm_str}\n"
         with open(self.backup_csv_path, "a") as f:
             f.write(log_str)
 
@@ -239,10 +240,9 @@ class File(BackupControl):
         """
         backup_files = list(self.backup_dir.glob(f"{self.file_id}*"))
         backup_files.sort(reverse=True)
-        if len(backup_files) > 0:
-            return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
-        else:
+        if len(backup_files) <= 0:
             return []
+        return [BackupFile(file_id=self.file_id, path=path) for path in backup_files]
 
     def backup(self) -> None:
         """
@@ -257,7 +257,7 @@ class File(BackupControl):
             self._make_backup()
         # If the file doesn't match the last backup then do a back up
         # TODO: Use FloodModeller API implemented equivalence testing. This is implemented at a higher level than FMFile where this method is called.
-        elif not (filecmp.cmp(self.path, backups[0].path)):
+        elif not filecmp.cmp(self.path, backups[0].path):
             self._make_backup()
         # TODO: Return the file path?
 

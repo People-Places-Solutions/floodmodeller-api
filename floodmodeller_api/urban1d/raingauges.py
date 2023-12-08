@@ -96,6 +96,9 @@ class RAINGAUGE(UrbanUnit):
         elif self.data_option == "FILE":
             params2 = join_n_char_ljust(15, self.filename, self.station, self.units)
 
+        else:
+            raise RuntimeError(f"{self.data_option} not supported")
+
         return params1 + params2
 
         # TODO: Implement validation that does not allow spaces to be entered in attribute values

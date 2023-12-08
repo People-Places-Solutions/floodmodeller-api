@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """ Holds the base file class for API file classes """
 
 from pathlib import Path
+from typing import NoReturn, Optional, Union
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
@@ -29,12 +30,12 @@ from .version import __version__
 class FMFile:
     """Base class for all Flood Modeller File types"""
 
-    _filetype = None
-    _suffix = None
+    _filetype: Optional[str] = None
+    _suffix: Optional[str] = None
 
-    def __init__(self):
-        if self._filepath is not None:
-            self._filepath = Path(self._filepath).resolve()  # save filepath to class
+    def __init__(self, filepath: Optional[Union[str, Path]]):
+        if filepath is not None:
+            self._filepath = Path(filepath).resolve()  # save filepath to class
             # Check if filepath valid
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
 
@@ -113,9 +114,9 @@ class FMFile:
             self._handle_exception(e, when="compare")
 
     def _get_diff(self, other):
-        return self.__eq__(other, return_diff=True)
+        return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
-    def _handle_exception(self, err, when):
+    def _handle_exception(self, err, when) -> NoReturn:
         tb = err.__traceback__
         while tb.tb_next is not None:
             tb = tb.tb_next
@@ -149,16 +150,15 @@ class FMFile:
                         "_log_path",
                     ):
                         continue
-                    else:
-                        _result, diff = check_item_with_dataframe_equal(
-                            item,
-                            other.__dict__[key],
-                            name=f"{self._filetype}->{key}",
-                            diff=diff,
-                            special_types=(Unit, IIC, UrbanUnit, UrbanSubsection),
-                        )
-                        if not _result:
-                            result = False
+                    _result, diff = check_item_with_dataframe_equal(
+                        item,
+                        other.__dict__[key],
+                        name=f"{self._filetype}->{key}",
+                        diff=diff,
+                        special_types=(Unit, IIC, UrbanUnit, UrbanSubsection),
+                    )
+                    if not _result:
+                        result = False
                 except KeyError as ke:
                     result = False
                     diff.append(
