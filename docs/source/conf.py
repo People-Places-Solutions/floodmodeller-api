@@ -21,7 +21,7 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = "Flood Modeller Python API"
-copyright = "2023, Jacobs"
+copyright = "2023, Jacobs"  # noqa: A001
 author = "Joe Pierce"
 
 # The full version, including alpha/beta/rc tags

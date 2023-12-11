@@ -84,7 +84,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
                 diff.append((name, f"Key: '{ke.args[0]}' missing in other"))
                 continue
 
-        for key in dict_b.keys():
+        for key in dict_b:
             if key not in dict_a:
                 result = False
                 diff.append((name, f"Key: {key} missing from first object"))
