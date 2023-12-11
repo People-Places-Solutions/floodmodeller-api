@@ -3,8 +3,8 @@
 from pathlib import Path
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import RIVER
 from floodmodeller_api.tool import FMTool, Parameter
+from floodmodeller_api.units import RIVER
 
 
 # Define the function
