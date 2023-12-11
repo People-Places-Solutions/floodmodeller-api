@@ -233,7 +233,7 @@ class IEF(FMFile):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
-                + " names and values referencing the IED files",
+                " names and values referencing the IED files",
             )
 
         # Number of 'EventData' flags in ief

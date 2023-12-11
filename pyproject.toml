@@ -20,7 +20,7 @@ line-length = 100
 builtins = ["__version__"]
 
 [tool.ruff.lint]
-select = ["A", "ASYNC", "B", "C", "COM", "E", "ERA", "F", "FLY", "I", "N", "PLR", "RET", "SIM", "UP", "W", "YTT", "RUF100", "TRY200"]
+select = ["A", "ASYNC", "B", "C", "COM", "DJ", "E", "ERA", "EXE", "F", "FLY", "G", "I", "ISC", "N", "PLR", "RET", "RUF100", "SIM", "T10", "TRY200", "UP", "W", "YTT"]
 ignore = ["E402", "E501"]
 
 [tool.ruff.per-file-ignores]

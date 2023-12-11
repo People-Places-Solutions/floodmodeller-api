@@ -147,7 +147,7 @@ class TuflowModelConverter:
     def convert_model(self) -> None:
         for fm_file_wrapper in self._fm_file_wrappers.values():
             for cc_display_name, cc_factory in fm_file_wrapper.cc_dict.items():
-                self._logger.info(f"converting {cc_display_name}...")
+                self._logger.info("converting %s...", cc_display_name)
 
                 try:
                     cc_object = cc_factory()
