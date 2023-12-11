@@ -36,7 +36,7 @@ SUPPORTED_SUBSECTIONS: Dict[str, SupportedSubsections] = {
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
     "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
     "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES},
-    "[XSECTIONS]": {"group": "units", "attribute": "_xsections", "class": XSECTIONS}
+    "[XSECTIONS]": {"group": "units", "attribute": "_xsections", "class": XSECTIONS},
 }
 
 UNSUPPORTED_SUBSECTIONS = {
