@@ -106,3 +106,5 @@ def _validate_parameter(param, value):  # noqa: C901
                 if not _validate_parameter(rule, item[key])[0]:
                     return _validate_parameter(rule, item[key])
         return True, 0
+
+    return None

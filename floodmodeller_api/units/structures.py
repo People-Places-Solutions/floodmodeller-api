@@ -797,6 +797,7 @@ class SLUICE(Unit):
             self._last_gate_row = gate_row
 
             return gates
+        return None
 
 
 class ORIFICE(Unit):

@@ -251,7 +251,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         segments["point2"] = gpd.GeoSeries(segments["point2"])
 
         # get endpoint heights & line thickness
-        segments = (
+        return (
             segments.merge(
                 rename_and_select(points, {"z": "height1", "geometry": "point1"}),
                 on="point1",
@@ -264,8 +264,6 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
             .drop(columns="point2")
             .astype({"height1": float, "height2": float})
         )
-
-        return segments
 
     @staticmethod
     def convert_polygons(polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:

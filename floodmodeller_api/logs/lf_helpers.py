@@ -209,10 +209,7 @@ class DateTimeParser(Parser):
 
     def _process_line(self, raw: str) -> dt.datetime:
         """Converts string to datetime"""
-
-        processed = dt.datetime.strptime(raw, self._code)
-
-        return processed
+        return dt.datetime.strptime(raw, self._code)
 
 
 class TimeParser(Parser):
@@ -227,9 +224,7 @@ class TimeParser(Parser):
         """Converts string to time"""
 
         raw, _, _ = raw.partition(" ")  # Temp fix to ignore '(+n d)' in EFT
-        processed = dt.datetime.strptime(raw, self._code).time()
-
-        return processed
+        return dt.datetime.strptime(raw, self._code).time()
 
 
 class TimeDeltaHMSParser(Parser):
@@ -241,9 +236,7 @@ class TimeDeltaHMSParser(Parser):
         """Converts string HH:MM:SS to timedelta"""
 
         h, m, s = raw.split(":")
-        processed = dt.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
-
-        return processed
+        return dt.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
 
 class TimeDeltaHParser(Parser):
@@ -255,9 +248,7 @@ class TimeDeltaHParser(Parser):
         """Converts string H (with decimal place and "hrs") to timedelta"""
 
         h = raw.split("hrs")[0]
-        processed = dt.timedelta(hours=float(h))
-
-        return processed
+        return dt.timedelta(hours=float(h))
 
 
 class TimeDeltaSParser(Parser):
@@ -269,9 +260,7 @@ class TimeDeltaSParser(Parser):
         """Converts string S (with decimal place and "s") to timedelta"""
 
         s = raw.split("s")[0]  # TODO: not necessary for simulation time
-        processed = dt.timedelta(seconds=float(s))
-
-        return processed
+        return dt.timedelta(seconds=float(s))
 
 
 class FloatParser(Parser):
@@ -282,9 +271,7 @@ class FloatParser(Parser):
     def _process_line(self, raw: str) -> float:
         """Converts string to float"""
 
-        processed = float(raw)
-
-        return processed
+        return float(raw)
 
 
 class FloatSplitParser(Parser):
@@ -298,9 +285,7 @@ class FloatSplitParser(Parser):
     def _process_line(self, raw: str) -> float:
         """Converts string to float, removing everything after split"""
 
-        processed = float(raw.split(self._split)[0])
-
-        return processed
+        return float(raw.split(self._split)[0])
 
 
 class StringParser(Parser):
@@ -311,9 +296,7 @@ class StringParser(Parser):
     def _process_line(self, raw: str) -> str:
         """No conversion necessary"""
 
-        processed = raw
-
-        return processed
+        return raw
 
 
 class StringSplitParser(Parser):
@@ -327,9 +310,7 @@ class StringSplitParser(Parser):
     def _process_line(self, raw: str) -> str:
         """Removes everything after split"""
 
-        processed = raw.split(self._split)[0]
-
-        return processed
+        return raw.split(self._split)[0]
 
 
 class TimeFloatMultParser(Parser):
@@ -350,6 +331,4 @@ class TimeFloatMultParser(Parser):
 
         as_float = [float(x) for x in raw.split()]
         first_as_timedelta = dt.timedelta(hours=float(as_float[0]))
-        processed = [first_as_timedelta] + as_float[1:]
-
-        return processed
+        return [first_as_timedelta] + as_float[1:]

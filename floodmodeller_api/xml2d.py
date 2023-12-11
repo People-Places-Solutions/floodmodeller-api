@@ -553,8 +553,7 @@ class XML2D(FMFile):
             elif method.upper() == "RETURN_PROCESS":
                 print("Executing simulation ...")
                 # execute simulation
-                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
-                return process
+                return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
 
             return None
 

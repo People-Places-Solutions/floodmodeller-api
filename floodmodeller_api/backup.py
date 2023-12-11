@@ -104,8 +104,7 @@ def parse_backup_dttm(path):
     # Extract datetime from string
     datetime_str = re.search(r"\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}", path).group(0)
     # Convert datetime string to datetime object
-    datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M-%S")
-    return datetime_obj
+    return datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M-%S")
 
 
 class BackupFile:

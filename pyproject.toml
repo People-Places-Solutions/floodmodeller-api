@@ -17,14 +17,14 @@ disable = "all"
 enable = "simplifiable-if-statement, simplifiable-if-expression, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 
 [tool.pytest.ini_options]
-addopts = "--cov=floodmodeller_api --cov-fail-under=78"
+addopts = "--cov=floodmodeller_api --cov-fail-under=79"
 
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
 
 [tool.ruff.lint]
-select = ["A", "B", "C", "E", "ERA", "F", "FLY", "I", "N", "SIM", "W", "PLR1714", "PLR5501", "RET505", "RET506", "RET507", "RUF100", "TRY200"]
+select = ["A", "B", "C", "E", "ERA", "F", "FLY", "I", "N", "RET", "SIM", "W", "PLR1714", "PLR5501", "RUF100", "TRY200"]
 ignore = ["E402", "E501"]
 
 [tool.ruff.per-file-ignores]

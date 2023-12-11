@@ -45,6 +45,7 @@ class UrbanUnit:
     def __repr__(self):
         if self._subtype is None:
             return f"<floodmodeller_api UrbanUnit Class: {self._unit}(name={self._name})>"
+        return None
 
     def _create_from_blank(self):
         raise NotImplementedError(
