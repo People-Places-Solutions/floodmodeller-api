@@ -15,3 +15,6 @@ ignore_missing_imports = true
 [tool.pylint]
 disable = "all"
 enable = "dangerous-default-value, unneeded-not, no-else-return, no-else-continue, simplifiable-if-statement, simplifiable-if-expression, unnecessary-comprehension, consider-using-in, redefined-builtin, unused-variable, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call, no-else-raise, consider-iterating-dictionary, raise-missing-from"
+
+[tool.pytest.ini_options]
+addopts = "--cov=floodmodeller_api --cov-fail-under=75"
