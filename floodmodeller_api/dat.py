@@ -809,7 +809,9 @@ class DAT(FMFile):
                 line = line.replace(f"{prefix} {prev_lbl} ", f"{prefix} {new_lbl} ")
 
             # Replace second label
-            if not ignore_second and line.startswith(f"{prev_lbl} "):  # space at the end important again
+            if not ignore_second and line.startswith(
+                f"{prev_lbl} "
+            ):  # space at the end important again
                 line = line.replace(f"{prev_lbl} ", f"{new_lbl} ", 1)
 
             new_gisinfo_block.append(line)
