@@ -292,12 +292,12 @@ class Calibration:
             self._starting_y_coords = [y_model, y_event]
 
         dropdown_buttons.append(
-            dict(
-                method="update",
-                label=self._node_dict[node],
-                visible=True,
-                args=[{"y": y_coords}],
-            )
+            {
+                "method": "update",
+                "label": self._node_dict[node],
+                "visible": True,
+                "args": [{"y": y_coords}],
+            }
         )
 
     def _create_html(self, fig, nodes_dropdown, trace_events, output_folder):
@@ -305,31 +305,31 @@ class Calibration:
         for event in self._event_names:
             show_event = [event in x for x in trace_events]
             events_dropdown.append(
-                dict(
-                    method="update",
-                    label=f"{event}",
-                    visible=True,
-                    args=[{"visible": show_event}],
-                )
+                {
+                    "method": "update",
+                    "label": f"{event}",
+                    "visible": True,
+                    "args": [{"visible": show_event}],
+                }
             )
 
         # dropdown
         fig.update_layout(
             updatemenus=[
-                dict(
-                    buttons=nodes_dropdown,
-                    direction="down",
-                    name="Node",
-                    x=-0.05,
-                    y=1.1,
-                ),
-                dict(
-                    buttons=events_dropdown,
-                    direction="down",
-                    name="Event",
-                    x=-0.05,
-                    y=1.0,
-                ),
+                {
+                    "buttons": nodes_dropdown,
+                    "direction": "down",
+                    "name": "Node",
+                    "x": -0.05,
+                    "y": 1.1,
+                },
+                {
+                    "buttons": events_dropdown,
+                    "direction": "down",
+                    "name": "Event",
+                    "x": -0.05,
+                    "y": 1.0,
+                },
             ]
         )
 

@@ -18,3 +18,14 @@ enable = "dangerous-default-value, unneeded-not, no-else-return, no-else-continu
 
 [tool.pytest.ini_options]
 addopts = "--cov=floodmodeller_api --cov-fail-under=78"
+
+[tool.ruff]
+line-length = 100
+builtins = ["__version__"]
+
+[tool.ruff.lint]
+select = ["F", "E", "W", "C", "I", "N", "RUF100"]
+ignore = ["E402", "E501"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]

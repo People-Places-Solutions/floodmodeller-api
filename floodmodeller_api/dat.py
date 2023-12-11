@@ -143,7 +143,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:  # noqa: C901
+    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds previous unit in the reach.
 
         Previous unit in reach can be infered by:

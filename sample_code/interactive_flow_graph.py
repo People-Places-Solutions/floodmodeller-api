@@ -42,12 +42,12 @@ fig.add_scatter(
 buttons = []
 for col in df.columns:
     buttons.append(
-        dict(
-            method="restyle",
-            label=col,
-            visible=True,
-            args=[{"y": [df[col]]}],
-        )
+        {
+            "method": "restyle",
+            "label": col,
+            "visible": True,
+            "args": [{"y": [df[col]]}],
+        }
     )
 
 # Update the chart layout with labels and add a dropdown menu with all buttons
@@ -55,7 +55,7 @@ fig.update_layout(
     title={"text": "Modelled Flow", "y": 0.95, "x": 0.5},
     xaxis_title="Time (hrs)",
     yaxis_title="Flow (m3/s)",
-    updatemenus=[dict(buttons=buttons, direction="down", name="Node")],
+    updatemenus=[{"buttons": buttons, "direction": "down", "name": "Node"}],
 )
 
 # Save chart to HTML file

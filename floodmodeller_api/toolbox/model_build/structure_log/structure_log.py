@@ -55,7 +55,7 @@ class StructureLogBuilder:
             conduit.friction_above_axis,
             conduit.friction_below_axis,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -70,7 +70,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -85,7 +85,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -102,7 +102,7 @@ class StructureLogBuilder:
         # it is only meant to go up to the height of the majority of the area
         dimensions = f"h: {height:.2f} x w: {width:.2f} x l: {length:.2f}"
         all_cw_frictions = conduit.coords.cw_friction.tolist()
-        cw_frictions_set = set([min(all_cw_frictions), max(all_cw_frictions)])
+        cw_frictions_set = {min(all_cw_frictions), max(all_cw_frictions)}
         if len(cw_frictions_set) == 1:
             friction = f"Colebrook-White: {cw_frictions_set.pop()}"
         else:
@@ -119,7 +119,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -202,7 +202,7 @@ class StructureLogBuilder:
 
     def _bridge_data(self, structure):
         all_mannings = structure.section_data["Mannings n"].tolist()
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
