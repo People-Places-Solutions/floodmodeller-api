@@ -30,11 +30,11 @@ jobs:
       - name: Run black
         run: black ${{ env.FILES_TO_CHECK }} --check
 
-      - name: Run mypy
-        run: mypy ${{ env.FILES_TO_CHECK }}
+      - name: Run ruff
+        run: ruff check ${{ env.FILES_TO_CHECK }}
 
       - name: Run pylint
         run: pylint ${{ env.FILES_TO_CHECK }}
 
-      - name: Run ruff
-        run: ruff check ${{ env.FILES_TO_CHECK }}
+      - name: Run mypy
+        run: mypy ${{ env.FILES_TO_CHECK }}
