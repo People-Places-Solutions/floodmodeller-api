@@ -385,7 +385,7 @@ class TuflowToDat:
             friction_eq = "MANNING"
             invert = 0.0
 
-            for i in range(0, 2):
+            for i in range(2):
                 if i == 0:
                     name_ud = name + "u"
                     next_dist = length

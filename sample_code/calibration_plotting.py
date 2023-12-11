@@ -89,7 +89,7 @@ class Calibration:
         nodes = list(gauges_nodes["Node"])
 
         self._node_dict = {}
-        for i in range(0, len(nodes)):
+        for i in range(len(nodes)):
             self._node_dict[nodes[i]] = tabs[i]
 
         self._nodes = list(self._node_dict.keys())
