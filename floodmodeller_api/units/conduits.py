@@ -128,7 +128,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_unit",
         spill="",
@@ -178,7 +178,7 @@ class CONDUIT(Unit):
             else:
                 setattr(self, param, val)
 
-    def _read(self, c_block):
+    def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels

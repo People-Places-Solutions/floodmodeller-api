@@ -158,7 +158,7 @@ class Parser(ABC):
 
     _nan: object
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         name: str,
         prefix: str,

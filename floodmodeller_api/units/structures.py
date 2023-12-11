@@ -125,7 +125,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block):  # noqa: C901
+    def _read(self, br_block):  # noqa: C901, PLR0912, PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
@@ -346,7 +346,7 @@ class BRIDGE(Unit):
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self):  # noqa: C901
+    def _write(self):  # noqa: C901, PLR0912, PLR0915
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = "BRIDGE " + self.comment
@@ -877,7 +877,7 @@ class ORIFICE(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_orifice",
         flapped=False,
@@ -975,7 +975,7 @@ class SPILL(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_spill",
         ds_label="",
@@ -1019,6 +1019,7 @@ class RNWEIR(Unit):
         RNWEIR: Flood Modeller RNWEIR Unit class object"""
 
     _unit = "RNWEIR"
+    ACCEPTABLE_MODULAR_LIMIT = 0.0
 
     def _read(self, block):
         """Function to read a given RNWEIR block and store data as class attributes"""
@@ -1049,7 +1050,7 @@ class RNWEIR(Unit):
         block = [header, labels]
 
         # First parameter line
-        if self.modular_limit == 0.0:
+        if self.modular_limit == self.ACCEPTABLE_MODULAR_LIMIT:
             params1 = join_10_char(
                 self.velocity_coefficient,
                 self.weir_length,
@@ -1073,7 +1074,7 @@ class RNWEIR(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_rnweir",
         comment="",
@@ -1163,7 +1164,7 @@ class WEIR(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_weir",
         comment="",
@@ -1212,6 +1213,7 @@ class CRUMP(Unit):
         CRUMP: Flood Modeller CRUMP Unit class object"""
 
     _unit = "CRUMP"
+    ACCEPTABLE_MODULAR_LIMIT = 0.0
 
     def _read(self, block):
         """Function to read a given CRUMP block and store data as class attributes"""
@@ -1253,7 +1255,7 @@ class CRUMP(Unit):
             self.calibration_coefficient,
             self.weir_breadth,
             self.weir_elevation,
-            self.modular_limit if self.modular_limit != 0.0 else "",
+            self.modular_limit if self.modular_limit != self.ACCEPTABLE_MODULAR_LIMIT else "",
         )
 
         block.append(params1)
@@ -1264,7 +1266,7 @@ class CRUMP(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_crump",
         comment="",
@@ -1320,6 +1322,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         FLAT_V_WEIR: Flood Modeller FLAT-V WEIR Unit class object"""
 
     _unit = "FLAT-V WEIR"
+    ACCEPTABLE_MODULAR_LIMIT = 0.0
 
     def _read(self, block):
         """Function to read a given FLAT-V WEIR block and store data as class attributes"""
@@ -1366,7 +1369,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
             self.calibration_coefficient,
             self.weir_breadth,
             self.weir_elevation,
-            self.modular_limit if self.modular_limit != 0.0 else "",
+            self.modular_limit if self.modular_limit != self.ACCEPTABLE_MODULAR_LIMIT else "",
             self.v_slope,
             self.side_slope,
             self.ds_face_slope,
@@ -1382,7 +1385,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_flat_v",
         comment="",
@@ -1538,7 +1541,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_reservoir",
         comment="",
@@ -1650,7 +1653,7 @@ class OUTFALL(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_outfall",
         flapped=False,

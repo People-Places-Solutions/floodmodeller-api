@@ -63,7 +63,7 @@ class ComponentConverterDAT(ComponentConverter):
 
 
 class NetworkConverterDAT(ComponentConverterDAT):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         dat: DAT,
         folder: Path,
@@ -89,7 +89,7 @@ class ComponentConverterXML2D(ComponentConverter):
 
 
 class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -152,7 +152,7 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
 
 
 class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -174,7 +174,7 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
 
 
 class TopographyConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -278,7 +278,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
 
 class RoughnessConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -336,7 +336,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
 
 
 class SchemeConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,

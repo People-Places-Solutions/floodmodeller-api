@@ -248,7 +248,7 @@ class StructureLogBuilder:
                 "",
             )
 
-    def _write(
+    def _write(  # noqa: PLR0913
         self,
         name,
         unit,

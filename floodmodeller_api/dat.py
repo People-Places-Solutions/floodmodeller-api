@@ -583,7 +583,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):  # noqa: C901
+    def _update_dat_struct(self):  # noqa: C901, PLR0912
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -656,7 +656,9 @@ class DAT(FMFile):
 
         self._dat_struct = dat_struct
 
-    def _close_struct_block(self, dat_struct, unit_type, unit_block, in_block, idx):
+    def _close_struct_block(  # noqa: PLR0913
+        self, dat_struct, unit_type, unit_block, in_block, idx
+    ):
         """Helper method to close block in dat struct"""
         if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
@@ -707,7 +709,9 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="remove unit")
 
-    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):  # noqa: C901
+    def insert_unit(  # noqa: C901, PLR0912
+        self, unit, add_before=None, add_after=None, add_at=None
+    ):
         """Inserts a unit into the dat file.
 
         Args:
@@ -788,7 +792,9 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="insert unit")
 
-    def _update_gisinfo_label(self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second):
+    def _update_gisinfo_label(  # noqa: PLR0913
+        self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second
+    ):
         """Update labels in GISINFO block if unit is renamed"""
 
         start, end = next(

@@ -37,7 +37,7 @@ class ZZN(FMFile):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
-    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):
+    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):  # noqa: PLR0915
         try:
             FMFile.__init__(self, zzn_filepath)
 
@@ -169,7 +169,7 @@ class ZZN(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def to_dataframe(
+    def to_dataframe(  # noqa: PLR0911
         self,
         result_type: str = "all",
         variable: str = "all",

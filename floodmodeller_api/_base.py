@@ -32,6 +32,7 @@ class FMFile:
 
     _filetype: Optional[str] = None
     _suffix: Optional[str] = None
+    MAX_DIFF = 25
 
     def __init__(self, filepath: Optional[Union[str, Path]]):
         if filepath is not None:
@@ -104,9 +105,13 @@ class FMFile:
                 print("No difference, files are equivalent")
             else:
                 print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
-                if len(diff[1]) > 25 and not force_print:
-                    print("[Showing first 25 differences...] ")
-                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1][:25]]))
+                if len(diff[1]) > self.MAX_DIFF and not force_print:
+                    print(f"[Showing first {self.MAX_DIFF} differences...] ")
+                    print(
+                        "\n".join(
+                            [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]]
+                        )
+                    )
                     print("\n...To see full list of all differences add force_print=True")
                 else:
                     print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))

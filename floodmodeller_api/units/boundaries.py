@@ -51,7 +51,7 @@ class QTBDY(Unit):
 
     _unit = "QTBDY"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_qtbdy",
         comment="",
@@ -164,7 +164,7 @@ class HTBDY(Unit):
 
     _unit = "HTBDY"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_htbdy",
         comment="",
@@ -338,7 +338,7 @@ class REFHBDY(Unit):
 
     _unit = "REFHBDY"
 
-    def _read(self, refhbdy_block):
+    def _read(self, refhbdy_block):  # noqa: PLR0915
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number

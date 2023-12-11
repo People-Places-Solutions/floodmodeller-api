@@ -59,7 +59,7 @@ class RIVER(Unit):
 
     _unit = "RIVER"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_section",
         comment="",
@@ -311,7 +311,7 @@ class INTERPOLATE(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_interp",
         comment="",
@@ -414,7 +414,7 @@ class REPLICATE(Unit):
 
         return block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_repl",
         comment="",

@@ -47,6 +47,9 @@ class IEF(FMFile):
 
     _filetype: str = "IEF"
     _suffix: str = ".ief"
+    OLD_FILE = 5
+    ERROR_MAX = 2000
+    WARNING_MAX = 3000
 
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
@@ -352,7 +355,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
-    def simulate(  # noqa: C901
+    def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
         raise_on_failure: bool = True,
@@ -556,8 +559,8 @@ class IEF(FMFile):
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-            # it's old if it's over 5 seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > 5
+            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > self.OLD_FILE
 
             # timeout
             if time.time() > max_time:
@@ -623,7 +626,9 @@ class IEF(FMFile):
 
         exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
-            lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
+            lambda x: "Error"
+            if x < self.ERROR_MAX
+            else ("Warning" if x < self.WARNING_MAX else "Note")
         )
         errors = len(exy_data[exy_data["type"] == "Error"])
         warnings = len(exy_data[exy_data["type"] == "Warning"])

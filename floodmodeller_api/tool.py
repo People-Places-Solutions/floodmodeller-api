@@ -91,7 +91,7 @@ class Gui:
 
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         master: tk.Tk,
         title: str,

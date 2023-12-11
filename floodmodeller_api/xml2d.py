@@ -65,6 +65,8 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
+    OLD_FILE = 5
+    GOOD_EXIT_CODE = 100
 
     def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
@@ -203,7 +205,9 @@ class XML2D(FMFile):
             )
             raise ValueError(msg) from err
 
-    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
+    def _recursive_update_xml(  # noqa: C901, PLR0912
+        self, new_dict, orig_dict, parent_key, list_idx=None
+    ):
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
@@ -270,7 +274,9 @@ class XML2D(FMFile):
                     # New value/attribute added
                     self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):  # noqa: C901
+    def _recursive_add_element(  # noqa: C901, PLR0912
+        self, parent, add_item, add_key, from_list=False
+    ):
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
         if isinstance(add_item, dict):
@@ -439,7 +445,7 @@ class XML2D(FMFile):
         self._read()
         self._log_path = self._filepath.with_suffix(".lf2")
 
-    def simulate(  # noqa: C901
+    def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
         raise_on_failure: bool = True,
@@ -599,8 +605,8 @@ class XML2D(FMFile):
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-            # it's old if it's over 5 seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > 5
+            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > self.OLD_FILE
 
             # timeout
             if time.time() > max_time:
@@ -662,6 +668,6 @@ class XML2D(FMFile):
         except Exception:
             msg = f"Exit with {exitcode}: Unknown error occurred!"
 
-        if raise_on_failure and exitcode != 100:
+        if raise_on_failure and exitcode != self.GOOD_EXIT_CODE:
             raise Exception(msg)
         print(msg)

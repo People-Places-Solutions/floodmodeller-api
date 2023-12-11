@@ -267,7 +267,7 @@ class BLOCKAGE(Unit):
 
         return blockage_block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_blockage",
         _revision=1,
