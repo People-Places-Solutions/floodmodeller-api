@@ -1,3 +1,17 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = black
+line-length = 100
+
+[tool.mypy]
+ignore-missing-imports = True
+
+[tool.pylint]
+disable = all
+enable = dangerous-default-value, unneeded-not, no-else-return, no-else-continue, simplifiable-if-statement, simplifiable-if-expression, unnecessary-comprehension, consider-using-in, redefined-builtin, unused-variable, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call, no-else-raise, consider-iterating-dictionary, raise-missing-from

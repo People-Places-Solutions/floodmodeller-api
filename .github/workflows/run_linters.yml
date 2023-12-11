@@ -13,7 +13,6 @@ jobs:
     env:
       PYTHON_VERSION: "3.11"
       FILES_TO_CHECK: floodmodeller_api sample_code scripts setup.py
-      LINE_LENGTH: "100"
 
     steps:
       - uses: actions/checkout@v2  
@@ -29,20 +28,10 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run isort
-        run: >
-          isort
-          ${{ env.FILES_TO_CHECK }}
-          --profile black
-          --line-length ${{ env.LINE_LENGTH }}
-          --check-only
-          --diff
+        run: isort ${{ env.FILES_TO_CHECK }} --check-only --diff
 
       - name: Run black
-        run: >
-          black
-          ${{ env.FILES_TO_CHECK }}
-          --check
-          --line-length ${{ env.LINE_LENGTH }}
+        run: black ${{ env.FILES_TO_CHECK }} --check
 
       - name: Run flake8
         run: >
@@ -54,31 +43,7 @@ jobs:
           --max-complexity 10
 
       - name: Run mypy
-        run: >
-          mypy
-          ${{ env.FILES_TO_CHECK }}
-          --ignore-missing-imports
+        run: mypy ${{ env.FILES_TO_CHECK }}
 
       - name: Run pylint
-        run: >
-          pylint
-          ${{ env.FILES_TO_CHECK }}
-          --disable=all
-          --enable=
-          dangerous-default-value,
-          unneeded-not,
-          no-else-return,
-          no-else-continue,
-          simplifiable-if-statement,
-          simplifiable-if-expression,
-          unnecessary-comprehension,
-          consider-using-in,
-          redefined-builtin,
-          unused-variable,
-          unnecessary-pass,
-          used-before-assignment,
-          superfluous-parens,
-          unnecessary-dunder-call,
-          no-else-raise,
-          consider-iterating-dictionary,
-          raise-missing-from
+        run: pylint ${{ env.FILES_TO_CHECK }}
