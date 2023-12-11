@@ -97,7 +97,7 @@ class TuflowModelConverter:
                     "roughness": self._create_roughness_cc_xml2d,
                     "scheme": self._create_scheme_cc_xml2d,
                 },
-            )
+            ),
         }
         self._logger.info("xml done")
 

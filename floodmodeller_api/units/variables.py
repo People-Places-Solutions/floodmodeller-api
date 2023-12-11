@@ -51,7 +51,7 @@ class Variables:
                     _type,
                     initial_value,
                     initial_status,
-                ]
+                ],
             )
         self.data = pd.DataFrame(data_list, columns=header)
 
@@ -80,6 +80,9 @@ class Variables:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name="Variables", diff=diff
+            self.__dict__,
+            other.__dict__,
+            name="Variables",
+            diff=diff,
         )
         return (result, diff) if return_diff else result

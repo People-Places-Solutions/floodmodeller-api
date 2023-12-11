@@ -46,7 +46,7 @@ class Unit:
             new_name = str(new_name)
             if " " in new_name:
                 raise Exception(
-                    f'Cannot set unit name to "{new_name}" as it contains one or more spaces'
+                    f'Cannot set unit name to "{new_name}" as it contains one or more spaces',
                 )
             self._name = new_name
         except Exception as e:
@@ -69,7 +69,7 @@ class Unit:
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
+            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read",
         )
 
     def __str__(self):
@@ -153,7 +153,7 @@ class Unit:
         block.append("RULES")
         self.nrules = len(self.rules)
         block.append(
-            f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+            f"{join_n_char_ljust(10, self.nrules)}{join_10_char(self.rule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}",
         )
         for rule in self.rules:
             block.append(rule["name"])
@@ -170,7 +170,7 @@ class Unit:
             block.append("VARRULES")
             self.nvarrules = len(self.varrules)
             block.append(
-                f"{join_n_char_ljust(10, self.nvarrules)}{join_10_char(self.varrule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}"
+                f"{join_n_char_ljust(10, self.nvarrules)}{join_10_char(self.varrule_sample_time)}{join_n_char_ljust(10, self.timeunit, self.extendmethod)}",
             )
             for varrule in self.varrules:
                 block.append(varrule["name"])

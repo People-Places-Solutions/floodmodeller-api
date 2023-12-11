@@ -36,7 +36,7 @@ def conduit_empty():
             "x": [0, 0],
             "y": [0, 0],
             "cw_friction": [0, 0],
-        }
+        },
     )
     return c
 
@@ -60,7 +60,7 @@ def conduit_filled():
             "x": [34, 43, 45, 3, 12, 7, 78],
             "y": [0, 0, 4, 5, 10, 65, 32],
             "cw_friction": [0, 0, 0, 3, 4, 3.5, 2],
-        }
+        },
     )
     return c
 

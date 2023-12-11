@@ -35,7 +35,7 @@ for csv_file in csv_folder.glob("*"):
                     csv_folder.parent,
                     "output",
                     f"Q{return_period}_{storm_duration}.ied",
-                )
+                ),
             )
             ied_files[return_period][storm_duration] = ied
 

@@ -39,7 +39,7 @@ def _validate_unit(unit, urban=False):
                 f"{param} {value[1]}"
                 for param, value in param_validation_dict.items()
                 if not value[0]
-            ]
+            ],
         )
         raise ValueError(f"One or more parameters in {repr(unit)} are invalid:\n     {errors}")
 

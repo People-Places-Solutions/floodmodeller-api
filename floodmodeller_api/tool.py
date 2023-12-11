@@ -115,7 +115,10 @@ class Gui:
         self.add_inputs()
         # Create and place the button
         self.button = tk.Button(
-            self.master, text="Run", font=("Arial", 14), command=self.run_gui_callback
+            self.master,
+            text="Run",
+            font=("Arial", 14),
+            command=self.run_gui_callback,
         )
         self.button.pack(pady=10)
         # Add other widgets to the app

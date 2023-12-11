@@ -143,14 +143,14 @@ class Calibration:
                         pd.DataFrame(
                             {f"{node}_{event}": values},
                             index=pd.Index(time, name="Time (hr)"),
-                        )
+                        ),
                     )
                     print(
-                        f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                        f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}",
                     )
                 except Exception:
                     print(
-                        f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                        f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}",
                     )
                 index += 1
                 # workbook file can't be found, or node sheet can't be found
@@ -256,7 +256,7 @@ class Calibration:
                         visible=show,
                         name="Model Data",
                         mode="lines",
-                    )
+                    ),
                 )
                 trace_events.append(event)
             if count < len(event_y_coords):
@@ -267,7 +267,7 @@ class Calibration:
                         visible=show,
                         name="Event Data",
                         mode="lines",
-                    )
+                    ),
                 )
             trace_events.append(event)
 
@@ -296,7 +296,7 @@ class Calibration:
                 "label": self._node_dict[node],
                 "visible": True,
                 "args": [{"y": y_coords}],
-            }
+            },
         )
 
     def _create_html(self, fig, nodes_dropdown, trace_events, output_folder):
@@ -309,7 +309,7 @@ class Calibration:
                     "label": f"{event}",
                     "visible": True,
                     "args": [{"visible": show_event}],
-                }
+                },
             )
 
         # dropdown
@@ -329,7 +329,7 @@ class Calibration:
                     "x": -0.05,
                     "y": 1.0,
                 },
-            ]
+            ],
         )
 
         fig.update_layout(
@@ -349,10 +349,12 @@ class Calibration:
                 and event_col_name in node_filtered_event.columns
             ):
                 model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace(
-                    "---", np.nan
+                    "---",
+                    np.nan,
                 )
                 event_col = (node_filtered_event[f"{node}_{link['event folder']}"]).replace(
-                    "---", np.nan
+                    "---",
+                    np.nan,
                 )
                 model_peak = model_col.max()
                 event_peak = event_col.max()
@@ -368,7 +370,7 @@ class Calibration:
                         model_time_peak,
                         event_time_peak,
                         f"{abs(model_time_peak - event_time_peak):.3f}",
-                    ]
+                    ],
                 )
 
     def _outputs_csv(self, csv_list, output_folder):

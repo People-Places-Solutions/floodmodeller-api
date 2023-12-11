@@ -9,7 +9,7 @@ try:
     from floodmodeller_api import DAT
 except ImportError:
     print(
-        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment"
+        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment",
     )
     sys.exit()
 
@@ -23,7 +23,8 @@ for _, section in dat.sections.items():  # iterate through all river sections
     min_elevation = df["Y"].min()  # get minimum cross section elevation
     raised_bed = min_elevation + 0.3  # define new lowest bed level (+300mm)
     df.loc[
-        df["Y"] < raised_bed, "Y"
+        df["Y"] < raised_bed,
+        "Y",
     ] = raised_bed  # Raise any levels lower than this to the new lowest level
 
 dat.save("sample_data\\ex3_300m_siltation.dat")  # save updates

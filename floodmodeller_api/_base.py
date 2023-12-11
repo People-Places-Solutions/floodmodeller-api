@@ -42,13 +42,13 @@ class FMFile:
 
             if not self._filepath.suffix.lower() == self._suffix:
                 raise TypeError(
-                    f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file"
+                    f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file",
                 )
             if not self._filepath.exists():
                 raise FileNotFoundError(
                     f"{self._filetype} file does not exist! If you are wanting to create a new {self._filetype}, initiate the class without a given "
                     f"filepath to create a new blank {self._filetype} or point the filepath of an existing {self._filetype} to use as a template, "
-                    f"then use the .save() method to save to a new filepath"
+                    f"then use the .save() method to save to a new filepath",
                 )
             # If the file is not a ZZN file, then perform a backup
             # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
@@ -71,7 +71,7 @@ class FMFile:
         """Updates the existing self._filetype based on any altered attributes"""
         if self._filepath is None:
             raise UserWarning(
-                f"{self._filetype} must be saved to a specific filepath before update() can be called."
+                f"{self._filetype} must be saved to a specific filepath before update() can be called.",
             )
 
         string = self._write()
@@ -83,7 +83,7 @@ class FMFile:
         filepath = Path(filepath).absolute()
         if not filepath.suffix.lower() == self._suffix:
             raise TypeError(
-                f'Given filepath does not point to a filepath suffixed "{self._suffix}". Please point to the full path to save the {self._filetype} file'
+                f'Given filepath does not point to a filepath suffixed "{self._suffix}". Please point to the full path to save the {self._filetype} file',
             )
 
         if not filepath.parent.exists():
@@ -109,8 +109,8 @@ class FMFile:
                     print(f"[Showing first {self.MAX_DIFF} differences...] ")
                     print(
                         "\n".join(
-                            [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]]
-                        )
+                            [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
+                        ),
                     )
                     print("\n...To see full list of all differences add force_print=True")
                 else:
@@ -134,7 +134,7 @@ class FMFile:
             f"\nAPI Error: Problem encountered when trying to {when} {self._filetype} file {self._filepath}."
             f"\n\nDetails: {__version__}-{fname}-{line_no}"
             f"\nMsg: {err}"
-            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api"
+            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api",
         )
 
     def __eq__(self, other, return_diff=False):
@@ -170,7 +170,7 @@ class FMFile:
                         (
                             f"{self._filetype}->{key}",
                             f"Key: '{ke.args[0]}' missing in other",
-                        )
+                        ),
                     )
                     continue
 

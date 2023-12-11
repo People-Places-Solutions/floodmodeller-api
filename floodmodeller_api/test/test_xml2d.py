@@ -79,7 +79,7 @@ def test_xml2d_add_remove_branch_roughness():
     orig_xml = x2d._write()
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"},
     )
     assert x2d._write() != orig_xml
     assert "my/roughness/file.shp" in x2d._write()
@@ -95,11 +95,11 @@ def test_xml2d_append_remove_branch_roughness():
     domain = list(x2d.domains)[0]
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"},
     )
     xml_1_roughness = x2d._write()
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "new/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "new/roughness/file.shp"},
     )
 
     assert x2d._write() != xml_1_roughness

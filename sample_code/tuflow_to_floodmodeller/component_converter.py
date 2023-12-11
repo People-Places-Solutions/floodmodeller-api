@@ -234,7 +234,8 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
     @staticmethod
     def convert_lines_and_points(
-        lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
+        lines: gpd.GeoDataFrame,
+        points: gpd.GeoDataFrame,
     ) -> gpd.GeoDataFrame:
         # split lines according to points
         segments = gpd.GeoDataFrame(
@@ -245,7 +246,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
         # get line endpoints
         segments[["point1", "point2"]] = pd.DataFrame(
-            segments.apply(lambda x: list(x.geometry.boundary.geoms), axis=1).tolist()
+            segments.apply(lambda x: list(x.geometry.boundary.geoms), axis=1).tolist(),
         )
         segments["point1"] = gpd.GeoSeries(segments["point1"])
         segments["point2"] = gpd.GeoSeries(segments["point2"])
@@ -316,7 +317,8 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
 
     @staticmethod
     def material_to_roughness(
-        material: gpd.GeoDataFrame, mapping: pd.DataFrame
+        material: gpd.GeoDataFrame,
+        mapping: pd.DataFrame,
     ) -> gpd.GeoDataFrame:
         return pd.merge(material, mapping, on="material_id")[["value", "geometry"]]
 

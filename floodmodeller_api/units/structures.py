@@ -163,7 +163,8 @@ class BRIDGE(Unit):
                 embankment = row_split[4]  # Embankment flag
                 data_list.append([x, y, n, embankment])
             self.section_data = pd.DataFrame(
-                data_list, columns=["X", "Y", "Mannings n", "Embankments"]
+                data_list,
+                columns=["X", "Y", "Mannings n", "Embankments"],
             )
 
             # Read bridge opening data
@@ -227,7 +228,8 @@ class BRIDGE(Unit):
                 embankment = row_split[4]  # Embankment flag
                 data_list.append([x, y, n, embankment])
             self.section_data = pd.DataFrame(
-                data_list, columns=["X", "Y", "Mannings n", "Embankments"]
+                data_list,
+                columns=["X", "Y", "Mannings n", "Embankments"],
             )
 
             # Read bridge opening data
@@ -249,7 +251,7 @@ class BRIDGE(Unit):
 
             # Read flood relief culvert data
             self.culvert_nrows = int(
-                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0]
+                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0],
             )
             data_list = []
             start_row = 9 + self.section_nrows + self.opening_nrows + 2
@@ -303,7 +305,8 @@ class BRIDGE(Unit):
                 top_level = row_split[5]  # Top Level (m)
                 data_list.append([x, y, n, embankment, top_level])
             self.us_section_data = pd.DataFrame(
-                data_list, columns=["X", "Y", "Mannings n", "Embankments", "Top Level"]
+                data_list,
+                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
             )
 
             # Read DS cross section data
@@ -319,7 +322,8 @@ class BRIDGE(Unit):
                 top_level = row_split[5]  # Top Level (m)
                 data_list.append([x, y, n, embankment, top_level])
             self.ds_section_data = pd.DataFrame(
-                data_list, columns=["X", "Y", "Mannings n", "Embankments", "Top Level"]
+                data_list,
+                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
             )
 
             # Read pier locations
@@ -341,7 +345,7 @@ class BRIDGE(Unit):
         else:
             # This else block is triggered for bridge subtypes which aren't yet supported, and just keeps the 'br_block' in it's raw state to write back.
             print(
-                f'This Bridge sub-type: "{self.subtype}" is currently unsupported for reading/editing'
+                f'This Bridge sub-type: "{self.subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
@@ -425,7 +429,7 @@ class BRIDGE(Unit):
                     pier_params,
                     self.abutment_alignment,
                     f"{str(self.section_nrows):>10}",
-                ]
+                ],
             )
 
             section_data = []
@@ -479,7 +483,7 @@ class BRIDGE(Unit):
                     params,
                     additional_params,
                     f"{str(self.us_section_nrows):>10}",
-                ]
+                ],
             )
 
             us_section_data = []
@@ -659,7 +663,7 @@ class SLUICE(Unit):
         else:
             self._raw_extra_lines = block[6:]
             print(
-                f"Note: Sluice control using method: {self.control_method} is not currently supported."
+                f"Note: Sluice control using method: {self.control_method} is not currently supported.",
             )
 
     def _write(self):
@@ -734,7 +738,7 @@ class SLUICE(Unit):
                     self.max_movement_rate,
                     self.max_setting,
                     self.min_setting,
-                )
+                ),
             )
             n = 1
             for gate in self.gates:
@@ -1482,7 +1486,8 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
 
             # Coordinate data
             coordinate_data = split_n_char(
-                f"{block[len(block)-1]:<{3*self._label_len}}", self._label_len
+                f"{block[len(block)-1]:<{3*self._label_len}}",
+                self._label_len,
             )
             self.easting = _to_float(coordinate_data[0])
             self.northing = _to_float(coordinate_data[1])

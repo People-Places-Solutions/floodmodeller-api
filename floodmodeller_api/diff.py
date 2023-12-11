@@ -22,11 +22,19 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
     try:
         if isinstance(item_a, dict):
             result, diff = check_dict_with_dataframe_equal(
-                item_a, item_b, name, diff, special_types
+                item_a,
+                item_b,
+                name,
+                diff,
+                special_types,
             )
         elif isinstance(item_a, list):
             result, diff = check_list_with_dataframe_equal(
-                item_a, item_b, name, diff, special_types
+                item_a,
+                item_b,
+                name,
+                diff,
+                special_types,
             )
         elif isinstance(item_a, (pd.DataFrame, pd.Series)):
             if not item_a.equals(item_b):
@@ -44,7 +52,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
                         if True not in df_diff.loc[row, col].duplicated().values:
                             vals = df_diff.loc[row, col].values
                             row_diffs.append(
-                                f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}"
+                                f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}",
                             )
                 msg += "\n".join(row_diffs)
                 diff.append((name, msg))

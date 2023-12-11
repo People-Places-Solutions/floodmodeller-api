@@ -59,7 +59,9 @@ class AllData(Data):
         self.no_values += 1
 
     def get_value(
-        self, index_key: Optional[str] = None, index_df: Optional[pd.Series] = None
+        self,
+        index_key: Optional[str] = None,
+        index_df: Optional[pd.Series] = None,
     ) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 

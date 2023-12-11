@@ -259,7 +259,7 @@ class CONDUIT(Unit):
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
             print(
-                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing'
+                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = c_block
 
@@ -288,7 +288,7 @@ class CONDUIT(Unit):
                     self.friction_eq,
                     params,
                     friction_params,
-                ]
+                ],
             )
             return c_block
 
@@ -311,7 +311,7 @@ class CONDUIT(Unit):
                     self.friction_eq,
                     params,
                     friction_params,
-                ]
+                ],
             )
             return c_block
 
@@ -337,7 +337,7 @@ class CONDUIT(Unit):
                         self.friction_on_walls,
                         self.friction_on_soffit,
                     ),
-                ]
+                ],
             )
             return c_block
 
@@ -363,7 +363,7 @@ class CONDUIT(Unit):
                         self.friction_on_walls,
                         self.friction_on_soffit,
                     ),
-                ]
+                ],
             )
             return c_block
 
@@ -372,11 +372,11 @@ class CONDUIT(Unit):
                 [
                     join_10_char(self.dist_to_next),
                     join_10_char(len(self.coords)),
-                ]
+                ],
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)]
+                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
                 )
             return c_block
 

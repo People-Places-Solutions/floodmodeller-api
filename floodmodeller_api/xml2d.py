@@ -174,11 +174,11 @@ class XML2D(FMFile):
         # find element in schema
         parent_name = parent.tag.replace(self._ns, "")
         schema_elem = self._xsd.find(
-            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']"
+            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']",
         )
         if "type" in schema_elem.attrib:
             schema_elem = self._xsd.find(
-                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']"
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']",
             )
         else:
             schema_elem = schema_elem.find("{http://www.w3.org/2001/XMLSchema}complexType")
@@ -206,7 +206,11 @@ class XML2D(FMFile):
             raise ValueError(msg) from err
 
     def _recursive_update_xml(  # noqa: C901, PLR0912
-        self, new_dict, orig_dict, parent_key, list_idx=None
+        self,
+        new_dict,
+        orig_dict,
+        parent_key,
+        list_idx=None,
     ):
         # TODO: Handle removing params
 
@@ -275,7 +279,11 @@ class XML2D(FMFile):
                     self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
     def _recursive_add_element(  # noqa: C901, PLR0912
-        self, parent, add_item, add_key, from_list=False
+        self,
+        parent,
+        add_item,
+        add_key,
+        from_list=False,
     ):
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
@@ -291,7 +299,10 @@ class XML2D(FMFile):
             else:
                 for item in add_item:
                     self._recursive_add_element(
-                        parent=parent, add_item=item, add_key=add_key, from_list=True
+                        parent=parent,
+                        add_item=item,
+                        add_key=add_key,
+                        from_list=True,
                     )
         elif add_key == "value":  # Value has been added
             parent.text = str(add_item)
@@ -299,7 +310,7 @@ class XML2D(FMFile):
             # Check schema to see if we should use parent.set for attribute
             # or etree.subelement() and set text
             schema_elem = self._xsd.findall(
-                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
             )
             if len(schema_elem) == 1:
                 schema_elem = schema_elem[0]
@@ -307,14 +318,14 @@ class XML2D(FMFile):
                 # This is just here for when there's multiple schema elements with same
                 # name, e.g. 'frequency'
                 parent_schema_elem = self._xsd.find(
-                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']"
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']",
                 )
                 if "type" in parent_schema_elem.attrib:
                     parent_schema_elem = self._xsd.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']"
+                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']",
                     )
                 schema_elem = parent_schema_elem.find(
-                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
                 )
 
             if schema_elem.tag.endswith("attribute"):
@@ -496,7 +507,7 @@ class XML2D(FMFile):
         try:
             if self._filepath is None:
                 raise UserWarning(
-                    "xml2D must be saved to a specific filepath before simulate() can be called."
+                    "xml2D must be saved to a specific filepath before simulate() can be called.",
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # defaults to single precision
@@ -512,7 +523,7 @@ class XML2D(FMFile):
                 _enginespath = enginespath
                 if not Path(_enginespath).exists():
                     raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
                     )
 
             # checking if all schemes used are fast, if so will use FAST.exe

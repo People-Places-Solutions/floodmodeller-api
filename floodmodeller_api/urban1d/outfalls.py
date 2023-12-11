@@ -84,7 +84,9 @@ class OUTFALL(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
-            15, self.elevation, self.type
+            15,
+            self.elevation,
+            self.type,
         )
 
         if self.type in ("FREE", "NORMAL"):

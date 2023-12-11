@@ -92,7 +92,7 @@ class IED(FMFile):
                         # block still exists
                         new_unit_data = unit_group[unit_name]._write()
                         existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
-                            unit_name
+                            unit_name,
                         )
                     else:
                         # Bdy block has been deleted
@@ -129,7 +129,7 @@ class IED(FMFile):
                         # Check if new name already exists as a label
                         if unit.name in unit_group:
                             raise Exception(
-                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group'
+                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
                             )
                         unit_group[unit.name] = unit
                         del unit_group[name]
@@ -167,7 +167,7 @@ class IED(FMFile):
                 unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
                     raise Exception(
-                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}',
                     )
                 unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 

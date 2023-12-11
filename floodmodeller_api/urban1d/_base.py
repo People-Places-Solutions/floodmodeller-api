@@ -49,7 +49,7 @@ class UrbanUnit:
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
+            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read",
         )
 
     def __str__(self):
@@ -106,7 +106,7 @@ class UrbanSubsection:
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            f"Creating new {self._name} subsections is not yet supported by floodmodeller_api, only existing subsections can be read"
+            f"Creating new {self._name} subsections is not yet supported by floodmodeller_api, only existing subsections can be read",
         )
 
     def __str__(self):
@@ -151,7 +151,7 @@ class UrbanSubsection:
                 # check that it is not an existing label in units
                 if unit.name in units:
                     raise Exception(
-                        f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the {self._attribute} subsection'
+                        f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the {self._attribute} subsection',
                     )
 
                 units[unit.name] = unit
@@ -175,6 +175,9 @@ class UrbanSubsection:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name=f"{self._attribute.upper()}", diff=diff
+            self.__dict__,
+            other.__dict__,
+            name=f"{self._attribute.upper()}",
+            diff=diff,
         )
         return (result, diff) if return_diff else result

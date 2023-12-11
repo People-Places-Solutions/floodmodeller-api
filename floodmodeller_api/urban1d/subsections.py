@@ -25,7 +25,8 @@ from .raingauges import RAINGAUGES
 from .xsections import XSECTIONS
 
 SupportedSubsections = TypedDict(
-    "SupportedSubsections", {"group": str, "attribute": str, "class": Type[UrbanSubsection]}
+    "SupportedSubsections",
+    {"group": str, "attribute": str, "class": Type[UrbanSubsection]},
 )
 
 # Unit types and support

@@ -170,7 +170,7 @@ class RIVER(Unit):
                         northing,
                         deactivation,
                         sp_marker,
-                    ]
+                    ],
                 )
             self.data = pd.DataFrame(
                 data_list,
@@ -191,7 +191,7 @@ class RIVER(Unit):
         else:
             # This else block is triggered for river subtypes which aren't yet supported, and just keeps the 'riv_block' in it's raw state to write back.
             print(
-                f'This River sub-type: "{self.subtype}" is currently unsupported for reading/editing'
+                f'This River sub-type: "{self.subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = riv_block
             self.name = riv_block[2][: self._label_len].strip()

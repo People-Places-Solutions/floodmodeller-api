@@ -269,7 +269,7 @@ class StructureLogBuilder:
                 dimensions,
                 weir_coefficient,
                 culvert_loss,
-            ]
+            ],
         )
 
     def create(self):

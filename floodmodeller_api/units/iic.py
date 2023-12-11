@@ -60,7 +60,7 @@ class IIC:
                     float(um),
                     float(us),
                     float(z),
-                ]
+                ],
             )
         # AL is this storing the values as strings?
         self.data = pd.DataFrame(data_list, columns=header)
@@ -96,6 +96,9 @@ class IIC:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name="Initial Conditions", diff=diff
+            self.__dict__,
+            other.__dict__,
+            name="Initial Conditions",
+            diff=diff,
         )
         return (result, diff) if return_diff else result

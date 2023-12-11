@@ -64,7 +64,12 @@ class LOSS(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name) + join_n_char_ljust(
-            15, self.kentry, self.kexit, self.kavg, self.flap, self.seepage
+            15,
+            self.kentry,
+            self.kexit,
+            self.kavg,
+            self.flap,
+            self.seepage,
         )
 
 

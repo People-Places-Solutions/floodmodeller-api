@@ -31,7 +31,7 @@ class TuflowToDat:
     def _clean_df_1(self):
         #   Clean up dataframes
         self._culvert_attributes = self._nwk_attributes.query(
-            "Type.str.lower() == 'r' | Type.str.lower() == 'c'"
+            "Type.str.lower() == 'r' | Type.str.lower() == 'c'",
         )
         self._nwk_attributes = self._nwk_attributes.query("Type.str.lower() == 's'")
 
@@ -47,16 +47,16 @@ class TuflowToDat:
         #   Extract geometry data
         self._nwk_attributes["length"] = self._nwk_attributes.length
         self._nwk_attributes["start"] = self._nwk_attributes["geometry"].apply(
-            lambda g: Point(g.coords[0])
+            lambda g: Point(g.coords[0]),
         )
         self._nwk_attributes["end"] = self._nwk_attributes["geometry"].apply(
-            lambda g: Point(g.coords[-1])
+            lambda g: Point(g.coords[-1]),
         )
         self._culvert_attributes["start"] = self._culvert_attributes["geometry"].apply(
-            lambda g: Point(g.coords[0])
+            lambda g: Point(g.coords[0]),
         )
         self._culvert_attributes["end"] = self._culvert_attributes["geometry"].apply(
-            lambda g: Point(g.coords[-1])
+            lambda g: Point(g.coords[-1]),
         )
 
     def _find_xs_intersect(self):
@@ -140,26 +140,28 @@ class TuflowToDat:
 
         self._nwk_attributes.loc[
             self._nwk_attributes["ID"].isin(
-                filtered_df["ID"][filtered_df["connected"].apply(lambda x: len(x) == 1)]
+                filtered_df["ID"][filtered_df["connected"].apply(lambda x: len(x) == 1)],
             ),
             "Flag",
         ] = "join_start"
         self._nwk_attributes.loc[
             self._nwk_attributes["ID"].isin(
-                filtered_df["ID"][filtered_df["connected"].apply(lambda x: len(x) != 1)]
+                filtered_df["ID"][filtered_df["connected"].apply(lambda x: len(x) != 1)],
             ),
             "Flag",
         ] = "join_end"
         self._nwk_attributes.loc[
-            self._nwk_attributes["connected"].apply(lambda x: len(x) == 0), "Flag"
+            self._nwk_attributes["connected"].apply(lambda x: len(x) == 0),
+            "Flag",
         ] = "end"
         self._nwk_attributes.loc[
-            self._nwk_attributes["before"].apply(lambda x: len(x) == 0), "Flag"
+            self._nwk_attributes["before"].apply(lambda x: len(x) == 0),
+            "Flag",
         ] = "start"
 
         non_empty_rows = self._nwk_attributes[self._nwk_attributes["Flag"] != ""]
         id_flag_dict = non_empty_rows.set_index("ID")[["Flag", "n_nF_Cd", "length", "end"]].to_dict(
-            orient="index"
+            orient="index",
         )
         self._full_flag_dict = self._nwk_attributes.set_index("ID")[
             ["Flag", "n_nF_Cd", "length", "start", "end"]
@@ -182,16 +184,20 @@ class TuflowToDat:
         #   add to the xs data
         self._xs_attributes["Flag"] = ""
         self._xs_attributes.loc[
-            self._xs_attributes["end_intersect"].isin(self._end_dict.keys()), "Flag"
+            self._xs_attributes["end_intersect"].isin(self._end_dict.keys()),
+            "Flag",
         ] = "end"
         self._xs_attributes.loc[
-            self._xs_attributes["intersect"].isin(self._start_dict.keys()), "Flag"
+            self._xs_attributes["intersect"].isin(self._start_dict.keys()),
+            "Flag",
         ] = "start"
         self._xs_attributes.loc[
-            self._xs_attributes["intersect"].isin(self._join_end_dict.keys()), "Flag"
+            self._xs_attributes["intersect"].isin(self._join_end_dict.keys()),
+            "Flag",
         ] = "join_end"
         self._xs_attributes.loc[
-            self._xs_attributes["intersect"].isin(self._join_start_dict.keys()), "Flag"
+            self._xs_attributes["intersect"].isin(self._join_start_dict.keys()),
+            "Flag",
         ] = "join_start"
 
         self._xs_attributes["dist_to_next"] = ""
@@ -307,7 +313,8 @@ class TuflowToDat:
         for _, row in self._cross_sections.iterrows():
             unit_csv_name = str(row["Source"])
             unit_csv = pd.read_csv(
-                Path(self._xs_paths[0].parent, unit_csv_name).resolve(), skiprows=[0]
+                Path(self._xs_paths[0].parent, unit_csv_name).resolve(),
+                skiprows=[0],
             )
             unit_csv.columns = ["X", "Z"]
             unit_data = pd.DataFrame(columns=self._headings)

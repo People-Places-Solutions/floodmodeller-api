@@ -178,7 +178,7 @@ class IEF(FMFile):
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
-                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n"
+                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n",
                     )
                     continue
 
@@ -233,7 +233,7 @@ class IEF(FMFile):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
-                + " names and values referencing the IED files"
+                + " names and values referencing the IED files",
             )
 
         # Number of 'EventData' flags in ief
@@ -392,7 +392,7 @@ class IEF(FMFile):
             self._range_settings = range_settings if range_settings else {}
             if self._filepath is None:
                 raise UserWarning(
-                    "IEF must be saved to a specific filepath before simulate() can be called."
+                    "IEF must be saved to a specific filepath before simulate() can be called.",
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # Defaults to single...
@@ -410,7 +410,7 @@ class IEF(FMFile):
                 _enginespath = enginespath
                 if not Path(_enginespath).exists():
                     raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
                     )
 
             if precision.upper() == "SINGLE":
@@ -628,7 +628,7 @@ class IEF(FMFile):
         exy_data["type"] = exy_data["code"].apply(
             lambda x: "Error"
             if x < self.ERROR_MAX
-            else ("Warning" if x < self.WARNING_MAX else "Note")
+            else ("Warning" if x < self.WARNING_MAX else "Note"),
         )
         errors = len(exy_data[exy_data["type"] == "Error"])
         warnings = len(exy_data[exy_data["type"] == "Warning"])

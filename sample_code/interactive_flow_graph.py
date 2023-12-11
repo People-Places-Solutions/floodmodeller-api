@@ -15,7 +15,7 @@ try:
     from floodmodeller_api import ZZN
 except ImportError:
     print(
-        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment"
+        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment",
     )
     sys.exit()
 
@@ -47,7 +47,7 @@ for col in df.columns:
             "label": col,
             "visible": True,
             "args": [{"y": [df[col]]}],
-        }
+        },
     )
 
 # Update the chart layout with labels and add a dropdown menu with all buttons

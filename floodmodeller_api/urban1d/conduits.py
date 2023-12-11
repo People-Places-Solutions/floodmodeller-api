@@ -75,7 +75,13 @@ class CONDUIT(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name, self.node1, self.node2) + join_n_char_ljust(
-            15, self.length, self.n, self.z1, self.z2, self.q0, self.qmax
+            15,
+            self.length,
+            self.n,
+            self.z1,
+            self.z2,
+            self.q0,
+            self.qmax,
         )
 
 
