@@ -151,12 +151,11 @@ class XML2D(FMFile):
             elif value == "":
                 self._recursive_elements_to_dict(child_dict, child)
 
+            elif child_key in self._multi_value_keys:
+                xml_dict[child_key] = xml_dict[child_key][:-1]  # remove unused dict
+                xml_dict[child_key].append(value_from_string(value))
             else:
-                if child_key in self._multi_value_keys:
-                    xml_dict[child_key] = xml_dict[child_key][:-1]  # remove unused dict
-                    xml_dict[child_key].append(value_from_string(value))
-                else:
-                    xml_dict[child_key] = value_from_string(value)
+                xml_dict[child_key] = value_from_string(value)
 
         return xml_dict
 
@@ -288,37 +287,36 @@ class XML2D(FMFile):
                     self._recursive_add_element(
                         parent=parent, add_item=item, add_key=add_key, from_list=True
                     )
-        else:
-            if add_key == "value":  # Value has been added
-                parent.text = str(add_item)
-            else:  # Attribute or element added
-                # Check schema to see if we should use parent.set for attribute
-                # or etree.subelement() and set text
-                schema_elem = self._xsd.findall(
+        elif add_key == "value":  # Value has been added
+            parent.text = str(add_item)
+        else:  # Attribute or element added
+            # Check schema to see if we should use parent.set for attribute
+            # or etree.subelement() and set text
+            schema_elem = self._xsd.findall(
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+            )
+            if len(schema_elem) == 1:
+                schema_elem = schema_elem[0]
+            else:
+                # This is just here for when there's multiple schema elements with same
+                # name, e.g. 'frequency'
+                parent_schema_elem = self._xsd.find(
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']"
+                )
+                if "type" in parent_schema_elem.attrib:
+                    parent_schema_elem = self._xsd.find(
+                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']"
+                    )
+                schema_elem = parent_schema_elem.find(
                     f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
                 )
-                if len(schema_elem) == 1:
-                    schema_elem = schema_elem[0]
-                else:
-                    # This is just here for when there's multiple schema elements with same
-                    # name, e.g. 'frequency'
-                    parent_schema_elem = self._xsd.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']"
-                    )
-                    if "type" in parent_schema_elem.attrib:
-                        parent_schema_elem = self._xsd.find(
-                            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']"
-                        )
-                    schema_elem = parent_schema_elem.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
-                    )
 
-                if schema_elem.tag.endswith("attribute"):
-                    parent.set(add_key, str(add_item))
+            if schema_elem.tag.endswith("attribute"):
+                parent.set(add_key, str(add_item))
 
-                else:
-                    new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
-                    new_element.text = str(add_item)
+            else:
+                new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+                new_element.text = str(add_item)
 
     def _recursive_remove_data_xml(self, new_dict, parent, list_idx=None):
         # This method will recursively work through the original dictionary and remove any

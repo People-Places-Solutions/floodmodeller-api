@@ -301,9 +301,8 @@ class ZZN(FMFile):
                 save_location, Path(self.meta["zzn_name"]).with_suffix(".csv").name
             )
 
-        else:
-            if not save_location.parent.exists():
-                Path.mkdir(save_location.parent)
+        elif not save_location.parent.exists():
+            Path.mkdir(save_location.parent)
 
         result_type = result_type.lower()
 
