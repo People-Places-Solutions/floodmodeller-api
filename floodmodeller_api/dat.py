@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from pathlib import Path
 from typing import List, Optional, Union
 
-from . import units  # Import for using as package
+from . import units
 from ._base import FMFile
 from .units._base import Unit
 from .units.helpers import _to_float, _to_int
