@@ -16,26 +16,25 @@ Failing tests or linters will prevent merging to main unless overridden.
 
 ## Linting
 Linting ensures that the code meets certain quality standards and can reveal bugs.
-The Lint workflow uses `black` for formatting, `isort` for sorting imports, `mypy` for type checking, and `pylint` and `flake8` for other best practices.
+The Lint workflow uses `black` for formatting, `pylint` and `ruff` for other best practices, and `mypy` for type checking.
 You do not need to install these packages to work on the Flood Modeller API as they run automatically in GitHub Actions.
 However, you may wish to install them if you want to check locally that your commits will pass before pushing to the remote.
 Install them with 
 ```shell
-pip install black isort mypy pylint flake8
+pip install black ruff pylint mypy
 ```
 
-The settings for `black`, `isort`, `mypy`, and `pylint` are included in the `pyproject.toml` file, whereas the settings for `flake8` have to be specified in the command line.
-Use the commands
+The settings are included in the `pyproject.toml` file, so the commands are short:
 ```shell
 black .
-isort .
-mypy .
+ruff .
 pylint .
-flake8 . --ignore E203,E402,E501,W503 --per-file-ignores __init__.py:F401 --builtins __version__ --max-complexity 10
+mypy .
 ```
 which correspond with those in the `run_linters.yml` file.
-The packages `black` and `isort` will sort out your problems whereas problems raised by `mpypy`, `pylint`, and `flake8` will have to be fixed manually.
+The package `black` will fix all formating problems and `ruff` will fix some linting problems, while the problems raised by `pylint` and `mypy` will have to be fixed manually.
 Best to run these checks throughout the development process, rather than just at the end.
+The packages `black` and `ruff` are also available as extensions for Visual Studio Code.
 
 
 ## Testing
