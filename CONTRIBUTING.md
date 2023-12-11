@@ -16,30 +16,25 @@ Failing tests or linters will prevent merging to main unless overridden.
 
 ## Linting
 Linting ensures that the code meets certain quality standards and can reveal bugs.
-The Lint workflow uses `black` for formatting, `isort` for sorting imports, `mypy` for type checking, and `flake8` and `pylint` for other best practices.
+The Lint workflow uses `black` for formatting, `isort` for sorting imports, `mypy` for type checking, and `pylint` and `flake8` for other best practices.
 You do not need to install these packages to work on the Flood Modeller API as they run automatically in GitHub Actions.
 However, you may wish to install them if you want to check locally that your commits will pass before pushing to the remote.
 Install them with 
 ```shell
-pip install black isort mypy flake8 pylint
+pip install black isort mypy pylint flake8
 ```
 
-If run locally, the packages `black` and `isort` will fix your formatting problems rather than just point them out.
+The settings for `black`, `isort`, `mypy`, and `pylint` are included in the `pyproject.toml` file, whereas the settings for `flake8` have to be specified in the command line.
 Use the commands
 ```shell
-black . --line-length 100
-isort . --profile black --line-length 100
-```
-to enforce a maximum line length of 100 and ensure that `black` and `isort` do not conflict with each other.
-
-Run `mypy`, `flake8`, and `pylint` with
-```shell
-mypy . --ignore-missing-imports
+black .
+isort .
+mypy .
+pylint .
 flake8 . --ignore E203,E402,E501,W503 --per-file-ignores __init__.py:F401 --builtins __version__ --max-complexity 10
-pylint . --disable=all --enable=dangerous-default-value, unneeded-not, no-else-return, no-else-continue, simplifiable-if-statement, simplifiable-if-expression, unnecessary-comprehension, consider-using-in, redefined-builtin, unused-variable, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call, no-else-raise, consider-iterating-dictionary, raise-missing-from
 ```
-to discover other code quality issues.
-Unlike `black` and `isort`, you will have to fix any of these problems manually.
+which correspond with those in the `run_linters.yml` file.
+The packages `black` and `isort` will sort out your problems whereas problems raised by `mpypy`, `pylint`, and `flake8` will have to be fixed manually.
 Best to run these checks throughout the development process, rather than just at the end.
 
 
@@ -57,11 +52,12 @@ to install the packages required for the tests.
 
 
 ### Running Tests
-Use
+The settings for `pytest` are included in the `pyproject.toml` file.
+Use the command
 ```shell
-pytest . -v --cov=floodmodeller_api --cov-fail-under=75
+pytest . -v
 ```
-to run tests from the terminal, including a coverage report.
+which corresponds to the that in the `run_tests.yml` file.
 
 Test coverage reports are important to ensure that all parts of the API are being tested and can help identify areas that need further testing.
 
@@ -88,7 +84,7 @@ Many tests share data which are set up using fixtures.
 You should add any fixtures which are shared across multiple tests to `test/conftest.py`.
 You must specify the `scope = "session"` parameter:
 ```python
-@pytest.fixture(scope = "session")
+@pytest.fixture(scope="session")
 def test_workspace():
     return os.path.join(os.path.dirname(__file__), "test_data")
 ```
@@ -119,29 +115,3 @@ test/
     ...
 ...
 ```
-
-
-## Visual Studio Code
-
-If you use Visual Studio Code, here is an example `.vscode/settings.json` file you might find useful when working on the Flood Modeller API:
-```json
-{
-    "python.testing.pytestArgs": [
-        "."
-    ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "editor.rulers": [100],
-    "black-formatter.args": ["--line-length", "100"],
-    "ruff.lint.args": [
-        "--select=F,E,W,C,I,N",
-        "--ignore=E203,E402,E501",
-        "--line-length=100",
-    ],
-}
-```
-
-These settings ensure that the tests can be run from the editor, a ruler appears at the designated line length (100 characters), the `black` and `ruff` plugins function according to this length, and that only certain errors (those that correspond to the implemented GitHub Actions) are checked for.
-
-The `ruff` plugin incorporates many of the linting checks implemented with GitHub Actions, but it runs quickly as you are writing the code.
-You need to have the `black` and `ruff` plugins installed to use them as part of the editor, distinct from installing packages with `pip` to use them via the commands listed as described earlier.
