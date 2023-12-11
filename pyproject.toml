@@ -5,10 +5,6 @@ build-backend = "setuptools.build_meta"
 [tool.black]
 line-length = 100
 
-[tool.isort]
-profile = "black"
-line_length = 100
-
 [tool.mypy]
 ignore_missing_imports = true
 
@@ -24,7 +20,7 @@ line-length = 100
 builtins = ["__version__"]
 
 [tool.ruff.lint]
-select = ["A", "B", "C", "E", "ERA", "F", "FLY", "I", "N", "RET", "SIM", "W", "PLR", "RUF100", "TRY200"]
+select = ["A", "B", "C", "E", "ERA", "F", "FLY", "I", "N", "RET", "SIM", "UP", "W", "PLR", "RUF100", "TRY200"]
 ignore = ["E402", "E501"]
 
 [tool.ruff.per-file-ignores]

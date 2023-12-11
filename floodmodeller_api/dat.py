@@ -289,7 +289,7 @@ class DAT(FMFile):
 
     def _read(self):
         # Read DAT data
-        with open(self._filepath, "r") as dat_file:
+        with open(self._filepath) as dat_file:
             self._raw_data = [line.rstrip("\n") for line in dat_file.readlines()]
 
         # Generate DAT structure
@@ -299,7 +299,7 @@ class DAT(FMFile):
         gxy_path = self._filepath.with_suffix(".gxy")
         if gxy_path.exists():
             self._gxy_filepath = gxy_path
-            with open(self._gxy_filepath, "r") as gxy_file:
+            with open(self._gxy_filepath) as gxy_file:
                 self._gxy_data = gxy_file.read()
         else:
             self._gxy_filepath = None

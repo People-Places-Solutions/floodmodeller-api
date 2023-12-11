@@ -56,7 +56,7 @@ class INP(FMFile):
 
     def _read(self):
         # Read INP file
-        with open(self._filepath, "r") as inp_file:
+        with open(self._filepath) as inp_file:
             self._raw_data = [line.rstrip("\n") for line in inp_file.readlines()]
 
         # Generate INP file structure

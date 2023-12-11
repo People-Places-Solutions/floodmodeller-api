@@ -65,7 +65,7 @@ class IEF(FMFile):
 
     def _read(self):
         # Read IEF data
-        with open(self._filepath, "r") as ief_file:
+        with open(self._filepath) as ief_file:
             raw_data = [line.rstrip("\n") for line in ief_file.readlines()]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
@@ -79,7 +79,7 @@ class IEF(FMFile):
 
             elif "=" in line:
                 # Using strip() method to remove any leading/trailing whitespace
-                prop, value = [itm.strip() for itm in line.split("=", 1)]
+                prop, value = (itm.strip() for itm in line.split("=", 1))
                 # Handle 'EventData' properties so that multiple can be set
                 if prop.upper() == "EVENTDATA":
                     if prev_comment is None:

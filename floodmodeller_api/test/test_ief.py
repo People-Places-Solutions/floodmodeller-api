@@ -12,7 +12,7 @@ def ief_fp(test_workspace):
 
 @pytest.fixture
 def data_before(ief_fp):
-    with open(ief_fp, "r") as ief_file:
+    with open(ief_fp) as ief_file:
         return ief_file.read()
 
 

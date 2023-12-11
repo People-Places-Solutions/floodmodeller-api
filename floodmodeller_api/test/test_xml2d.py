@@ -126,13 +126,13 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
         "nrows": ...,
         "rotation": ...,
     }
-    x2d.domains[domain]["computational_area"]["yll"] = float(1.1)
-    x2d.domains[domain]["computational_area"]["xll"] = float(2.6)
+    x2d.domains[domain]["computational_area"]["yll"] = 1.1
+    x2d.domains[domain]["computational_area"]["xll"] = 2.6
     x2d.domains[domain]["computational_area"]["dx"] = float(2)
     x2d.domains[domain]["computational_area"]["active_area"] = "path/to/asc/file.asc"
-    x2d.domains[domain]["computational_area"]["ncols"] = int(12)
-    x2d.domains[domain]["computational_area"]["nrows"] = int(42)
-    x2d.domains[domain]["computational_area"]["rotation"] = float(3.14159)
+    x2d.domains[domain]["computational_area"]["ncols"] = 12
+    x2d.domains[domain]["computational_area"]["nrows"] = 42
+    x2d.domains[domain]["computational_area"]["rotation"] = 3.14159
 
     x2d.domains[domain]["run_data"]["upwind"] = "upwind value"
     x2d.domains[domain]["run_data"]["wall"] = "Humpty Dumpty"

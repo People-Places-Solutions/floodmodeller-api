@@ -15,7 +15,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 from typing import Dict, TypedDict
 
-UnitTypes = TypedDict("UnitTypes", {"group": str, "has_subtype": bool})
+
+class UnitTypes(TypedDict):
+    group: str
+    has_subtype: bool
 
 # Unit types and support
 SUPPORTED_UNIT_TYPES: Dict[str, UnitTypes] = {
