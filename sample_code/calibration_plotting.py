@@ -345,9 +345,10 @@ class Calibration:
         for link in self._model_event_links:
             model_col_name = f"{node}_{link['model results']}"[:-4]
             event_col_name = f"{node}_{link['event folder']}"
-            if model_col_name in node_filtered_model.columns and (
-                event_col_name
-            ) in node_filtered_event.columns:
+            if (
+                model_col_name in node_filtered_model.columns
+                and event_col_name in node_filtered_event.columns
+            ):
                 model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace(
                     "---", np.nan
                 )
