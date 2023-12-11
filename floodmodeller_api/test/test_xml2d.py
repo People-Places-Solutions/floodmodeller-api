@@ -139,10 +139,6 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
 
     # TODO: Add check that this should fail validation if in the wrong order
     # # how do I check that something fails?
-    # with pytest.raises(Exception) as e_info:
-    #     x2d._validate()
-
-    # assert "XML Validation Error for" in e_info
 
     assert x2d._write()
 

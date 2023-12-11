@@ -81,7 +81,6 @@ class XML2D(FMFile):
     def _read(self, from_blank=False):
         # Read xml data
         self._ns = "{https://www.floodmodeller.com}"
-        # etree.register_namespace('', 'https://www.floodmodeller.com')
         if from_blank:
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
@@ -91,7 +90,6 @@ class XML2D(FMFile):
         self._get_multi_value_keys()
 
         self._create_dict()
-        # self._create_schema_dict()
         for key, data in self._data.items():
             if key == "domain":
                 self.domains = {domain["domain_id"]: domain for domain in data}
@@ -281,7 +279,6 @@ class XML2D(FMFile):
             for key, item in add_item.items():
                 self._recursive_add_element(parent=new_element, add_item=item, add_key=key)
         elif isinstance(add_item, list):
-            # new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             if add_key == "variables":
                 # Variables is special case where we have list but add to one element
                 new_element = etree.SubElement(parent, f"{self._ns}{add_key}")

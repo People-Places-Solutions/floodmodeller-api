@@ -183,7 +183,6 @@ class IED(FMFile):
                     unit_name = unit_data[1][:12].strip()
                     subtype = False
 
-                # _label_len = _to_int(params[5], 12)  # label length
                 self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
                     unit_data,
                     12,

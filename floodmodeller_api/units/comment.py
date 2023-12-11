@@ -45,9 +45,6 @@ class COMMENT(Unit):
 
         return block
 
-    # def _create_from_blank(self, text = []):
-    # for param, val in {"text": text,}.items():setattr(self, param, val)
-
     def _create_from_blank(self, text=None):
         """Function to create an empty comment unit."""
         if text is None:

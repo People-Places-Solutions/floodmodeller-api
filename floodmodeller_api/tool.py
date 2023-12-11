@@ -101,7 +101,6 @@ class Gui:
     ):
         self.master = master
         self.master.title(title)
-        # self.master.resizable(False, False)
         self.master.geometry("400x300")
         self.master.configure(bg="#f5f5f5")
         self.parameters = parameters

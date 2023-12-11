@@ -83,7 +83,6 @@ class AllData(Data):
                 index_df = df[index_duplicate].dt.round("1s")
 
                 df.drop(index_duplicate, axis=1, inplace=True)
-                # self._subheaders.remove(index_duplicate)
 
         # there is no index because *this* is the index
         if index_key is None:

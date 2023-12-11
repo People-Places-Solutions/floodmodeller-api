@@ -96,7 +96,6 @@ class TuflowModelConverter:
                     "topography": self._create_topography_cc_xml2d,
                     "roughness": self._create_roughness_cc_xml2d,
                     "scheme": self._create_scheme_cc_xml2d,
-                    # "boundary": self._create_boundary_cc_xml2d,
                 },
             )
         }

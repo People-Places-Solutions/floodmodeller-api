@@ -210,7 +210,6 @@ class Calibration:
 
             self._add_node_dropdown(node, node_filtered_model, node_filtered_event, node_dropdown)
 
-            # self._plot(node, node_filtered_model, node_filtered_event, output_folder)
             self._fill_csv_list(
                 node,
                 node_filtered_model,

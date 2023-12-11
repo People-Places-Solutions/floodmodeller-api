@@ -104,8 +104,6 @@ class LF(FMFile):
     def _update_data(self):
         """Updates value of each Parser object based on raw data"""
 
-        # self._print_no_lines()
-
         # loop through lines that haven't already been read
         raw_lines = self._raw_data[self._no_lines :]
         for raw_line in raw_lines:
@@ -126,8 +124,6 @@ class LF(FMFile):
 
             # update counter
             self._no_lines += 1
-
-        # self._print_no_lines()
 
     def _get_index(self):
         """Finds key and dataframe for variable that is the index"""

@@ -16,7 +16,7 @@ Failing tests or linters will prevent merging to main unless overridden.
 
 ## Linting
 Linting ensures that the code meets certain quality standards and can reveal bugs.
-The Lint workflow uses `black` for formatting, `pylint` and `ruff` for other best practices, and `mypy` for type checking.
+The Lint workflow uses `black` for formatting, `ruff` and `pylint` for other best practices, and `mypy` for type checking.
 You do not need to install these packages to work on the Flood Modeller API as they run automatically in GitHub Actions.
 However, you may wish to install them if you want to check locally that your commits will pass before pushing to the remote.
 Install them with 
@@ -24,15 +24,15 @@ Install them with
 pip install black ruff pylint mypy
 ```
 
-The settings are included in the `pyproject.toml` file, so the commands are short:
+The settings are included in the [`pyproject.toml`](pyproject.toml) file, so the commands are short:
 ```shell
 black .
 ruff .
 pylint .
 mypy .
 ```
-which correspond with those in the `run_linters.yml` file.
-The package `black` will fix all formating problems and `ruff` will fix some linting problems, while the problems raised by `pylint` and `mypy` will have to be fixed manually.
+which correspond with those in the [`run_linters.yml`](.github/workflows/run_linters.yml) file.
+The package `black` will fix all formating problems and `ruff` will fix some linting problems, while problems raised by `pylint` and `mypy` have to be fixed manually.
 Best to run these checks throughout the development process, rather than just at the end.
 The packages `black` and `ruff` are also available as extensions for Visual Studio Code.
 
@@ -51,12 +51,12 @@ to install the packages required for the tests.
 
 
 ### Running Tests
-The settings for `pytest` are included in the `pyproject.toml` file.
+The settings for `pytest` are included in the [`pyproject.toml`](pyproject.toml) file.
 Use the command
 ```shell
 pytest . -v
 ```
-which corresponds to the that in the `run_tests.yml` file.
+which corresponds to the that in the [`run_tests.yml`](.github/workflows/run_tests.yml) file.
 
 Test coverage reports are important to ensure that all parts of the API are being tested and can help identify areas that need further testing.
 

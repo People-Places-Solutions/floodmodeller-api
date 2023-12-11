@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def next_unit(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -740,7 +740,6 @@ class DAT(FMFile):
                 _validate_unit(unit)
                 unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]  # get rid
                 unit_group = getattr(self, unit_group_name)
-                # unit_class = unit._unit
                 if unit.name in unit_group:
                     raise NameError(
                         "Name already appears in unit group. Cannot have two units with same name in same group"

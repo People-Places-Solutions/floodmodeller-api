@@ -31,19 +31,12 @@ SupportedSubsections = TypedDict(
 # Unit types and support
 # TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed
 SUPPORTED_SUBSECTIONS: Dict[str, SupportedSubsections] = {
-    # '[TITLE]': {'attribute': 'Title', 'class': 'Title'}
-    # "[OPTIONS]": {"group": "general", "attribute": "Options", "class": "Options"},
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
     "[RAINGAGES]": {"group": "units", "attribute": "_raingauges", "class": RAINGAUGES},
     "[CONDUITS]": {"group": "units", "attribute": "_conduits", "class": CONDUITS},
     "[LOSSES]": {"group": "units", "attribute": "_losses", "class": LOSSES},
     "[XSECTIONS]": {"group": "units", "attribute": "_xsections", "class": XSECTIONS}
-    # 'SPILL': {'group': 'structures', 'has_subtype': False},
-    # 'INITIAL CONDITIONS': {'group': 'other', 'has_subtype': False},
-    # '[TITLE]' : {
-    #    'attribute' : 'title',
-    #     'class' : Title}
 }
 
 UNSUPPORTED_SUBSECTIONS = {
