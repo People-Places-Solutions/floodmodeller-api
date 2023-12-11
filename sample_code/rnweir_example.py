@@ -18,7 +18,7 @@ os.chdir(script_loc)  # Set current working directory to this script location
 dat = DAT("sample_data/ex4.DAT")
 
 # Iterate through all round nosed weir sections
-for name, structure in dat.structures.items():
+for _, structure in dat.structures.items():
     if structure._unit == "RNWEIR":
         structure.upstream_crest_height += 0.3  # Increase upstream crest height by 0.3m
 

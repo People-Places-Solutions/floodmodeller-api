@@ -67,7 +67,7 @@ class FMFile:
         raise NotImplementedError
 
     def _update(self):
-        f"""Updates the existing {self._filetype} based on any altered attributes"""
+        """Updates the existing self._filetype based on any altered attributes"""
         if self._filepath is None:
             raise UserWarning(
                 f"{self._filetype} must be saved to a specific filepath before update() can be called."

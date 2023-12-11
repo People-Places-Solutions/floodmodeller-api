@@ -187,7 +187,7 @@ class IEF(FMFile):
                         # exist, this stops it being deleted
                         # Add new values to EventData flag
                         delattr(self, prop)
-                        setattr(self, "EventData", val)
+                        self.EventData = val
                         prop = "EventData"
 
                 # Check ief group header

@@ -106,6 +106,7 @@ def data_factory(data_type: str, header: str, subheaders: Optional[list] = None)
 
 
 class State(ABC):
+    @abstractmethod
     def __init__(self, extracted_data):
         pass
 
@@ -130,6 +131,9 @@ class UnsteadyState(State):
 
 
 class SteadyState(State):
+    def __init__(self, extracted_data):
+        pass
+
     def report_progress(self):
         raise NotImplementedError("No progress reporting for steady simulations")
 

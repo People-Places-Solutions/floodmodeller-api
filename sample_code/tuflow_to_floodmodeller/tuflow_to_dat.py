@@ -423,7 +423,7 @@ class TuflowToDat:
     def _add_gxy_data(self):
         #   Write out .gxy
         file_contents = ""
-        for index, row in self._cross_sections.iterrows():
+        for _, row in self._cross_sections.iterrows():
             file_contents += f"[RIVER_SECTION_{row['Name']}]\n"
             file_contents += f"x={row['easting']:.2f}\n"
             file_contents += f"y={row['northing']:.2f}\n\n"

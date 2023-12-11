@@ -18,7 +18,7 @@ os.chdir(script_loc)  # Set current working directory to this script location
 
 dat = DAT("sample_data\\ex3.dat")  # Initialise DAT class
 
-for name, section in dat.sections.items():  # iterate through all river sections
+for _, section in dat.sections.items():  # iterate through all river sections
     df = section.data  # get section data
     min_elevation = df["Y"].min()  # get minimum cross section elevation
     raised_bed = min_elevation + 0.3  # define new lowest bed level (+300mm)

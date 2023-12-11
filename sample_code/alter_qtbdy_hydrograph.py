@@ -36,7 +36,7 @@ def update_hydrograph(qtbdy_unit):
 
 
 # Iterate through all QTBDY units
-for name, unit in ied.boundaries.items():
+for _, unit in ied.boundaries.items():
     if isinstance(unit, QTBDY):  # check if unit is a QTBDY type
         update_hydrograph(unit)  # Call the custom function defined above to alter hydrograph
 
