@@ -1,4 +1,5 @@
 import argparse
+import contextlib
 import os
 from pathlib import Path
 
@@ -29,10 +30,8 @@ elif args.ld:
             continue
         print(f"    -> {file.stem}\n")
 
-        try:
+        with contextlib.suppress(Exception):
             os.system(f'python "{str(file)}" -h')
-        except Exception:
-            pass
         print("================================================\n")
 
 # TODO: Add functionality to create a bat and py file in scripts, add to setup.py and install to path

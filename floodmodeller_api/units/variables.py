@@ -43,12 +43,8 @@ class Variables:
             name = line[:20].strip()
             _type = line[20:30].strip()
             initial_value = line[30:40].strip()
-            if _type.upper() == "TIMER":
-                initial_status = line[40:50].strip()
-            else:
-                initial_status = (
-                    "n/a"  # unless the type is a timer, nothing else has an initial status
-                )
+            # unless the type is a timer, nothing else has an initial status
+            initial_status = line[40:50].strip() if _type.upper() == "TIMER" else "n/a"
             data_list.append(
                 [
                     name,

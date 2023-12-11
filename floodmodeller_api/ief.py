@@ -121,7 +121,7 @@ class IEF(FMFile):
                     # writes the [] bound headers to ief string
                     ief_string += prop + "\n"
                 elif prop.lstrip().startswith(";"):
-                    if not self._ief_properties[idx + 1].lower() == "eventdata":
+                    if self._ief_properties[idx + 1].lower() != "eventdata":
                         # Only write comment if not preceding event data
                         ief_string += prop + "\n"
                 elif prop.lower() == "eventdata":
@@ -179,16 +179,15 @@ class IEF(FMFile):
                     )
                     continue
 
-                if prop.upper() == "EVENTDATA":
-                    # This will be triggered in special case where eventdata has been added with different case, but case
+                if prop.upper() == "EVENTDATA" and prop != "EventData":
+                    # (1) This will be triggered in special case where eventdata has been added with different case, but case
                     # needs to be kept as 'EventData', to allow dealing wiht multiple IEDs
-                    if prop != "EventData":
-                        # In case of EventData being added with correct case where it doesn't already
-                        # exist, this stops it being deleted
-                        # Add new values to EventData flag
-                        delattr(self, prop)
-                        self.EventData = val
-                        prop = "EventData"
+                    # (2) In case of EventData being added with correct case where it doesn't already
+                    # exist, this stops it being deleted
+                    # Add new values to EventData flag
+                    delattr(self, prop)
+                    self.EventData = val
+                    prop = "EventData"
 
                 # Check ief group header
                 group = f"[{flags[prop.upper()]}]"
@@ -395,10 +394,12 @@ class IEF(FMFile):
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # Defaults to single...
                 for attr in dir(self):
-                    if attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION":  # Unless DP specified
-                        if getattr(self, attr) == "1":
-                            precision = "DOUBLE"
-                            break
+                    if (
+                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"  # Unless DP specified
+                        and getattr(self, attr) == "1"
+                    ):
+                        precision = "DOUBLE"
+                        break
 
             if enginespath == "":
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location

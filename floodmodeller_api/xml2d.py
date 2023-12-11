@@ -238,7 +238,7 @@ class XML2D(FMFile):
                 if parent_key == "ROOT":
                     item = getattr(self, key)
                 try:
-                    if not item == orig_dict[key]:
+                    if item != orig_dict[key]:
                         if key == "value":
                             # Value has been updated
                             parent.text = str(item)
@@ -329,7 +329,7 @@ class XML2D(FMFile):
             # Check each element is in the new_dict somewhere, delete if not
             elem_key = elem.tag.replace(self._ns, "")
             if elem_key in self._multi_value_keys:
-                if not list_idx_key == elem_key:
+                if list_idx_key != elem_key:
                     list_idx_key = elem_key
                     list_idx = 0
                 try:

@@ -126,28 +126,27 @@ class Unit:
         self.time_rule_data = rule_data
         # VARRULES (not always necessary)
         self.has_varrules = False
-        if self._last_time_row + 1 < len(block):
-            if block[self._last_time_row + 1].strip() == "VARRULES":
-                self.has_varrules = True
-                varrule_params = split_10_char(block[self._last_time_row + 2])
-                self.nvarrules = int(varrule_params[0])
-                self.varrule_sample_time = _to_float(rule_params[1])
-                self.varrules = self._get_logical_rules(
-                    self.nvarrules, block, self._last_time_row + 3
-                )
-                # Get time rule data set
-                var_nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
-                data_list = []
-                for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows]:
-                    row_split = split_10_char(f"{row:<20}")
-                    x = _to_float(row_split[0])  # time
-                    y = row[10:].strip()  # operating rules
-                    data_list.append([x, y])
+        if (self._last_time_row + 1 < len(block)) and (
+            block[self._last_time_row + 1].strip() == "VARRULES"
+        ):
+            self.has_varrules = True
+            varrule_params = split_10_char(block[self._last_time_row + 2])
+            self.nvarrules = int(varrule_params[0])
+            self.varrule_sample_time = _to_float(rule_params[1])
+            self.varrules = self._get_logical_rules(self.nvarrules, block, self._last_time_row + 3)
+            # Get time rule data set
+            var_nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
+            data_list = []
+            for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows]:
+                row_split = split_10_char(f"{row:<20}")
+                x = _to_float(row_split[0])  # time
+                y = row[10:].strip()  # operating rules
+                data_list.append([x, y])
 
-                varrule_data = pd.DataFrame(data_list, columns=["Time", "Operating Rules"])
-                varrule_data = varrule_data.set_index("Time")
-                varrule_data = varrule_data["Operating Rules"]
-                self.time_varrule_data = varrule_data
+            varrule_data = pd.DataFrame(data_list, columns=["Time", "Operating Rules"])
+            varrule_data = varrule_data.set_index("Time")
+            varrule_data = varrule_data["Operating Rules"]
+            self.time_varrule_data = varrule_data
 
     def _write_rules(self, block):
         # ADD RULES

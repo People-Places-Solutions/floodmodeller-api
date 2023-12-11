@@ -224,26 +224,7 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
-        elif self._subtype == "SPRUNG":
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            self.equation = _to_str(c_block[4], "MANNING")
-            params = split_10_char(f"{c_block[5]:<100}")
-            self.elevation_invert = _to_float(params[0])
-            self.width = _to_float(params[1])
-            self.height_springing = _to_float(params[2])
-            self.height_crown = _to_float(params[3])
-            self.use_bottom_slot = _to_str(params[4], "GLOBAL")
-            self.bottom_slot_dist = _to_float(params[5])
-            self.bottom_slot_depth = _to_float(params[6])
-            self.use_top_slot = _to_str(params[7], "GLOBAL")
-            self.top_slot_dist = _to_float(params[8])
-            self.top_slot_depth = _to_float(params[9])
-            friction_params = split_10_char(f"{c_block[6]:<30}")
-            self.friction_on_invert = _to_float(friction_params[0])
-            self.friction_on_walls = _to_float(friction_params[1])
-            self.friction_on_soffit = _to_float(friction_params[2])
-
-        elif self._subtype == "SPRUNGARCH":
+        elif self._subtype in ("SPRUNG", "SPRUNGARCH"):
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
             params = split_10_char(f"{c_block[5]:<100}")

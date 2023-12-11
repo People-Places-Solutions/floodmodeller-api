@@ -53,7 +53,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
             result, new_diff = item_a._get_diff(item_b)
             new_diff = [(f"{name}->{new_name}", new_item) for new_name, new_item in new_diff]
             diff.extend(new_diff)
-        elif not item_a == item_b:
+        elif item_a != item_b:
             result = False
             diff.append((name, f"{item_a} != {item_b}"))
     except Exception as e:

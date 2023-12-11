@@ -26,17 +26,15 @@ class StructureLogBuilder:
         inlet = ""
         outlet = ""
         previous = self._dat.prev(conduit)
-        if hasattr(previous, "subtype"):
-            if previous.subtype == "INLET":
-                inlet = previous.ki
+        if hasattr(previous, "subtype") and previous.subtype == "INLET":
+            inlet = previous.ki
         current_conduit = conduit
         while current_conduit.dist_to_next != 0:
             length += current_conduit.dist_to_next
             current_conduit = self._dat.next_unit(current_conduit)
         next_conduit = self._dat.next_unit(current_conduit)
-        if hasattr(next_conduit, "subtype"):
-            if next_conduit.subtype == "OUTLET":
-                outlet = next_conduit.loss_coefficient
+        if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
+            outlet = next_conduit.loss_coefficient
         return [length, inlet, outlet]
 
     def _culvert_loss_data(self, inlet, outlet):

@@ -196,13 +196,13 @@ class LF(FMFile):
             parser = self._extracted_data[key]
 
             # sync parser types that are not the index
-            if parser.is_index is False:
-                # if their number of values is not in sync
-                if parser.data_type == "all" and parser.data.no_values < (
-                    self._no_iters + int(parser.before_index)
-                ):
-                    # append nan to the list
-                    parser.data.update(parser._nan)
+            if (
+                parser.is_index is False  # if their number of values is not in sync
+                and parser.data_type == "all"
+                and parser.data.no_values < (self._no_iters + int(parser.before_index))
+            ):
+                # append nan to the list
+                parser.data.update(parser._nan)
 
     def _print_no_lines(self):
         """Prints number of lines that have been read so far"""

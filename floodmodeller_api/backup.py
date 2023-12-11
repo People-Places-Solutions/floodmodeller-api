@@ -253,12 +253,10 @@ class File(BackupControl):
         # get the backups of that file
         backups = self.list_backups()
         # If there aren't any backups then backup the file
-        if len(backups) == 0:
+        if len(backups) == 0 or not filecmp.cmp(self.path, backups[0].path):
             self._make_backup()
         # If the file doesn't match the last backup then do a back up
         # TODO: Use FloodModeller API implemented equivalence testing. This is implemented at a higher level than FMFile where this method is called.
-        elif not filecmp.cmp(self.path, backups[0].path):
-            self._make_backup()
         # TODO: Return the file path?
 
     def clear_backup(self):

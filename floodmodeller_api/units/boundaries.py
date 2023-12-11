@@ -379,7 +379,7 @@ class REFHBDY(Unit):
         self.urbext = _to_float(refhbdy_params2[2])
         self.season = _to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
         self.calc_source = _to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
-        self.use_urban_subdivisions = not refhbdy_params2[5] == ""
+        self.use_urban_subdivisions = refhbdy_params2[5] != ""
         if self.use_urban_subdivisions:
             # Just keeping this raw for now as unlikely to be used.
             self._urban_refh_data = refhbdy_block[5:8]

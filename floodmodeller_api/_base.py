@@ -51,7 +51,7 @@ class FMFile:
                 )
             # If the file is not a ZZN file, then perform a backup
             # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
-            if not self._filetype == "ZZN":
+            if self._filetype != "ZZN":
                 file = File(path=self._filepath)
                 file.backup()
                 # Add the file object as a property to expose the restore method

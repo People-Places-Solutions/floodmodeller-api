@@ -28,11 +28,11 @@ def update_hydrograph(qtbdy_unit):
     peak_flow = hydrograph.max()  # Get peak flow value
     peak_flow_idx = hydrograph.loc[hydrograph == peak_flow].index  # Get index of peak flow
     for time, flow in hydrograph.items():  # Iterate through hydrograph series
-        if time > peak_flow_idx:  # For only flows after peak flow i.e. falling limb
-            if flow < peak_flow * 0.5:  # If the flow is less than 50% of the peak
-                hydrograph.loc[time] = (
-                    peak_flow * 0.5
-                )  # Maintain minimum flow of 50% of peak for remainder of hydrograph
+        # For only flows after peak flow i.e. falling limb
+        # If the flow is less than 50% of the peak
+        if (time > peak_flow_idx) and (flow < peak_flow * 0.5):
+            # Maintain minimum flow of 50% of peak for remainder of hydrograph
+            hydrograph.loc[time] = peak_flow * 0.5
 
 
 # Iterate through all QTBDY units
