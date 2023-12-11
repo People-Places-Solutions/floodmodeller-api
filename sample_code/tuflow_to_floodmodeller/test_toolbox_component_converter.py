@@ -21,7 +21,7 @@ from .component_converter import (
     SchemeConverterXML2D,
     TopographyConverterXML2D,
     concat,
-    filter,
+    filter_dataframe,
     rename_and_select,
 )
 
@@ -146,10 +146,10 @@ def test_rename_and_select():
 def test_filter(polygon1, polygon2):
     gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
 
-    deactive = filter(gdf, column="code", value=0)
+    deactive = filter_dataframe(gdf, column="code", value=0)
     assert deactive.equals(gpd.GeoDataFrame({"geometry": [polygon1]}, index=[0]))
 
-    active = filter(gdf, column="code", value=1)
+    active = filter_dataframe(gdf, column="code", value=1)
     assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
 
 

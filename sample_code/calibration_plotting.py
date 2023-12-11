@@ -194,7 +194,7 @@ class Calibration:
             ],
         ]
 
-        if not (os.path.exists(output_folder)):
+        if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
         self._starting_y_coords = None
@@ -303,7 +303,7 @@ class Calibration:
     def _create_html(self, fig, nodes_dropdown, trace_events, output_folder):
         events_dropdown = []
         for event in self._event_names:
-            show_event = [True if event in x else False for x in trace_events]
+            show_event = [event in x for x in trace_events]
             events_dropdown.append(
                 dict(
                     method="update",
@@ -345,7 +345,7 @@ class Calibration:
         for link in self._model_event_links:
             model_col_name = f"{node}_{link['model results']}"[:-4]
             event_col_name = f"{node}_{link['event folder']}"
-            if (model_col_name) in node_filtered_model.columns and (
+            if model_col_name in node_filtered_model.columns and (
                 event_col_name
             ) in node_filtered_event.columns:
                 model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace(

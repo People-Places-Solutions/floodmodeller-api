@@ -304,7 +304,7 @@ class TuflowToDat:
     def _add_xss(self):
         # iterate through adding xs
         rows_to_add = []
-        for index, row in self._cross_sections.iterrows():
+        for _, row in self._cross_sections.iterrows():
             unit_csv_name = str(row["Source"])
             unit_csv = pd.read_csv(
                 Path(self._xs_paths[0].parent, unit_csv_name).resolve(), skiprows=[0]

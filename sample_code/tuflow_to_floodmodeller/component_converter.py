@@ -22,7 +22,7 @@ def rename_and_select(df: pd.DataFrame, mapper: Dict[str, str]) -> pd.DataFrame:
     return df.rename(columns=mapper_subset)[list(mapper_subset.values())]
 
 
-def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
+def filter_dataframe(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
     is_selected = gdf.loc[:, column] == value
     is_selected = is_selected[is_selected].index
     return gdf.iloc[is_selected].drop(columns=column)
@@ -116,7 +116,7 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
         all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
 
         for name, code in {"active": 1, "deactive": 0}.items():
-            area = filter(all_areas_concat, "code", code)
+            area = filter_dataframe(all_areas_concat, "code", code)
             area_exists = len(area.index) > 0
             if not area_exists:
                 continue
@@ -212,20 +212,19 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         if lines_present and points_present and not polygons_present:
             return cls.convert_lines_and_points(lines, points)
 
-        elif polygons_present and not (points_present or lines_present):
+        if polygons_present and not (points_present or lines_present):
             return cls.convert_polygons(polygons)
 
-        else:
-            spatial_types = []
-            if lines_present:
-                spatial_types.append("lines")
-            if points_present:
-                spatial_types.append("points")
-            if polygons_present:
-                spatial_types.append("polygons")
-            spatial_types_display = ", ".join(spatial_types)
+        spatial_types = []
+        if lines_present:
+            spatial_types.append("lines")
+        if points_present:
+            spatial_types.append("points")
+        if polygons_present:
+            spatial_types.append("polygons")
+        spatial_types_display = ", ".join(spatial_types)
 
-            raise RuntimeError(f"Combination not supported: {spatial_types_display}")
+        raise RuntimeError(f"Combination not supported: {spatial_types_display}")
 
     @staticmethod
     def standardise_topography(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
