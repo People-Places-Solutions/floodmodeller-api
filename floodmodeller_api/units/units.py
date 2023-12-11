@@ -20,6 +20,7 @@ class UnitTypes(TypedDict):
     group: str
     has_subtype: bool
 
+
 # Unit types and support
 SUPPORTED_UNIT_TYPES: Dict[str, UnitTypes] = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},

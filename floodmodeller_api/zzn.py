@@ -121,10 +121,8 @@ class ZZN(FMFile):
             self.meta["savint_skip"] = ct.c_int(1)
             self.meta["savint_range"] = ct.c_int(
                 int(
-
-                        (self.meta["isavint"][1] - self.meta["isavint"][0])
-                        / self.meta["savint_skip"].value
-
+                    (self.meta["isavint"][1] - self.meta["isavint"][0])
+                    / self.meta["savint_skip"].value
                 )
             )
             nx = self.meta["nnodes"].value
