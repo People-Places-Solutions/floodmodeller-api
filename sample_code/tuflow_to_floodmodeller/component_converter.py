@@ -22,7 +22,7 @@ def rename_and_select(df: pd.DataFrame, mapper: Dict[str, str]) -> pd.DataFrame:
     return df.rename(columns=mapper_subset)[list(mapper_subset.values())]
 
 
-def filter(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
+def filter_dataframe(gdf: gpd.GeoDataFrame, column: str, value: int) -> gpd.GeoDataFrame:
     is_selected = gdf.loc[:, column] == value
     is_selected = is_selected[is_selected].index
     return gdf.iloc[is_selected].drop(columns=column)
@@ -63,7 +63,7 @@ class ComponentConverterDAT(ComponentConverter):
 
 
 class NetworkConverterDAT(ComponentConverterDAT):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         dat: DAT,
         folder: Path,
@@ -89,7 +89,7 @@ class ComponentConverterXML2D(ComponentConverter):
 
 
 class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -116,7 +116,7 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
         all_areas_concat = concat([self.standardise_areas(x) for x in all_areas])
 
         for name, code in {"active": 1, "deactive": 0}.items():
-            area = filter(all_areas_concat, "code", code)
+            area = filter_dataframe(all_areas_concat, "code", code)
             area_exists = len(area.index) > 0
             if not area_exists:
                 continue
@@ -152,7 +152,7 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
 
 
 class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -174,7 +174,7 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
 
 
 class TopographyConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -212,20 +212,19 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         if lines_present and points_present and not polygons_present:
             return cls.convert_lines_and_points(lines, points)
 
-        elif polygons_present and not (points_present or lines_present):
+        if polygons_present and not (points_present or lines_present):
             return cls.convert_polygons(polygons)
 
-        else:
-            spatial_types = []
-            if lines_present:
-                spatial_types.append("lines")
-            if points_present:
-                spatial_types.append("points")
-            if polygons_present:
-                spatial_types.append("polygons")
-            spatial_types_display = ", ".join(spatial_types)
+        spatial_types = []
+        if lines_present:
+            spatial_types.append("lines")
+        if points_present:
+            spatial_types.append("points")
+        if polygons_present:
+            spatial_types.append("polygons")
+        spatial_types_display = ", ".join(spatial_types)
 
-            raise RuntimeError(f"Combination not supported: {spatial_types_display}")
+        raise RuntimeError(f"Combination not supported: {spatial_types_display}")
 
     @staticmethod
     def standardise_topography(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -235,7 +234,8 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
     @staticmethod
     def convert_lines_and_points(
-        lines: gpd.GeoDataFrame, points: gpd.GeoDataFrame
+        lines: gpd.GeoDataFrame,
+        points: gpd.GeoDataFrame,
     ) -> gpd.GeoDataFrame:
         # split lines according to points
         segments = gpd.GeoDataFrame(
@@ -246,13 +246,13 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
         # get line endpoints
         segments[["point1", "point2"]] = pd.DataFrame(
-            segments.apply(lambda x: list(x.geometry.boundary.geoms), axis=1).tolist()
+            segments.apply(lambda x: list(x.geometry.boundary.geoms), axis=1).tolist(),
         )
         segments["point1"] = gpd.GeoSeries(segments["point1"])
         segments["point2"] = gpd.GeoSeries(segments["point2"])
 
         # get endpoint heights & line thickness
-        segments = (
+        return (
             segments.merge(
                 rename_and_select(points, {"z": "height1", "geometry": "point1"}),
                 on="point1",
@@ -265,8 +265,6 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
             .drop(columns="point2")
             .astype({"height1": float, "height2": float})
         )
-
-        return segments
 
     @staticmethod
     def convert_polygons(polygons: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -281,7 +279,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
 
 
 class RoughnessConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,
@@ -319,7 +317,8 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
 
     @staticmethod
     def material_to_roughness(
-        material: gpd.GeoDataFrame, mapping: pd.DataFrame
+        material: gpd.GeoDataFrame,
+        mapping: pd.DataFrame,
     ) -> gpd.GeoDataFrame:
         return pd.merge(material, mapping, on="material_id")[["value", "geometry"]]
 
@@ -339,7 +338,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
 
 
 class SchemeConverterXML2D(ComponentConverterXML2D):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         xml: XML2D,
         folder: Path,

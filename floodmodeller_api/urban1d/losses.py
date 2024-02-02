@@ -36,6 +36,7 @@ class LOSS(UrbanUnit):
     """
 
     _unit = "LOSS"
+    MIN_LENGTH = 6
 
     def _read(self, line):
         """Function to read a given LOSS line and store data as class attributes"""
@@ -45,7 +46,7 @@ class LOSS(UrbanUnit):
         unit_data = line.split()  # Get unit parameters
 
         # Extend length of unit_data if options variables not provided.
-        while len(unit_data) < 6:
+        while len(unit_data) < self.MIN_LENGTH:
             unit_data.append("")
 
         self.name = _to_str(unit_data[0], "")
@@ -63,7 +64,12 @@ class LOSS(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name) + join_n_char_ljust(
-            15, self.kentry, self.kexit, self.kavg, self.flap, self.seepage
+            15,
+            self.kentry,
+            self.kexit,
+            self.kavg,
+            self.flap,
+            self.seepage,
         )
 
 

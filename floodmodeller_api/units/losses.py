@@ -118,7 +118,7 @@ class CULVERT(Unit):
         else:
             # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
             print(
-                f'This Culvert sub-type: "{self.subtype}" is currently unsupported for reading/editing'
+                f'This Culvert sub-type: "{self.subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = block
 
@@ -240,7 +240,7 @@ class BLOCKAGE(Unit):
         # Custom validation for blockage percentage
         if self.data.max() > 1 or self.data.min() < 0:
             raise ValueError(
-                f"Parameter error with {repr(self)} - blockage percentage must be between 0 and 1"
+                f"Parameter error with {repr(self)} - blockage percentage must be between 0 and 1",
             )
 
         header = f"BLOCKAGE #revision#{self._revision} {self.comment}"
@@ -267,7 +267,7 @@ class BLOCKAGE(Unit):
 
         return blockage_block
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_blockage",
         _revision=1,

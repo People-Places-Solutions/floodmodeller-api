@@ -22,11 +22,19 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
     try:
         if isinstance(item_a, dict):
             result, diff = check_dict_with_dataframe_equal(
-                item_a, item_b, name, diff, special_types
+                item_a,
+                item_b,
+                name,
+                diff,
+                special_types,
             )
         elif isinstance(item_a, list):
             result, diff = check_list_with_dataframe_equal(
-                item_a, item_b, name, diff, special_types
+                item_a,
+                item_b,
+                name,
+                diff,
+                special_types,
             )
         elif isinstance(item_a, (pd.DataFrame, pd.Series)):
             if not item_a.equals(item_b):
@@ -44,7 +52,7 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
                         if True not in df_diff.loc[row, col].duplicated().values:
                             vals = df_diff.loc[row, col].values
                             row_diffs.append(
-                                f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}"
+                                f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}",
                             )
                 msg += "\n".join(row_diffs)
                 diff.append((name, msg))
@@ -53,10 +61,9 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
             result, new_diff = item_a._get_diff(item_b)
             new_diff = [(f"{name}->{new_name}", new_item) for new_name, new_item in new_diff]
             diff.extend(new_diff)
-        else:
-            if not item_a == item_b:
-                result = False
-                diff.append((name, f"{item_a} != {item_b}"))
+        elif item_a != item_b:
+            result = False
+            diff.append((name, f"{item_a} != {item_b}"))
     except Exception as e:
         result = False
         diff.append((name, f"Error encountered when comparing: {e.args[0]}"))
@@ -84,7 +91,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
                 diff.append((name, f"Key: '{ke.args[0]}' missing in other"))
                 continue
 
-        for key in dict_b.keys():
+        for key in dict_b:
             if key not in dict_a:
                 result = False
                 diff.append((name, f"Key: {key} missing from first object"))

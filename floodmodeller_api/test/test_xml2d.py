@@ -79,7 +79,7 @@ def test_xml2d_add_remove_branch_roughness():
     orig_xml = x2d._write()
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"},
     )
     assert x2d._write() != orig_xml
     assert "my/roughness/file.shp" in x2d._write()
@@ -95,11 +95,11 @@ def test_xml2d_append_remove_branch_roughness():
     domain = list(x2d.domains)[0]
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "my/roughness/file.shp"},
     )
     xml_1_roughness = x2d._write()
     x2d.domains[domain]["roughness"].append(
-        {"type": "file", "law": "manning", "value": "new/roughness/file.shp"}
+        {"type": "file", "law": "manning", "value": "new/roughness/file.shp"},
     )
 
     assert x2d._write() != xml_1_roughness
@@ -126,23 +126,19 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
         "nrows": ...,
         "rotation": ...,
     }
-    x2d.domains[domain]["computational_area"]["yll"] = float(1.1)
-    x2d.domains[domain]["computational_area"]["xll"] = float(2.6)
+    x2d.domains[domain]["computational_area"]["yll"] = 1.1
+    x2d.domains[domain]["computational_area"]["xll"] = 2.6
     x2d.domains[domain]["computational_area"]["dx"] = float(2)
     x2d.domains[domain]["computational_area"]["active_area"] = "path/to/asc/file.asc"
-    x2d.domains[domain]["computational_area"]["ncols"] = int(12)
-    x2d.domains[domain]["computational_area"]["nrows"] = int(42)
-    x2d.domains[domain]["computational_area"]["rotation"] = float(3.14159)
+    x2d.domains[domain]["computational_area"]["ncols"] = 12
+    x2d.domains[domain]["computational_area"]["nrows"] = 42
+    x2d.domains[domain]["computational_area"]["rotation"] = 3.14159
 
     x2d.domains[domain]["run_data"]["upwind"] = "upwind value"
     x2d.domains[domain]["run_data"]["wall"] = "Humpty Dumpty"
 
     # TODO: Add check that this should fail validation if in the wrong order
     # # how do I check that something fails?
-    # with pytest.raises(Exception) as e_info:
-    #     x2d._validate()
-
-    # assert "XML Validation Error for" in e_info
 
     assert x2d._write()
 

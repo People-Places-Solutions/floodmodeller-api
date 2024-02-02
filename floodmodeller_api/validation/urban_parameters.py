@@ -70,22 +70,6 @@ urban_parameter_options = {
         "type": "type-match",
         "options": (str),
     },
-    # "station": {
-    #     "type": "type-match",
-    #     "options": (str),
-    # },
-    # "station": {
-    #     "type": "type-match",
-    #     "options": (str),
-    # },
-    # "station": {
-    #     "type": "type-match",
-    #     "options": (str),
-    # },
-    # "station": {
-    #     "type": "type-match",
-    #     "options": (str),
-    # },
     "units": {
         "type": "value-match",
         "options": ["IN", "MM"],

@@ -25,9 +25,7 @@ def tuflow_parser(tmpdir) -> TuflowParser:
     with open(file_path, "w") as f:
         f.write(text)
 
-    tuflow_parser = TuflowParser(file_path)
-
-    return tuflow_parser
+    return TuflowParser(file_path)
 
 
 @pytest.fixture

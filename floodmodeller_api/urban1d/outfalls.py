@@ -38,6 +38,8 @@ class OUTFALL(UrbanUnit):
     """
 
     _unit = "OUTFALL"
+    MIN_LENGTH_FREE_NORMAL = 5
+    MIN_LENGTH_FIXED_NORMAL_TIMESERIES = 6
 
     def _read(self, line):
         unit_data = line.split()
@@ -51,7 +53,7 @@ class OUTFALL(UrbanUnit):
 
         if self.type in ("FREE", "NORMAL"):
             # Extend length of unit_data to account for missing optional arguments.
-            while len(unit_data) < 5:
+            while len(unit_data) < self.MIN_LENGTH_FREE_NORMAL:
                 unit_data.append("")
 
             self.gated = _to_str(unit_data[3], "NO")
@@ -59,7 +61,7 @@ class OUTFALL(UrbanUnit):
 
         elif self.type in ("FIXED", "NORMAL", "TIMESERIES"):
             # Extend length of unit_data to account for missing optional arguments.
-            while len(unit_data) < 6:
+            while len(unit_data) < self.MIN_LENGTH_FIXED_NORMAL_TIMESERIES:
                 unit_data.append("")
 
             if self.type == "FIXED":
@@ -82,7 +84,9 @@ class OUTFALL(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
-            15, self.elevation, self.type
+            15,
+            self.elevation,
+            self.type,
         )
 
         if self.type in ("FREE", "NORMAL"):

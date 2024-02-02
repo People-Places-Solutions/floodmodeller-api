@@ -56,13 +56,13 @@ class IED(FMFile):
 
     def _read(self):
         # Read IED data
-        with open(self._filepath, "r") as ied_file:
+        with open(self._filepath) as ied_file:
             self._raw_data = [line.rstrip("\n") for line in ied_file.readlines()]
 
         # Generate IED structure
         self._update_ied_struct()
 
-    def _write(self) -> str:  # noqa: C901
+    def _write(self) -> str:  # noqa: C901, PLR0912
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
@@ -92,7 +92,7 @@ class IED(FMFile):
                         # block still exists
                         new_unit_data = unit_group[unit_name]._write()
                         existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
-                            unit_name
+                            unit_name,
                         )
                     else:
                         # Bdy block has been deleted
@@ -129,7 +129,7 @@ class IED(FMFile):
                         # Check if new name already exists as a label
                         if unit.name in unit_group:
                             raise Exception(
-                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group'
+                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
                             )
                         unit_group[unit.name] = unit
                         del unit_group[name]
@@ -167,7 +167,7 @@ class IED(FMFile):
                 unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
                     raise Exception(
-                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}',
                     )
                 unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 
@@ -183,7 +183,6 @@ class IED(FMFile):
                     unit_name = unit_data[1][:12].strip()
                     subtype = False
 
-                # _label_len = _to_int(params[5], 12)  # label length
                 self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
                     unit_data,
                     12,
@@ -195,7 +194,7 @@ class IED(FMFile):
 
         print()
 
-    def _update_ied_struct(self):  # noqa: C901
+    def _update_ied_struct(self):  # noqa: C901, PLR0912, PLR0915
         # Generate IED structure
         ied_struct = []
         in_block = False

@@ -39,12 +39,12 @@ def _validate_unit(unit, urban=False):
                 f"{param} {value[1]}"
                 for param, value in param_validation_dict.items()
                 if not value[0]
-            ]
+            ],
         )
         raise ValueError(f"One or more parameters in {repr(unit)} are invalid:\n     {errors}")
 
 
-def _validate_parameter(param, value):  # noqa: C901
+def _validate_parameter(param, value):  # noqa: C901, PLR0911, PLR0912
     if param["type"] == "type-match":
         return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
 
@@ -106,3 +106,5 @@ def _validate_parameter(param, value):  # noqa: C901
                 if not _validate_parameter(rule, item[key])[0]:
                     return _validate_parameter(rule, item[key])
         return True, 0
+
+    return None

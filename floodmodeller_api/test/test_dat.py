@@ -1,3 +1,4 @@
+import contextlib
 import os
 from pathlib import Path
 
@@ -64,10 +65,8 @@ def test_dat_read_doesnt_change_data(test_workspace):
         second_output = second_dat._write()
         assert first_output == second_output
         os.remove("__temp.dat")
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove("__temp.gxy")
-    except FileNotFoundError:
-        pass
 
 
 def test_insert_unit(test_workspace):

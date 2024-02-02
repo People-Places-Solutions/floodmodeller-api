@@ -47,6 +47,9 @@ class IEF(FMFile):
 
     _filetype: str = "IEF"
     _suffix: str = ".ief"
+    OLD_FILE = 5
+    ERROR_MAX = 2000
+    WARNING_MAX = 3000
 
     def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
         try:
@@ -62,7 +65,7 @@ class IEF(FMFile):
 
     def _read(self):
         # Read IEF data
-        with open(self._filepath, "r") as ief_file:
+        with open(self._filepath) as ief_file:
             raw_data = [line.rstrip("\n") for line in ief_file.readlines()]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
@@ -76,7 +79,7 @@ class IEF(FMFile):
 
             elif "=" in line:
                 # Using strip() method to remove any leading/trailing whitespace
-                prop, value = [itm.strip() for itm in line.split("=", 1)]
+                prop, value = (itm.strip() for itm in line.split("=", 1))
                 # Handle 'EventData' properties so that multiple can be set
                 if prop.upper() == "EVENTDATA":
                     if prev_comment is None:
@@ -121,7 +124,7 @@ class IEF(FMFile):
                     # writes the [] bound headers to ief string
                     ief_string += prop + "\n"
                 elif prop.lstrip().startswith(";"):
-                    if not self._ief_properties[idx + 1].lower() == "eventdata":
+                    if self._ief_properties[idx + 1].lower() != "eventdata":
                         # Only write comment if not preceding event data
                         ief_string += prop + "\n"
                 elif prop.lower() == "eventdata":
@@ -175,20 +178,19 @@ class IEF(FMFile):
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
-                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n"
+                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n",
                     )
                     continue
 
-                if prop.upper() == "EVENTDATA":
-                    # This will be triggered in special case where eventdata has been added with different case, but case
+                if prop.upper() == "EVENTDATA" and prop != "EventData":
+                    # (1) This will be triggered in special case where eventdata has been added with different case, but case
                     # needs to be kept as 'EventData', to allow dealing wiht multiple IEDs
-                    if prop != "EventData":
-                        # In case of EventData being added with correct case where it doesn't already
-                        # exist, this stops it being deleted
-                        # Add new values to EventData flag
-                        delattr(self, prop)
-                        setattr(self, "EventData", val)
-                        prop = "EventData"
+                    # (2) In case of EventData being added with correct case where it doesn't already
+                    # exist, this stops it being deleted
+                    # Add new values to EventData flag
+                    delattr(self, prop)
+                    self.EventData = val
+                    prop = "EventData"
 
                 # Check ief group header
                 group = f"[{flags[prop.upper()]}]"
@@ -231,7 +233,7 @@ class IEF(FMFile):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
-                + " names and values referencing the IED files"
+                " names and values referencing the IED files",
             )
 
         # Number of 'EventData' flags in ief
@@ -353,7 +355,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
-    def simulate(  # noqa: C901
+    def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
         raise_on_failure: bool = True,
@@ -390,15 +392,17 @@ class IEF(FMFile):
             self._range_settings = range_settings if range_settings else {}
             if self._filepath is None:
                 raise UserWarning(
-                    "IEF must be saved to a specific filepath before simulate() can be called."
+                    "IEF must be saved to a specific filepath before simulate() can be called.",
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # Defaults to single...
                 for attr in dir(self):
-                    if attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION":  # Unless DP specified
-                        if getattr(self, attr) == "1":
-                            precision = "DOUBLE"
-                            break
+                    if (
+                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"  # Unless DP specified
+                        and getattr(self, attr) == "1"
+                    ):
+                        precision = "DOUBLE"
+                        break
 
             if enginespath == "":
                 _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
@@ -406,7 +410,7 @@ class IEF(FMFile):
                 _enginespath = enginespath
                 if not Path(_enginespath).exists():
                     raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
                     )
 
             if precision.upper() == "SINGLE":
@@ -441,8 +445,7 @@ class IEF(FMFile):
             elif method.upper() == "RETURN_PROCESS":
                 print("Executing simulation...")
                 # execute simulation
-                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
-                return process
+                return Popen(run_command, cwd=os.path.dirname(self._filepath))
 
             return None
 
@@ -556,8 +559,8 @@ class IEF(FMFile):
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-            # it's old if it's over 5 seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > 5
+            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > self.OLD_FILE
 
             # timeout
             if time.time() > max_time:
@@ -623,7 +626,9 @@ class IEF(FMFile):
 
         exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
-            lambda x: "Error" if x < 2000 else ("Warning" if x < 3000 else "Note")
+            lambda x: "Error"
+            if x < self.ERROR_MAX
+            else ("Warning" if x < self.WARNING_MAX else "Note"),
         )
         errors = len(exy_data[exy_data["type"] == "Error"])
         warnings = len(exy_data[exy_data["type"] == "Warning"])

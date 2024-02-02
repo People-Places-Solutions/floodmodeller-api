@@ -21,7 +21,7 @@ from .component_converter import (
     SchemeConverterXML2D,
     TopographyConverterXML2D,
     concat,
-    filter,
+    filter_dataframe,
     rename_and_select,
 )
 
@@ -77,7 +77,7 @@ def tuflow_p():
             "c": np.nan,
             "d": np.nan,
             "geometry": [Point(2, 0), Point(2, 3), Point(3, 4), Point(4, 4)],
-        }
+        },
     )
 
 
@@ -93,7 +93,7 @@ def tuflow_l():
                 LineString([(2, 0), (2, 4), (3, 4)]),
                 LineString([(3, 4), (4, 4)]),
             ],
-        }
+        },
     )
 
 
@@ -109,7 +109,7 @@ def tuflow_r():
                 Polygon([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]),
                 Polygon([[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]),
             ],
-        }
+        },
     )
 
 
@@ -128,7 +128,7 @@ def test_concat(polygon1, polygon2, point1, point2):
                 "geometry": [polygon1, polygon2, point1, point2],
                 "X": [np.nan, np.nan, 2, np.nan],
                 "y": [np.nan, np.nan, np.nan, 3],
-            }
+            },
         ),
     )
 
@@ -146,10 +146,10 @@ def test_rename_and_select():
 def test_filter(polygon1, polygon2):
     gdf = gpd.GeoDataFrame({"code": [0, 1], "geometry": [polygon1, polygon2]})
 
-    deactive = filter(gdf, column="code", value=0)
+    deactive = filter_dataframe(gdf, column="code", value=0)
     assert deactive.equals(gpd.GeoDataFrame({"geometry": [polygon1]}, index=[0]))
 
-    active = filter(gdf, column="code", value=1)
+    active = filter_dataframe(gdf, column="code", value=1)
     assert active.equals(gpd.GeoDataFrame({"geometry": [polygon2]}, index=[1]))
 
 
@@ -186,10 +186,10 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
         all_areas=[gdf1, gdf2],
     )
     assert gpd.read_file(active_area_path).equals(
-        gpd.GeoDataFrame({"FID": 0, "geometry": [point1]})
+        gpd.GeoDataFrame({"FID": 0, "geometry": [point1]}),
     )
     assert gpd.read_file(deactive_area_path).equals(
-        gpd.GeoDataFrame({"FID": 0, "geometry": [point2]})
+        gpd.GeoDataFrame({"FID": 0, "geometry": [point2]}),
     )
 
     comp_area.edit_fm_file()
@@ -249,8 +249,8 @@ def test_convert_points_and_lines(tuflow_p, tuflow_l):
                 ],
                 "height1": [50.0, 80.0, 90.0],
                 "height2": [80.0, 90.0, 20.0],
-            }
-        )
+            },
+        ),
     )
 
 
@@ -266,8 +266,8 @@ def test_convert_polygons(tuflow_r):
                     Polygon([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]),
                     Polygon([[0, 0], [2, 0], [2, 2], [0, 2], [0, 0]]),
                 ],
-            }
-        )
+            },
+        ),
     )
 
 
@@ -325,7 +325,7 @@ def test_material_to_roughness(point1, polygon1, polygon2):
     )
 
     assert roughness.equals(
-        gpd.GeoDataFrame({"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, point1]})
+        gpd.GeoDataFrame({"value": [0.7, 0.1, 0.9], "geometry": [polygon1, polygon2, point1]}),
     )
 
 

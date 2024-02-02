@@ -41,6 +41,9 @@ class XSECTION(UrbanUnit):
     """
 
     _unit = "XSECTION"
+    MIN_LENGTH_OTHER = 8
+    MIN_LENGTH_CUSTOM = 5
+    MIN_LENGTH_IRREGULAR = 3
 
     def _read(self, line):
         unit_data = line.split()
@@ -52,7 +55,7 @@ class XSECTION(UrbanUnit):
         if unit_data[1] in _shape_options:
             # Extend length of unit_data to account for missing optional arguments.
 
-            while len(unit_data) < 8:
+            while len(unit_data) < self.MIN_LENGTH_OTHER:
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
@@ -64,7 +67,7 @@ class XSECTION(UrbanUnit):
             self.culvert = _to_int(unit_data[7], "")
 
         elif unit_data[1] == "CUSTOM":
-            while len(unit_data) < 5:
+            while len(unit_data) < self.MIN_LENGTH_CUSTOM:
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
@@ -72,7 +75,7 @@ class XSECTION(UrbanUnit):
             self.barrels = _to_int(unit_data[6], 1)
 
         elif unit_data[1] == "IRREGULAR":
-            while len(unit_data) < 3:
+            while len(unit_data) < self.MIN_LENGTH_IRREGULAR:
                 unit_data.append("")
 
             self.shape = str(unit_data[1])

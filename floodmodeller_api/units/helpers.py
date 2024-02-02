@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from typing import List, Optional
 
 # Helper Functions
+NOTATION_THRESHOLD = 10
 
 
 def split_10_char(line):
@@ -37,11 +38,8 @@ def join_10_char(*itms, dp=3):
     for itm in itms:
         if isinstance(itm, float):
             # save to 3 dp
-            if len(f"{itm:.{dp}f}") > 10:
-                # Use scientific notation if number greater than 10 characters
-                itm = f"{itm:.{dp}e}"
-            else:
-                itm = f"{itm:.{dp}f}"
+            # Use scientific notation if number greater than NOTATION_THRESHOLD characters
+            itm = f"{itm:.{dp}e}" if len(f"{itm:.{dp}f}") > NOTATION_THRESHOLD else f"{itm:.{dp}f}"
         itm = str(itm)
         itm = itm[:10]
         string += f"{itm:>10}"
@@ -54,11 +52,8 @@ def join_12_char_ljust(*itms, dp=3):
     for itm in itms:
         if isinstance(itm, float):
             # save to 3 dp
-            if len(f"{itm:.{dp}f}") > 10:
-                # Use scientific notation if number greater than 10 characters
-                itm = f"{itm:.{dp}e}"
-            else:
-                itm = f"{itm:.{dp}f}"
+            # Use scientific notation if number greater than 10 characters
+            itm = f"{itm:.{dp}e}" if len(f"{itm:.{dp}f}") > NOTATION_THRESHOLD else f"{itm:.{dp}f}"
         itm = str(itm)
         itm = itm[:12]
         string += f"{itm:<12}"
@@ -71,11 +66,8 @@ def join_n_char_ljust(n, *itms, dp=3):
     for itm in itms:
         if isinstance(itm, float):
             # save to 3 dp
-            if len(f"{itm:.{dp}f}") > 10:
-                # Use scientific notation if number greater than 10 characters
-                itm = f"{itm:.{dp}e}"
-            else:
-                itm = f"{itm:.{dp}f}"
+            # Use scientific notation if number greater than 10 characters
+            itm = f"{itm:.{dp}e}" if len(f"{itm:.{dp}f}") > NOTATION_THRESHOLD else f"{itm:.{dp}f}"
         itm = str(itm)
         itm = itm[:n]
         string += f"{itm:<{n}}"
