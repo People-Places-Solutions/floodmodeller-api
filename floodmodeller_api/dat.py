@@ -612,8 +612,8 @@ class DAT(FMFile):
                 continue
             if in_comment:
                 comment_n -= 1
-                if comment_n == 0:
-                    unit_block["end"] = idx  # add ending index
+                if comment_n <= 0:
+                    unit_block["end"] = idx + comment_n  # add ending index
                     # append existing bdy block to the dat_struct
                     dat_struct.append(unit_block)
                     unit_block = {}  # reset bdy block
@@ -707,7 +707,14 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="remove unit")
 
-    def insert_unit(self, unit, add_before=None, add_after=None, add_at=None):  # noqa: C901
+    def insert_unit(  # noqa: C901, PLR0912
+        self,
+        unit,
+        add_before=None,
+        add_after=None,
+        add_at=None,
+        defer_update=False
+    ):
         """Inserts a unit into the dat file.
 
         Args:
@@ -783,8 +790,10 @@ class DAT(FMFile):
             # update all
             if unit._unit != "COMMENT":
                 self.general_parameters["Node Count"] += 1  # flag no update for comments
-            self._update_raw_data()
-            self._update_dat_struct()
+            
+            if not defer_update:
+                self._update_raw_data()
+                self._update_dat_struct()
 
         except Exception as e:
             self._handle_exception(e, when="insert unit")
