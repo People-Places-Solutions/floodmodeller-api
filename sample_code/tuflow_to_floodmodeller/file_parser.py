@@ -84,7 +84,8 @@ class TuflowParser:
         return [self._resolve_path(x) for x in self._dict[name]]
 
     def get_all_geodataframes(
-        self, name: str
+        self,
+        name: str,
     ) -> List[Union[Tuple[gpd.GeoDataFrame], gpd.GeoDataFrame]]:
         gdf_list = []
 
@@ -94,7 +95,7 @@ class TuflowParser:
                     [
                         gpd.read_file(self._resolve_path(x))
                         for x in self.get_tuple(name, self.TUPLE_SYMBOL, index=i)
-                    ]
+                    ],
                 )
             else:
                 to_append = gpd.read_file(self._resolve_path(string))

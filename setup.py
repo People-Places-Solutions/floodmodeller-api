@@ -3,7 +3,7 @@ from setuptools import setup
 with open("README.md") as f:
     readme_txt = f.read()
 
-exec(open("floodmodeller_api/version.py").read())
+exec(open("floodmodeller_api/version.py").read())  # noqa: SIM115
 
 setup(
     name="floodmodeller_api",

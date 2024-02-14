@@ -17,7 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from pathlib import Path
 from typing import List, Optional, Union
 
-from . import units  # Import for using as package
+from . import units
 from ._base import FMFile
 from .units._base import Unit
 from .units.helpers import _to_float, _to_int
@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def next_unit(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -143,7 +143,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:  # noqa: C901
+    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds previous unit in the reach.
 
         Previous unit in reach can be infered by:
@@ -289,7 +289,7 @@ class DAT(FMFile):
 
     def _read(self):
         # Read DAT data
-        with open(self._filepath, "r") as dat_file:
+        with open(self._filepath) as dat_file:
             self._raw_data = [line.rstrip("\n") for line in dat_file.readlines()]
 
         # Generate DAT structure
@@ -299,7 +299,7 @@ class DAT(FMFile):
         gxy_path = self._filepath.with_suffix(".gxy")
         if gxy_path.exists():
             self._gxy_filepath = gxy_path
-            with open(self._gxy_filepath, "r") as gxy_file:
+            with open(self._gxy_filepath) as gxy_file:
                 self._gxy_data = gxy_file.read()
         else:
             self._gxy_filepath = None
@@ -417,7 +417,7 @@ class DAT(FMFile):
                     # Check if new name already exists as a label
                     if unit.name in unit_group:
                         raise Exception(
-                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group'
+                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
                         )
                     unit_group[unit.name] = unit
                     del unit_group[name]
@@ -496,7 +496,8 @@ class DAT(FMFile):
 
                         # Get unit object
                         unit_group = getattr(
-                            self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                            self,
+                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"],
                         )
                         if unit_name in unit_group:
                             # block still exists
@@ -553,12 +554,12 @@ class DAT(FMFile):
                 unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
                     raise Exception(
-                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}',
                     )
                 # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
                 unit_type = block["Type"].replace(" ", "_").replace("-", "_")
                 unit_group[unit_name] = eval(
-                    f"units.{unit_type}({unit_data}, {self._label_len})"  # append to our _all._units as well???
+                    f"units.{unit_type}({unit_data}, {self._label_len})",  # append to our _all._units as well???
                 )
                 self._all_units.append(unit_group[unit_name])
 
@@ -583,7 +584,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):  # noqa: C901
+    def _update_dat_struct(self):  # noqa: C901, PLR0912
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -625,14 +626,22 @@ class DAT(FMFile):
             if line == "COMMENT":
                 in_comment = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, "COMMENT", unit_block, in_block, idx
+                    dat_struct,
+                    "COMMENT",
+                    unit_block,
+                    in_block,
+                    idx,
                 )
                 continue
 
             if line == "GISINFO":
                 gisinfo_block = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, "GISINFO", unit_block, in_block, idx
+                    dat_struct,
+                    "GISINFO",
+                    unit_block,
+                    in_block,
+                    idx,
                 )
 
             if not gisinfo_block:
@@ -645,7 +654,11 @@ class DAT(FMFile):
                     continue
 
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct, unit_type, unit_block, in_block, idx
+                    dat_struct,
+                    unit_type,
+                    unit_block,
+                    in_block,
+                    idx,
                 )
 
         if len(unit_block) != 0:
@@ -656,7 +669,14 @@ class DAT(FMFile):
 
         self._dat_struct = dat_struct
 
-    def _close_struct_block(self, dat_struct, unit_type, unit_block, in_block, idx):
+    def _close_struct_block(  # noqa: PLR0913
+        self,
+        dat_struct,
+        unit_type,
+        unit_block,
+        in_block,
+        idx,
+    ):
         """Helper method to close block in dat struct"""
         if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
@@ -707,13 +727,8 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="remove unit")
 
-    def insert_unit(  # noqa: C901, PLR0912
-        self,
-        unit,
-        add_before=None,
-        add_after=None,
-        add_at=None,
-        defer_update=False
+    def insert_unit(  # noqa: C901, PLR0912, PLR0913
+        self, unit, add_before=None, add_after=None, add_at=None, defer_update=False,
     ):
         """Inserts a unit into the dat file.
 
@@ -733,13 +748,13 @@ class DAT(FMFile):
             # catch errors
             if all(arg is None for arg in (add_before, add_after, add_at)):
                 raise SyntaxError(
-                    "No possitional argument given. Please provide either add_before, add_at or add_after"
+                    "No possitional argument given. Please provide either add_before, add_at or add_after",
                 )
             if not isinstance(unit, Unit):
                 raise TypeError("unit isn't a unit")
             if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
                 raise TypeError(
-                    "add_before or add_after argument must be a Flood Modeller Unit type"
+                    "add_before or add_after argument must be a Flood Modeller Unit type",
                 )
 
             unit_class = unit._unit
@@ -747,10 +762,9 @@ class DAT(FMFile):
                 _validate_unit(unit)
                 unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]  # get rid
                 unit_group = getattr(self, unit_group_name)
-                # unit_class = unit._unit
                 if unit.name in unit_group:
                     raise NameError(
-                        "Name already appears in unit group. Cannot have two units with same name in same group"
+                        "Name already appears in unit group. Cannot have two units with same name in same group",
                     )
 
             # positional argument
@@ -769,7 +783,7 @@ class DAT(FMFile):
                         break
                 else:
                     raise Exception(
-                        f"{check_unit} not found in dat network, so cannot be used to add before/after"
+                        f"{check_unit} not found in dat network, so cannot be used to add before/after",
                     )
 
             unit_data = unit._write()
@@ -777,7 +791,8 @@ class DAT(FMFile):
             if unit._unit != "COMMENT":
                 unit_group[unit.name] = unit
             self._dat_struct.insert(
-                insert_index + 1, {"Type": unit_class, "new_insert": unit_data}
+                insert_index + 1,
+                {"Type": unit_class, "new_insert": unit_data},
             )  # add to dat struct without unit.name
 
             if unit._unit != "COMMENT":
@@ -790,7 +805,7 @@ class DAT(FMFile):
             # update all
             if unit._unit != "COMMENT":
                 self.general_parameters["Node Count"] += 1  # flag no update for comments
-            
+
             if not defer_update:
                 self._update_raw_data()
                 self._update_dat_struct()
@@ -798,7 +813,14 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="insert unit")
 
-    def _update_gisinfo_label(self, unit_type, unit_subtype, prev_lbl, new_lbl, ignore_second):
+    def _update_gisinfo_label(  # noqa: PLR0913
+        self,
+        unit_type,
+        unit_subtype,
+        prev_lbl,
+        new_lbl,
+        ignore_second,
+    ):
         """Update labels in GISINFO block if unit is renamed"""
 
         start, end = next(
@@ -819,9 +841,10 @@ class DAT(FMFile):
                 line = line.replace(f"{prefix} {prev_lbl} ", f"{prefix} {new_lbl} ")
 
             # Replace second label
-            if not ignore_second:
-                if line.startswith(f"{prev_lbl} "):  # space at the end important again
-                    line = line.replace(f"{prev_lbl} ", f"{new_lbl} ", 1)
+            if not ignore_second and line.startswith(
+                f"{prev_lbl} ",
+            ):  # space at the end important again
+                line = line.replace(f"{prev_lbl} ", f"{new_lbl} ", 1)
 
             new_gisinfo_block.append(line)
 

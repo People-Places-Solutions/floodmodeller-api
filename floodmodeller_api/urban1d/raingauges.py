@@ -63,8 +63,8 @@ class RAINGAUGE(UrbanUnit):
             self.timeseries = str(unit_data[5])
 
             # Creates empty fields to allow user to change data_option
-            self.filename = str("")
-            self.station = str("")
+            self.filename = ""
+            self.station = ""
             self.units = "MM"
         elif self.data_option == "FILE":
             self.filename = str(unit_data[5])
@@ -72,7 +72,7 @@ class RAINGAUGE(UrbanUnit):
             self.units = str(unit_data[7])
 
             # Creates empty fields to allow user to change data_option
-            self.timeseries = str("")
+            self.timeseries = ""
 
     def _write(self):
         """Function to write a valid JUNCTION line"""

@@ -104,8 +104,7 @@ def parse_backup_dttm(path):
     # Extract datetime from string
     datetime_str = re.search(r"\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}", path).group(0)
     # Convert datetime string to datetime object
-    datetime_obj = datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M-%S")
-    return datetime_obj
+    return datetime.strptime(datetime_str, "%Y-%m-%d-%H-%M-%S")
 
 
 class BackupFile:
@@ -253,12 +252,10 @@ class File(BackupControl):
         # get the backups of that file
         backups = self.list_backups()
         # If there aren't any backups then backup the file
-        if len(backups) == 0:
+        if len(backups) == 0 or not filecmp.cmp(self.path, backups[0].path):
             self._make_backup()
         # If the file doesn't match the last backup then do a back up
         # TODO: Use FloodModeller API implemented equivalence testing. This is implemented at a higher level than FMFile where this method is called.
-        elif not filecmp.cmp(self.path, backups[0].path):
-            self._make_backup()
         # TODO: Return the file path?
 
     def clear_backup(self):

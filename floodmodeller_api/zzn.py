@@ -37,7 +37,7 @@ class ZZN(FMFile):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
-    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):
+    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):  # noqa: PLR0915
         try:
             FMFile.__init__(self, zzn_filepath)
 
@@ -51,7 +51,7 @@ class ZZN(FMFile):
             zzl = zzn.with_suffix(".zzl")
             if not zzl.exists():
                 raise FileNotFoundError(
-                    "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name."
+                    "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.",
                 )
 
             self.meta: Dict[str, Any] = {}  # Dict object to hold all metadata
@@ -104,7 +104,8 @@ class ZZN(FMFile):
             )
             self.meta["output_hrs"] = (ct.c_float * 2)(0.0, last_hr)
             self.meta["aitimestep"] = (ct.c_int * 2)(
-                self.meta["timestep0"].value, self.meta["ltimestep"].value
+                self.meta["timestep0"].value,
+                self.meta["ltimestep"].value,
             )
             self.meta["isavint"] = (ct.c_int * 2)()
             zzn_read.PREPROCESS_ZZN(
@@ -121,11 +122,9 @@ class ZZN(FMFile):
             self.meta["savint_skip"] = ct.c_int(1)
             self.meta["savint_range"] = ct.c_int(
                 int(
-                    (
-                        (self.meta["isavint"][1] - self.meta["isavint"][0])
-                        / self.meta["savint_skip"].value
-                    )
-                )
+                    (self.meta["isavint"][1] - self.meta["isavint"][0])
+                    / self.meta["savint_skip"].value,
+                ),
             )
             nx = self.meta["nnodes"].value
             ny = self.meta["nvars"].value
@@ -169,7 +168,7 @@ class ZZN(FMFile):
         except Exception as e:
             self._handle_exception(e, when="read")
 
-    def to_dataframe(
+    def to_dataframe(  # noqa: PLR0911
         self,
         result_type: str = "all",
         variable: str = "all",
@@ -298,22 +297,24 @@ class ZZN(FMFile):
             if not save_location.exists():
                 Path.mkdir(save_location)
             save_location = Path(
-                save_location, Path(self.meta["zzn_name"]).with_suffix(".csv").name
+                save_location,
+                Path(self.meta["zzn_name"]).with_suffix(".csv").name,
             )
 
-        else:
-            if not save_location.parent.exists():
-                Path.mkdir(save_location.parent)
+        elif not save_location.parent.exists():
+            Path.mkdir(save_location.parent)
 
         result_type = result_type.lower()
 
         if result_type.lower() not in ["all", "max", "min"]:
             raise Exception(
-                f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
+                f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' ",
             )
 
         df = self.to_dataframe(
-            result_type=result_type, variable=variable, include_time=include_time
+            result_type=result_type,
+            variable=variable,
+            include_time=include_time,
         )
         df.to_csv(save_location)
         print(f"CSV saved to {save_location}")
@@ -354,7 +355,7 @@ class ZZN(FMFile):
                 input_vars[i] = var.strip().capitalize()
                 if input_vars[i] not in vars_list:
                     raise Exception(
-                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
+                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} ",
                     )
 
             for var in vars_list:

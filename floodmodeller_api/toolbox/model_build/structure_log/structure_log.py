@@ -26,17 +26,15 @@ class StructureLogBuilder:
         inlet = ""
         outlet = ""
         previous = self._dat.prev(conduit)
-        if hasattr(previous, "subtype"):
-            if previous.subtype == "INLET":
-                inlet = previous.ki
+        if hasattr(previous, "subtype") and previous.subtype == "INLET":
+            inlet = previous.ki
         current_conduit = conduit
         while current_conduit.dist_to_next != 0:
             length += current_conduit.dist_to_next
-            current_conduit = self._dat.next(current_conduit)
-        next_conduit = self._dat.next(current_conduit)
-        if hasattr(next_conduit, "subtype"):
-            if next_conduit.subtype == "OUTLET":
-                outlet = next_conduit.loss_coefficient
+            current_conduit = self._dat.next_unit(current_conduit)
+        next_conduit = self._dat.next_unit(current_conduit)
+        if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
+            outlet = next_conduit.loss_coefficient
         return [length, inlet, outlet]
 
     def _culvert_loss_data(self, inlet, outlet):
@@ -55,7 +53,7 @@ class StructureLogBuilder:
             conduit.friction_above_axis,
             conduit.friction_below_axis,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -70,7 +68,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -85,7 +83,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -102,7 +100,7 @@ class StructureLogBuilder:
         # it is only meant to go up to the height of the majority of the area
         dimensions = f"h: {height:.2f} x w: {width:.2f} x l: {length:.2f}"
         all_cw_frictions = conduit.coords.cw_friction.tolist()
-        cw_frictions_set = set([min(all_cw_frictions), max(all_cw_frictions)])
+        cw_frictions_set = {min(all_cw_frictions), max(all_cw_frictions)}
         if len(cw_frictions_set) == 1:
             friction = f"Colebrook-White: {cw_frictions_set.pop()}"
         else:
@@ -119,7 +117,7 @@ class StructureLogBuilder:
             conduit.friction_on_soffit,
             conduit.friction_on_walls,
         ]
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -202,7 +200,7 @@ class StructureLogBuilder:
 
     def _bridge_data(self, structure):
         all_mannings = structure.section_data["Mannings n"].tolist()
-        mannings_set = set([min(all_mannings), max(all_mannings)])
+        mannings_set = {min(all_mannings), max(all_mannings)}
         if len(mannings_set) == 1:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
@@ -250,7 +248,7 @@ class StructureLogBuilder:
                 "",
             )
 
-    def _write(
+    def _write(  # noqa: PLR0913
         self,
         name,
         unit,
@@ -271,7 +269,7 @@ class StructureLogBuilder:
                 dimensions,
                 weir_coefficient,
                 culvert_loss,
-            ]
+            ],
         )
 
     def create(self):

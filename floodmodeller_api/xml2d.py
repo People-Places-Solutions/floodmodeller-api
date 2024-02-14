@@ -65,6 +65,8 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
+    OLD_FILE = 5
+    GOOD_EXIT_CODE = 100
 
     def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
         try:
@@ -81,7 +83,6 @@ class XML2D(FMFile):
     def _read(self, from_blank=False):
         # Read xml data
         self._ns = "{https://www.floodmodeller.com}"
-        # etree.register_namespace('', 'https://www.floodmodeller.com')
         if from_blank:
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
@@ -91,7 +92,6 @@ class XML2D(FMFile):
         self._get_multi_value_keys()
 
         self._create_dict()
-        # self._create_schema_dict()
         for key, data in self._data.items():
             if key == "domain":
                 self.domains = {domain["domain_id"]: domain for domain in data}
@@ -153,12 +153,11 @@ class XML2D(FMFile):
             elif value == "":
                 self._recursive_elements_to_dict(child_dict, child)
 
+            elif child_key in self._multi_value_keys:
+                xml_dict[child_key] = xml_dict[child_key][:-1]  # remove unused dict
+                xml_dict[child_key].append(value_from_string(value))
             else:
-                if child_key in self._multi_value_keys:
-                    xml_dict[child_key] = xml_dict[child_key][:-1]  # remove unused dict
-                    xml_dict[child_key].append(value_from_string(value))
-                else:
-                    xml_dict[child_key] = value_from_string(value)
+                xml_dict[child_key] = value_from_string(value)
 
         return xml_dict
 
@@ -175,11 +174,11 @@ class XML2D(FMFile):
         # find element in schema
         parent_name = parent.tag.replace(self._ns, "")
         schema_elem = self._xsd.find(
-            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']"
+            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']",
         )
         if "type" in schema_elem.attrib:
             schema_elem = self._xsd.find(
-                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']"
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']",
             )
         else:
             schema_elem = schema_elem.find("{http://www.w3.org/2001/XMLSchema}complexType")
@@ -206,7 +205,13 @@ class XML2D(FMFile):
             )
             raise ValueError(msg) from err
 
-    def _recursive_update_xml(self, new_dict, orig_dict, parent_key, list_idx=None):  # noqa: C901
+    def _recursive_update_xml(  # noqa: C901, PLR0912
+        self,
+        new_dict,
+        orig_dict,
+        parent_key,
+        list_idx=None,
+    ):
         # TODO: Handle removing params
 
         for key, item in new_dict.items():
@@ -241,7 +246,7 @@ class XML2D(FMFile):
                 if parent_key == "ROOT":
                     item = getattr(self, key)
                 try:
-                    if not item == orig_dict[key]:
+                    if item != orig_dict[key]:
                         if key == "value":
                             # Value has been updated
                             parent.text = str(item)
@@ -273,7 +278,13 @@ class XML2D(FMFile):
                     # New value/attribute added
                     self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
-    def _recursive_add_element(self, parent, add_item, add_key, from_list=False):  # noqa: C901
+    def _recursive_add_element(  # noqa: C901, PLR0912
+        self,
+        parent,
+        add_item,
+        add_key,
+        from_list=False,
+    ):
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
             raise Exception(f"Element: '{add_key}' must be added as list")
         if isinstance(add_item, dict):
@@ -281,7 +292,6 @@ class XML2D(FMFile):
             for key, item in add_item.items():
                 self._recursive_add_element(parent=new_element, add_item=item, add_key=key)
         elif isinstance(add_item, list):
-            # new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             if add_key == "variables":
                 # Variables is special case where we have list but add to one element
                 new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
@@ -289,39 +299,41 @@ class XML2D(FMFile):
             else:
                 for item in add_item:
                     self._recursive_add_element(
-                        parent=parent, add_item=item, add_key=add_key, from_list=True
+                        parent=parent,
+                        add_item=item,
+                        add_key=add_key,
+                        from_list=True,
                     )
-        else:
-            if add_key == "value":  # Value has been added
-                parent.text = str(add_item)
-            else:  # Attribute or element added
-                # Check schema to see if we should use parent.set for attribute
-                # or etree.subelement() and set text
-                schema_elem = self._xsd.findall(
-                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
+        elif add_key == "value":  # Value has been added
+            parent.text = str(add_item)
+        else:  # Attribute or element added
+            # Check schema to see if we should use parent.set for attribute
+            # or etree.subelement() and set text
+            schema_elem = self._xsd.findall(
+                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
+            )
+            if len(schema_elem) == 1:
+                schema_elem = schema_elem[0]
+            else:
+                # This is just here for when there's multiple schema elements with same
+                # name, e.g. 'frequency'
+                parent_schema_elem = self._xsd.find(
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']",
                 )
-                if len(schema_elem) == 1:
-                    schema_elem = schema_elem[0]
-                else:
-                    # This is just here for when there's multiple schema elements with same
-                    # name, e.g. 'frequency'
+                if "type" in parent_schema_elem.attrib:
                     parent_schema_elem = self._xsd.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']"
+                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']",
                     )
-                    if "type" in parent_schema_elem.attrib:
-                        parent_schema_elem = self._xsd.find(
-                            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']"
-                        )
-                    schema_elem = parent_schema_elem.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']"
-                    )
+                schema_elem = parent_schema_elem.find(
+                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
+                )
 
-                if schema_elem.tag.endswith("attribute"):
-                    parent.set(add_key, str(add_item))
+            if schema_elem.tag.endswith("attribute"):
+                parent.set(add_key, str(add_item))
 
-                else:
-                    new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
-                    new_element.text = str(add_item)
+            else:
+                new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
+                new_element.text = str(add_item)
 
     def _recursive_remove_data_xml(self, new_dict, parent, list_idx=None):
         # This method will recursively work through the original dictionary and remove any
@@ -334,7 +346,7 @@ class XML2D(FMFile):
             # Check each element is in the new_dict somewhere, delete if not
             elem_key = elem.tag.replace(self._ns, "")
             if elem_key in self._multi_value_keys:
-                if not list_idx_key == elem_key:
+                if list_idx_key != elem_key:
                     list_idx_key = elem_key
                     list_idx = 0
                 try:
@@ -444,7 +456,7 @@ class XML2D(FMFile):
         self._read()
         self._log_path = self._filepath.with_suffix(".lf2")
 
-    def simulate(  # noqa: C901
+    def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
         raise_on_failure: bool = True,
@@ -495,7 +507,7 @@ class XML2D(FMFile):
         try:
             if self._filepath is None:
                 raise UserWarning(
-                    "xml2D must be saved to a specific filepath before simulate() can be called."
+                    "xml2D must be saved to a specific filepath before simulate() can be called.",
                 )
             if precision.upper() == "DEFAULT":
                 precision = "SINGLE"  # defaults to single precision
@@ -511,7 +523,7 @@ class XML2D(FMFile):
                 _enginespath = enginespath
                 if not Path(_enginespath).exists():
                     raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}"
+                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
                     )
 
             # checking if all schemes used are fast, if so will use FAST.exe
@@ -558,8 +570,7 @@ class XML2D(FMFile):
             elif method.upper() == "RETURN_PROCESS":
                 print("Executing simulation ...")
                 # execute simulation
-                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
-                return process
+                return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
 
             return None
 
@@ -605,8 +616,8 @@ class XML2D(FMFile):
             last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
             time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-            # it's old if it's over 5 seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > 5
+            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
+            old_log_file = time_diff_sec > self.OLD_FILE
 
             # timeout
             if time.time() > max_time:
@@ -668,6 +679,6 @@ class XML2D(FMFile):
         except Exception:
             msg = f"Exit with {exitcode}: Unknown error occurred!"
 
-        if raise_on_failure and exitcode != 100:
+        if raise_on_failure and exitcode != self.GOOD_EXIT_CODE:
             raise Exception(msg)
         print(msg)

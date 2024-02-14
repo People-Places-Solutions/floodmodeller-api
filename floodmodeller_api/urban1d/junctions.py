@@ -36,6 +36,7 @@ class JUNCTION(UrbanUnit):
     """
 
     _unit = "JUNCTION"
+    MIN_LENGTH = 6
 
     def _read(self, line):
         """Function to read a given JUNCTION line and store data as class attributes"""
@@ -44,7 +45,8 @@ class JUNCTION(UrbanUnit):
 
         unit_data = line.split()  # Get unit parameters
 
-        while len(unit_data) < 6:  # Extend length of unit_data if options variables not provided.
+        # Extend length of unit_data if options variables not provided.
+        while len(unit_data) < self.MIN_LENGTH:
             unit_data.append("")
 
         self.name = str(unit_data[0])

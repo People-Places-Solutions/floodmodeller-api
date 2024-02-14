@@ -9,7 +9,7 @@ try:
     from floodmodeller_api import ZZN
 except ImportError:
     print(
-        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment"
+        "Import failed - Please ensure you have correctly installed floodmodeller_api to your active environment",
     )
     sys.exit()
 

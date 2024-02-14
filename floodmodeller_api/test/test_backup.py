@@ -63,7 +63,7 @@ def test_backup_locations(file):
     backup_file_path = Path(file.backup_dir, file.backup_filename)
     assert backup_file_path.exists()
     # check if contents of backup file match the original file
-    with open(backup_file_path, "r") as f1, open(file.path, "r") as f2:
+    with open(backup_file_path) as f1, open(file.path) as f2:
         assert f1.read() == f2.read()
 
 

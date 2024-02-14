@@ -56,7 +56,7 @@ class INP(FMFile):
 
     def _read(self):
         # Read INP file
-        with open(self._filepath, "r") as inp_file:
+        with open(self._filepath) as inp_file:
             self._raw_data = [line.rstrip("\n") for line in inp_file.readlines()]
 
         # Generate INP file structure
@@ -138,7 +138,7 @@ class INP(FMFile):
 
     def _create_from_blank(self):
         raise NotImplementedError(
-            "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
+            "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read",
         )
 
     def _get_section_definitions(self):
@@ -168,7 +168,9 @@ class INP(FMFile):
 
                                 # Set type to Float or Stirng, as appropirate.
                                 self.options[data[0].lower()] = _to_str(
-                                    data[1], None, check_float=True
+                                    data[1],
+                                    None,
+                                    check_float=True,
                                 )
 
                 # Create appropriate sub-class instences for supported units

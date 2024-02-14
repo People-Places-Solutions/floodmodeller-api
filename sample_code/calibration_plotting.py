@@ -60,7 +60,7 @@ class Calibration:
     def __init__(self) -> None:
         pass
 
-    def calibrate_node(
+    def calibrate_node(  # noqa: PLR0913
         self,
         model_event_links,
         gauge_locations_path,
@@ -89,7 +89,7 @@ class Calibration:
         nodes = list(gauges_nodes["Node"])
 
         self._node_dict = {}
-        for i in range(0, len(nodes)):
+        for i in range(len(nodes)):
             self._node_dict[nodes[i]] = tabs[i]
 
         self._nodes = list(self._node_dict.keys())
@@ -143,14 +143,14 @@ class Calibration:
                         pd.DataFrame(
                             {f"{node}_{event}": values},
                             index=pd.Index(time, name="Time (hr)"),
-                        )
+                        ),
                     )
                     print(
-                        f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                        f"Added {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}",
                     )
                 except Exception:
                     print(
-                        f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}"
+                        f"Failed to add {self._node_dict[node]} for {event}: {index}/{len(self._event_names) * len(self._nodes)}",
                     )
                 index += 1
                 # workbook file can't be found, or node sheet can't be found
@@ -194,7 +194,7 @@ class Calibration:
             ],
         ]
 
-        if not (os.path.exists(output_folder)):
+        if not os.path.exists(output_folder):
             os.makedirs(output_folder)
 
         self._starting_y_coords = None
@@ -210,7 +210,6 @@ class Calibration:
 
             self._add_node_dropdown(node, node_filtered_model, node_filtered_event, node_dropdown)
 
-            # self._plot(node, node_filtered_model, node_filtered_event, output_folder)
             self._fill_csv_list(
                 node,
                 node_filtered_model,
@@ -257,7 +256,7 @@ class Calibration:
                         visible=show,
                         name="Model Data",
                         mode="lines",
-                    )
+                    ),
                 )
                 trace_events.append(event)
             if count < len(event_y_coords):
@@ -268,7 +267,7 @@ class Calibration:
                         visible=show,
                         name="Event Data",
                         mode="lines",
-                    )
+                    ),
                 )
             trace_events.append(event)
 
@@ -292,45 +291,45 @@ class Calibration:
             self._starting_y_coords = [y_model, y_event]
 
         dropdown_buttons.append(
-            dict(
-                method="update",
-                label=self._node_dict[node],
-                visible=True,
-                args=[{"y": y_coords}],
-            )
+            {
+                "method": "update",
+                "label": self._node_dict[node],
+                "visible": True,
+                "args": [{"y": y_coords}],
+            },
         )
 
     def _create_html(self, fig, nodes_dropdown, trace_events, output_folder):
         events_dropdown = []
         for event in self._event_names:
-            show_event = [True if event in x else False for x in trace_events]
+            show_event = [event in x for x in trace_events]
             events_dropdown.append(
-                dict(
-                    method="update",
-                    label=f"{event}",
-                    visible=True,
-                    args=[{"visible": show_event}],
-                )
+                {
+                    "method": "update",
+                    "label": f"{event}",
+                    "visible": True,
+                    "args": [{"visible": show_event}],
+                },
             )
 
         # dropdown
         fig.update_layout(
             updatemenus=[
-                dict(
-                    buttons=nodes_dropdown,
-                    direction="down",
-                    name="Node",
-                    x=-0.05,
-                    y=1.1,
-                ),
-                dict(
-                    buttons=events_dropdown,
-                    direction="down",
-                    name="Event",
-                    x=-0.05,
-                    y=1.0,
-                ),
-            ]
+                {
+                    "buttons": nodes_dropdown,
+                    "direction": "down",
+                    "name": "Node",
+                    "x": -0.05,
+                    "y": 1.1,
+                },
+                {
+                    "buttons": events_dropdown,
+                    "direction": "down",
+                    "name": "Event",
+                    "x": -0.05,
+                    "y": 1.0,
+                },
+            ],
         )
 
         fig.update_layout(
@@ -345,14 +344,17 @@ class Calibration:
         for link in self._model_event_links:
             model_col_name = f"{node}_{link['model results']}"[:-4]
             event_col_name = f"{node}_{link['event folder']}"
-            if (model_col_name) in node_filtered_model.columns and (
-                event_col_name
-            ) in node_filtered_event.columns:
+            if (
+                model_col_name in node_filtered_model.columns
+                and event_col_name in node_filtered_event.columns
+            ):
                 model_col = (node_filtered_model[f"{node}_{link['model results']}"[:-4]]).replace(
-                    "---", np.nan
+                    "---",
+                    np.nan,
                 )
                 event_col = (node_filtered_event[f"{node}_{link['event folder']}"]).replace(
-                    "---", np.nan
+                    "---",
+                    np.nan,
                 )
                 model_peak = model_col.max()
                 event_peak = event_col.max()
@@ -368,7 +370,7 @@ class Calibration:
                         model_time_peak,
                         event_time_peak,
                         f"{abs(model_time_peak - event_time_peak):.3f}",
-                    ]
+                    ],
                 )
 
     def _outputs_csv(self, csv_list, output_folder):

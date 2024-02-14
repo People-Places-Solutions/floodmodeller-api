@@ -38,6 +38,7 @@ class CONDUIT(UrbanUnit):
     """
 
     _unit = "CONDUIT"
+    MIN_LENGTH = 9
 
     def _read(self, line):
         """Function to read a given CONDUIT line and store data as class attributes"""
@@ -48,7 +49,7 @@ class CONDUIT(UrbanUnit):
         unit_data = line.split()  # Get unit parameters
 
         # Extend length of unit_data if options variables not provided.
-        while len(unit_data) < 9:
+        while len(unit_data) < self.MIN_LENGTH:
             unit_data.append("")
 
         # TODO: Update defaults.  Presently atrbitary defaults added to allow API to work.
@@ -74,7 +75,13 @@ class CONDUIT(UrbanUnit):
         # TODO:Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name, self.node1, self.node2) + join_n_char_ljust(
-            15, self.length, self.n, self.z1, self.z2, self.q0, self.qmax
+            15,
+            self.length,
+            self.n,
+            self.z1,
+            self.z2,
+            self.q0,
+            self.qmax,
         )
 
 

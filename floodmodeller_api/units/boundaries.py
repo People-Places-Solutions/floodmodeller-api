@@ -51,7 +51,7 @@ class QTBDY(Unit):
 
     _unit = "QTBDY"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_qtbdy",
         comment="",
@@ -164,7 +164,7 @@ class HTBDY(Unit):
 
     _unit = "HTBDY"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_htbdy",
         comment="",
@@ -338,7 +338,7 @@ class REFHBDY(Unit):
 
     _unit = "REFHBDY"
 
-    def _read(self, refhbdy_block):
+    def _read(self, refhbdy_block):  # noqa: PLR0915
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
@@ -379,7 +379,7 @@ class REFHBDY(Unit):
         self.urbext = _to_float(refhbdy_params2[2])
         self.season = _to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
         self.calc_source = _to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
-        self.use_urban_subdivisions = not refhbdy_params2[5] == ""
+        self.use_urban_subdivisions = refhbdy_params2[5] != ""
         if self.use_urban_subdivisions:
             # Just keeping this raw for now as unlikely to be used.
             self._urban_refh_data = refhbdy_block[5:8]

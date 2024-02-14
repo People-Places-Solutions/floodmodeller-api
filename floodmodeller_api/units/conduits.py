@@ -128,7 +128,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_unit",
         spill="",
@@ -178,7 +178,7 @@ class CONDUIT(Unit):
             else:
                 setattr(self, param, val)
 
-    def _read(self, c_block):
+    def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
         self._subtype = c_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
@@ -224,26 +224,7 @@ class CONDUIT(Unit):
             self.friction_on_walls = _to_float(friction_params[1])
             self.friction_on_soffit = _to_float(friction_params[2])
 
-        elif self._subtype == "SPRUNG":
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            self.equation = _to_str(c_block[4], "MANNING")
-            params = split_10_char(f"{c_block[5]:<100}")
-            self.elevation_invert = _to_float(params[0])
-            self.width = _to_float(params[1])
-            self.height_springing = _to_float(params[2])
-            self.height_crown = _to_float(params[3])
-            self.use_bottom_slot = _to_str(params[4], "GLOBAL")
-            self.bottom_slot_dist = _to_float(params[5])
-            self.bottom_slot_depth = _to_float(params[6])
-            self.use_top_slot = _to_str(params[7], "GLOBAL")
-            self.top_slot_dist = _to_float(params[8])
-            self.top_slot_depth = _to_float(params[9])
-            friction_params = split_10_char(f"{c_block[6]:<30}")
-            self.friction_on_invert = _to_float(friction_params[0])
-            self.friction_on_walls = _to_float(friction_params[1])
-            self.friction_on_soffit = _to_float(friction_params[2])
-
-        elif self._subtype == "SPRUNGARCH":
+        elif self._subtype in ("SPRUNG", "SPRUNGARCH"):
             self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
             self.equation = _to_str(c_block[4], "MANNING")
             params = split_10_char(f"{c_block[5]:<100}")
@@ -278,7 +259,7 @@ class CONDUIT(Unit):
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
             print(
-                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing'
+                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = c_block
 
@@ -307,7 +288,7 @@ class CONDUIT(Unit):
                     self.friction_eq,
                     params,
                     friction_params,
-                ]
+                ],
             )
             return c_block
 
@@ -330,7 +311,7 @@ class CONDUIT(Unit):
                     self.friction_eq,
                     params,
                     friction_params,
-                ]
+                ],
             )
             return c_block
 
@@ -356,7 +337,7 @@ class CONDUIT(Unit):
                         self.friction_on_walls,
                         self.friction_on_soffit,
                     ),
-                ]
+                ],
             )
             return c_block
 
@@ -382,7 +363,7 @@ class CONDUIT(Unit):
                         self.friction_on_walls,
                         self.friction_on_soffit,
                     ),
-                ]
+                ],
             )
             return c_block
 
@@ -391,11 +372,11 @@ class CONDUIT(Unit):
                 [
                     join_10_char(self.dist_to_next),
                     join_10_char(len(self.coords)),
-                ]
+                ],
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)]
+                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
                 )
             return c_block
 

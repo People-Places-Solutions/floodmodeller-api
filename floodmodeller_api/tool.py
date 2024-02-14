@@ -91,7 +91,7 @@ class Gui:
 
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         master: tk.Tk,
         title: str,
@@ -101,7 +101,6 @@ class Gui:
     ):
         self.master = master
         self.master.title(title)
-        # self.master.resizable(False, False)
         self.master.geometry("400x300")
         self.master.configure(bg="#f5f5f5")
         self.parameters = parameters
@@ -116,7 +115,10 @@ class Gui:
         self.add_inputs()
         # Create and place the button
         self.button = tk.Button(
-            self.master, text="Run", font=("Arial", 14), command=self.run_gui_callback
+            self.master,
+            text="Run",
+            font=("Arial", 14),
+            command=self.run_gui_callback,
         )
         self.button.pack(pady=10)
         # Add other widgets to the app

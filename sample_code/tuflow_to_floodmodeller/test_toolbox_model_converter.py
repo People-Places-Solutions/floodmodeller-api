@@ -94,7 +94,7 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
 
 def test_model_converter(tmpdir, model_name, tcf, mocker):
     def assert_log_equals(log_path, expected):
-        with open(log_path, "r") as file:
+        with open(log_path) as file:
             for l1, l2 in zip_longest(file, expected):
                 assert l1.split(" - ", 1)[1] == f"{l2}\n"
 

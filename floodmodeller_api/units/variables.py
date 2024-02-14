@@ -43,19 +43,15 @@ class Variables:
             name = line[:20].strip()
             _type = line[20:30].strip()
             initial_value = line[30:40].strip()
-            if _type.upper() == "TIMER":
-                initial_status = line[40:50].strip()
-            else:
-                initial_status = (
-                    "n/a"  # unless the type is a timer, nothing else has an initial status
-                )
+            # unless the type is a timer, nothing else has an initial status
+            initial_status = line[40:50].strip() if _type.upper() == "TIMER" else "n/a"
             data_list.append(
                 [
                     name,
                     _type,
                     initial_value,
                     initial_status,
-                ]
+                ],
             )
         self.data = pd.DataFrame(data_list, columns=header)
 
@@ -84,6 +80,9 @@ class Variables:
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__, other.__dict__, name="Variables", diff=diff
+            self.__dict__,
+            other.__dict__,
+            name="Variables",
+            diff=diff,
         )
         return (result, diff) if return_diff else result
