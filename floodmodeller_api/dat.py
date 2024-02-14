@@ -728,7 +728,12 @@ class DAT(FMFile):
             self._handle_exception(e, when="remove unit")
 
     def insert_unit(  # noqa: C901, PLR0912, PLR0913
-        self, unit, add_before=None, add_after=None, add_at=None, defer_update=False,
+        self,
+        unit,
+        add_before=None,
+        add_after=None,
+        add_at=None,
+        defer_update=False,
     ):
         """Inserts a unit into the dat file.
 
