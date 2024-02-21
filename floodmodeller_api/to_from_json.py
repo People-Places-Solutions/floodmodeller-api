@@ -6,10 +6,10 @@ from .version import __version__
 
 """
 TODO:
-- Update variable names to be more clear 
-- pandas dataframe and series, include class type
-- general tidy up 
-- Better handle type imports so not circular
+- Update variable names to be more clear            ## DONE
+- pandas dataframe and series, include class type   ## 
+- general tidy up                                   ##
+- Better handle type imports so not circular        ## 
 
 """
 
@@ -29,7 +29,7 @@ def recursive_to_json(obj: Any) -> Any:
     from .units import IIC
     from .backup import File
     # creating the dictionary
-    dictObj = {}
+    obj_dic_result = {}
     
     if is_jsonable(obj):
         return obj
@@ -37,7 +37,7 @@ def recursive_to_json(obj: Any) -> Any:
     if isinstance(obj, (pd.DataFrame, pd.Series)):
         #TODO: handle this case 
         # Do they need a class type?? Probably
-        # dictObj["Class"] = str(cla)[8:-2]
+        # obj_dic_result["Class"] = str(obj_class)[8:-2]
         return "pandas object" # DataFrame.to_json()
     
     if isinstance(obj, Path):
@@ -55,23 +55,23 @@ def recursive_to_json(obj: Any) -> Any:
     if isinstance(obj, dict):
         # create list and append
         for key, value in obj.items():
-            dictObj[key] = recursive_to_json(value)
+            obj_dic_result[key] = recursive_to_json(value)
         
-        return dictObj
+        return obj_dic_result
 
     # Either a type of FM API Class
     if isinstance(obj, (FMFile, Unit, IIC, File)):
-        cla = obj.__class__
+        obj_class = obj.__class__
 
-        dictObj["API Class"] = str(cla)[8:-2]
-        dictObj["API Version"] = __version__
+        obj_dic_result["API Class"] = str(obj_class)[8:-2]
+        obj_dic_result["API Version"] = __version__
 
-        objDic = {}
+        obj_dic = {}
         for key, value in obj.__dict__.items():
-            objDic[key] = recursive_to_json(value)
+            obj_dic[key] = recursive_to_json(value)
         
-        dictObj["Object Attributes"] = objDic
-        return dictObj
+        obj_dic_result["Object Attributes"] = obj_dic
+        return obj_dic_result
 
 # def from_json():
 #     pass
