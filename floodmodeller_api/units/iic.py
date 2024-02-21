@@ -18,6 +18,7 @@ import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from .helpers import join_10_char, split_10_char
+from ..to_from_json import to_json
 
 # Initial Conditions Class
 
@@ -102,3 +103,6 @@ class IIC:
             diff=diff,
         )
         return (result, diff) if return_diff else result
+    
+    def to_json(self) -> str:
+        return to_json(self)

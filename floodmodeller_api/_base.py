@@ -25,6 +25,7 @@ from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .version import __version__
+from .to_from_json import to_json
 
 
 class FMFile:
@@ -179,3 +180,6 @@ class FMFile:
             diff.append((f"{self._filetype}->{key}", f"Error encountered: {e.args[0]}"))
 
         return (result, diff) if return_diff else result
+    
+    def to_json(self) -> str:
+        return to_json(self)
