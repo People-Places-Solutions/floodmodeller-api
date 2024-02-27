@@ -1,15 +1,17 @@
+
 from typing import Any
 import json
-import pandas as pd
 from pathlib import Path
-from version import __version__
+import pandas as pd
+from .version import __version__
+
 
 """
 TODO:
 - Update variable names to be more clear            ## DONE
 - pandas dataframe and series, include class type   ## DONE
-- general tidy up                                   ##
-- Better handle type imports so not circular        ## 
+- general tidy up                                   ## DONE
+- Better handle type imports so not circular        ## DONE
 
 """
 
@@ -25,32 +27,26 @@ def is_jsonable(obj: Any) -> bool:
         return False
 
 
-def new_dictionary(obj: Any) -> dict:
-    obj_class = obj.__class__
-    # creating the dictionary
-    obj_dic_result = {}
-
-    obj_dic_result["API Class"] = str(obj_class)[8:-2]
-    obj_dic_result["API Version"] = __version__
-
-    return obj_dic_result
-
-
 def recursive_to_json(obj: Any) -> Any:
-    global pd_json
-    from _base import FMFile
-    from units._base import Unit
-    from units import IIC
-    from backup import File
-
-    obj_dic_result = new_dictionary(obj)
-
+    from ._base import FMFile
+    from .units._base import Unit
+    from .units import IIC
+    from .backup import File
 
     if is_jsonable(obj):
         return obj
 
     if isinstance(obj, (pd.DataFrame, pd.Series)):
-        return obj.to_json()
+        data_pd = {}
+        if isinstance(obj, pd.DataFrame):
+            return {"class": "pandas.DataFrame",
+                                         "object": obj.to_dict()
+                                         }
+        elif isinstance(obj, pd.Series):
+            return {"class": "pandas.Series",
+                                         "object": obj.to_dict()
+                                         }
+
 
     if isinstance(obj, Path):
         return str(obj)
@@ -64,31 +60,31 @@ def recursive_to_json(obj: Any) -> Any:
 
         return items
 
+    return_dict = {}
+
     if isinstance(obj, dict):
         for key, value in obj.items():
-            obj_dic_result[key] = recursive_to_json(value)
+            return_dict[key] = recursive_to_json(value)
 
-        return obj_dic_result
+        return return_dict
 
     # Either a type of FM API Class
     if isinstance(obj, (FMFile, Unit, IIC, File)):
+        obj_class = obj.__class__
 
+        return_dict["API Class"] = str(obj_class)[8:-2]
+        return_dict["API Version"] = __version__
 
         obj_dic = {}
         for key, value in obj.__dict__.items():
             obj_dic[key] = recursive_to_json(value)
 
-        obj_dic_result["Object Attributes"] = obj_dic
-        return obj_dic_result
+        return_dict["Object Attributes"] = obj_dic
+
+        return return_dict
 
 
 def from_json():
     pass
-
-
-if __name__ == '__main__':
-    ief = "C:\PROJECTS\FLOOD_MODELLER_API\JSON\floodmodeller-api\demo\data\ex3.ief"
-    to_json(ief)
-
 
 
