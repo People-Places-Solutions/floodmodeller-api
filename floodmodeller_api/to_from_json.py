@@ -6,16 +6,16 @@ import pandas as pd
 from .version import __version__
 
 
-"""
-TODO:
-- Update variable names to be more clear            ## DONE
-- pandas dataframe and series, include class type   ## DONE
-- general tidy up                                   ## DONE
-- Better handle type imports so not circular        ## DONE
-
-"""
-
 def to_json(obj: Any) -> str:
+    """
+    Function to convert any flood modeller object into a JSON file
+
+    Args:
+        obj (object):  Any flood modeller object (dat, ied, ief, cross sections...)
+
+    Returns:
+        A JSON file.
+    """
     return json.dumps(recursive_to_json(obj), indent=4)
 
 
@@ -28,6 +28,16 @@ def is_jsonable(obj: Any) -> bool:
 
 
 def recursive_to_json(obj: Any) -> Any:
+    """
+    Function to undertake a recursion through the different elements of the python object
+
+    Args:
+        Obj (object):  Any flood modeller object (dat, ied, ief, cross sections...)
+
+    Returns:
+        if the object is serializable, it creates the object to go to the function to_json and to create the JSON file,
+        otherwise, it will move back through this function recursively until the object is finally serializable.
+    """
     from ._base import FMFile
     from .units._base import Unit
     from .units import IIC
@@ -37,17 +47,16 @@ def recursive_to_json(obj: Any) -> Any:
         return obj
 
     if isinstance(obj, (pd.DataFrame, pd.Series)):
-        data_pd = {}
         if isinstance(obj, pd.DataFrame):
             return {"class": "pandas.DataFrame",
-                                         "object": obj.to_dict()
-                                         }
+                    "object": obj.to_dict()
+                    }
         elif isinstance(obj, pd.Series):
             return {"class": "pandas.Series",
-                                         "object": obj.to_dict()
-                                         }
+                    "object": obj.to_dict()
+                    }
 
-
+    # To convert WindowsPath, no serializable, objects to string, serializable.
     if isinstance(obj, Path):
         return str(obj)
 
@@ -60,8 +69,8 @@ def recursive_to_json(obj: Any) -> Any:
 
         return items
 
+    # Dictionary to the all the serializable objects
     return_dict = {}
-
     if isinstance(obj, dict):
         for key, value in obj.items():
             return_dict[key] = recursive_to_json(value)
@@ -70,6 +79,7 @@ def recursive_to_json(obj: Any) -> Any:
 
     # Either a type of FM API Class
     if isinstance(obj, (FMFile, Unit, IIC, File)):
+        """Information from the flood modeller object will be included in the JSON file"""
         obj_class = obj.__class__
 
         return_dict["API Class"] = str(obj_class)[8:-2]
@@ -84,7 +94,7 @@ def recursive_to_json(obj: Any) -> Any:
         return return_dict
 
 
-def from_json():
+def from_json(cls, json: Any) -> str:
     pass
 
 
