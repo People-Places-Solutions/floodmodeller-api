@@ -210,6 +210,6 @@ class Unit:
         self._last_rule_row = rule_row
 
         return rules
-    
+
     def to_json(self) -> str:
         return to_json(self)

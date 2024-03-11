@@ -180,6 +180,6 @@ class FMFile:
             diff.append((f"{self._filetype}->{key}", f"Error encountered: {e.args[0]}"))
 
         return (result, diff) if return_diff else result
-    
-    def to_json(self) -> str:
-        return to_json(self)
+
+    # def to_json(self) -> str:
+    #     return to_json(self)

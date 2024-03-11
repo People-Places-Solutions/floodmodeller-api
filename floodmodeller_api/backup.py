@@ -25,7 +25,7 @@ from typing import Union
 
 import pandas as pd
 
-from .to_from_json import to_json
+# from .to_from_json import to_json
 
 
 class BackupControl:
@@ -271,5 +271,5 @@ class File(BackupControl):
         backup_logs = backup_logs[backup_logs.file_id != self.file_id]
         backup_logs.to_csv(self.backup_csv_path, index=False)
 
-    def to_json(self) -> str:
-        return to_json(self)
+    # def to_json(self) -> str:
+    #     return to_json(self)

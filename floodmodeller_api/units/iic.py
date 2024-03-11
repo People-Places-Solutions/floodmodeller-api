@@ -103,6 +103,6 @@ class IIC:
             diff=diff,
         )
         return (result, diff) if return_diff else result
-    
+
     def to_json(self) -> str:
         return to_json(self)
