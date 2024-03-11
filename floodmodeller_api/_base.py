@@ -181,5 +181,5 @@ class FMFile:
 
         return (result, diff) if return_diff else result
 
-    # def to_json(self) -> str:
-    #     return to_json(self)
+    def to_json(self) -> str:
+        return to_json(self)
