@@ -1,8 +1,9 @@
-
-from typing import Any
 import json
 from pathlib import Path
+from typing import Any
+
 import pandas as pd
+
 from .version import __version__
 
 
@@ -23,11 +24,11 @@ def is_jsonable(obj: Any) -> bool:
     try:
         json.dumps(obj)
         return True
-    except:
+    except Exception:
         return False
 
 
-def recursive_to_json(obj: Any) -> Any:
+def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
     """
     Function to undertake a recursion through the different elements of the python object
 
@@ -38,7 +39,7 @@ def recursive_to_json(obj: Any) -> Any:
         if the object is serializable, it creates the object to go to the function to_json and to create the JSON file,
         otherwise, it will move back through this function recursively until the object is finally serializable.
     """
-    from ._base import FMFile
+    from ._base import FMFile  # noqa: I001
     from .units._base import Unit
     from .units import IIC
     from .backup import File
@@ -46,15 +47,10 @@ def recursive_to_json(obj: Any) -> Any:
     if is_jsonable(obj):
         return obj
 
-    if isinstance(obj, (pd.DataFrame, pd.Series)):
-        if isinstance(obj, pd.DataFrame):
-            return {"class": "pandas.DataFrame",
-                    "object": obj.to_dict()
-                    }
-        elif isinstance(obj, pd.Series):
-            return {"class": "pandas.Series",
-                    "object": obj.to_dict()
-                    }
+    if isinstance(obj, pd.DataFrame):
+        return {"class": "pandas.DataFrame", "object": obj.to_dict()}
+    elif isinstance(obj, pd.Series):
+        return {"class": "pandas.Series", "object": obj.to_dict()}
 
     # To convert WindowsPath, no serializable, objects to string, serializable.
     if isinstance(obj, Path):
@@ -78,10 +74,10 @@ def recursive_to_json(obj: Any) -> Any:
         return return_dict
 
     # Either a type of FM API Class
-    if isinstance(obj, (FMFile, Unit, IIC, File)):
-        """Information from the flood modeller object will be included in the JSON file"""
+    if isinstance(obj, (FMFile, Unit, IIC, File)):  # noqa: RET503
+        # Information from the flood modeller object will be included in the JSON file
         obj_class = obj.__class__
-
+        # slicing undertaken to remove quotation marks
         return_dict["API Class"] = str(obj_class)[8:-2]
         return_dict["API Version"] = __version__
 
@@ -96,5 +92,3 @@ def recursive_to_json(obj: Any) -> Any:
 
 def from_json(cls, json: Any) -> str:
     pass
-
-
