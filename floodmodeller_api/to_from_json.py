@@ -28,7 +28,7 @@ def is_jsonable(obj: Any) -> bool:
         return False
 
 
-def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
+def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: C901, PLR0911
     """
     Function to undertake a recursion through the different elements of the python object
 
@@ -49,7 +49,7 @@ def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
 
     if isinstance(obj, pd.DataFrame):
         return {"class": "pandas.DataFrame", "object": obj.to_dict()}
-    elif isinstance(obj, pd.Series):
+    if isinstance(obj, pd.Series):
         return {"class": "pandas.Series", "object": obj.to_dict()}
 
     # To convert WindowsPath, no serializable, objects to string, serializable.
@@ -61,7 +61,7 @@ def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
         # create list and append
         items = []
         for item in obj:
-            items.append(recursive_to_json(item))
+            items.append(recursive_to_json(item, is_top_level=False))
 
         return items
 
@@ -69,7 +69,7 @@ def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
     return_dict = {}
     if isinstance(obj, dict):
         for key, value in obj.items():
-            return_dict[key] = recursive_to_json(value)
+            return_dict[key] = recursive_to_json(value, is_top_level=False)
 
         return return_dict
 
@@ -79,11 +79,12 @@ def recursive_to_json(obj: Any) -> Any:  # noqa: C901, PLR0911
         obj_class = obj.__class__
         # slicing undertaken to remove quotation marks
         return_dict["API Class"] = str(obj_class)[8:-2]
-        return_dict["API Version"] = __version__
+        if is_top_level:
+            return_dict["API Version"] = __version__
 
         obj_dic = {}
         for key, value in obj.__dict__.items():
-            obj_dic[key] = recursive_to_json(value)
+            obj_dic[key] = recursive_to_json(value, is_top_level=False)
 
         return_dict["Object Attributes"] = obj_dic
 
