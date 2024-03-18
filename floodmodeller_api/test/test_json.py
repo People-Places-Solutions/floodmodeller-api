@@ -27,9 +27,9 @@ def json_expected(test_workspace):
     return os.path.join(test_workspace, "EX18_expected.json")
 
 
-def test_dat_json(dat_test):
+def test_dat_json(dat_obj):
     """JSON:  To test if to_json produces the json file"""
-    assert to_json(dat_test)
+    assert to_json(dat_obj)
 
 
 def test_json_file_produced(dat_obj, json_expected):
@@ -46,7 +46,7 @@ def test_json_file_produced(dat_obj, json_expected):
         del dict_dat_values[key]
     # Second, to handle the json file EX18_expected.json which must be the same as the object created above.
     # load is to read a json document
-    json_dict = json.load(open(json_expected))     # noqa: SIM115
+    json_dict = json.load(open(json_expected))  # noqa: SIM115
     dict_expected_values = json_dict.get("Object Attributes")
     for key in keys_removed:
         del dict_expected_values[key]
