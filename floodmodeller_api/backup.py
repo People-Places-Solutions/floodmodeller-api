@@ -22,8 +22,11 @@ from hashlib import sha1
 from pathlib import Path
 from shutil import copy
 from typing import Union
+from .to_from_json import to_json
 
 import pandas as pd
+
+# from .to_from_json import to_json
 
 
 class BackupControl:
@@ -268,3 +271,6 @@ class File(BackupControl):
         backup_logs = pd.read_csv(self.backup_csv_path)
         backup_logs = backup_logs[backup_logs.file_id != self.file_id]
         backup_logs.to_csv(self.backup_csv_path, index=False)
+
+    def to_json(self) -> str:
+        return to_json(self)
