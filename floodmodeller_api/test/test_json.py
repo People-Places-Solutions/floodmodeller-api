@@ -57,3 +57,9 @@ def test_json_file_produced(dat_obj, json_expected):
 def test_is_jsonable(dat_obj):  # I have doubts that it is making the job
     """JSON:  To test that all the elements of the json are indeed serializable"""
     assert json.dumps(dat_obj)
+
+
+def test_dat_from_json(test_workspace):
+    """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
+    for datfile in Path(test_workspace).glob("*.dat"):
+        assert DAT(datfile) == DAT.from_json(DAT(datfile).to_json())
