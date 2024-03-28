@@ -23,10 +23,12 @@ def create_expected_json_files():
         "EX3.IEF",
         "Domain1_Q.xml",
         "Linked1D2D.xml",
-    ]:  
+    ]:
         file = Path(test_workspace, file)
         obj = read_file(file)
-        with open(file.with_name(f"{file.name.replace('.', '_')}_expected").with_suffix(".json"), "w") as json_file:
+        with open(
+            file.with_name(f"{file.name.replace('.', '_')}_expected").with_suffix(".json"), "w"
+        ) as json_file:
             json_file.write(obj.to_json())
 
 
@@ -52,13 +54,25 @@ def parameterised_objs_and_expected(test_workspace):
     """JSON:  expected after passing to_json method"""
     return [
         (DAT(Path(test_workspace, "EX18.DAT")), Path(test_workspace, "EX18_DAT_expected.json")),
-        (DAT(Path(test_workspace, "network.dat")), Path(test_workspace, "network_dat_expected.json")),
-        (IED(Path(test_workspace, "network.ied")), Path(test_workspace, "network_ied_expected.json")),
+        (
+            DAT(Path(test_workspace, "network.dat")),
+            Path(test_workspace, "network_dat_expected.json"),
+        ),
+        (
+            IED(Path(test_workspace, "network.ied")),
+            Path(test_workspace, "network_ied_expected.json"),
+        ),
         (DAT(Path(test_workspace, "EX3.DAT")), Path(test_workspace, "EX3_DAT_expected.json")),
         (DAT(Path(test_workspace, "EX6.DAT")), Path(test_workspace, "EX6_DAT_expected.json")),
         (IEF(Path(test_workspace, "EX3.IEF")), Path(test_workspace, "EX3_IEF_expected.json")),
-        (XML2D(Path(test_workspace, "Domain1_Q.xml")), Path(test_workspace, "Domain1_Q_xml_expected.json")),
-        (XML2D(Path(test_workspace, "Linked1D2D.xml")), Path(test_workspace, "Linked1D2D_xml_expected.json")),
+        (
+            XML2D(Path(test_workspace, "Domain1_Q.xml")),
+            Path(test_workspace, "Domain1_Q_xml_expected.json"),
+        ),
+        (
+            XML2D(Path(test_workspace, "Linked1D2D.xml")),
+            Path(test_workspace, "Linked1D2D_xml_expected.json"),
+        ),
     ]
 
 

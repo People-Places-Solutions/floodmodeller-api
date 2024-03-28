@@ -23,6 +23,7 @@ import webbrowser
 def open_docs():
     webbrowser.open_new_tab("https://api.floodmodeller.com/api/")
 
+
 def read_file(filepath: Union[str, Path]) -> FMFile:
     """Helper function to create an instance of an API class based on the provided filepath.
 
@@ -44,7 +45,7 @@ def read_file(filepath: Union[str, Path]) -> FMFile:
             from floodmodeller_api import read_file
 
             ief = read_file("/path/to/file.ief")
-            
+
 
     """
     suffix_to_class = {

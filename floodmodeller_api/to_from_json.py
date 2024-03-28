@@ -107,7 +107,8 @@ def from_json(obj: str) -> Any:
         A FMP object
     """
     obj = json.loads(obj)
-    API_class = obj["API Class"]    # probably to identify the type of class to use it when creating the class
+    # probably to identify the type of class to use it when creating the class
+    API_class = obj["API Class"]
     obj = obj["Object Attributes"]
     return recursive_from_json(obj)
 
