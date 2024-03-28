@@ -21,8 +21,8 @@ from typing import List, Optional
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
-from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 from ..to_from_json import to_json
+from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
 class Unit:

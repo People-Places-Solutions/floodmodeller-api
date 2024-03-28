@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 from typing import Any
 
@@ -123,7 +122,7 @@ def recursive_from_json(obj: Any) -> Any:
     Returns:
         A FMP object
     """
-    # from ._base import FMFile  # noqa: I001
+    # from ._base import FMFile
     # from .units._base import Unit
     # from .units import IIC
     # from .backup import File

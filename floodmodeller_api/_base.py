@@ -21,11 +21,11 @@ from typing import NoReturn, Optional, Union
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
+from .to_from_json import to_json
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .version import __version__
-from .to_from_json import to_json
 
 
 class FMFile:

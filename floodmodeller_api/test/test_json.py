@@ -1,12 +1,12 @@
-import os
 import json
+import os
 from pathlib import Path
 
 import pytest
 
 from floodmodeller_api import DAT, IED, IEF, XML2D
-from floodmodeller_api.util import read_file
 from floodmodeller_api.to_from_json import is_jsonable
+from floodmodeller_api.util import read_file
 
 
 def create_expected_json_files():
@@ -27,7 +27,7 @@ def create_expected_json_files():
         file = Path(test_workspace, file)
         obj = read_file(file)
         with open(
-            file.with_name(f"{file.name.replace('.', '_')}_expected").with_suffix(".json"), "w"
+            file.with_name(f"{file.name.replace('.', '_')}_expected").with_suffix(".json"), "w",
         ) as json_file:
             json_file.write(obj.to_json())
 

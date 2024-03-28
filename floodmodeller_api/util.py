@@ -13,11 +13,13 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
-from typing import Union
-from pathlib import Path
-from ._base import FMFile
-from . import DAT, IEF, IED, ZZN, XML2D, INP, LF1, LF2
+
 import webbrowser
+from pathlib import Path
+from typing import Union
+
+from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
+from ._base import FMFile
 
 
 def open_docs():
@@ -62,5 +64,5 @@ def read_file(filepath: Union[str, Path]) -> FMFile:
     api_class = suffix_to_class.get(filepath.suffix.lower())
     if api_class:
         return api_class(filepath)
-    else:
-        raise ValueError(f"Unsupported file type: {filepath.suffix}")
+
+    raise ValueError(f"Unsupported file type: {filepath.suffix}")
