@@ -8,7 +8,7 @@ from floodmodeller_api import INP
 
 @pytest.fixture
 def inp_fp(test_workspace):
-    return os.path.join(test_workspace, "network.inp")
+    return Path(test_workspace, "network.inp")
 
 
 @pytest.fixture

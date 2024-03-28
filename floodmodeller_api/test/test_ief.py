@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 
@@ -7,7 +7,7 @@ from floodmodeller_api import IEF
 
 @pytest.fixture
 def ief_fp(test_workspace):
-    return os.path.join(test_workspace, "network.ief")
+    return Path(test_workspace, "network.ief")
 
 
 @pytest.fixture

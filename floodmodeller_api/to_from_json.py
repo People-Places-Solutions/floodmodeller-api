@@ -10,15 +10,15 @@ from .version import __version__
 
 def to_json(obj: Any) -> str:
     """
-    Function to convert any flood modeller object into a JSON file
+    Function to convert any flood modeller object into a JSON object
 
     Args:
         obj (object):  Any flood modeller object (dat, ied, ief, cross sections...)
 
     Returns:
-        A JSON file.
+        A JSON formatted string.
     """
-    return json.dumps(recursive_to_json(obj), indent=4)
+    return json.dumps(recursive_to_json(obj), indent=2)
 
 
 def is_jsonable(obj: Any) -> bool:
