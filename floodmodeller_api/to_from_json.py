@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -91,5 +92,76 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: C901
         return return_dict
 
 
-def from_json(cls, json: Any) -> str:
-    pass
+# def from_json(cls, json: Any) -> str:
+#     pass
+
+
+def from_json(obj: str) -> Any:
+    """
+    Function to convert a JSON string back into Python objects
+
+    Args:
+        json_str (str): A JSON string
+
+    Returns:
+        A FMP object
+    """
+    obj = json.loads(obj)
+    API_class = obj["API Class"]    # probably to identify the type of class to use it when creating the class
+    obj = obj["Object Attributes"]
+    return recursive_from_json(obj)
+
+
+def recursive_from_json(obj: Any) -> Any:
+    """
+    Function to undertake a recursion through the different elements of the JSON object
+
+    Args:
+        obj (dict):  A JSON dict.  IT was converted from str to dict in from_json
+
+    Returns:
+        A FMP object
+    """
+    # from ._base import FMFile  # noqa: I001
+    # from .units._base import Unit
+    # from .units import IIC
+    # from .backup import File
+
+    for key, value in obj.items():
+        if isinstance(value, dict):
+            obj[key] = recursive_from_json(value)
+        elif key == "class" and value == "pandas.DataFrame":
+            df = pd.DataFrame.from_dict(obj["object"])
+            obj["object"] = df
+        elif key == "class" and value == "pandas.Series":
+            sr = pd.Series(obj["object"])
+            obj["object"] = sr
+        elif isinstance(value, list):
+            for item in value:
+                if not isinstance(item, dict):
+                    continue
+                elif isinstance(item, dict):
+                    recursive_from_json(item)
+        # elif not value:
+        #     pass
+        # elif isinstance(value, int):
+        #     pass
+        # elif isinstance(value, float):
+        #     pass
+        # elif isinstance(value, str):
+        #     pass
+        # elif os.path.isfile(value):
+        #     obj[key] = Path(value)
+        # elif os.path.isdir(value):
+        #     obj[key] = Path(value)
+        elif "API Class" in obj:
+            pass
+    return obj
+
+
+#######
+# 1. Is what has been done so far correct?
+# 2. To handle windowsPath
+# 3. To handle API class
+# 4. To create the proper FMP object
+#
