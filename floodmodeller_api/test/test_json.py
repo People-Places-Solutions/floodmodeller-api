@@ -67,15 +67,14 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
     """JSON:  To test if the json object produced in to_json is identical to the expected json file"""
     for obj, json_expected in parameterised_objs_and_expected:
         # First, to create and handle the json (str) object
-        # loads is to convert a json string document into a python dictionary
+        # Fetch "Object Attributes" key only as we don't need to compare API versions
         json_dict_from_obj = json.loads(obj.to_json())["Object Attributes"]
 
-        # Second, to handle the json file EX18_expected.json which must be the same as the object created above.
+        # Second, to handle the json file ..._expected.json which must be the same as the object created above.
         json_dict_from_file = json.load(open(json_expected))["Object Attributes"]  # noqa: SIM115
 
-        # keys with paths and timing that must be removed to avoid issues when testing.
+        # keys to ignore when testing for equivalence
         keys_to_remove = ["_filepath", "file"]
-
         for key in keys_to_remove:
             del json_dict_from_obj[key]
             del json_dict_from_file[key]
