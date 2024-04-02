@@ -21,7 +21,7 @@ from typing import NoReturn, Optional, Union
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
-from .to_from_json import to_json
+from .to_from_json import to_json, from_json
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
@@ -183,3 +183,14 @@ class FMFile:
 
     def to_json(self) -> str:
         return to_json(self)
+    
+    @classmethod
+    def from_json(cls, json_string: str):
+        api_object = cls()
+        object_dict = from_json(json_string)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object
