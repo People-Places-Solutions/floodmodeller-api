@@ -59,40 +59,25 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: C901
     # Case list or dict of non-jsonable stuff
     if isinstance(obj, list):
         # create list and append
-        items = []
-        for item in obj:
-            items.append(recursive_to_json(item, is_top_level=False))
-
-        return items
+        return [recursive_to_json(item, is_top_level=False) for item in obj]
 
     # Dictionary to the all the serializable objects
-    return_dict = {}
     if isinstance(obj, dict):
-        for key, value in obj.items():
-            return_dict[key] = recursive_to_json(value, is_top_level=False)
-
-        return return_dict
+        return {key: recursive_to_json(value, is_top_level=False) for key, value in obj.items()}
 
     # Either a type of FM API Class
     if isinstance(obj, (FMFile, Unit, IIC, File)):  # noqa: RET503
-        # Information from the flood modeller object will be included in the JSON file
-        obj_class = obj.__class__
+        # Information from the flood modeller object will be included in the JSON output
         # slicing undertaken to remove quotation marks
-        return_dict["API Class"] = str(obj_class)[8:-2]
+        return_dict: dict[str, Any] = {"API Class": str(obj.__class__)[8:-2]}
         if is_top_level:
             return_dict["API Version"] = __version__
 
-        obj_dic = {}
-        for key, value in obj.__dict__.items():
-            obj_dic[key] = recursive_to_json(value, is_top_level=False)
-
-        return_dict["Object Attributes"] = obj_dic
+        return_dict["Object Attributes"] = {
+            key: recursive_to_json(value, is_top_level=False) for key, value in obj.__dict__.items()
+        }
 
         return return_dict
-
-
-# def from_json(cls, json: Any) -> str:
-#     pass
 
 
 def from_json(obj: str) -> Any:
