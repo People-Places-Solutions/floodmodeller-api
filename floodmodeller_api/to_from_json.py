@@ -4,6 +4,7 @@ from typing import Any
 #from ._base import FMFile
 import pandas as pd
 
+import floodmodeller_api
 from .version import __version__
 
 
@@ -118,10 +119,9 @@ def recursive_from_json(obj: Any) -> Any:
     Returns:
         A FMP object
     """
-    # from ._base import FMFile
-    # from .units._base import Unit
-    # from .units import IIC
-    # from .backup import File
+
+    #import_list = []
+
     for key, value in obj.items():
         if isinstance(value, dict):
             obj[key] = recursive_from_json(value)
@@ -158,9 +158,19 @@ def recursive_from_json(obj: Any) -> Any:
                 #print(obj["API Class"])
                 head_flood_modeller_class = obj["API Class"][:17]   # to slice the api class to be able to solve issue with eval().  See comment by eval().
                 tail_flood_modeller_class = obj["API Class"][18:]
-                eval(f"__import__({head_flood_modeller_class}).{tail_flood_modeller_class}").from_json(obj["Object Attributes"])    # error.  NameError: name 'floodmodeller_api' is not defined.  See bookmark.
-                # for key, value in api_dict.items():
-                #     setattr(eval(obj["API Class"]), key, value)
+                ##################################################################################
+                # import_list.append(head_flood_modeller_class)   # to try to avoid using eval()
+                # if len(import_list) == 0:
+                #     pass
+                # if len(import_list) == 1:
+                #     __import__(import_list[0])
+                # elif len(import_list) > 1:
+                #     for n, i in enumerate(import_list):
+                #         if import_list[n+1] != import_list[n]:
+                #             __import__(import_list[n+1])
+                ####################################################################################
+                #eval(f"__import__({head_flood_modeller_class}).{tail_flood_modeller_class}", {"floodmodeller_api": "floodmodeller_api"}).from_json(obj["Object Attributes"])    # error.  NameError: name 'floodmodeller_api' is not defined.  See bookmark.
+                eval(obj["API Class"]).from_json()
 
 
     return obj
