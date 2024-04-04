@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import Any
-
+#from ._base import FMFile
 import pandas as pd
 
 from .version import __version__
@@ -90,11 +90,22 @@ def from_json(obj: str) -> Any:
     Returns:
         A FMP object
     """
+    # To convert a JSON string into a python dictionary
+    #obj = obj.replace("'", '"')
     obj = json.loads(obj)
     # probably to identify the type of class to use it when creating the class
-    API_class = obj["API Class"]
+    #if obj.get("API Class"):
+    #API_class = obj["API Class"]
     obj = obj["Object Attributes"]
     return recursive_from_json(obj)
+
+# function to define the FMP classes inside of the main FMP object.  For instance, a dat class can have many different other objects inside
+# def _class_api(api: Any) -> Any:
+#     class_sliced = api[18:].replace(".", " ").split()    # it creates a list
+#     if len(class_sliced) == 2:    # if there are 2 items in the list, it is not a unit
+#         pass
+#     elif len(class_sliced) == 3:  # if there are 3 items in the list, it is a unit
+#         pass
 
 
 def recursive_from_json(obj: Any) -> Any:
@@ -111,7 +122,6 @@ def recursive_from_json(obj: Any) -> Any:
     # from .units._base import Unit
     # from .units import IIC
     # from .backup import File
-
     for key, value in obj.items():
         if isinstance(value, dict):
             obj[key] = recursive_from_json(value)
@@ -139,14 +149,19 @@ def recursive_from_json(obj: Any) -> Any:
         #     obj[key] = Path(value)
         # elif os.path.isdir(value):
         #     obj[key] = Path(value)
-        elif "API Class" in obj:
-            pass
+        elif key == "API Class":
+            #print(obj["Object Attributes"])
+            #class_api = _class_api(obj["API Class"])
+            #class_type = obj["API Class"]           # variable with the type of class to be added in setattr
+            if value.startswith("floodmodeller_api."):
+                #api_dict = obj["Object Attributes"]    # dict with the instances of the FMP object
+                #print(obj["API Class"])
+                head_flood_modeller_class = obj["API Class"][:17]   # to slice the api class to be able to solve issue with eval().  See comment by eval().
+                tail_flood_modeller_class = obj["API Class"][18:]
+                eval(f"__import__({head_flood_modeller_class}).{tail_flood_modeller_class}").from_json(obj["Object Attributes"])    # error.  NameError: name 'floodmodeller_api' is not defined.  See bookmark.
+                # for key, value in api_dict.items():
+                #     setattr(eval(obj["API Class"]), key, value)
+
+
     return obj
 
-
-#######
-# 1. Is what has been done so far correct?
-# 2. To handle windowsPath
-# 3. To handle API class
-# 4. To create the proper FMP object
-#
