@@ -102,6 +102,27 @@ lf1_unsteady_data_to_extract = {
         "data_type": "all",
         "before_index": True,
     },
+    "tuflow_vol": {
+        "class": TimeFloatMultParser,
+        "prefix": "!!HPC_Vol",
+        "data_type": "all",
+        "subheaders": ["simulated_duplicate", "tuflow_vol"],
+        "before_index": True,
+    },
+    "tuflow_n_wet": {
+        "class": TimeFloatMultParser,
+        "prefix": "!!HPC_nWet",
+        "data_type": "all",
+        "subheaders": ["simulated_duplicate", "tuflow_n_wet"],
+        "before_index": True,
+    },
+    "tuflow_dt": {
+        "class": TimeFloatMultParser,
+        "prefix": "!!HPC_dt",
+        "data_type": "all",
+        "subheaders": ["simulated_duplicate", "tuflow_dt"],
+        "before_index": True,
+    },
     "simulated": {
         "class": TimeDeltaHMSParser,
         "prefix": "!!Info1 Simulated",
