@@ -347,7 +347,7 @@ class TimeSplitParser(Parser):
         super().__init__(*args, **kwargs)
         self._nan = pd.NaT
 
-    def _process_line(self, raw: str) -> str:
+    def _process_line(self, raw: str) -> dt.time:
         """Converts string to time, removing everything after split"""
 
         return dt.datetime.strptime(raw.split(self._split)[0].strip(), self._code).time()
