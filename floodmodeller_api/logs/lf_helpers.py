@@ -336,3 +336,18 @@ class TimeFloatMultParser(Parser):
         as_float = [float(x) for x in raw.split()]
         first_as_timedelta = dt.timedelta(hours=float(as_float[0]))
         return [first_as_timedelta] + as_float[1:]
+
+
+class TimeSplitParser(Parser):
+    """Extra argument from superclass    code: str, split: str"""
+
+    def __init__(self, *args, **kwargs):
+        self._code = kwargs.pop("code")
+        self._split = kwargs.pop("split")
+        super().__init__(*args, **kwargs)
+        self._nan = pd.NaT
+
+    def _process_line(self, raw: str) -> str:
+        """Converts string to time, removing everything after split"""
+
+        return dt.datetime.strptime(raw.split(self._split)[0].strip(), self._code).time()

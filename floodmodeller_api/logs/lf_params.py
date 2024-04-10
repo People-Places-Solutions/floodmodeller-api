@@ -25,6 +25,7 @@ from .lf_helpers import (
     TimeDeltaSParser,
     TimeFloatMultParser,
     TimeParser,
+    TimeSplitParser,
 )
 
 lf1_unsteady_data_to_extract = {
@@ -269,6 +270,86 @@ lf1_unsteady_data_to_extract = {
     "mass_balance_error_2": {
         "class": FloatSplitParser,
         "prefix": "!!output1  Mass balance error [2]:",
+        "data_type": "last",
+        "split": "%",
+    },
+    "tuflow_start_time": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW Start Time (h): ",
+        "data_type": "last",
+    },
+    "tuflow_end_time": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW End Time (h): ",
+        "data_type": "last",
+    },
+    "tuflow_cpu_time": {
+        "class": TimeSplitParser,
+        "prefix": "!!TUFLOW CPU Time: ",
+        "data_type": "last",
+        "split": "[",
+        "code": "%H:%M:%S",
+    },
+    "tuflow_clock_time": {
+        "class": TimeSplitParser,
+        "prefix": "!!TUFLOW Clock Time: ",
+        "data_type": "last",
+        "split": "[",
+        "code": "%H:%M:%S",
+    },
+    "tuflow_warnings_prior": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW WARNINGs prior to simulation:",
+        "data_type": "last",
+        "split": "[",
+    },
+    "tuflow_warnings_during": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW WARNINGs during simulation:",
+        "data_type": "last",
+        "split": "[",
+    },
+    "tuflow_checks_prior": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW CHECKs prior to simulation:",
+        "data_type": "last",
+        "split": "[",
+    },
+    "tuflow_checks_during": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW CHECKs during simulation:",
+        "data_type": "last",
+        "split": "[",
+    },
+    "tuflow_vol_start": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW Volume at Start (m3):",
+        "data_type": "last",
+    },
+    "tuflow_vol_end": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW Volume at End (m3):",
+        "data_type": "last",
+    },
+    "tuflow_vol_in": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW Total Volume In (m3):",
+        "data_type": "last",
+    },
+    "tuflow_vol_out": {
+        "class": FloatParser,
+        "prefix": "!!TUFLOW Total Volume Out (m3):",
+        "data_type": "last",
+    },
+    "tuflow_volume_error": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW Volume Error (m3):",
+        "data_type": "last",
+        "split": "or",
+    },
+    "tuflow_cumulative_me": {
+        "class": FloatSplitParser,
+        "prefix": "!!TUFLOW Final Cumulative ME:",
         "data_type": "last",
         "split": "%",
     },
