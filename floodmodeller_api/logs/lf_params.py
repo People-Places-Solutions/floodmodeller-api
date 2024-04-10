@@ -39,8 +39,16 @@ lf1_unsteady_data_to_extract = {
         "prefix": "!!output1  Number of 1D river nodes in model:",
         "data_type": "last",
     },
-    "qtol": {"class": FloatParser, "prefix": "!!Info1 qtol =", "data_type": "last"},
-    "htol": {"class": FloatParser, "prefix": "!!Info1 htol =", "data_type": "last"},
+    "qtol": {
+        "class": FloatParser,
+        "prefix": "!!Info1 qtol =",
+        "data_type": "last",
+    },
+    "htol": {
+        "class": FloatParser,
+        "prefix": "!!Info1 htol =",
+        "data_type": "last",
+    },
     "start_time": {
         "class": TimeDeltaHParser,
         "prefix": "!!Info1 Start Time:",
@@ -471,7 +479,11 @@ lf2_data_to_extract = {
         "prefix": "!!PlotG2 Change in volume",
         "data_type": "all",
     },
-    "volume": {"class": FloatParser, "prefix": "!!PlotG2 Volume", "data_type": "all"},
+    "volume": {
+        "class": FloatParser,
+        "prefix": "!!PlotG2 Volume",
+        "data_type": "all",
+    },
     "inst_mass_err": {
         "class": FloatParser,
         "prefix": "!!PlotG2 Inst. mass err",
