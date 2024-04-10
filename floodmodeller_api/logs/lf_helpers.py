@@ -82,9 +82,11 @@ class AllData(Data):
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
             if index_duplicate in df.columns:
-                index_df = df[index_duplicate].dt.round("1s")
-
-                df.drop(index_duplicate, axis=1, inplace=True)
+                try:
+                    index_df = df[index_duplicate].dt.round("1s")
+                    df.drop(index_duplicate, axis=1, inplace=True)
+                except AttributeError:
+                    df = df.drop(columns=index_duplicate)
 
         # there is no index because *this* is the index
         if index_key is None:
