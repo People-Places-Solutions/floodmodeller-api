@@ -63,7 +63,7 @@ Updates
 
 Bug fixes
 --------------
-- Addressed 'FutureWarning' raised by lf_helpers module (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/27>`_ )
-- Addressed Iteritems > items: futurewarning (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/30>`_ )
+- Addressed 'FutureWarning' raised by lf_helpers module (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/27>`__)
+- Addressed Iteritems > items: futurewarning (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/30>`__)
 
 
