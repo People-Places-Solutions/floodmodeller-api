@@ -233,6 +233,9 @@ class LF1(LF):
         mass_error (pandas.DataFrame): Mass error
         timestep (pandas.DataFrame): Timestep
         elapsed (pandas.DataFrame): Elapsed
+        tuflow_vol (pandas.DataFrame): TUFLOW Vol
+        tuflow_n_wet (pandas.DataFrame): TUFLOW nWet
+        tuflow_dt (pandas.DataFrame): TUFLOW dt
         simulated (pandas.DataFrame): Simulated
         iterations (pandas.DataFrame): PlotI1
         convergence (pandas.DataFrame): PlotC1
