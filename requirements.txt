@@ -12,3 +12,6 @@ ruff==0.1.7
 lxml-stubs==0.4.0
 pandas-stubs==2.0.3.230814
 tqdm-stubs==0.2.1
+sphinx==7.2.6
+sphinx-panels==0.6.0
+pydata-sphinx-theme==0.15.2
