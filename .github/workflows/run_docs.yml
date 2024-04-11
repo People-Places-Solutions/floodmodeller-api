@@ -27,6 +27,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: Create documentation
-        run: |
-          cd docs
-          make html
+        run: sphinx-build -b html docs/source docs/build/html -W 
