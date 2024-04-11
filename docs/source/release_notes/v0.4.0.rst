@@ -16,6 +16,7 @@ Updates
   instances of the same class can now be tested using ``==`` to check whether they are 
   equivalent. In addition, a detailed breakdown of any differences can be found using 
   the ``.diff()`` method::
+
     dat_a = DAT('some_network.dat')
     dat_b = DAT('another_similar_network.dat')
 
@@ -25,6 +26,7 @@ Updates
         print('Files not equivalent')
     
     dat_a.diff(dat_b)  # prints a list of differences to terminal
+
 - RNWEIR Unit Class added (Broad Crested Weir)
 
 
