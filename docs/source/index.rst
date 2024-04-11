@@ -12,67 +12,56 @@ Flood Modeller API is a python package which provides a bridge between
 `Flood Modeller <https://www.floodmodeller.com/>`_ and the python programming language 
 to extend the capabilities of Flood Modeller in automated workflows.
 
-.. panels::
-    :card: + intro-card text-center
-    :column: col-lg-6 col-md-6 col-sm-6 col-xs-10 d-flex p-2
+.. grid:: 1 2 2 2
+   :gutter: 2
 
-    ---
-    :img-top: _static/getting_started.png
+   .. grid-item-card::
+      :img-top: _static/getting_started.png
 
-    **Getting Started**
+        **Getting Started**
 
-    If you're new to Flood Modeller Python API then this is the place to start.
+        If you're new to Flood Modeller Python API then this is the place to start.
 
-    +++
+      .. button-ref:: getting_started/index
+         :ref-type: doc
 
-    .. link-button:: getting_started/index
-            :type: ref
-            :text: Get started
-            :classes: btn-block btn-secondary stretched-link
+         Get started
 
-    ---
-    :img-top: _static/user_guide.png
+   .. grid-item-card::
+      :img-top: _static/user_guide.png
 
-    **User Guide**
+        **User Guide**
 
-    A comprehensive guide to each of the main python classes, plus code reference and examples.
+        A comprehensive guide to each of the main python classes, plus code reference and examples.
 
-    +++
+      .. button-ref:: user_guide/index
+         :ref-type: doc
 
-    .. link-button:: user_guide/index
-            :type: ref
-            :text: Go to user guide
-            :classes: btn-block btn-secondary stretched-link
+         Go to user guide
 
-    ---
-    :img-top: _static/release_notes.png
+   .. grid-item-card::
+      :img-top: _static/release_notes.png
 
-    **Release Notes**
+        **Release Notes**
 
-    Details of the latest updates and features.
+        Details of the latest updates and features.
 
-    +++
+      .. button-ref:: release_notes/index
+         :ref-type: doc
 
-    .. link-button:: release_notes/index
-            :type: ref
-            :text: Go to release notes
-            :classes: btn-block btn-secondary stretched-link
+         Go to release notes
 
-    ---
-    :img-top: _static/support.png
+   .. grid-item-card::
+      :img-top: _static/support.png
 
-    **Support and Feedback**
+        **Support and Feedback**
 
-    Get support using Flood Modeller and Python, and help improve Flood Modeller Python API
-    by providing feedback to the developers.
+        Get support using Flood Modeller and Python, and help improve Flood Modeller Python API by providing feedback to the developers.
 
-    +++
-
-    .. link-button:: support/index
-            :type: ref
-            :text: Support & Feedback
-            :classes: btn-block btn-secondary stretched-link
-
+      .. button-ref:: support/index
+         :ref-type: doc
+         
+         Support & Feedback
 
 
 Contents
@@ -84,5 +73,3 @@ Contents
    user_guide/index
    release_notes/index
    support/index
-   
-
