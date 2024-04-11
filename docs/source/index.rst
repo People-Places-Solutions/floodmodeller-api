@@ -25,8 +25,8 @@ to extend the capabilities of Flood Modeller in automated workflows.
       .. button-ref:: getting_started/index
          :color: secondary
          :ref-type: doc
-         :shadow:
          :expand:
+         :click-parent:
 
          Get started
 
@@ -40,8 +40,8 @@ to extend the capabilities of Flood Modeller in automated workflows.
       .. button-ref:: user_guide/index
          :color: secondary
          :ref-type: doc
-         :shadow:
          :expand:
+         :click-parent:
 
          Go to user guide
 
@@ -55,8 +55,8 @@ to extend the capabilities of Flood Modeller in automated workflows.
       .. button-ref:: release_notes/index
          :color: secondary
          :ref-type: doc
-         :shadow:
          :expand:
+         :click-parent:
 
          Go to release notes
 
@@ -70,8 +70,8 @@ to extend the capabilities of Flood Modeller in automated workflows.
       .. button-ref:: support/index
          :color: secondary
          :ref-type: doc
-         :shadow:
          :expand:
+         :click-parent:
          
          Support & Feedback
 
