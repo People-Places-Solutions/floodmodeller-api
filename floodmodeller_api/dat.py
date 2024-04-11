@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next_unit(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
