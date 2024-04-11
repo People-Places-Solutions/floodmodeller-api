@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  lint:
+  docs:
     runs-on: ubuntu-latest
 
     env:
