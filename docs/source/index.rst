@@ -23,7 +23,10 @@ to extend the capabilities of Flood Modeller in automated workflows.
         If you're new to Flood Modeller Python API then this is the place to start.
 
       .. button-ref:: getting_started/index
+         :color: secondary
          :ref-type: doc
+         :shadow:
+         :expand:
 
          Get started
 
@@ -35,7 +38,10 @@ to extend the capabilities of Flood Modeller in automated workflows.
         A comprehensive guide to each of the main python classes, plus code reference and examples.
 
       .. button-ref:: user_guide/index
+         :color: secondary
          :ref-type: doc
+         :shadow:
+         :expand:
 
          Go to user guide
 
@@ -47,7 +53,10 @@ to extend the capabilities of Flood Modeller in automated workflows.
         Details of the latest updates and features.
 
       .. button-ref:: release_notes/index
+         :color: secondary
          :ref-type: doc
+         :shadow:
+         :expand:
 
          Go to release notes
 
@@ -59,7 +68,10 @@ to extend the capabilities of Flood Modeller in automated workflows.
         Get support using Flood Modeller and Python, and help improve Flood Modeller Python API by providing feedback to the developers.
 
       .. button-ref:: support/index
+         :color: secondary
          :ref-type: doc
+         :shadow:
+         :expand:
          
          Support & Feedback
 

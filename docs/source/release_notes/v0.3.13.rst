@@ -17,8 +17,8 @@ Updates
 
 Bug fixes
 --------------
-- Fixed `issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/3>`_ that required setting ``ied_filepath = None`` to create a blank IED file. Now it can be done by simply calling ``IED()``
-- Fixed `issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/4>`_ in IEF class where it would fail when attempting to save an IEF after changing the case of an attribute. Now if you have an IEF with
+- Fixed `issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/3>`__ that required setting ``ied_filepath = None`` to create a blank IED file. Now it can be done by simply calling ``IED()``
+- Fixed `issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/4>`__ in IEF class where it would fail when attempting to save an IEF after changing the case of an attribute. Now if you have an IEF with
   an attribute 'Title=...' and you set ``ief.title = ...`` the updated ief file will match the lower case used in ``title``.
 - Fixed issue on orifice unit where shape not defined in .dat.
 - Allow 'timeunit' attribute to be set as number (which is used for user defined time multiplier)
