@@ -145,10 +145,10 @@ def recursive_from_json(obj: Any) -> Any:
         #     pass
         # elif isinstance(value, str):
         #     pass
-        # elif os.path.isfile(value):
-        #     obj[key] = Path(value)
-        # elif os.path.isdir(value):
-        #     obj[key] = Path(value)
+        elif os.path.isfile(value):
+            obj[key] = Path(value)
+        elif os.path.isdir(value):
+            obj[key] = Path(value)
         elif key == "API Class":
             #print(obj["Object Attributes"])
             #class_api = _class_api(obj["API Class"])
