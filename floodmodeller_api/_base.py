@@ -186,8 +186,8 @@ class FMFile:
     
     @classmethod
     def from_json(cls, json_string: str):
-        api_object = cls()
         object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
 
         # Loop through the dictionary and update the object
         for key, value in object_dict.items():

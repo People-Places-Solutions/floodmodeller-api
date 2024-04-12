@@ -26,7 +26,9 @@ from .helpers import join_10_char, split_10_char
 class IIC:
     """Class to hold initial conditions data"""
 
-    def __init__(self, ic_block, n=12):
+    def __init__(self, ic_block=None, n=12, from_json: bool = False):
+        if from_json:
+            return
         self._label_len = n
         self._read(ic_block)
 
@@ -109,8 +111,8 @@ class IIC:
 
     @classmethod
     def from_json(cls, json_string: str):
-        api_object = cls()
         object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
 
         # Loop through the dictionary and update the object
         for key, value in object_dict.items():

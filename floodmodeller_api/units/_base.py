@@ -30,7 +30,9 @@ class Unit:
     _subtype: Optional[str] = None
     _name: Optional[str] = None
 
-    def __init__(self, unit_block=None, n=12, **kwargs):
+    def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
+        if from_json:
+            return
         self._label_len = n
         if unit_block is not None:
             self._read(unit_block, **kwargs)
@@ -216,15 +218,11 @@ class Unit:
     
     @classmethod
     def from_json(cls, json_string: str):
-        api_object = cls()
         object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
 
         # Loop through the dictionary and update the object
         for key, value in object_dict.items():
             setattr(api_object, key, value)
 
         return api_object
-
-    #@classmethod
-    # def from_json(cls, json_dict):
-    #     return cls(json_dict)

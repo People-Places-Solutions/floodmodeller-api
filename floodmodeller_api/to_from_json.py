@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 #from ._base import FMFile
 import pandas as pd
 
@@ -81,7 +81,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: C901
         return return_dict
 
 
-def from_json(obj: str) -> Any:
+def from_json(obj: Union[str, dict]) -> Any:
     """
     Function to convert a JSON string back into Python objects
 
@@ -93,7 +93,8 @@ def from_json(obj: str) -> Any:
     """
     # To convert a JSON string into a python dictionary
     #obj = obj.replace("'", '"')
-    obj = json.loads(obj)
+    if isinstance(obj, str):
+        obj = json.loads(obj)
     # probably to identify the type of class to use it when creating the class
     #if obj.get("API Class"):
     #API_class = obj["API Class"]
@@ -109,7 +110,7 @@ def from_json(obj: str) -> Any:
 #         pass
 
 
-def recursive_from_json(obj: Any) -> Any:
+def recursive_from_json(obj: dict) -> dict:
     """
     Function to undertake a recursion through the different elements of the JSON object
 
@@ -121,60 +122,31 @@ def recursive_from_json(obj: Any) -> Any:
     """
 
     #import_list = []
-
+    if "API Class" in obj:
+        class_type = obj["API Class"]           # variable with the type of class
+        return eval(f"{class_type}").from_json(obj)
+    
+    if "class" in obj and obj['class'] == "pandas.DataFrame":
+        df = pd.DataFrame.from_dict(obj["object"])
+        df.index = pd.RangeIndex(len(df))
+        return df
+    if "class" in obj and obj['class'] == "pandas.Series":
+        sr = pd.Series(obj["object"])
+        sr.index = sr.index.astype('float64')
+        return sr
+    
     for key, value in obj.items():
         if isinstance(value, dict):
             obj[key] = recursive_from_json(value)
-        elif key == "class" and value == "pandas.DataFrame":
-            df = pd.DataFrame.from_dict(obj["object"])
-            obj["object"] = df
-        elif key == "class" and value == "pandas.Series":
-            sr = pd.Series(obj["object"])
-            obj["object"] = sr
         elif isinstance(value, list):
+            new_list = []
             for item in value:
-                if not isinstance(item, dict):
-                    continue
-                elif isinstance(item, dict):
-                    recursive_from_json(item)
-        # elif not value:
-        #     pass
-        # elif isinstance(value, int):
-        #     pass
-        # elif isinstance(value, float):
-        #     pass
-        # elif isinstance(value, str):
-        #     pass
-        # elif os.path.isfile(value):
-        #     obj[key] = Path(value)
-        # elif os.path.isdir(value):
-        #     obj[key] = Path(value)
-        elif key == "API Class":
-            #print(obj["Object Attributes"])
-            #class_api = _class_api(obj["API Class"])
-            #print(type(obj["Object Attributes"]))
-            class_type = obj["API Class"]           # variable with the type of class
-            if value.startswith("floodmodeller_api."):
-                #api_dict = obj["Object Attributes"]    # dict with the instances of the FMP object
-                #print(obj["API Class"])
-                #head_flood_modeller_class = obj["API Class"][:17]   # to slice the api class to be able to solve issue with eval().  See comment by eval().
-                #tail_flood_modeller_class = obj["API Class"][18:]
-                ##################################################################################
-                # import_list.append(head_flood_modeller_class)
-                # if len(import_list) == 0:
-                #     pass
-                # if len(import_list) == 1:
-                #     __import__(import_list[0])
-                # elif len(import_list) > 1:
-                #     for n, i in enumerate(import_list):
-                #         if import_list[n] != import_list[n-1]:
-                #             __import__(import_list[n])
-                ####################################################################################
-                #eval(f"__import__({head_flood_modeller_class}).{tail_flood_modeller_class}", {"floodmodeller_api": "floodmodeller_api"}).from_json(obj["Object Attributes"])    # error.  NameError: name 'floodmodeller_api' is not defined.  See bookmark.
-                #eval(f"{class_type}.from_json({obj['Object Attributes']})")             # everything inside eval() as string
-                #eval(f"{class_type}").from_json(json.dumps(obj["Object Attributes"]))   # instance as string
-                eval(f"{class_type}").from_json(obj["Object Attributes"])                # instance as dictionary
-
+                if isinstance(item, dict):
+                    new_list.append(recursive_from_json(item))
+                else:
+                    new_list.append(item)
+                    
+            obj[key] = new_list
 
     return obj
 

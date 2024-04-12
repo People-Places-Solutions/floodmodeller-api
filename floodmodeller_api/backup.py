@@ -191,7 +191,9 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: Union[str, Path], **args: object) -> object:
+    def __init__(self, path: Union[str, Path] = None, from_json: bool = False, **args: object) -> object:
+        if from_json:
+            return
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists
@@ -278,8 +280,8 @@ class File(BackupControl):
 
     @classmethod
     def from_json(cls, json_string: str):
-        api_object = cls()
         object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
 
         # Loop through the dictionary and update the object
         for key, value in object_dict.items():
