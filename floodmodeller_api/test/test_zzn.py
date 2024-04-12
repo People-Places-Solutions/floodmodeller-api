@@ -26,5 +26,5 @@ def test_load_zzn_using_dll(zzn_fp, tab_csv_output, test_workspace):
         save_location=os.path.join(test_workspace, "test_output.csv"),
     )
     output = pd.read_csv(os.path.join(test_workspace, "test_output.csv"))
-    output = round(output, 3)  # Round to 3dp
+    output = round(output, 3)
     pd.testing.assert_frame_equal(output, tab_csv_output, rtol=0.0001)
