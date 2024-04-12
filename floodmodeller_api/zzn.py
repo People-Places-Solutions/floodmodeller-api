@@ -92,10 +92,15 @@ class ZZN(FMFile):
             zzn_read.process_labels(
                 ct.byref(self.meta["zzl_name"]),
                 ct.byref(self.meta["nnodes"]),
-                ct.byref(self.meta["labels"]),
                 ct.byref(self.meta["label_length"]),
                 ct.byref(self.meta["errstat"]),
             )
+            for i in range(self.meta["nnodes"].value):
+                zzn_read.get_zz_label(
+                    ct.byref(ct.c_int(i + 1)),
+                    ct.byref(self.meta["labels"][i]),
+                    ct.byref(self.meta["errstat"]),
+                )
             # PREPROCESS_ZZN
             last_hr = (
                 (self.meta["ltimestep"].value - self.meta["timestep0"].value)
