@@ -224,3 +224,7 @@ class Unit:
             setattr(api_object, key, value)
 
         return api_object
+
+    #@classmethod
+    # def from_json(cls, json_dict):
+    #     return cls(json_dict)

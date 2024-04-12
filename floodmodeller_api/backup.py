@@ -25,7 +25,7 @@ from typing import Union
 
 import pandas as pd
 
-from .to_from_json import to_json
+from .to_from_json import to_json, from_json
 
 # from .to_from_json import to_json
 
@@ -191,7 +191,7 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: Union[str, Path], **args):
+    def __init__(self, path: Union[str, Path], **args: object) -> object:
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists
@@ -275,3 +275,19 @@ class File(BackupControl):
 
     def to_json(self) -> str:
         return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        api_object = cls()
+        object_dict = from_json(json_string)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object
+
+    # @classmethod
+    # def from_json(cls, json_dict):
+    #     return cls(json_dict)
+
