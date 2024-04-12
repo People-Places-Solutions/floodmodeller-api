@@ -71,7 +71,7 @@ class ZZN(FMFile):
             self.meta["nvars"] = ct.c_int(0)
             self.meta["tzero"] = (ct.c_int * 5)()
             self.meta["errstat"] = ct.c_int(0)
-            zzn_read.PROCESS_ZZL(
+            zzn_read.process_zzl(
                 ct.byref(self.meta["zzl_name"]),
                 ct.byref(self.meta["model_title"]),
                 ct.byref(self.meta["nnodes"]),
@@ -89,7 +89,7 @@ class ZZN(FMFile):
             self.meta["labels"] = (
                 ct.c_char * self.meta["label_length"].value * self.meta["nnodes"].value
             )()
-            zzn_read.PROCESS_LABELS(
+            zzn_read.process_labels(
                 ct.byref(self.meta["zzl_name"]),
                 ct.byref(self.meta["nnodes"]),
                 ct.byref(self.meta["labels"]),
@@ -108,7 +108,7 @@ class ZZN(FMFile):
                 self.meta["ltimestep"].value,
             )
             self.meta["isavint"] = (ct.c_int * 2)()
-            zzn_read.PREPROCESS_ZZN(
+            zzn_read.preprocess_zzn(
                 ct.byref(self.meta["output_hrs"]),
                 ct.byref(self.meta["aitimestep"]),
                 ct.byref(self.meta["dt"]),
@@ -134,7 +134,7 @@ class ZZN(FMFile):
             self.data["min_results"] = (ct.c_float * nx * ny)()
             self.data["max_times"] = (ct.c_int * nx * ny)()
             self.data["min_times"] = (ct.c_int * nx * ny)()
-            zzn_read.PROCESS_ZZN(
+            zzn_read.process_zzn(
                 ct.byref(self.meta["zzn_name"]),
                 ct.byref(self.meta["node_ID"]),
                 ct.byref(self.meta["nnodes"]),
