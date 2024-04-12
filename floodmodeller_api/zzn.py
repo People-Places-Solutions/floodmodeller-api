@@ -42,7 +42,7 @@ class ZZN(FMFile):
             FMFile.__init__(self, zzn_filepath)
 
             # Get zzn_dll path
-            zzn_dll = Path(Path(__file__).resolve().parent, "zzn_read.dll")
+            zzn_dll = Path(Path(__file__).resolve().parent, "lib/zzn_read.dll")
             # Using str() method as CDLL doesn't seem to like accepting Path object
             zzn_read = ct.CDLL(str(zzn_dll))
 
