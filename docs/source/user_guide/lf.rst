@@ -62,19 +62,18 @@ This prints the following pandas dataframe object:
 
 .. code:: python
 
-                     mass_error               timestep         elapsed  tuflow_vol  tuflow_n_wet  tuflow_dt  iter  log(dt)  convergence_flow  convergence_level  inflow  outflow
+                     mass_error               timestep         elapsed  iter  log(dt)  convergence_flow  convergence_level  inflow  outflow
     simulated
-    0 days 00:00:00        0.00 0 days 00:00:18.750000 0 days 00:00:00         NaN           NaN        NaN   6.0      4.6            0.0186             0.0004    3.67     2.58
-    0 days 00:05:00       -0.01 0 days 00:00:37.500000 0 days 00:00:00         NaN           NaN        NaN   5.0      6.2            0.0086             0.0008    3.71     2.69
-    0 days 00:10:00       -0.04 0 days 00:00:37.500000 0 days 00:00:00         NaN           NaN        NaN   3.0      6.2            0.0036             0.0003    3.75     3.04
-    0 days 00:15:00       -0.05        0 days 00:01:15 0 days 00:00:00         NaN           NaN        NaN   3.0      7.8            0.0029             0.0002    3.79     3.32
-    0 days 00:20:00       -0.07        0 days 00:02:30 0 days 00:00:00         NaN           NaN        NaN   3.0      9.4            0.0025             0.0002    3.83     3.50
-    ...                     ...                    ...             ...         ...           ...        ...   ...      ...               ...                ...     ...      ...
-    0 days 23:40:00       -0.05        0 days 00:05:00 0 days 00:00:01         NaN           NaN        NaN   3.0     11.0            0.0024             0.0020   22.06    24.25
-    0 days 23:45:00       -0.04        0 days 00:05:00 0 days 00:00:01         NaN           NaN        NaN   3.0     11.0            0.0025             0.0020   21.30    23.45
-    0 days 23:50:00       -0.04        0 days 00:05:00 0 days 00:00:01         NaN           NaN        NaN   3.0     11.0            0.0026             0.0020   20.55    22.65
-    0 days 23:55:00       -0.03        0 days 00:05:00 0 days 00:00:01         NaN           NaN        NaN   3.0     11.0            0.0027             0.0020   19.79    21.86
-    1 days 00:00:00       -0.03        0 days 00:05:00 0 days 00:00:01         NaN           NaN        NaN   3.0     11.0            0.0028             0.0020   19.04    21.06
+    0 days 00:00:00        0.00 0 days 00:00:18.750000 0 days 00:00:00   6.0      4.6            0.0186             0.0004    3.67     2.58
+    0 days 00:05:00       -0.01 0 days 00:00:37.500000 0 days 00:00:00   5.0      6.2            0.0086             0.0008    3.71     2.69
+    0 days 00:10:00       -0.04 0 days 00:00:37.500000 0 days 00:00:00   3.0      6.2            0.0036             0.0003    3.75     3.04
+    0 days 00:15:00       -0.05        0 days 00:01:15 0 days 00:00:00   3.0      7.8            0.0029             0.0002    3.79     3.32
+    0 days 00:20:00       -0.07        0 days 00:02:30 0 days 00:00:00   3.0      9.4            0.0025             0.0002    3.83     3.50
+    ...                     ...                    ...             ...   ...      ...               ...                ...     ...      ...
+    0 days 23:45:00       -0.04        0 days 00:05:00 0 days 00:00:01   3.0     11.0            0.0025             0.0020   21.30    23.45
+    0 days 23:50:00       -0.04        0 days 00:05:00 0 days 00:00:01   3.0     11.0            0.0026             0.0020   20.55    22.65
+    0 days 23:55:00       -0.03        0 days 00:05:00 0 days 00:00:01   3.0     11.0            0.0027             0.0020   19.79    21.86
+    1 days 00:00:00       -0.03        0 days 00:05:00 0 days 00:00:01   3.0     11.0            0.0028             0.0020   19.04    21.06
 
 **Example 2 - Reading log file and printing dictionary**
 
@@ -122,7 +121,6 @@ This prints the following dictionary:
         'mass_balance_error_2': -0.0
     }
 
-
 **Example 3 - Plotting convergence**
 
 The dataframe attributes of ``LF1`` can be easily plotted.
@@ -139,3 +137,17 @@ The dataframe attributes of ``LF1`` can be easily plotted.
 
 .. image:: convergence.png
    :width: 500
+
+**Example 4 - Reading TUFLOW HPC**
+
+The ``LF1`` class also includes information from linked TUFLOW HPC models.
+This will be included in the ``info`` attribute automatically, and can be included in the dataframe via the ``include_tuflow`` argument.
+
+.. code:: python
+
+    from floodmodeller_api import LF1
+
+    lf1 = LF1("path/to/log.lf1")
+
+    print(lf1.to_dataframe(include_tuflow=True))
+    print(lf1.info)
