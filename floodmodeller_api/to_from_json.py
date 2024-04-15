@@ -1,10 +1,9 @@
 import json
 from pathlib import Path
 from typing import Any, Union
-#from ._base import FMFile
+
 import pandas as pd
 
-import floodmodeller_api
 from .version import __version__
 
 
@@ -29,7 +28,7 @@ def is_jsonable(obj: Any) -> bool:
         return False
 
 
-def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: C901, PLR0911
+def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0911
     """
     Function to undertake a recursion through the different elements of the python object
 
@@ -92,25 +91,14 @@ def from_json(obj: Union[str, dict]) -> Any:
         A FMP object
     """
     # To convert a JSON string into a python dictionary
-    #obj = obj.replace("'", '"')
     if isinstance(obj, str):
         obj = json.loads(obj)
-    # probably to identify the type of class to use it when creating the class
-    #if obj.get("API Class"):
-    #API_class = obj["API Class"]
+
     obj = obj["Object Attributes"]
     return recursive_from_json(obj)
 
-# function to define the FMP classes inside of the main FMP object.  For instance, a dat class can have many different other objects inside
-# def _class_api(api: Any) -> Any:
-#     class_sliced = api[18:].replace(".", " ").split()    # it creates a list
-#     if len(class_sliced) == 2:    # if there are 2 items in the list, it is not a unit
-#         pass
-#     elif len(class_sliced) == 3:  # if there are 3 items in the list, it is a unit
-#         pass
 
-
-def recursive_from_json(obj: dict) -> dict:
+def recursive_from_json(obj: Union[dict, Any]) -> Any:
     """
     Function to undertake a recursion through the different elements of the JSON object
 
@@ -121,20 +109,19 @@ def recursive_from_json(obj: dict) -> dict:
         A FMP object
     """
 
-    #import_list = []
     if "API Class" in obj:
-        class_type = obj["API Class"]           # variable with the type of class
+        class_type = obj["API Class"]
         return eval(f"{class_type}").from_json(obj)
-    
-    if "class" in obj and obj['class'] == "pandas.DataFrame":
+
+    if "class" in obj and obj["class"] == "pandas.DataFrame":
         df = pd.DataFrame.from_dict(obj["object"])
         df.index = pd.RangeIndex(len(df))
         return df
-    if "class" in obj and obj['class'] == "pandas.Series":
+    if "class" in obj and obj["class"] == "pandas.Series":
         sr = pd.Series(obj["object"])
-        sr.index = sr.index.astype('float64')
+        sr.index = sr.index.astype("float64")
         return sr
-    
+
     for key, value in obj.items():
         if isinstance(value, dict):
             obj[key] = recursive_from_json(value)
@@ -145,8 +132,7 @@ def recursive_from_json(obj: dict) -> dict:
                     new_list.append(recursive_from_json(item))
                 else:
                     new_list.append(item)
-                    
+
             obj[key] = new_list
 
     return obj
-

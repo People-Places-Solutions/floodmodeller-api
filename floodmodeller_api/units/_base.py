@@ -21,7 +21,7 @@ from typing import List, Optional
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
-from ..to_from_json import to_json, from_json
+from ..to_from_json import from_json, to_json
 from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
@@ -215,7 +215,7 @@ class Unit:
 
     def to_json(self) -> str:
         return to_json(self)
-    
+
     @classmethod
     def from_json(cls, json_string: str):
         object_dict = from_json(json_string)

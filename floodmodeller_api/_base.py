@@ -183,7 +183,7 @@ class FMFile:
 
     def to_json(self) -> str:
         return to_json(self)
-    
+
     @classmethod
     def from_json(cls, json_string: str):
         object_dict = from_json(json_string)
