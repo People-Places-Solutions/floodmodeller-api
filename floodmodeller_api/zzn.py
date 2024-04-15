@@ -16,13 +16,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import ctypes as ct
 from pathlib import Path
-import sys
 from typing import Any, Dict, Optional, Union
 
 import numpy as np
 import pandas as pd
 
 from ._base import FMFile
+from .util import is_windows
 
 
 class ZZN(FMFile):
@@ -43,8 +43,7 @@ class ZZN(FMFile):
             FMFile.__init__(self, zzn_filepath)
 
             # Get zzn_dll path
-            is_windows = sys.platform.startswith("win")
-            lib = "zzn_read.dll" if is_windows else "libzzn_read.so"
+            lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
             zzn_dll = Path(__file__).resolve().parent / "libs" / lib
             # Using str() method as CDLL doesn't seem to like accepting Path object
             zzn_read = ct.CDLL(str(zzn_dll))

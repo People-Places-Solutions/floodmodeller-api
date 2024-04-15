@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from floodmodeller_api.tool import FMTool, Gui, Parameter
+from floodmodeller_api.util import is_windows
 
 
 def my_sum(a: float, b: float):
@@ -113,7 +114,7 @@ def test_run_from_command_line():
 def gui_test(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if "DISPLAY" not in os.environ:
+        if not is_windows():
             pytest.skip("Skipping GUI test because no display is available")
         return func(*args, **kwargs)
 
