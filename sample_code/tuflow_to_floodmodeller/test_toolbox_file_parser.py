@@ -30,33 +30,33 @@ def tuflow_parser(tmpdir) -> TuflowParser:
 
 @pytest.fixture
 def path1(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\folder1\\file1.csv")
+    return Path(tmpdir, "folder1", "file1.csv")
 
 
 @pytest.fixture
 def path2(tmpdir) -> Path:
     tmpdir_parent = str(Path(tmpdir).parent)
-    return Path(f"{tmpdir_parent}\\file2.tmf")
+    return Path(tmpdir_parent, "file2.tmf")
 
 
 @pytest.fixture
 def path3(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\file3")
+    return Path(tmpdir, "file3")
 
 
 @pytest.fixture
 def path4(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\file4")
+    return Path(tmpdir, "file4")
 
 
 @pytest.fixture
 def path5(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\file5")
+    return Path(tmpdir, "file5")
 
 
 @pytest.fixture
 def path6(tmpdir) -> Path:
-    return Path(f"{tmpdir}\\file6")
+    return Path(tmpdir, "file6")
 
 
 def test_dict(tuflow_parser):
