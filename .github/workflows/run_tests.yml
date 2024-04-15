@@ -28,16 +28,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Install Intel oneAPI
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          curl -fsSL https://registrationcenter-download.intel.com/akdlm/irc_nas/18416/l_BaseKit_p_2022.2.0.179_offline.sh -o oneAPI_BaseKit.sh
-          chmod +x oneAPI_BaseKit.sh
-          echo "Installing Intel oneAPI, this might take a while..."
-          sudo ./oneAPI_BaseKit.sh -s --eula accept --install-dir /opt/intel/oneapi --action install
-          rm oneAPI_BaseKit.sh
-          echo 'source /opt/intel/oneapi/setvars.sh' >> $GITHUB_ENV
     
       - name: Run unit tests with coverage
         if: matrix.os == 'windows-latest'
@@ -45,4 +35,6 @@ jobs:
     
       - name: Run unit tests without coverage
         if: matrix.os == 'ubuntu-latest'
-        run: pytest . -v
+        run: |
+          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
+          pytest . -v
