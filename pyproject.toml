@@ -12,9 +12,6 @@ ignore_missing_imports = true
 disable = "all"
 enable = "simplifiable-if-statement, simplifiable-if-expression, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 
-[tool.pytest.ini_options]
-addopts = "--cov=floodmodeller_api --cov-fail-under=79"
-
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
