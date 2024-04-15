@@ -31,8 +31,9 @@ jobs:
       
       - name: Run unit tests
         run: |
-          if ["${{ matrix.os }}" == "windows-latest"]; then
+          if [ "${{ matrix.os }}" == "windows-latest" ]; then
             pytest . -v --cov=floodmodeller_api --cov-fail-under=79
           else
             pytest . -v
           fi
+        shell: bash

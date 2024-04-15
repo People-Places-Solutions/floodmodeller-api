@@ -1,4 +1,3 @@
-import os
 import tkinter as tk
 from functools import wraps
 from unittest.mock import MagicMock, patch
