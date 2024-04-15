@@ -41,8 +41,10 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
+    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False, from_json: bool = False):
         try:
+            if from_json:
+                return
             if dat_filepath is not None:
                 FMFile.__init__(self, dat_filepath)
                 self._read()
