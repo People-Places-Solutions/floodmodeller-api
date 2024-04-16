@@ -21,7 +21,7 @@ from typing import NoReturn, Optional, Union
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
-from .to_from_json import to_json, from_json
+from .to_from_json import from_json, to_json
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit

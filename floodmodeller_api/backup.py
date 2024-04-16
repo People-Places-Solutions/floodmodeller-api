@@ -21,13 +21,11 @@ from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
 from shutil import copy
-from typing import Union, Optional
-
+from typing import Union
 
 import pandas as pd
 
-from .to_from_json import from_json
-from .to_from_json import to_json
+from .to_from_json import from_json, to_json
 
 
 class BackupControl:
