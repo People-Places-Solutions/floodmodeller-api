@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next_unit(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def next(self, unit: Unit) -> Union[Unit, List[Unit], None]:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -803,9 +803,9 @@ class DAT(FMFile):
             if unit._unit != "COMMENT":
                 # update the iic's tables
                 iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-                self.initial_conditions.data.loc[
-                    len(self.initial_conditions.data)
-                ] = iic_data  # flaged
+                self.initial_conditions.data.loc[len(self.initial_conditions.data)] = (
+                    iic_data  # flaged
+                )
 
             # update all
             if unit._unit != "COMMENT":

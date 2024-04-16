@@ -9,6 +9,12 @@ pip install -e path\to\floodmodeller-api
 to install the package in editable mode.
 This allows you to edit and use the package without having to reinstall it.
 
+Run the command
+```shell
+pip install -r requirements.txt
+```
+to install the additional packages required for development.
+
 To contribute, you should create a new branch, work on it, and then open a Pull Request once you are done.
 The repository uses GitHub Actions to run tests and linters automatically.
 These are triggered whenever a push is made to any branch and whenever a pull request is made to the main branch.
@@ -17,12 +23,6 @@ Failing tests or linters will prevent merging to main unless overridden.
 ## Linting
 Linting ensures that the code meets certain quality standards and can reveal bugs.
 The Lint workflow uses `black` for formatting, `ruff` and `pylint` for other best practices, and `mypy` for type checking.
-You do not need to install these packages to work on the Flood Modeller API as they run automatically in GitHub Actions.
-However, you may wish to install them if you want to check locally that your commits will pass before pushing to the remote.
-Install them with 
-```shell
-pip install black ruff pylint mypy
-```
 
 The settings are included in the [`pyproject.toml`](pyproject.toml) file, so the commands are short:
 ```shell
@@ -42,12 +42,6 @@ The Flood Modeller API uses the [`pytest` framework](https://docs.pytest.org/) f
 
 Writing comprehensive unit tests is an essential part of contributing to the Flood Modeller API.
 We encourage contributors to adopt Test Driven Development.
-
-Run
-```shell
-pip install -r requirements.txt
-```
-to install the packages required for the tests.
 
 
 ### Running Tests
@@ -114,3 +108,12 @@ test/
     ...
 ...
 ```
+
+## Documentation
+The documentation is built using `sphinx`.
+Run the commands
+```shell
+cd docs
+make html
+```
+to navigate to the `docs` directory and build the documentation.

@@ -82,9 +82,11 @@ class AllData(Data):
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
             if index_duplicate in df.columns:
-                index_df = df[index_duplicate].dt.round("1s")
-
-                df.drop(index_duplicate, axis=1, inplace=True)
+                try:
+                    index_df = df[index_duplicate].dt.round("1s")
+                    df.drop(index_duplicate, axis=1, inplace=True)
+                except AttributeError:
+                    df = df.drop(columns=index_duplicate)
 
         # there is no index because *this* is the index
         if index_key is None:
@@ -334,3 +336,18 @@ class TimeFloatMultParser(Parser):
         as_float = [float(x) for x in raw.split()]
         first_as_timedelta = dt.timedelta(hours=float(as_float[0]))
         return [first_as_timedelta] + as_float[1:]
+
+
+class TimeSplitParser(Parser):
+    """Extra argument from superclass    code: str, split: str"""
+
+    def __init__(self, *args, **kwargs):
+        self._code = kwargs.pop("code")
+        self._split = kwargs.pop("split")
+        super().__init__(*args, **kwargs)
+        self._nan = pd.NaT
+
+    def _process_line(self, raw: str) -> dt.time:
+        """Converts string to time, removing everything after split"""
+
+        return dt.datetime.strptime(raw.split(self._split)[0].strip(), self._code).time()

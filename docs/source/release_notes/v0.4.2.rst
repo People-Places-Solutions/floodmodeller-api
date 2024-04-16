@@ -21,7 +21,7 @@ Updates
 
 Bug fixes
 --------------
-- Fix missing default general parameters in DAT class (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/61>`_)
-- Fix XML2D multi-value key issue (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/52>`_)
+- Fix missing default general parameters in DAT class (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/61>`__)
+- Fix XML2D multi-value key issue (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/52>`__)
 
 
