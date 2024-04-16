@@ -1,7 +1,7 @@
 import contextlib
 import os
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
 import pytest
 
@@ -20,16 +20,18 @@ def data_before(dat_fp):
 
 
 @pytest.fixture()
-def dat_ex3(test_workspace) -> DAT:
+def dat_ex3(test_workspace):
     return DAT(Path(test_workspace, "EX3.DAT"))
 
 
 @pytest.fixture()
-def dat_ex6(test_workspace) -> DAT:
+def dat_ex6(test_workspace):
     dat = DAT(Path(test_workspace, "EX6.DAT"))
-    dat._update_raw_data = MagicMock(side_effect=dat._update_raw_data)
-    dat._update_dat_struct = MagicMock(side_effect=dat._update_dat_struct)
-    return dat
+    with (
+        patch.object(dat, "_update_raw_data", wraps=dat._update_raw_data),
+        patch.object(dat, "_update_dat_struct", wraps=dat._update_dat_struct),
+    ):
+        yield dat
 
 
 def test_dat_str_not_changed_by_write(dat_fp, data_before):
@@ -83,7 +85,7 @@ def test_dat_read_doesnt_change_data(test_workspace):
         os.remove("__temp.gxy")
 
 
-def test_insert_unit(dat_ex3: DAT, dat_ex6: DAT):
+def test_insert_unit(dat_ex3, dat_ex6):
     unit = dat_ex3.sections["20"]
     dat_ex6.insert_unit(unit, add_before=dat_ex6.sections["P4000"])
     assert "20" in dat_ex6.sections
@@ -92,7 +94,7 @@ def test_insert_unit(dat_ex3: DAT, dat_ex6: DAT):
     dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_insert_units(dat_ex3: DAT, dat_ex6: DAT):
+def test_insert_units(dat_ex3, dat_ex6):
     unit_1 = dat_ex3.sections["20"]
     unit_2 = dat_ex3.sections["40"]
     unit_3 = dat_ex3.sections["60"]
@@ -105,7 +107,7 @@ def test_insert_units(dat_ex3: DAT, dat_ex6: DAT):
     dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_remove_unit(dat_ex3: DAT, dat_ex6: DAT):
+def test_remove_unit(dat_ex3, dat_ex6):
     unit = dat_ex3.sections["20"]
     prev_dat_struct_len = len(dat_ex3._dat_struct)
     dat_ex3.remove_unit(unit)
