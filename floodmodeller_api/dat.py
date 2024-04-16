@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from . import units
@@ -82,7 +84,7 @@ class DAT(FMFile):
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
 
-    def diff(self, other: "DAT", force_print: bool = False) -> None:
+    def diff(self, other: DAT, force_print: bool = False) -> None:
         """Compares the DAT class against another DAT class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a DAT class are
         deemed equivalent if all of their attributes are equal except for the filepath and

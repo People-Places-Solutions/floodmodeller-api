@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import datetime as dt
 import io
 import os
@@ -412,7 +414,7 @@ class XML2D(FMFile):
                 self._multi_value_keys.append(elem.attrib["name"])
         self._multi_value_keys = set(self._multi_value_keys)
 
-    def diff(self, other: "XML2D", force_print: bool = False) -> None:
+    def diff(self, other: XML2D, force_print: bool = False) -> None:
         """Compares the XML2D class against another XML2D class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a XML2D class are
         deemed equivalent if all of their attributes are equal except for the filepath and

@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import datetime as dt
 import os
 import subprocess
@@ -325,7 +327,7 @@ class IEF(FMFile):
         if not existing_attr_deleted:
             super().__delattr__(name)
 
-    def diff(self, other: "IEF", force_print: bool = False) -> None:
+    def diff(self, other: IEF, force_print: bool = False) -> None:
         """Compares the IEF class against another IEF class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IEF class are
         deemed equivalent if all of their attributes are equal except for the filepath and

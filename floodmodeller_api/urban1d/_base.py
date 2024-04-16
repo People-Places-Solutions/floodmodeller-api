@@ -14,9 +14,9 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-""" Holds the base unit class for all FM 1D units Units """
+from __future__ import annotations
 
-from typing import Type
+""" Holds the base unit class for all FM 1D units Units """
 
 from ..diff import check_item_with_dataframe_equal
 
@@ -85,7 +85,7 @@ class UrbanUnit:
 
 class UrbanSubsection:
     _name: str | None = None
-    _urban_unit_class: Type[UrbanUnit] | None = None
+    _urban_unit_class: type[UrbanUnit] | None = None
 
     def __init__(self, subsection_block=None, **kwargs):
         if subsection_block is not None:

@@ -14,13 +14,18 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .._base import FMFile
 from .lf_helpers import state_factory
 from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class LF(FMFile):
