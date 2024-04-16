@@ -107,7 +107,7 @@ def test_insert_units(dat_ex3, dat_ex6):
     dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_remove_unit(dat_ex3, dat_ex6):
+def test_remove_unit(dat_ex3):
     unit = dat_ex3.sections["20"]
     prev_dat_struct_len = len(dat_ex3._dat_struct)
     dat_ex3.remove_unit(unit)
