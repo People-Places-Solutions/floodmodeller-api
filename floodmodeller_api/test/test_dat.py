@@ -19,6 +19,19 @@ def data_before(dat_fp):
     return DAT(dat_fp)._write()
 
 
+@pytest.fixture()
+def dat_ex3(test_workspace) -> DAT:
+    return DAT(Path(test_workspace, "EX3.DAT"))
+
+
+@pytest.fixture()
+def dat_ex6(test_workspace) -> DAT:
+    dat = DAT(Path(test_workspace, "EX6.DAT"))
+    dat._update_raw_data = MagicMock(side_effect=dat._update_raw_data)
+    dat._update_dat_struct = MagicMock(side_effect=dat._update_dat_struct)
+    return dat
+
+
 def test_dat_str_not_changed_by_write(dat_fp, data_before):
     # TODO: Update this test - it isn't really testing anything since the behaviour of the fixture is exactly the same
     """DAT: Test str representation equal to dat file with no changes"""
@@ -70,40 +83,33 @@ def test_dat_read_doesnt_change_data(test_workspace):
         os.remove("__temp.gxy")
 
 
-def test_insert_unit(test_workspace):
-    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
-    dat_b = DAT(Path(test_workspace, "EX6.DAT"))
-    unit = dat_a.sections["20"]
-    dat_b.insert_unit(unit, add_before=dat_b.sections["P4000"])
-    # Check unit is added to sections
-    assert "20" in dat_b.sections
-    # Check unit in correct position in all units
-    assert dat_b._all_units[8:10] == [unit, dat_b.sections["P4000"]]
+def test_insert_unit(dat_ex3: DAT, dat_ex6: DAT):
+    unit = dat_ex3.sections["20"]
+    dat_ex6.insert_unit(unit, add_before=dat_ex6.sections["P4000"])
+    assert "20" in dat_ex6.sections
+    assert dat_ex6._all_units[8:10] == [unit, dat_ex6.sections["P4000"]]
+    dat_ex6._update_raw_data.assert_called_once()
+    dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_insert_units(test_workspace):
-    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
-    dat_b = DAT(Path(test_workspace, "EX6.DAT"))
-    dat_b._update_raw_data = MagicMock(side_effect=dat_b._update_raw_data)
-    dat_b._update_dat_struct = MagicMock(side_effect=dat_b._update_dat_struct)
-    unit_1 = dat_a.sections["20"]
-    unit_2 = dat_a.sections["40"]
-    unit_3 = dat_a.sections["60"]
-    dat_b.insert_units([unit_1, unit_2, unit_3], add_before=dat_b.sections["P4000"])
-    assert "20" in dat_b.sections
-    assert "40" in dat_b.sections
-    assert "60" in dat_b.sections
-    assert dat_b._all_units[8:12] == [unit_1, unit_2, unit_3, dat_b.sections["P4000"]]
-    dat_b._update_raw_data.assert_called_once()
-    dat_b._update_dat_struct.assert_called_once()
+def test_insert_units(dat_ex3: DAT, dat_ex6: DAT):
+    unit_1 = dat_ex3.sections["20"]
+    unit_2 = dat_ex3.sections["40"]
+    unit_3 = dat_ex3.sections["60"]
+    dat_ex6.insert_units([unit_1, unit_2, unit_3], add_before=dat_ex6.sections["P4000"])
+    assert "20" in dat_ex6.sections
+    assert "40" in dat_ex6.sections
+    assert "60" in dat_ex6.sections
+    assert dat_ex6._all_units[8:12] == [unit_1, unit_2, unit_3, dat_ex6.sections["P4000"]]
+    dat_ex6._update_raw_data.assert_called_once()
+    dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_remove_unit(test_workspace):
-    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
-    unit = dat_a.sections["20"]
-    prev_dat_struct_len = len(dat_a._dat_struct)
-    dat_a.remove_unit(unit)
-    assert "20" not in dat_a.sections
-    assert unit not in dat_a._all_units
-    assert dat_a._dat_struct
-    assert (prev_dat_struct_len - len(dat_a._dat_struct)) == 1
+def test_remove_unit(dat_ex3: DAT, dat_ex6: DAT):
+    unit = dat_ex3.sections["20"]
+    prev_dat_struct_len = len(dat_ex3._dat_struct)
+    dat_ex3.remove_unit(unit)
+    assert "20" not in dat_ex3.sections
+    assert unit not in dat_ex3._all_units
+    assert dat_ex3._dat_struct
+    assert (prev_dat_struct_len - len(dat_ex3._dat_struct)) == 1
