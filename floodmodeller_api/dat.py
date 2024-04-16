@@ -15,7 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Self
 
 from . import units
 from ._base import FMFile
@@ -83,7 +82,7 @@ class DAT(FMFile):
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
 
-    def diff(self, other: Self, force_print: bool = False) -> None:
+    def diff(self, other: "DAT", force_print: bool = False) -> None:
         """Compares the DAT class against another DAT class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a DAT class are
         deemed equivalent if all of their attributes are equal except for the filepath and

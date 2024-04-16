@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Any, Self
+from typing import Any
 
 from . import units
 from ._base import FMFile
@@ -273,7 +273,7 @@ class IED(FMFile):
 
         self._ied_struct = ied_struct
 
-    def diff(self, other: Self, force_print: bool = False) -> None:
+    def diff(self, other: "IED", force_print: bool = False) -> None:
         """Compares the IED class against another IED class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IED class are
         deemed equivalent if all of their attributes are equal except for the filepath and

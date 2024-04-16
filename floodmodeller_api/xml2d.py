@@ -21,7 +21,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from subprocess import DEVNULL, Popen
-from typing import Callable, Self
+from typing import Callable
 
 from lxml import etree
 from tqdm import trange
@@ -412,7 +412,7 @@ class XML2D(FMFile):
                 self._multi_value_keys.append(elem.attrib["name"])
         self._multi_value_keys = set(self._multi_value_keys)
 
-    def diff(self, other: Self, force_print: bool = False) -> None:
+    def diff(self, other: "XML2D", force_print: bool = False) -> None:
         """Compares the XML2D class against another XML2D class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a XML2D class are
         deemed equivalent if all of their attributes are equal except for the filepath and

@@ -20,7 +20,7 @@ import subprocess
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import Callable, Self
+from typing import Callable
 
 import pandas as pd
 from tqdm import trange
@@ -325,7 +325,7 @@ class IEF(FMFile):
         if not existing_attr_deleted:
             super().__delattr__(name)
 
-    def diff(self, other: Self, force_print: bool = False) -> None:
+    def diff(self, other: "IEF", force_print: bool = False) -> None:
         """Compares the IEF class against another IEF class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IEF class are
         deemed equivalent if all of their attributes are equal except for the filepath and

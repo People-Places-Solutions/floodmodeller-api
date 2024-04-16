@@ -15,7 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Self
 
 from . import units
 from ._base import FMFile
@@ -228,7 +227,7 @@ class INP(FMFile):
 
         self._inp_struct = inp_struct
 
-    def diff(self, other: Self, force_print: bool = False) -> None:
+    def diff(self, other: "INP", force_print: bool = False) -> None:
         """Compares the INP class against another INP class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an INP class are
         deemed equivalent if all of their attributes are equal except for the filepath and
