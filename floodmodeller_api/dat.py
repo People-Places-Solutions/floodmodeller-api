@@ -741,7 +741,7 @@ class DAT(FMFile):
             unit (Unit): FloodModeller unit input.
             add_before (Unit): FloodModeller unit to add before.
             add_after (Unit): FloodModeller unit to add after.
-            add_at (interger): Positional argument (starting at 0) of where to add in
+            add_at (integer): Positional argument (starting at 0) of where to add in
                 the dat file. To add at the end of the network you can use -1.
 
         Raises:
@@ -817,6 +817,18 @@ class DAT(FMFile):
 
         except Exception as e:
             self._handle_exception(e, when="insert unit")
+
+    def insert_units(
+        self,
+        units,
+        add_before=None,
+        add_after=None,
+        add_at=None,
+    ):
+        for unit in units:
+            self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
+        self._update_raw_data()
+        self._update_dat_struct()
 
     def _update_gisinfo_label(  # noqa: PLR0913
         self,

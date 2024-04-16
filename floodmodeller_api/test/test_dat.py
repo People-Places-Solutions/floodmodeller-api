@@ -1,6 +1,7 @@
 import contextlib
 import os
 from pathlib import Path
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -71,13 +72,30 @@ def test_dat_read_doesnt_change_data(test_workspace):
 
 def test_insert_unit(test_workspace):
     dat_a = DAT(Path(test_workspace, "EX3.DAT"))
-    dat_b = DAT(Path(Path(test_workspace, "EX6.DAT")))
+    dat_b = DAT(Path(test_workspace, "EX6.DAT"))
     unit = dat_a.sections["20"]
     dat_b.insert_unit(unit, add_before=dat_b.sections["P4000"])
     # Check unit is added to sections
     assert "20" in dat_b.sections
     # Check unit in correct position in all units
     assert dat_b._all_units[8:10] == [unit, dat_b.sections["P4000"]]
+
+
+def test_insert_units(test_workspace):
+    dat_a = DAT(Path(test_workspace, "EX3.DAT"))
+    dat_b = DAT(Path(test_workspace, "EX6.DAT"))
+    dat_b._update_raw_data = MagicMock(side_effect=dat_b._update_raw_data)
+    dat_b._update_dat_struct = MagicMock(side_effect=dat_b._update_dat_struct)
+    unit_1 = dat_a.sections["20"]
+    unit_2 = dat_a.sections["40"]
+    unit_3 = dat_a.sections["60"]
+    dat_b.insert_units([unit_1, unit_2, unit_3], add_before=dat_b.sections["P4000"])
+    assert "20" in dat_b.sections
+    assert "40" in dat_b.sections
+    assert "60" in dat_b.sections
+    assert dat_b._all_units[8:12] == [unit_1, unit_2, unit_3, dat_b.sections["P4000"]]
+    dat_b._update_raw_data.assert_called_once()
+    dat_b._update_dat_struct.assert_called_once()
 
 
 def test_remove_unit(test_workspace):
