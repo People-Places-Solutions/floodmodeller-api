@@ -21,7 +21,8 @@ from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
 from shutil import copy
-from typing import Union
+from typing import Union, Optional
+
 
 import pandas as pd
 
@@ -191,9 +192,11 @@ class File(BackupControl):
     """
 
     def __init__(
-        self, path: Union[str, Path] = None, from_json: bool = False, **args: object,
+        self,
+        path: Union[str, Path] = "",
+        from_json: bool = False,
+        **args: object,
     ):
-
         if from_json:
             return
         # TODO: Make protected properties so they can't be manipulated

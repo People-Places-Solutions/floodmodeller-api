@@ -4,6 +4,8 @@ from typing import Any, Union
 
 import pandas as pd
 
+import floodmodeller_api  # noqa: F401.  Needed to execute eval() at line 115 in from_json
+
 from .version import __version__
 
 
@@ -80,7 +82,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return return_dict
 
 
-def from_json(obj: Union[str, dict]) -> Any:
+def from_json(obj: Union[str, dict]) -> dict:
     """
     Function to convert a JSON string back into Python objects
 
@@ -92,10 +94,11 @@ def from_json(obj: Union[str, dict]) -> Any:
     """
     # To convert a JSON string into a python dictionary
     if isinstance(obj, str):
-        obj = json.loads(obj)
+        obj_dict = json.loads(obj)["Object Attributes"]
+    else:
+        obj_dict = obj["Object Attributes"]
 
-    obj = obj["Object Attributes"]
-    return recursive_from_json(obj)
+    return recursive_from_json(obj_dict)
 
 
 def recursive_from_json(obj: Union[dict, Any]) -> Any:

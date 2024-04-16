@@ -35,7 +35,7 @@ class FMFile:
     _suffix: Optional[str] = None
     MAX_DIFF = 25
 
-    def __init__(self, filepath: Optional[Union[str, Path]]):
+    def __init__(self, filepath: Optional[Union[str, Path]] = None, **kwargs):
         if filepath is not None:
             self._filepath = Path(filepath).resolve()  # save filepath to class
             # Check if filepath valid
@@ -194,7 +194,3 @@ class FMFile:
             setattr(api_object, key, value)
 
         return api_object
-
-    # @classmethod
-    # def from_json(cls, json_dict):
-    #     return cls(json_dict)
