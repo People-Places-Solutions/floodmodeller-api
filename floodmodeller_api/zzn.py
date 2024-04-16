@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 import ctypes as ct
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -38,7 +38,7 @@ class ZZN(FMFile):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
-    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):  # noqa: PLR0915
+    def __init__(self, zzn_filepath: str | Path | None):  # noqa: PLR0915
         try:
             FMFile.__init__(self, zzn_filepath)
 
@@ -56,7 +56,7 @@ class ZZN(FMFile):
                     "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.",
                 )
 
-            self.meta: Dict[str, Any] = {}  # Dict object to hold all metadata
+            self.meta: dict[str, Any] = {}  # Dict object to hold all metadata
             self.data = {}  # Dict object to hold all data
 
             # PROCESS_ZZL
@@ -181,7 +181,7 @@ class ZZN(FMFile):
         variable: str = "all",
         include_time: bool = False,
         multilevel_header: bool = True,
-    ) -> Union[pd.Series, pd.DataFrame]:
+    ) -> pd.Series | pd.DataFrame:
         """Loads zzn results to pandas dataframe object.
 
         Args:
@@ -271,7 +271,7 @@ class ZZN(FMFile):
 
     def export_to_csv(
         self,
-        save_location: Union[str, Path] = "default",
+        save_location: str | Path = "default",
         result_type: str = "all",
         variable: str = "all",
         include_time: bool = False,

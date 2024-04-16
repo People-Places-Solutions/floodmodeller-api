@@ -15,7 +15,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import Optional, Union
 
 import pandas as pd
 
@@ -38,7 +37,7 @@ class LF(FMFile):
 
     def __init__(
         self,
-        lf_filepath: Optional[Union[str, Path]],
+        lf_filepath: str | Path | None,
         data_to_extract: dict,
         steady: bool = False,
     ):
@@ -252,7 +251,7 @@ class LF1(LF):
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
-    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
+    def __init__(self, lf_filepath: str | Path | None, steady: bool = False):
         if steady is False:
             data_to_extract = lf1_unsteady_data_to_extract
         else:
@@ -290,7 +289,7 @@ class LF2(LF):
     _filetype: str = "LF2"
     _suffix: str = ".lf2"
 
-    def __init__(self, lf_filepath: Optional[Union[str, Path]]):
+    def __init__(self, lf_filepath: str | Path | None):
         data_to_extract = {
             **lf1_unsteady_data_to_extract,
             **lf2_data_to_extract,

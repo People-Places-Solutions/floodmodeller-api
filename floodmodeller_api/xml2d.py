@@ -21,7 +21,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from subprocess import DEVNULL, Popen
-from typing import Callable, List, Optional, Union
+from typing import Callable, Self
 
 from lxml import etree
 from tqdm import trange
@@ -32,7 +32,7 @@ from .logs import error_2d_dict, lf_factory
 from .xml2d_template import xml2d_template
 
 
-def value_from_string(value: Union[str, List[str]]):
+def value_from_string(value: str | list[str]):
     try:
         if isinstance(value, list):
             return value
@@ -68,7 +68,7 @@ class XML2D(FMFile):
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
-    def __init__(self, xml_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, xml_filepath: str | Path | None = None):
         try:
             if xml_filepath is not None:
                 FMFile.__init__(self, xml_filepath)
@@ -412,7 +412,7 @@ class XML2D(FMFile):
                 self._multi_value_keys.append(elem.attrib["name"])
         self._multi_value_keys = set(self._multi_value_keys)
 
-    def diff(self, other: "XML2D", force_print: bool = False) -> None:
+    def diff(self, other: Self, force_print: bool = False) -> None:
         """Compares the XML2D class against another XML2D class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a XML2D class are
         deemed equivalent if all of their attributes are equal except for the filepath and
@@ -438,7 +438,7 @@ class XML2D(FMFile):
         # Update XML dict and tree
         self._read()
 
-    def save(self, filepath: Optional[Union[str, Path]]):
+    def save(self, filepath: str | Path | None):
         """Saves the XML to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the XML() class will continue working from the saved location, therefore any further calls to XML.update() will
         update in the latest saved location rather than the original source XML used to construct the class
@@ -464,8 +464,8 @@ class XML2D(FMFile):
         enginespath: str = "",
         console_output: str = "simple",
         range_function: Callable = trange,
-        range_settings: Optional[dict] = None,
-    ) -> Optional[Popen]:
+        range_settings: dict | None = None,
+    ) -> Popen | None:
         """Simulate the XML2D file directly as a subprocess.
 
         Args:

@@ -16,15 +16,15 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 """ Holds the base unit class for all FM 1D units Units """
 
-from typing import Optional, Type
+from typing import Type
 
 from ..diff import check_item_with_dataframe_equal
 
 
 class UrbanUnit:
-    _unit: Optional[str] = None
-    _subtype: Optional[str] = None
-    _name: Optional[str] = None
+    _unit: str | None = None
+    _subtype: str | None = None
+    _name: str | None = None
 
     def __init__(self, unit_block=None, **kwargs):
         if unit_block is not None:
@@ -84,8 +84,8 @@ class UrbanUnit:
 
 
 class UrbanSubsection:
-    _name: Optional[str] = None
-    _urban_unit_class: Optional[Type[UrbanUnit]] = None
+    _name: str | None = None
+    _urban_unit_class: Type[UrbanUnit] | None = None
 
     def __init__(self, subsection_block=None, **kwargs):
         if subsection_block is not None:

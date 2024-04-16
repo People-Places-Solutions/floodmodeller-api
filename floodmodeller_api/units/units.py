@@ -13,7 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
-from typing import Dict, TypedDict
+from typing import TypedDict
 
 
 class UnitTypes(TypedDict):
@@ -22,7 +22,7 @@ class UnitTypes(TypedDict):
 
 
 # Unit types and support
-SUPPORTED_UNIT_TYPES: Dict[str, UnitTypes] = {
+SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},
     "HTBDY": {"group": "boundaries", "has_subtype": False},
     "QHBDY": {"group": "boundaries", "has_subtype": False},

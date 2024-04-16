@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Self
 
 from . import units
 from ._base import FMFile
@@ -41,7 +41,7 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: Optional[Union[str, Path]] = None, with_gxy: bool = False):
+    def __init__(self, dat_filepath: str | Path | None = None, with_gxy: bool = False):
         try:
             if dat_filepath is not None:
                 FMFile.__init__(self, dat_filepath)
@@ -60,7 +60,7 @@ class DAT(FMFile):
         self._update()
         self._write_gxy(self._gxy_filepath)
 
-    def save(self, filepath: Union[str, Path]) -> None:
+    def save(self, filepath: str | Path) -> None:
         """Saves the DAT to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the DAT() class will continue working from the saved location, therefore any further calls to DAT.update() will
         update in the latest saved location rather than the original source DAT used to construct the class
@@ -83,7 +83,7 @@ class DAT(FMFile):
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
 
-    def diff(self, other: "DAT", force_print: bool = False) -> None:
+    def diff(self, other: Self, force_print: bool = False) -> None:
         """Compares the DAT class against another DAT class to check whether they are
         equivalent, or if not, what the differences are. Two instances of a DAT class are
         deemed equivalent if all of their attributes are equal except for the filepath and
@@ -104,7 +104,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    def next_unit(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def next_unit(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds next unit in the reach.
 
         Next unit in reach can be infered by:
@@ -143,7 +143,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def prev(self, unit: Unit) -> Union[Unit, List[Unit], None]:
+    def prev(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds previous unit in the reach.
 
         Previous unit in reach can be infered by:
@@ -213,7 +213,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def _next_in_dat_struct(self, current_unit) -> Optional[Unit]:
+    def _next_in_dat_struct(self, current_unit) -> Unit | None:
         """Finds next unit in the dat file using the index position.
 
         Returns:
@@ -230,7 +230,7 @@ class DAT(FMFile):
 
         return None
 
-    def _prev_in_dat_struct(self, current_unit) -> Optional[Unit]:
+    def _prev_in_dat_struct(self, current_unit) -> Unit | None:
         """Finds previous unit in the dat file using the index position.
 
         Returns:
@@ -245,7 +245,7 @@ class DAT(FMFile):
 
         return None
 
-    def _ds_label_match(self, current_unit) -> Union[Unit, List[Unit], None]:
+    def _ds_label_match(self, current_unit) -> Unit | list[Unit] | None:
         """Pulls out all units with ds label that matches the input unit.
 
         Returns:
@@ -266,7 +266,7 @@ class DAT(FMFile):
             return _ds_list[0]
         return _ds_list
 
-    def _name_label_match(self, current_unit, name_override=None) -> Union[Unit, List[Unit], None]:
+    def _name_label_match(self, current_unit, name_override=None) -> Unit | list[Unit] | None:
         """Pulls out all units with same name as the input unit.
 
         Returns:
