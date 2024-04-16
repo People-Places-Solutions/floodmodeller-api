@@ -167,8 +167,11 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self) -> pd.DataFrame:
+    def to_dataframe(self, *, include_tuflow: bool = False) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
+
+        Args:
+            include_tuflow (bool): Include diagnostics for linked TUFLOW models
 
         Returns:
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
@@ -177,7 +180,9 @@ class LF(FMFile):
         # TODO: make more like ZZN.to_dataframe
 
         data_type_all = {
-            k: getattr(self, k) for k, v in self._data_to_extract.items() if v["data_type"] == "all"
+            k: getattr(self, k)
+            for k, v in self._data_to_extract.items()
+            if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
         }
 
         df = pd.concat(data_type_all, axis=1)
@@ -232,6 +237,9 @@ class LF1(LF):
         mass_error (pandas.DataFrame): Mass error
         timestep (pandas.DataFrame): Timestep
         elapsed (pandas.DataFrame): Elapsed
+        tuflow_vol (pandas.DataFrame): TUFLOW HPC Vol
+        tuflow_n_wet (pandas.DataFrame): TUFLOW HPC nWet
+        tuflow_dt (pandas.DataFrame): TUFLOW HPC dt
         simulated (pandas.DataFrame): Simulated
         iterations (pandas.DataFrame): PlotI1
         convergence (pandas.DataFrame): PlotC1

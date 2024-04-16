@@ -626,9 +626,9 @@ class IEF(FMFile):
 
         exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
-            lambda x: "Error"
-            if x < self.ERROR_MAX
-            else ("Warning" if x < self.WARNING_MAX else "Note"),
+            lambda x: (
+                "Error" if x < self.ERROR_MAX else ("Warning" if x < self.WARNING_MAX else "Note")
+            ),
         )
         errors = len(exy_data[exy_data["type"] == "Error"])
         warnings = len(exy_data[exy_data["type"] == "Warning"])

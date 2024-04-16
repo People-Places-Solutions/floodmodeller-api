@@ -30,9 +30,9 @@ def test_lf1_to_dataframe(lf1_fp):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
     df = lf1.to_dataframe()
-    assert df.iloc[0, 3] == 6
-    assert df.iloc[-1, -1] == 21.06
-    assert df.iloc[4, 0] == -0.07
+    assert df.loc[df.index[0], "iter"] == 6
+    assert df.loc[df.index[-1], "outflow"] == 21.06
+    assert df.loc[df.index[4], "mass_error"] == -0.07
 
 
 def test_lf1_from_ief(lf1_fp, test_workspace):

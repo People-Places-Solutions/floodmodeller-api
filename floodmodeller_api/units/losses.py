@@ -14,7 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -49,7 +48,7 @@ class CULVERT(Unit):
         headloss_type (str): Keyword TOTAL to denote headloss based on total head, otherwise (keyword STATIC or blank) headloss is based on static head
         reverse_flow_mode (str): Reverse Flow Mode; keyword ZERO (for zero headloss in reverse flow) or CALCULATED (for calculated head loss in reverse flow)
 
-    **Inlet Loss Type (``CULVERT.subtype == 'INLET'``)**
+    **Inlet Loss Type** (``CULVERT.subtype == 'INLET'``)
 
     Args:
         type_code (str): options are 'Type A', 'Type B','Type C'
@@ -61,9 +60,9 @@ class CULVERT(Unit):
         screen_width (float): Trash screen width (m)
         bar_proportion (float): Proportion of trash screen area occupied by bars (0 to 1.0)
         debris_proportion (float): Blockage ratio (proportion of trash screen area occupied by debris) (0 to 1.0)
-        max_screen_height (float): Max. Trash Screen Height *see Flood Modeller help for further information
+        max_screen_height (float): Max. Trash Screen Height (see Flood Modeller help for further information)
 
-    **Outlet Loss Type (``CULVERT.subtype == 'OUTLET'``)**
+    **Outlet Loss Type** (``CULVERT.subtype == 'OUTLET'``)
 
     No additional attributes required for OUTLET subtype
 
