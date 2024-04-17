@@ -60,8 +60,12 @@ You can restore backups via the the `.file.restore()` method. Currently this res
 
 JSON
 ----
-Any flood modeller object can be transformed to a JavaScript Object Notation (JSON) file, and vice versa.  This allows to convert a flood modeller object to JSON format which could be potentially used on a web page.  To do this it is needed to call the method ``.to_json()`` which will convert any no-serializable object to into a serializable object to be able to create the JSON file.
-Besides, on the other way around, a flood modeller object can be created from a JSON file.  The method used for this conversion is ``.from_json()``.
+Any flood modeller object can be transformed to a JavaScript Object Notation (JSON) file, and vice 
+versa.  This allows to convert a flood modeller object to JSON format which could be potentially 
+used on a web page.  To do this it is needed to call the method ``.to_json()`` which will convert 
+any no-serializable object to into a serializable object to be able to create the JSON file.
+Besides, on the other way around, a flood modeller object can be created from a JSON file.  
+The method used for this conversion is ``.from_json()``.
 
 To convert a flood modeller object to a JSON file.
 
