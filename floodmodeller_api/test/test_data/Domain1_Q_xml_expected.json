@@ -8,9 +8,9 @@
       "Object Attributes": {
         "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Domain1_Q.xml",
         "ext": ".xml",
-        "dttm_str": "2024-03-28-17-09-55",
+        "dttm_str": "2024-04-17-14-09-24",
         "file_id": "a213182e3df6175444086915fcc1e069d5acafb0",
-        "backup_filename": "a213182e3df6175444086915fcc1e069d5acafb0_2024-03-28-17-09-55.xml",
+        "backup_filename": "a213182e3df6175444086915fcc1e069d5acafb0_2024-04-17-14-09-24.xml",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -21,7 +21,27 @@
     "_xmltree": null,
     "_xsd": null,
     "_xsdschema": null,
-    "_multi_value_keys": null,
+    "_multi_value_keys": {
+      "python_set": [
+        "boundary",
+        "domain",
+        "file",
+        "fmfile",
+        "link",
+        "link1d",
+        "network",
+        "output",
+        "processorid",
+        "roughness",
+        "sediment_property_file",
+        "series",
+        "single",
+        "source",
+        "topography",
+        "topography_2",
+        "variable"
+      ]
+    },
     "_raw_data": {
       "name": "H 20m 6.8m Tide Q link",
       "link1d": [

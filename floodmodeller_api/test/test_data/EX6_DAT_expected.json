@@ -8,9 +8,9 @@
       "Object Attributes": {
         "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX6.DAT",
         "ext": ".DAT",
-        "dttm_str": "2024-03-28-17-09-55",
+        "dttm_str": "2024-04-17-14-09-24",
         "file_id": "823c43247cc6b314ee7d6a06a30ba0f022b28a0e",
-        "backup_filename": "823c43247cc6b314ee7d6a06a30ba0f022b28a0e_2024-03-28-17-09-55.DAT",
+        "backup_filename": "823c43247cc6b314ee7d6a06a30ba0f022b28a0e_2024-04-17-14-09-24.DAT",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -15889,6 +15889,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": 93.0,
               "0.5": 105.0,
@@ -15923,6 +15925,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
             "object": {
               "0.0": 71.64
             }
@@ -15946,6 +15950,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": -42.0,
               "0.5": -47.0,
@@ -15984,6 +15990,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": -4.0,
               "0.5": -4.0,
@@ -16018,6 +16026,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
             "object": {
               "0.0": 71.64
             }
@@ -16113,6 +16123,8 @@
           "_last_time_row": 59,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "RULE1,RULE2,RULE3,RULE4,RULE5,RULE6,RULE7,RULE8"
             }
@@ -16364,6 +16376,8 @@
           "_last_time_row": 139,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14"
             }
@@ -16617,6 +16631,8 @@
           "_last_time_row": 140,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14"
             }
@@ -16707,6 +16723,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": 93.0,
               "0.5": 105.0,
@@ -16835,6 +16853,8 @@
           "_last_time_row": 59,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "RULE1,RULE2,RULE3,RULE4,RULE5,RULE6,RULE7,RULE8"
             }
@@ -16855,6 +16875,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
             "object": {
               "0.0": 71.64
             }
@@ -18900,6 +18922,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": -42.0,
               "0.5": -47.0,
@@ -19165,6 +19189,8 @@
           "_last_time_row": 139,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14"
             }
@@ -24445,6 +24471,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": -4.0,
               "0.5": -4.0,
@@ -24712,6 +24740,8 @@
           "_last_time_row": 140,
           "time_rule_data": {
             "class": "pandas.Series",
+            "variable_name": "Operating Rules",
+            "index_name": "Time",
             "object": {
               "0.0": "R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14"
             }
@@ -30738,6 +30768,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
             "object": {
               "0.0": 71.64
             }

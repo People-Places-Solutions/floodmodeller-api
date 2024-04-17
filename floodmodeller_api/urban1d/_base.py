@@ -19,6 +19,7 @@ from __future__ import annotations
 """ Holds the base unit class for all FM 1D units Units """
 
 from ..diff import check_item_with_dataframe_equal
+from ..to_from_json import from_json, to_json
 
 
 class UrbanUnit:
@@ -26,7 +27,9 @@ class UrbanUnit:
     _subtype: str | None = None
     _name: str | None = None
 
-    def __init__(self, unit_block=None, **kwargs):
+    def __init__(self, unit_block=None, from_json: bool = False, **kwargs):
+        if from_json:
+            return
         if unit_block is not None:
             self._read(unit_block)
             # TODO: add functionality to read description
@@ -81,13 +84,29 @@ class UrbanUnit:
             diff=diff,
         )
         return (result, diff) if return_diff else result
+    
+    def to_json(self) -> str:
+        return to_json(self)
+    
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object
 
 
 class UrbanSubsection:
     _name: str | None = None
     _urban_unit_class: type[UrbanUnit] | None = None
 
-    def __init__(self, subsection_block=None, **kwargs):
+    def __init__(self, subsection_block=None, from_json: bool = False, **kwargs):
+        if from_json:
+            return
         if subsection_block is not None:
             self._read(subsection_block)
         else:
@@ -181,3 +200,17 @@ class UrbanSubsection:
             diff=diff,
         )
         return (result, diff) if return_diff else result
+    
+    def to_json(self) -> str:
+        return to_json(self)
+    
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

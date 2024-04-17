@@ -8,9 +8,9 @@
       "Object Attributes": {
         "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\network.ied",
         "ext": ".ied",
-        "dttm_str": "2024-03-28-17-09-55",
+        "dttm_str": "2024-04-17-14-09-24",
         "file_id": "88256e1c368ee0953d6b32dba41eeafa01bcb245",
-        "backup_filename": "88256e1c368ee0953d6b32dba41eeafa01bcb245_2024-03-28-17-09-55.ied",
+        "backup_filename": "88256e1c368ee0953d6b32dba41eeafa01bcb245_2024-04-17-14-09-24.ied",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -100,6 +100,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": 1.0,
               "46800.0": 1.0,
@@ -119,6 +121,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Stage",
             "object": {
               "67.03": 0.0,
               "67.75": 1.751,
@@ -244,6 +248,8 @@
           "allow_override": "OVERRIDE",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
             "object": {
               "0.0": 1.0,
               "46800.0": 1.0,
@@ -263,6 +269,8 @@
           "interpmethod": "LINEAR",
           "data": {
             "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Stage",
             "object": {
               "67.03": 0.0,
               "67.75": 1.751,

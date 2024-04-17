@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from floodmodeller_api import DAT, IED, IEF, XML2D
+from floodmodeller_api import DAT, IED, IEF, XML2D, INP, ZZN
 from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.util import read_file
 
@@ -82,10 +82,22 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
         assert json_dict_from_obj == json_dict_from_file
 
 
-def test_dat_reproduces_from_json_for_all_test_dat_files(test_workspace):
+@pytest.mark.parametrize(
+    "api_class,file_extension_glob",
+    [
+        (DAT, "*.dat"),
+        (IED, "*.ied"),
+        (XML2D, "*.xml"),
+        (IEF, "*.ief"),
+        (INP, "*.inp"),
+    ],
+)
+def test_obj_reproduces_from_json_for_all_test_api_files(
+    test_workspace, api_class, file_extension_glob
+):
     """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
-    for datfile in Path(test_workspace).glob("*.dat"):
-        assert DAT(datfile) == DAT.from_json(DAT(datfile).to_json())
+    for file in Path(test_workspace).glob(file_extension_glob):
+        assert api_class(file) == api_class.from_json(api_class(file).to_json())
 
 
 def test_is_jsonable_with_jsonable_object():

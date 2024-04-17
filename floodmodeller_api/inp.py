@@ -43,8 +43,10 @@ class INP(FMFile):
     _filetype: str = "INP"
     _suffix: str = ".inp"
 
-    def __init__(self, inp_filepath: str | Path | None = None):
+    def __init__(self, inp_filepath: str | Path | None = None, from_json: bool = False):
         try:
+            if from_json:
+                return
             if inp_filepath is not None:
                 FMFile.__init__(self, inp_filepath)
                 self._read()

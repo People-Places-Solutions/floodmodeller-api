@@ -53,8 +53,10 @@ class IEF(FMFile):
     ERROR_MAX = 2000
     WARNING_MAX = 3000
 
-    def __init__(self, ief_filepath: str | Path | None = None):
+    def __init__(self, ief_filepath: str | Path | None = None, from_json: bool = False):
         try:
+            if from_json:
+                return
             if ief_filepath is not None:
                 FMFile.__init__(self, ief_filepath)
 

@@ -8,9 +8,9 @@
       "Object Attributes": {
         "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.xml",
         "ext": ".xml",
-        "dttm_str": "2024-03-28-17-09-56",
+        "dttm_str": "2024-04-17-14-09-24",
         "file_id": "f2bb3ee3c2dd177c7bdfa93069585c1291a8a36d",
-        "backup_filename": "f2bb3ee3c2dd177c7bdfa93069585c1291a8a36d_2024-03-28-17-09-56.xml",
+        "backup_filename": "f2bb3ee3c2dd177c7bdfa93069585c1291a8a36d_2024-04-17-14-09-24.xml",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -21,7 +21,27 @@
     "_xmltree": null,
     "_xsd": null,
     "_xsdschema": null,
-    "_multi_value_keys": null,
+    "_multi_value_keys": {
+      "python_set": [
+        "boundary",
+        "domain",
+        "file",
+        "fmfile",
+        "link",
+        "link1d",
+        "network",
+        "output",
+        "processorid",
+        "roughness",
+        "sediment_property_file",
+        "series",
+        "single",
+        "source",
+        "topography",
+        "topography_2",
+        "variable"
+      ]
+    },
     "_raw_data": {
       "name": "River 10m linked ADI",
       "link1d": [

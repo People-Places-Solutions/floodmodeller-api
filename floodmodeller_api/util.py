@@ -18,8 +18,6 @@ import sys
 import webbrowser
 from pathlib import Path
 from typing import Union
-
-from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
 from ._base import FMFile
 
 
@@ -51,6 +49,7 @@ def read_file(filepath: str | Path) -> FMFile:
 
 
     """
+    from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
     suffix_to_class = {
         ".ief": IEF,
         ".dat": DAT,

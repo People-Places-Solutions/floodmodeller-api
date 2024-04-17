@@ -70,8 +70,10 @@ class XML2D(FMFile):
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
-    def __init__(self, xml_filepath: str | Path | None = None):
+    def __init__(self, xml_filepath: str | Path | None = None,from_json: bool = False):
         try:
+            if from_json:
+                return
             if xml_filepath is not None:
                 FMFile.__init__(self, xml_filepath)
                 self._read()

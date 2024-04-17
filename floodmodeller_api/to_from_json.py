@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Any, Union
 
 import pandas as pd
+from pandas import Index
 
 import floodmodeller_api  # noqa: F401.  Needed to execute eval() at line 115 in from_json
 
@@ -43,6 +44,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     """
     from ._base import FMFile  # noqa: I001
     from .units._base import Unit
+    from .urban1d._base import UrbanSubsection, UrbanUnit
     from .units import IIC
     from .backup import File
 
@@ -52,12 +54,21 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     if isinstance(obj, pd.DataFrame):
         return {"class": "pandas.DataFrame", "object": obj.to_dict()}
     if isinstance(obj, pd.Series):
-        return {"class": "pandas.Series", "object": obj.to_dict()}
+        return {
+            "class": "pandas.Series",
+            "variable_name": obj.name,
+            "index_name": obj.index.name,
+            "object": obj.to_dict(),
+        }
 
     # To convert WindowsPath, no serializable, objects to string, serializable.
     if isinstance(obj, Path):
         return str(obj)
 
+    if isinstance(obj, set):
+        # create list and append
+        return {"python_set": [recursive_to_json(item, is_top_level=False) for item in sorted(obj)]}
+    
     # Case list or dict of non-jsonable stuff
     if isinstance(obj, list):
         # create list and append
@@ -68,7 +79,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return {key: recursive_to_json(value, is_top_level=False) for key, value in obj.items()}
 
     # Either a type of FM API Class
-    if isinstance(obj, (FMFile, Unit, IIC, File)):  # noqa: RET503
+    if isinstance(obj, (FMFile, Unit, IIC, File,UrbanSubsection, UrbanUnit)):  # noqa: RET503
         # Information from the flood modeller object will be included in the JSON output
         # slicing undertaken to remove quotation marks
         return_dict: dict[str, Any] = {"API Class": str(obj.__class__)[8:-2]}
@@ -118,12 +129,17 @@ def recursive_from_json(obj: Union[dict, Any]) -> Any:
 
     if "class" in obj and obj["class"] == "pandas.DataFrame":
         df = pd.DataFrame.from_dict(obj["object"])
-        df.index = pd.RangeIndex(len(df))
+        df.index = convert_dataframe_index(df.index)
         return df
     if "class" in obj and obj["class"] == "pandas.Series":
         sr = pd.Series(obj["object"])
-        sr.index = sr.index.astype("float64")
+        sr.index = convert_dataframe_index(sr.index)
+        sr.index.name = obj["index_name"]
+        sr.name = obj["variable_name"]
         return sr
+    
+    if "python_set" in obj:
+        return set(obj["python_set"])
 
     for key, value in obj.items():
         if isinstance(value, dict):
@@ -139,3 +155,14 @@ def recursive_from_json(obj: Union[dict, Any]) -> Any:
             obj[key] = new_list
 
     return obj
+
+
+def convert_dataframe_index(index: Index) -> Index:
+    try:
+        return index.astype("int")
+    except ValueError:
+        pass
+    try:
+        return index.astype("float")
+    except ValueError:
+        return index

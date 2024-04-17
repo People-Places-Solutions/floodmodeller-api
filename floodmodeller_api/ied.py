@@ -41,8 +41,10 @@ class IED(FMFile):
     _filetype: str = "IED"
     _suffix: str = ".ied"
 
-    def __init__(self, ied_filepath: str | Path | None = None):
+    def __init__(self, ied_filepath: str | Path | None = None, from_json: bool = False):
         try:
+            if from_json:
+                return
             if ied_filepath is not None:
                 FMFile.__init__(self, ied_filepath)
 
