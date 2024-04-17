@@ -43,7 +43,7 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
         ("DOUBLE", "ISISf32_DoubleP.exe"),
     ],
 )
-def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str | None, exe: str):
+def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, exe: str):
     with patch("floodmodeller_api.ief.Popen") as p_open:
         exe_path = Path(exe_bin, exe)
         ief.simulate(enginespath=str(exe_bin), precision=precision)
