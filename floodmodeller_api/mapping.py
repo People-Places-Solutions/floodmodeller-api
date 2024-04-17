@@ -1,7 +1,6 @@
 from typing import Any
 
 from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
-from ._base import FMFile
 from .backup import File
 from .units import (
     BLOCKAGE,
@@ -28,8 +27,6 @@ from .units import (
     WEIR,
     Variables,
 )
-from .units._base import Unit
-from .urban1d._base import UrbanSubsection, UrbanUnit
 from .urban1d.conduits import CONDUIT as CONDUIT_URBAN
 from .urban1d.conduits import CONDUITS as CONDUITS_URBAN
 from .urban1d.junctions import JUNCTION, JUNCTIONS
