@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -23,6 +23,7 @@ from typing import NoReturn
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
+from .to_from_json import from_json, to_json
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
@@ -36,7 +37,7 @@ class FMFile:
     _suffix: str | None = None
     MAX_DIFF = 25
 
-    def __init__(self, filepath: str | Path | None):
+    def __init__(self, filepath: str | Path | None = None, **kwargs):
         if filepath is not None:
             self._filepath = Path(filepath).resolve()  # save filepath to class
             # Check if filepath valid
@@ -181,3 +182,17 @@ class FMFile:
             diff.append((f"{self._filetype}->{key}", f"Error encountered: {e.args[0]}"))
 
         return (result, diff) if return_diff else result
+
+    def to_json(self) -> str:
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

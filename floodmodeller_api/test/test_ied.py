@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pytest
 
@@ -7,7 +7,7 @@ from floodmodeller_api import IED
 
 @pytest.fixture
 def ied_fp(test_workspace):
-    return os.path.join(test_workspace, "network.ied")
+    return Path(test_workspace, "network.ied")
 
 
 def test_open_ied_does_not_change_file(ied_fp):

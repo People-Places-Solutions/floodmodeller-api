@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -25,6 +25,8 @@ from pathlib import Path
 from shutil import copy
 
 import pandas as pd
+
+from .to_from_json import from_json, to_json
 
 
 class BackupControl:
@@ -188,7 +190,7 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: str | Path, **args):
+    def __init__(self, path: str | Path = "", from_json: bool = False, **args):
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists
@@ -269,3 +271,17 @@ class File(BackupControl):
         backup_logs = pd.read_csv(self.backup_csv_path)
         backup_logs = backup_logs[backup_logs.file_id != self.file_id]
         backup_logs.to_csv(self.backup_csv_path, index=False)
+
+    def to_json(self) -> str:
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

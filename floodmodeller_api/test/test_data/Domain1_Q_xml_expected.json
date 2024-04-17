@@ -1,0 +1,263 @@
+{
+  "API Class": "floodmodeller_api.xml2d.XML2D",
+  "API Version": "0.4.2.post1",
+  "Object Attributes": {
+    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Domain1_Q.xml",
+    "file": {
+      "API Class": "floodmodeller_api.backup.File",
+      "Object Attributes": {
+        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Domain1_Q.xml",
+        "ext": ".xml",
+        "dttm_str": "2024-04-17-14-09-24",
+        "file_id": "a213182e3df6175444086915fcc1e069d5acafb0",
+        "backup_filename": "a213182e3df6175444086915fcc1e069d5acafb0_2024-04-17-14-09-24.xml",
+        "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
+        "backup_dirname": "floodmodeller_api_backup",
+        "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
+        "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
+      }
+    },
+    "_ns": "{https://www.floodmodeller.com}",
+    "_xmltree": null,
+    "_xsd": null,
+    "_xsdschema": null,
+    "_multi_value_keys": {
+      "python_set": [
+        "boundary",
+        "domain",
+        "file",
+        "fmfile",
+        "link",
+        "link1d",
+        "network",
+        "output",
+        "processorid",
+        "roughness",
+        "sediment_property_file",
+        "series",
+        "single",
+        "source",
+        "topography",
+        "topography_2",
+        "variable"
+      ]
+    },
+    "_raw_data": {
+      "name": "H 20m 6.8m Tide Q link",
+      "link1d": [
+        {
+          "link": [
+            "GIS\\Link1_Q.shp"
+          ],
+          "ief": "Domain1_Q.ief",
+          "mb": "Domain1_Q_MB1D.csv"
+        }
+      ],
+      "logfile": "Domain1_Q.log",
+      "domain": [
+        {
+          "domain_id": "Domain1 20m H",
+          "computational_area": {
+            "xll": 538010.0,
+            "yll": 177010.0,
+            "dx": 20,
+            "nrows": 200,
+            "ncols": 300,
+            "active_area": "GIS\\Active_Area1.shp"
+          },
+          "topography": [
+            "GIS\\5M_DTM_1.asc"
+          ],
+          "time": {
+            "start_time": "00:00:00",
+            "start_date": "1/1/2000",
+            "total": {
+              "unit": "second",
+              "value": 43200
+            }
+          },
+          "run_data": {
+            "time_step": 2,
+            "scheme": "ADI"
+          },
+          "initial_conditions": {
+            "type": "globalwaterlevel",
+            "value": 0.0
+          },
+          "roughness": [
+            {
+              "law": "manning",
+              "type": "global",
+              "value": 0.05
+            }
+          ],
+          "output_results": {
+            "output": [
+              {
+                "output_id": "",
+                "format": "SMS9",
+                "variables": [
+                  "Depth",
+                  "Velocity",
+                  "Elevation",
+                  "Flow"
+                ],
+                "frequency": 300
+              }
+            ],
+            "massfile": {
+              "frequency": "10",
+              "value": "Domain1_Q_MB2D.csv"
+            }
+          }
+        }
+      ]
+    },
+    "_data": {
+      "name": "H 20m 6.8m Tide Q link",
+      "link1d": [
+        {
+          "link": [
+            "GIS\\Link1_Q.shp"
+          ],
+          "ief": "Domain1_Q.ief",
+          "mb": "Domain1_Q_MB1D.csv"
+        }
+      ],
+      "logfile": "Domain1_Q.log",
+      "domain": [
+        {
+          "domain_id": "Domain1 20m H",
+          "computational_area": {
+            "xll": 538010.0,
+            "yll": 177010.0,
+            "dx": 20,
+            "nrows": 200,
+            "ncols": 300,
+            "active_area": "GIS\\Active_Area1.shp"
+          },
+          "topography": [
+            "GIS\\5M_DTM_1.asc"
+          ],
+          "time": {
+            "start_time": "00:00:00",
+            "start_date": "1/1/2000",
+            "total": {
+              "unit": "second",
+              "value": 43200
+            }
+          },
+          "run_data": {
+            "time_step": 2,
+            "scheme": "ADI"
+          },
+          "initial_conditions": {
+            "type": "globalwaterlevel",
+            "value": 0.0
+          },
+          "roughness": [
+            {
+              "law": "manning",
+              "type": "global",
+              "value": 0.05
+            }
+          ],
+          "output_results": {
+            "output": [
+              {
+                "output_id": "",
+                "format": "SMS9",
+                "variables": [
+                  "Depth",
+                  "Velocity",
+                  "Elevation",
+                  "Flow"
+                ],
+                "frequency": 300
+              }
+            ],
+            "massfile": {
+              "frequency": "10",
+              "value": "Domain1_Q_MB2D.csv"
+            }
+          }
+        }
+      ]
+    },
+    "name": "H 20m 6.8m Tide Q link",
+    "link1d": [
+      {
+        "link": [
+          "GIS\\Link1_Q.shp"
+        ],
+        "ief": "Domain1_Q.ief",
+        "mb": "Domain1_Q_MB1D.csv"
+      }
+    ],
+    "logfile": "Domain1_Q.log",
+    "domains": {
+      "Domain1 20m H": {
+        "domain_id": "Domain1 20m H",
+        "computational_area": {
+          "xll": 538010.0,
+          "yll": 177010.0,
+          "dx": 20,
+          "nrows": 200,
+          "ncols": 300,
+          "active_area": "GIS\\Active_Area1.shp"
+        },
+        "topography": [
+          "GIS\\5M_DTM_1.asc"
+        ],
+        "time": {
+          "start_time": "00:00:00",
+          "start_date": "1/1/2000",
+          "total": {
+            "unit": "second",
+            "value": 43200
+          }
+        },
+        "run_data": {
+          "time_step": 2,
+          "scheme": "ADI"
+        },
+        "initial_conditions": {
+          "type": "globalwaterlevel",
+          "value": 0.0
+        },
+        "roughness": [
+          {
+            "law": "manning",
+            "type": "global",
+            "value": 0.05
+          }
+        ],
+        "output_results": {
+          "output": [
+            {
+              "output_id": "",
+              "format": "SMS9",
+              "variables": [
+                "Depth",
+                "Velocity",
+                "Elevation",
+                "Flow"
+              ],
+              "frequency": 300
+            }
+          ],
+          "massfile": {
+            "frequency": "10",
+            "value": "Domain1_Q_MB2D.csv"
+          }
+        }
+      }
+    },
+    "restart_options": null,
+    "advanced_options": null,
+    "processor": null,
+    "unit_system": null,
+    "description": null,
+    "_log_path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Domain1_Q.lf2"
+  }
+}

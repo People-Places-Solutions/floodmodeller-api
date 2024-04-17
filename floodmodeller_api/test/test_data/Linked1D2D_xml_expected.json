@@ -1,0 +1,313 @@
+{
+  "API Class": "floodmodeller_api.xml2d.XML2D",
+  "API Version": "0.4.2.post1",
+  "Object Attributes": {
+    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.xml",
+    "file": {
+      "API Class": "floodmodeller_api.backup.File",
+      "Object Attributes": {
+        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.xml",
+        "ext": ".xml",
+        "dttm_str": "2024-04-17-14-09-24",
+        "file_id": "f2bb3ee3c2dd177c7bdfa93069585c1291a8a36d",
+        "backup_filename": "f2bb3ee3c2dd177c7bdfa93069585c1291a8a36d_2024-04-17-14-09-24.xml",
+        "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
+        "backup_dirname": "floodmodeller_api_backup",
+        "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
+        "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
+      }
+    },
+    "_ns": "{https://www.floodmodeller.com}",
+    "_xmltree": null,
+    "_xsd": null,
+    "_xsdschema": null,
+    "_multi_value_keys": {
+      "python_set": [
+        "boundary",
+        "domain",
+        "file",
+        "fmfile",
+        "link",
+        "link1d",
+        "network",
+        "output",
+        "processorid",
+        "roughness",
+        "sediment_property_file",
+        "series",
+        "single",
+        "source",
+        "topography",
+        "topography_2",
+        "variable"
+      ]
+    },
+    "_raw_data": {
+      "name": "River 10m linked ADI",
+      "link1d": [
+        {
+          "link_to_model": "ISIS1D",
+          "link": [
+            "GIS\\Link.shp"
+          ],
+          "ief": "Linked1D2D.ief",
+          "mb": {
+            "frequency": "60",
+            "value": "Linked1D2D_MB1D.csv"
+          }
+        }
+      ],
+      "logfile": "Linked1D2D_ADI.log",
+      "domain": [
+        {
+          "domain_id": "River 10m",
+          "computational_area": {
+            "xll": 391800.0,
+            "yll": 172600.0,
+            "dx": 10,
+            "nrows": 100,
+            "ncols": 80,
+            "active_area": "GIS\\River_Active_Area.shp",
+            "rotation": 0
+          },
+          "topography": [
+            "GIS\\5M_DTM.asc"
+          ],
+          "time": {
+            "start_time": "00:00:00",
+            "start_date": "1/1/2000",
+            "total": {
+              "unit": "hour",
+              "value": 5.0
+            }
+          },
+          "run_data": {
+            "time_step": 5,
+            "scheme": "ADI",
+            "pulsedepth": 0.0001,
+            "negdepththreshold": -0.001,
+            "velocityheadthreshold": 0.1,
+            "frictionincreasedepth": 0.1
+          },
+          "initial_conditions": {
+            "type": "globalwaterlevel",
+            "value": 0.0
+          },
+          "roughness": [
+            {
+              "law": "manning",
+              "type": "global",
+              "value": 0.05
+            }
+          ],
+          "output_results": {
+            "hazard_debris_factor_method": {
+              "static": {
+                "factor": "1.0"
+              }
+            },
+            "output": [
+              {
+                "output_id": "",
+                "format": "SMS9",
+                "variables": [
+                  "Depth",
+                  "Velocity",
+                  "Elevation",
+                  "Flow"
+                ],
+                "frequency": 120
+              }
+            ],
+            "massfile": {
+              "frequency": "10",
+              "value": "Linked1D2D_MB2D.csv"
+            }
+          }
+        }
+      ],
+      "advanced_options": {
+        "spatial_diagnostics": "on"
+      }
+    },
+    "_data": {
+      "name": "River 10m linked ADI",
+      "link1d": [
+        {
+          "link_to_model": "ISIS1D",
+          "link": [
+            "GIS\\Link.shp"
+          ],
+          "ief": "Linked1D2D.ief",
+          "mb": {
+            "frequency": "60",
+            "value": "Linked1D2D_MB1D.csv"
+          }
+        }
+      ],
+      "logfile": "Linked1D2D_ADI.log",
+      "domain": [
+        {
+          "domain_id": "River 10m",
+          "computational_area": {
+            "xll": 391800.0,
+            "yll": 172600.0,
+            "dx": 10,
+            "nrows": 100,
+            "ncols": 80,
+            "active_area": "GIS\\River_Active_Area.shp",
+            "rotation": 0
+          },
+          "topography": [
+            "GIS\\5M_DTM.asc"
+          ],
+          "time": {
+            "start_time": "00:00:00",
+            "start_date": "1/1/2000",
+            "total": {
+              "unit": "hour",
+              "value": 5.0
+            }
+          },
+          "run_data": {
+            "time_step": 5,
+            "scheme": "ADI",
+            "pulsedepth": 0.0001,
+            "negdepththreshold": -0.001,
+            "velocityheadthreshold": 0.1,
+            "frictionincreasedepth": 0.1
+          },
+          "initial_conditions": {
+            "type": "globalwaterlevel",
+            "value": 0.0
+          },
+          "roughness": [
+            {
+              "law": "manning",
+              "type": "global",
+              "value": 0.05
+            }
+          ],
+          "output_results": {
+            "hazard_debris_factor_method": {
+              "static": {
+                "factor": "1.0"
+              }
+            },
+            "output": [
+              {
+                "output_id": "",
+                "format": "SMS9",
+                "variables": [
+                  "Depth",
+                  "Velocity",
+                  "Elevation",
+                  "Flow"
+                ],
+                "frequency": 120
+              }
+            ],
+            "massfile": {
+              "frequency": "10",
+              "value": "Linked1D2D_MB2D.csv"
+            }
+          }
+        }
+      ],
+      "advanced_options": {
+        "spatial_diagnostics": "on"
+      }
+    },
+    "name": "River 10m linked ADI",
+    "link1d": [
+      {
+        "link_to_model": "ISIS1D",
+        "link": [
+          "GIS\\Link.shp"
+        ],
+        "ief": "Linked1D2D.ief",
+        "mb": {
+          "frequency": "60",
+          "value": "Linked1D2D_MB1D.csv"
+        }
+      }
+    ],
+    "logfile": "Linked1D2D_ADI.log",
+    "domains": {
+      "River 10m": {
+        "domain_id": "River 10m",
+        "computational_area": {
+          "xll": 391800.0,
+          "yll": 172600.0,
+          "dx": 10,
+          "nrows": 100,
+          "ncols": 80,
+          "active_area": "GIS\\River_Active_Area.shp",
+          "rotation": 0
+        },
+        "topography": [
+          "GIS\\5M_DTM.asc"
+        ],
+        "time": {
+          "start_time": "00:00:00",
+          "start_date": "1/1/2000",
+          "total": {
+            "unit": "hour",
+            "value": 5.0
+          }
+        },
+        "run_data": {
+          "time_step": 5,
+          "scheme": "ADI",
+          "pulsedepth": 0.0001,
+          "negdepththreshold": -0.001,
+          "velocityheadthreshold": 0.1,
+          "frictionincreasedepth": 0.1
+        },
+        "initial_conditions": {
+          "type": "globalwaterlevel",
+          "value": 0.0
+        },
+        "roughness": [
+          {
+            "law": "manning",
+            "type": "global",
+            "value": 0.05
+          }
+        ],
+        "output_results": {
+          "hazard_debris_factor_method": {
+            "static": {
+              "factor": "1.0"
+            }
+          },
+          "output": [
+            {
+              "output_id": "",
+              "format": "SMS9",
+              "variables": [
+                "Depth",
+                "Velocity",
+                "Elevation",
+                "Flow"
+              ],
+              "frequency": 120
+            }
+          ],
+          "massfile": {
+            "frequency": "10",
+            "value": "Linked1D2D_MB2D.csv"
+          }
+        }
+      }
+    },
+    "advanced_options": {
+      "spatial_diagnostics": "on"
+    },
+    "restart_options": null,
+    "processor": null,
+    "unit_system": null,
+    "description": null,
+    "_log_path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.lf2"
+  }
+}

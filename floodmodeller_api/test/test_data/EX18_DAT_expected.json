@@ -1,0 +1,3876 @@
+{
+  "API Class": "floodmodeller_api.dat.DAT",
+  "API Version": "0.4.2.post1",
+  "Object Attributes": {
+    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX18.DAT",
+    "file": {
+      "API Class": "floodmodeller_api.backup.File",
+      "Object Attributes": {
+        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX18.DAT",
+        "ext": ".DAT",
+        "dttm_str": "2024-04-17-14-09-24",
+        "file_id": "c0ec56a171ba2e84830901a95ab9052ac87aa017",
+        "backup_filename": "c0ec56a171ba2e84830901a95ab9052ac87aa017_2024-04-17-14-09-24.DAT",
+        "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
+        "backup_dirname": "floodmodeller_api_backup",
+        "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
+        "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
+      }
+    },
+    "_raw_data": [
+      "",
+      "#REVISION#1",
+      "        34     0.750     0.900     0.100     0.001        12",
+      "    10.000     0.010     0.010     0.700     0.100     0.700     0.000",
+      "RAD FILE",
+      "",
+      "END GENERAL",
+      "QTBDY",
+      "QT1",
+      "         3     0.000     0.000     HOURS    EXTEND    LINEAR          ",
+      "     0.050     0.000",
+      "     0.300     5.000",
+      "     0.050     9.000",
+      "QTBDY",
+      "QT2",
+      "         3     0.000     0.000     HOURS    EXTEND    LINEAR          ",
+      "     0.050     0.000",
+      "     0.300     5.000",
+      "     0.050     9.000",
+      "QTBDY",
+      "S1d",
+      "         3     0.000     0.000     HOURS    EXTEND    LINEAR          ",
+      "     0.050     0.000",
+      "     0.750     2.000",
+      "     0.050     9.000",
+      "RESERVOIR #revision#1",
+      "S0          QT1         QT2",
+      "",
+      "         5",
+      "    19.000   800.000",
+      "    20.000  1000.000",
+      "    21.000  1200.000",
+      "    22.000  1400.000",
+      "    23.000  1600.000",
+      "      0000      0000         0",
+      "WEIR",
+      "S0          S1u",
+      "     1.500",
+      "     1.000     1.000     1.500    21.000     0.800",
+      "JUNCTION",
+      "OPEN",
+      "S1u         S1          S1d",
+      "RIVER",
+      "SECTION",
+      "S1",
+      "     5.000              0.0001",
+      "         5",
+      "     0.000    25.000     0.030     1.000                0.00      0.00",
+      "     0.100    20.100     0.030     1.000                0.00      0.00",
+      "     1.000    20.100     0.030     1.000                0.00      0.00",
+      "     2.000    20.100     0.030     1.000                0.00      0.00",
+      "     2.100    25.000     0.030     1.000                0.00      0.00",
+      "RIVER",
+      "SECTION",
+      "S2",
+      "     0.000              0.0001",
+      "         5",
+      "     0.000    25.000     0.030     1.000                0.00      0.00",
+      "     0.100    20.000     0.030     1.000                0.00      0.00",
+      "     1.000    20.000     0.030     1.000                0.00      0.00",
+      "     2.000    20.000     0.030     1.000                0.00      0.00",
+      "     2.100    25.000     0.030     1.000                0.00      0.00",
+      "CULVERT",
+      "INLET",
+      "S2          C2",
+      "    0.5200     0.670    0.0380     0.800     0.600         A",
+      "     0.000     0.000     0.000     0.000ZERO          STATIC     0.000",
+      "CONDUIT",
+      "CIRCULAR",
+      "C2",
+      "   100.000",
+      "MANNING",
+      "    20.000     1.000",
+      "   0.02000   0.01500",
+      "REPLICATE",
+      "C2_R1",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R2",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R3",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R4",
+      "   100.000     0.200         0         0     0.200",
+      "CONDUIT",
+      "CIRCULAR",
+      "C2m",
+      "     0.000",
+      "MANNING",
+      "    19.200     1.000",
+      "   0.02000   0.01500",
+      "MANHOLE #revision#1",
+      "C2m         C2md        C2mH",
+      "      20.5         3       1.7       0.9         0",
+      "HTBDY",
+      "C2mH",
+      "         1             SECONDS    EXTEND    LINEAR",
+      "    20.500     0.000",
+      "CONDUIT",
+      "CIRCULAR",
+      "C2md",
+      "   100.000",
+      "MANNING",
+      "    19.200     1.000",
+      "   0.02000   0.01500",
+      "REPLICATE",
+      "C2_R5",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R6",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R7",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R8",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R9",
+      "   100.000     0.200         0         0     0.200",
+      "REPLICATE",
+      "C2_R10",
+      "   100.000     0.200         0         0     0.200",
+      "CONDUIT",
+      "CIRCULAR",
+      "C2d",
+      "     0.000",
+      "MANNING",
+      "    18.000     1.000",
+      "   0.02000   0.01500",
+      "WEIR",
+      "C2d         S3",
+      "     1.500",
+      "     1.000     1.000     0.600    18.000     0.800",
+      "RIVER",
+      "SECTION",
+      "S3          S3LS",
+      "   100.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    18.000     0.030     1.000                0.00      0.00",
+      "     1.000    18.000     0.030     1.000                0.00      0.00",
+      "     2.000    18.000     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "RIVER",
+      "SECTION",
+      "S4",
+      "     0.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    17.800     0.030     1.000                0.00      0.00",
+      "     1.000    17.800     0.030     1.000                0.00      0.00",
+      "     2.000    17.800     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "WEIR",
+      "S4          S4_drop",
+      "     1.500",
+      "     1.000     1.000     2.000    17.900     0.800",
+      "JUNCTION",
+      "OPEN",
+      "S4_drop     P_suc       S5",
+      "RIVER",
+      "SECTION",
+      "S5",
+      "   100.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    17.700     0.030     1.000                0.00      0.00",
+      "     1.000    17.700     0.030     1.000                0.00      0.00",
+      "     2.000    17.700     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "RIVER",
+      "SECTION",
+      "S6",
+      "   100.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    17.700     0.030     1.000                0.00      0.00",
+      "     1.000    17.700     0.030     1.000                0.00      0.00",
+      "     2.000    17.700     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "RIVER",
+      "SECTION",
+      "S7",
+      "   100.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    17.700     0.030     1.000                0.00      0.00",
+      "     1.000    17.700     0.030     1.000                0.00      0.00",
+      "     2.000    18.000     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "RIVER",
+      "SECTION",
+      "S8",
+      "     0.000              0.0001",
+      "         5",
+      "     0.000    20.000     0.030     1.000                0.00      0.00",
+      "     0.100    17.600     0.030     1.000                0.00      0.00",
+      "     1.000    17.600     0.030     1.000                0.00      0.00",
+      "     2.000    17.600     0.030     1.000                0.00      0.00",
+      "     2.100    20.000     0.030     1.000                0.00      0.00",
+      "WEIR",
+      "S8          S9",
+      "     1.500",
+      "     1.000     1.000     2.000    17.700     0.800",
+      "OCPUMP",
+      "P_suc       P_del",
+      "   730.000    19.000     0.200     0.600",
+      "LOGICAL",
+      "TRIGGER   MODE",
+      "         3HOURS     EXTEND",
+      "     0.000    MANUAL   STOPPED",
+      "     2.500    MANUAL        ON",
+      "     8.000    MANUAL   STOPPED",
+      "HEAD      FLOW      EFFICIENCY",
+      "         3",
+      "    17.600     0.100     0.550",
+      "    19.000     0.200     0.600",
+      "    20.000     0.300     0.550",
+      "RULES",
+      "3              0.000HOURS     EXTEND",
+      "Rule1",
+      "IF(LEVEL(S3).LT.18.3)",
+      "THEN PUMP=STOPPED",
+      "END",
+      "Rule2",
+      "IF(LEVEL(S6).GT.21.5)",
+      "THEN PUMP=STOPPED",
+      "END",
+      "Rule3",
+      "IF(LEVEL(S3).GT.20.3)",
+      "THEN PUMP=ON",
+      "END",
+      "TIME RULE DATA SET",
+      "         2",
+      "     0.000ALL",
+      "   999.000ALL",
+      "HTBDY",
+      "P_del",
+      "         1",
+      "     0.000     0.000",
+      "HTBDY",
+      "S9",
+      "         2               HOURS    EXTEND    LINEAR",
+      "    17.700     0.000",
+      "    17.700    10.000",
+      "SPILL",
+      "S3LS        CSO",
+      "     1.700     0.900",
+      "         2",
+      "     0.000    20.000      0.00      0.00",
+      "   100.000    20.000      0.00      0.00",
+      "RESERVOIR #revision#1",
+      "CSO",
+      "",
+      "         5",
+      "    19.000   800.000",
+      "    20.000  1000.000",
+      "    21.000  1200.000",
+      "    22.000  1200.000",
+      "    23.000  1200.000",
+      "      0000      0000         0",
+      "INITIAL CONDITIONS",
+      " label   ?      flow     stage froude no  velocity     umode    ustate         z",
+      "QT1          y     0.050    21.115     0.000     0.000     0.000     0.000     0.000",
+      "QT2          y     0.050    21.115     0.000     0.000     0.000     0.000     0.000",
+      "S1d          y     0.050    20.544     0.000     0.000     0.000     0.000     0.000",
+      "S0           y     0.100    21.115     0.222     0.629     1.000     0.000    21.000",
+      "S1u          y     0.100    20.544     0.000     0.000     0.000     0.000    21.000",
+      "S1           y     0.150    20.544     0.005     0.026     0.000     0.000   -79.900",
+      "S2           y     0.150    20.544     0.290     0.025     1.000     0.000   -80.000",
+      "C2           y     0.150    20.315     0.473     0.708     0.000     0.000    20.000",
+      "C2_R1        y     0.150    20.116     0.471     0.705     0.000     0.000    19.800",
+      "C2_R2        y     0.150    19.913     0.480     0.715     0.000     0.000    19.600",
+      "C2_R3        y     0.150    19.743     0.401     0.629     0.000     0.000    19.400",
+      "C2_R4        y     0.150    19.657     0.232     0.429     0.000     0.000    19.200",
+      "C2m          y     0.150    19.515     0.473     0.707     0.000     0.000    19.200",
+      "C2md         y     0.150    19.515     0.473     0.707     0.000     0.000    19.200",
+      "C2mH         y     0.000    20.500     0.000     0.000     0.000     0.000    20.500",
+      "C2_R5        y     0.150    19.315     0.473     0.708     0.000     0.000    19.000",
+      "C2_R6        y     0.150    19.115     0.472     0.707     0.000     0.000    18.800",
+      "C2_R7        y     0.150    18.914     0.476     0.711     0.000     0.000    18.600",
+      "C2_R8        y     0.150    18.721     0.455     0.689     0.000     0.000    18.400",
+      "C2_R9        y     0.150    18.597     0.303     0.516     0.000     0.000    18.200",
+      "C2_R10       y     0.150    18.550     0.162     0.339     0.000     0.000    18.000",
+      "C2d          y     0.150    18.251     0.735     0.972     1.000     1.000    18.000",
+      "S3           y     0.150    18.031     0.006     0.030     0.000     0.000   -82.000",
+      "S3LS         y     0.000 -9999.990     0.000     0.000     0.000     0.000    20.000",
+      "S4           y     0.150    18.025     0.005     0.028     1.000     0.000   -82.200",
+      "S4_drop      y     0.150    17.843     0.009     0.049     0.000     0.000    17.900",
+      "P_suc        y     0.000    17.843     0.000     0.000     1.000     0.000     0.000",
+      "S5           y     0.150    17.843     0.005     0.028     0.000     0.000   -82.300",
+      "S6           y     0.150    17.838     0.005     0.028     0.000     0.000   -82.300",
+      "S7           y     0.150    17.831     0.005     0.029     0.000     0.000   -82.300",
+      "S8           y     0.150    17.825     0.005     0.028     1.000     0.000   -82.400",
+      "S9           y     0.150    17.700     0.000     0.000     0.000     0.000    17.700",
+      "P_del        y     0.000     0.000     0.000     0.000     0.000     0.000     0.000",
+      "CSO          y     0.000    19.001     0.000     0.000     0.000     0.000     0.000",
+      "GISINFO",
+      "QTBDY QT1 0 0 0 0 0",
+      "QTBDY QT2 0 0 0 0 0",
+      "QTBDY S1d 0 0 0 0 0",
+      "RESERVOIR S0 0 0 0 0 0",
+      "WEIR S0 0 0 0 0 0",
+      "JUNCTION OPEN S1u 0 0 0 0 0",
+      "RIVER SECTION S1 0 0 0 0 0",
+      "RIVER SECTION S2 0 0 0 0 0",
+      "CULVERT INLET S2 0 0 0 0 0",
+      "CONDUIT CIRCULAR C2 0 0 0 0 0",
+      "REPLICATE C2_R1 0 0 0 0 0",
+      "REPLICATE C2_R2 0 0 0 0 0",
+      "REPLICATE C2_R3 0 0 0 0 0",
+      "REPLICATE C2_R4 0 0 0 0 0",
+      "CONDUIT CIRCULAR C2m 0 0 0 0 0",
+      "MANHOLE C2m 0 0 0 0 0",
+      "HTBDY C2mH 0 0 0 0 0",
+      "CONDUIT CIRCULAR C2md 0 0 0 0 0",
+      "REPLICATE C2_R5 0 0 0 0 0",
+      "REPLICATE C2_R6 0 0 0 0 0",
+      "REPLICATE C2_R7 0 0 0 0 0",
+      "REPLICATE C2_R8 0 0 0 0 0",
+      "REPLICATE C2_R9 0 0 0 0 0",
+      "REPLICATE C2_R10 0 0 0 0 0",
+      "CONDUIT CIRCULAR C2d 0 0 0 0 0",
+      "WEIR C2d 0 0 0 0 0",
+      "RIVER SECTION S3 0 0 0 0 0",
+      "RIVER SECTION S4 0 0 0 0 0",
+      "WEIR S4 0 0 0 0 0",
+      "JUNCTION OPEN S4_drop 0 0 0 0 0",
+      "RIVER SECTION S5 0 0 0 0 0",
+      "RIVER SECTION S6 0 0 0 0 0",
+      "RIVER SECTION S7 0 0 0 0 0",
+      "RIVER SECTION S8 0 0 0 0 0",
+      "WEIR S8 0 0 0 0 0",
+      "OCPUMP P_suc 0 0 0 0 0",
+      "HTBDY P_del 0 0 0 0 0",
+      "HTBDY S9 0 0 0 0 0",
+      "SPILL S3LS 0 0 0 0 0",
+      "RESERVOIR CSO 0 0 0 0 0",
+      "QT1 0 0 0 0 0",
+      "QT2 0 0 0 0 0",
+      "S1d 0 0 0 0 0",
+      "S0 0 0 0 0 0",
+      "S1u 0 0 0 0 0",
+      "S1 0 0 0 0 0",
+      "S2 0 0 0 0 0",
+      "C2 0 0 0 0 0",
+      "C2_R1 0 0 0 0 0",
+      "C2_R2 0 0 0 0 0",
+      "C2_R3 0 0 0 0 0",
+      "C2_R4 0 0 0 0 0",
+      "C2m 0 0 0 0 0",
+      "C2md 0 0 0 0 0",
+      "C2mH 0 0 0 0 0",
+      "C2_R5 0 0 0 0 0",
+      "C2_R6 0 0 0 0 0",
+      "C2_R7 0 0 0 0 0",
+      "C2_R8 0 0 0 0 0",
+      "C2_R9 0 0 0 0 0",
+      "C2_R10 0 0 0 0 0",
+      "C2d 0 0 0 0 0",
+      "S3 0 0 0 0 0",
+      "S3LS 0 0 0 0 0",
+      "S4 0 0 0 0 0",
+      "S4_drop 0 0 0 0 0",
+      "P_suc 0 0 0 0 0",
+      "S5 0 0 0 0 0",
+      "S6 0 0 0 0 0",
+      "S7 0 0 0 0 0",
+      "S8 0 0 0 0 0",
+      "S9 0 0 0 0 0",
+      "P_del 0 0 0 0 0",
+      "CSO 0 0 0 0 0"
+    ],
+    "_dat_struct": [
+      {
+        "start": 0,
+        "Type": "GENERAL",
+        "end": 6
+      },
+      {
+        "Type": "QTBDY",
+        "start": 7,
+        "end": 12
+      },
+      {
+        "Type": "QTBDY",
+        "start": 13,
+        "end": 18
+      },
+      {
+        "Type": "QTBDY",
+        "start": 19,
+        "end": 24
+      },
+      {
+        "Type": "RESERVOIR",
+        "start": 25,
+        "end": 34
+      },
+      {
+        "Type": "WEIR",
+        "start": 35,
+        "end": 38
+      },
+      {
+        "Type": "JUNCTION",
+        "start": 39,
+        "end": 41
+      },
+      {
+        "Type": "RIVER",
+        "start": 42,
+        "end": 51
+      },
+      {
+        "Type": "RIVER",
+        "start": 52,
+        "end": 61
+      },
+      {
+        "Type": "CULVERT",
+        "start": 62,
+        "end": 66
+      },
+      {
+        "Type": "CONDUIT",
+        "start": 67,
+        "end": 73
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 74,
+        "end": 76
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 77,
+        "end": 79
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 80,
+        "end": 82
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 83,
+        "end": 85
+      },
+      {
+        "Type": "CONDUIT",
+        "start": 86,
+        "end": 92
+      },
+      {
+        "Type": "MANHOLE",
+        "start": 93,
+        "end": 95
+      },
+      {
+        "Type": "HTBDY",
+        "start": 96,
+        "end": 99
+      },
+      {
+        "Type": "CONDUIT",
+        "start": 100,
+        "end": 106
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 107,
+        "end": 109
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 110,
+        "end": 112
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 113,
+        "end": 115
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 116,
+        "end": 118
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 119,
+        "end": 121
+      },
+      {
+        "Type": "REPLICATE",
+        "start": 122,
+        "end": 124
+      },
+      {
+        "Type": "CONDUIT",
+        "start": 125,
+        "end": 131
+      },
+      {
+        "Type": "WEIR",
+        "start": 132,
+        "end": 135
+      },
+      {
+        "Type": "RIVER",
+        "start": 136,
+        "end": 145
+      },
+      {
+        "Type": "RIVER",
+        "start": 146,
+        "end": 155
+      },
+      {
+        "Type": "WEIR",
+        "start": 156,
+        "end": 159
+      },
+      {
+        "Type": "JUNCTION",
+        "start": 160,
+        "end": 162
+      },
+      {
+        "Type": "RIVER",
+        "start": 163,
+        "end": 172
+      },
+      {
+        "Type": "RIVER",
+        "start": 173,
+        "end": 182
+      },
+      {
+        "Type": "RIVER",
+        "start": 183,
+        "end": 192
+      },
+      {
+        "Type": "RIVER",
+        "start": 193,
+        "end": 202
+      },
+      {
+        "Type": "WEIR",
+        "start": 203,
+        "end": 206
+      },
+      {
+        "Type": "OCPUMP",
+        "start": 207,
+        "end": 238
+      },
+      {
+        "Type": "HTBDY",
+        "start": 239,
+        "end": 242
+      },
+      {
+        "Type": "HTBDY",
+        "start": 243,
+        "end": 247
+      },
+      {
+        "Type": "SPILL",
+        "start": 248,
+        "end": 253
+      },
+      {
+        "Type": "RESERVOIR",
+        "start": 254,
+        "end": 263
+      },
+      {
+        "Type": "INITIAL CONDITIONS",
+        "start": 264,
+        "end": 299
+      },
+      {
+        "Type": "GISINFO",
+        "start": 300,
+        "end": 374
+      }
+    ],
+    "_gxy_filepath": null,
+    "_gxy_data": null,
+    "title": "",
+    "general_parameters": {
+      "Node Count": 34,
+      "Lower Froude": 0.75,
+      "Upper Froude": 0.9,
+      "Min Depth": 0.1,
+      "Convergence Direct": 0.001,
+      "Units": "DEFAULT",
+      "Water Temperature": 10.0,
+      "Convergence Flow": 0.01,
+      "Convergence Head": 0.01,
+      "Mathematical Damping": 0.7,
+      "Pivotal Choice": 0.1,
+      "Under-relaxation": 0.7,
+      "Matrix Dummy": 0.0,
+      "RAD File": ""
+    },
+    "_label_len": 12,
+    "sections": {
+      "S1": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S1",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 5.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 25.0,
+                "1": 20.1,
+                "2": 20.1,
+                "3": 20.1,
+                "4": 25.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S2": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S2",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 25.0,
+                "1": 20.0,
+                "2": 20.0,
+                "3": 20.0,
+                "4": 25.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "C2_R1": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R1",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R2": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R2",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R3": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R3",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R4": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R4",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R5": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R5",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R6": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R6",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R7": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R7",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R8": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R8",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R9": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R9",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "C2_R10": {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R10",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      "S3": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S3",
+          "spill1": "S3LS",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 18.0,
+                "2": 18.0,
+                "3": 18.0,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S4": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S4",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.8,
+                "2": 17.8,
+                "3": 17.8,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S5": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S5",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 17.7,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S6": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S6",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 17.7,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S7": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S7",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 18.0,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      "S8": {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S8",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.6,
+                "2": 17.6,
+                "3": 17.6,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "boundaries": {
+      "QT1": {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "QT1",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "5.0": 0.3,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      "QT2": {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "QT2",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "5.0": 0.3,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      "S1d": {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1d",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "2.0": 0.75,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      "C2mH": {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2mH",
+          "comment": "",
+          "nrows": 1,
+          "_something": "",
+          "timeunit": "SECONDS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 20.5
+            }
+          }
+        }
+      },
+      "P_del": {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "P_del",
+          "comment": "",
+          "nrows": 1,
+          "_something": "",
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.0
+            }
+          }
+        }
+      },
+      "S9": {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S9",
+          "comment": "",
+          "nrows": 2,
+          "_something": "",
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 17.7,
+              "10.0": 17.7
+            }
+          }
+        }
+      }
+    },
+    "structures": {
+      "S0": {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "ds_label": "S1u",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 1.5,
+          "weir_elevation": 21.0,
+          "modular_limit": 0.8
+        }
+      },
+      "C2d": {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2d",
+          "ds_label": "S3",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 0.6,
+          "weir_elevation": 18.0,
+          "modular_limit": 0.8
+        }
+      },
+      "S4": {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4",
+          "ds_label": "S4_drop",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 2.0,
+          "weir_elevation": 17.9,
+          "modular_limit": 0.8
+        }
+      },
+      "S8": {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S8",
+          "ds_label": "S9",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 2.0,
+          "weir_elevation": 17.7,
+          "modular_limit": 0.8
+        }
+      },
+      "S3LS": {
+        "API Class": "floodmodeller_api.units.structures.SPILL",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S3LS",
+          "ds_label": "CSO",
+          "comment": "",
+          "weir_coefficient": 1.7,
+          "modular_limit": 0.9,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 100.0
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 20.0
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0
+              }
+            }
+          }
+        }
+      }
+    },
+    "conduits": {
+      "C2": {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "friction_eq": "MANNING",
+          "invert": 20.0,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      "C2m": {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2m",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "friction_eq": "MANNING",
+          "invert": 19.2,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      "C2md": {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2md",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "friction_eq": "MANNING",
+          "invert": 19.2,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      "C2d": {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2d",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "friction_eq": "MANNING",
+          "invert": 18.0,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      }
+    },
+    "losses": {
+      "S2": {
+        "API Class": "floodmodeller_api.units.losses.CULVERT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "INLET",
+          "comment": "",
+          "_name": "S2",
+          "ds_label": "C2",
+          "us_remote_label": "",
+          "ds_remote_label": "",
+          "k": 0.52,
+          "m": 0.67,
+          "c": 0.038,
+          "y": 0.8,
+          "ki": 0.6,
+          "type_code": "A",
+          "screen_width": 0.0,
+          "bar_proportion": 0.0,
+          "debris_proportion": 0.0,
+          "loss_coefficient": 0.0,
+          "reverse_flow_mode": "ZERO",
+          "headloss_type": "STATIC",
+          "max_screen_height": 0.0
+        }
+      }
+    },
+    "_unsupported": {
+      "S0 (RESERVOIR)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "_unit": "RESERVOIR",
+          "_subtype": false,
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "S0          QT1         QT2",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1400.000",
+            "    23.000  1600.000",
+            "      0000      0000         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "S0",
+            "QT1",
+            "QT2"
+          ],
+          "ds_label": "QT1"
+        }
+      },
+      "S1u (JUNCTION)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1u",
+          "_unit": "JUNCTION",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S1u         S1          S1d"
+          ],
+          "comment": "",
+          "labels": [
+            "S1u",
+            "S1",
+            "S1d"
+          ]
+        }
+      },
+      "C2m (MANHOLE)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2m",
+          "_unit": "MANHOLE",
+          "_subtype": false,
+          "_raw_block": [
+            "MANHOLE #revision#1",
+            "C2m         C2md        C2mH",
+            "      20.5         3       1.7       0.9         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "C2m",
+            "C2md",
+            "C2mH"
+          ],
+          "ds_label": "C2md"
+        }
+      },
+      "S4_drop (JUNCTION)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4_drop",
+          "_unit": "JUNCTION",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S4_drop     P_suc       S5"
+          ],
+          "comment": "",
+          "labels": [
+            "S4_drop",
+            "P_suc",
+            "S5"
+          ]
+        }
+      },
+      "P_suc (OCPUMP)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "P_suc",
+          "_unit": "OCPUMP",
+          "_subtype": false,
+          "_raw_block": [
+            "OCPUMP",
+            "P_suc       P_del",
+            "   730.000    19.000     0.200     0.600",
+            "LOGICAL",
+            "TRIGGER   MODE",
+            "         3HOURS     EXTEND",
+            "     0.000    MANUAL   STOPPED",
+            "     2.500    MANUAL        ON",
+            "     8.000    MANUAL   STOPPED",
+            "HEAD      FLOW      EFFICIENCY",
+            "         3",
+            "    17.600     0.100     0.550",
+            "    19.000     0.200     0.600",
+            "    20.000     0.300     0.550",
+            "RULES",
+            "3              0.000HOURS     EXTEND",
+            "Rule1",
+            "IF(LEVEL(S3).LT.18.3)",
+            "THEN PUMP=STOPPED",
+            "END",
+            "Rule2",
+            "IF(LEVEL(S6).GT.21.5)",
+            "THEN PUMP=STOPPED",
+            "END",
+            "Rule3",
+            "IF(LEVEL(S3).GT.20.3)",
+            "THEN PUMP=ON",
+            "END",
+            "TIME RULE DATA SET",
+            "         2",
+            "     0.000ALL",
+            "   999.000ALL"
+          ],
+          "comment": "",
+          "labels": [
+            "P_suc",
+            "P_del"
+          ],
+          "ds_label": "P_del"
+        }
+      },
+      "CSO (RESERVOIR)": {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSO",
+          "_unit": "RESERVOIR",
+          "_subtype": false,
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "CSO",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1200.000",
+            "    23.000  1200.000",
+            "      0000      0000         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "CSO",
+            ""
+          ]
+        }
+      }
+    },
+    "_all_units": [
+      {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "QT1",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "5.0": 0.3,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "QT2",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "5.0": 0.3,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.boundaries.QTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1d",
+          "comment": "",
+          "nrows": 3,
+          "timeoffset": 0.0,
+          "_something": 0.0,
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "flowmultiplier": 0.0,
+          "minflow": 0.0,
+          "allow_override": "OVERRIDE",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Flow",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.05,
+              "2.0": 0.75,
+              "9.0": 0.05
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "_unit": "RESERVOIR",
+          "_subtype": false,
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "S0          QT1         QT2",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1400.000",
+            "    23.000  1600.000",
+            "      0000      0000         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "S0",
+            "QT1",
+            "QT2"
+          ],
+          "ds_label": "QT1"
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "ds_label": "S1u",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 1.5,
+          "weir_elevation": 21.0,
+          "modular_limit": 0.8
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1u",
+          "_unit": "JUNCTION",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S1u         S1          S1d"
+          ],
+          "comment": "",
+          "labels": [
+            "S1u",
+            "S1",
+            "S1d"
+          ]
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S1",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 5.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 25.0,
+                "1": 20.1,
+                "2": 20.1,
+                "3": 20.1,
+                "4": 25.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S2",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 25.0,
+                "1": 20.0,
+                "2": 20.0,
+                "3": 20.0,
+                "4": 25.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.losses.CULVERT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "INLET",
+          "comment": "",
+          "_name": "S2",
+          "ds_label": "C2",
+          "us_remote_label": "",
+          "ds_remote_label": "",
+          "k": 0.52,
+          "m": 0.67,
+          "c": 0.038,
+          "y": 0.8,
+          "ki": 0.6,
+          "type_code": "A",
+          "screen_width": 0.0,
+          "bar_proportion": 0.0,
+          "debris_proportion": 0.0,
+          "loss_coefficient": 0.0,
+          "reverse_flow_mode": "ZERO",
+          "headloss_type": "STATIC",
+          "max_screen_height": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "friction_eq": "MANNING",
+          "invert": 20.0,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R1",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R2",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R3",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R4",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2m",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "friction_eq": "MANNING",
+          "invert": 19.2,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2m",
+          "_unit": "MANHOLE",
+          "_subtype": false,
+          "_raw_block": [
+            "MANHOLE #revision#1",
+            "C2m         C2md        C2mH",
+            "      20.5         3       1.7       0.9         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "C2m",
+            "C2md",
+            "C2mH"
+          ],
+          "ds_label": "C2md"
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2mH",
+          "comment": "",
+          "nrows": 1,
+          "_something": "",
+          "timeunit": "SECONDS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 20.5
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2md",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "friction_eq": "MANNING",
+          "invert": 19.2,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R5",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R6",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R7",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R8",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R9",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.REPLICATE",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2_R10",
+          "first_spill": "",
+          "second_spill": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "bed_level_drop": 0.2,
+          "easting": 0.0,
+          "northing": 0.0
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.conduits.CONDUIT",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "CIRCULAR",
+          "_name": "C2d",
+          "spill": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "friction_eq": "MANNING",
+          "invert": 18.0,
+          "diameter": 1.0,
+          "use_bottom_slot": "GLOBAL",
+          "bottom_slot_dist": 0.0,
+          "bottom_slot_depth": 0.0,
+          "use_top_slot": "GLOBAL",
+          "top_slot_dist": 0.0,
+          "top_slot_depth": 0.0,
+          "friction_below_axis": 0.02,
+          "friction_above_axis": 0.015
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "C2d",
+          "ds_label": "S3",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 0.6,
+          "weir_elevation": 18.0,
+          "modular_limit": 0.8
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S3",
+          "spill1": "S3LS",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 18.0,
+                "2": 18.0,
+                "3": 18.0,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S4",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.8,
+                "2": 17.8,
+                "3": 17.8,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4",
+          "ds_label": "S4_drop",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 2.0,
+          "weir_elevation": 17.9,
+          "modular_limit": 0.8
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4_drop",
+          "_unit": "JUNCTION",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S4_drop     P_suc       S5"
+          ],
+          "comment": "",
+          "labels": [
+            "S4_drop",
+            "P_suc",
+            "S5"
+          ]
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S5",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 17.7,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S6",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 17.7,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S7",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 100.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.7,
+                "2": 17.7,
+                "3": 18.0,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.sections.RIVER",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_subtype": "SECTION",
+          "_name": "S8",
+          "spill1": "",
+          "spill2": "",
+          "lat1": "",
+          "lat2": "",
+          "lat3": "",
+          "lat4": "",
+          "comment": "",
+          "dist_to_next": 0.0,
+          "slope": 0.0001,
+          "density": 1000.0,
+          "nrows": 5,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 0.1,
+                "2": 1.0,
+                "3": 2.0,
+                "4": 2.1
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 17.6,
+                "2": 17.6,
+                "3": 17.6,
+                "4": 20.0
+              },
+              "Mannings n": {
+                "0": 0.03,
+                "1": 0.03,
+                "2": 0.03,
+                "3": 0.03,
+                "4": 0.03
+              },
+              "Panel": {
+                "0": false,
+                "1": false,
+                "2": false,
+                "3": false,
+                "4": false
+              },
+              "RPL": {
+                "0": 1.0,
+                "1": 1.0,
+                "2": 1.0,
+                "3": 1.0,
+                "4": 1.0
+              },
+              "Marker": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0,
+                "2": 0.0,
+                "3": 0.0,
+                "4": 0.0
+              },
+              "Deactivation": {
+                "0": "",
+                "1": "",
+                "2": "",
+                "3": "",
+                "4": ""
+              },
+              "SP. Marker": {
+                "0": 0,
+                "1": 0,
+                "2": 0,
+                "3": 0,
+                "4": 0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.structures.WEIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S8",
+          "ds_label": "S9",
+          "comment": "",
+          "exponent": 1.5,
+          "discharge_coefficient": 1.0,
+          "velocity_coefficient": 1.0,
+          "weir_breadth": 2.0,
+          "weir_elevation": 17.7,
+          "modular_limit": 0.8
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "P_suc",
+          "_unit": "OCPUMP",
+          "_subtype": false,
+          "_raw_block": [
+            "OCPUMP",
+            "P_suc       P_del",
+            "   730.000    19.000     0.200     0.600",
+            "LOGICAL",
+            "TRIGGER   MODE",
+            "         3HOURS     EXTEND",
+            "     0.000    MANUAL   STOPPED",
+            "     2.500    MANUAL        ON",
+            "     8.000    MANUAL   STOPPED",
+            "HEAD      FLOW      EFFICIENCY",
+            "         3",
+            "    17.600     0.100     0.550",
+            "    19.000     0.200     0.600",
+            "    20.000     0.300     0.550",
+            "RULES",
+            "3              0.000HOURS     EXTEND",
+            "Rule1",
+            "IF(LEVEL(S3).LT.18.3)",
+            "THEN PUMP=STOPPED",
+            "END",
+            "Rule2",
+            "IF(LEVEL(S6).GT.21.5)",
+            "THEN PUMP=STOPPED",
+            "END",
+            "Rule3",
+            "IF(LEVEL(S3).GT.20.3)",
+            "THEN PUMP=ON",
+            "END",
+            "TIME RULE DATA SET",
+            "         2",
+            "     0.000ALL",
+            "   999.000ALL"
+          ],
+          "comment": "",
+          "labels": [
+            "P_suc",
+            "P_del"
+          ],
+          "ds_label": "P_del"
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "P_del",
+          "comment": "",
+          "nrows": 1,
+          "_something": "",
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 0.0
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.boundaries.HTBDY",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S9",
+          "comment": "",
+          "nrows": 2,
+          "_something": "",
+          "timeunit": "HOURS",
+          "extendmethod": "EXTEND",
+          "interpmethod": "LINEAR",
+          "data": {
+            "class": "pandas.Series",
+            "variable_name": "Stage",
+            "index_name": "Time",
+            "object": {
+              "0.0": 17.7,
+              "10.0": 17.7
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.structures.SPILL",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S3LS",
+          "ds_label": "CSO",
+          "comment": "",
+          "weir_coefficient": 1.7,
+          "modular_limit": 0.9,
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "X": {
+                "0": 0.0,
+                "1": 100.0
+              },
+              "Y": {
+                "0": 20.0,
+                "1": 20.0
+              },
+              "Easting": {
+                "0": 0.0,
+                "1": 0.0
+              },
+              "Northing": {
+                "0": 0.0,
+                "1": 0.0
+              }
+            }
+          }
+        }
+      },
+      {
+        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSO",
+          "_unit": "RESERVOIR",
+          "_subtype": false,
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "CSO",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1200.000",
+            "    23.000  1200.000",
+            "      0000      0000         0"
+          ],
+          "comment": "#revision#1",
+          "labels": [
+            "CSO",
+            ""
+          ]
+        }
+      }
+    ],
+    "initial_conditions": {
+      "API Class": "floodmodeller_api.units.iic.IIC",
+      "Object Attributes": {
+        "_label_len": 12,
+        "data": {
+          "class": "pandas.DataFrame",
+          "object": {
+            "label": {
+              "0": "QT1",
+              "1": "QT2",
+              "2": "S1d",
+              "3": "S0",
+              "4": "S1u",
+              "5": "S1",
+              "6": "S2",
+              "7": "C2",
+              "8": "C2_R1",
+              "9": "C2_R2",
+              "10": "C2_R3",
+              "11": "C2_R4",
+              "12": "C2m",
+              "13": "C2md",
+              "14": "C2mH",
+              "15": "C2_R5",
+              "16": "C2_R6",
+              "17": "C2_R7",
+              "18": "C2_R8",
+              "19": "C2_R9",
+              "20": "C2_R10",
+              "21": "C2d",
+              "22": "S3",
+              "23": "S3LS",
+              "24": "S4",
+              "25": "S4_drop",
+              "26": "P_suc",
+              "27": "S5",
+              "28": "S6",
+              "29": "S7",
+              "30": "S8",
+              "31": "S9",
+              "32": "P_del",
+              "33": "CSO"
+            },
+            "?": {
+              "0": "y",
+              "1": "y",
+              "2": "y",
+              "3": "y",
+              "4": "y",
+              "5": "y",
+              "6": "y",
+              "7": "y",
+              "8": "y",
+              "9": "y",
+              "10": "y",
+              "11": "y",
+              "12": "y",
+              "13": "y",
+              "14": "y",
+              "15": "y",
+              "16": "y",
+              "17": "y",
+              "18": "y",
+              "19": "y",
+              "20": "y",
+              "21": "y",
+              "22": "y",
+              "23": "y",
+              "24": "y",
+              "25": "y",
+              "26": "y",
+              "27": "y",
+              "28": "y",
+              "29": "y",
+              "30": "y",
+              "31": "y",
+              "32": "y",
+              "33": "y"
+            },
+            "flow": {
+              "0": 0.05,
+              "1": 0.05,
+              "2": 0.05,
+              "3": 0.1,
+              "4": 0.1,
+              "5": 0.15,
+              "6": 0.15,
+              "7": 0.15,
+              "8": 0.15,
+              "9": 0.15,
+              "10": 0.15,
+              "11": 0.15,
+              "12": 0.15,
+              "13": 0.15,
+              "14": 0.0,
+              "15": 0.15,
+              "16": 0.15,
+              "17": 0.15,
+              "18": 0.15,
+              "19": 0.15,
+              "20": 0.15,
+              "21": 0.15,
+              "22": 0.15,
+              "23": 0.0,
+              "24": 0.15,
+              "25": 0.15,
+              "26": 0.0,
+              "27": 0.15,
+              "28": 0.15,
+              "29": 0.15,
+              "30": 0.15,
+              "31": 0.15,
+              "32": 0.0,
+              "33": 0.0
+            },
+            "stage": {
+              "0": 21.115,
+              "1": 21.115,
+              "2": 20.544,
+              "3": 21.115,
+              "4": 20.544,
+              "5": 20.544,
+              "6": 20.544,
+              "7": 20.315,
+              "8": 20.116,
+              "9": 19.913,
+              "10": 19.743,
+              "11": 19.657,
+              "12": 19.515,
+              "13": 19.515,
+              "14": 20.5,
+              "15": 19.315,
+              "16": 19.115,
+              "17": 18.914,
+              "18": 18.721,
+              "19": 18.597,
+              "20": 18.55,
+              "21": 18.251,
+              "22": 18.031,
+              "23": -9999.99,
+              "24": 18.025,
+              "25": 17.843,
+              "26": 17.843,
+              "27": 17.843,
+              "28": 17.838,
+              "29": 17.831,
+              "30": 17.825,
+              "31": 17.7,
+              "32": 0.0,
+              "33": 19.001
+            },
+            "froude no": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 0.222,
+              "4": 0.0,
+              "5": 0.005,
+              "6": 0.29,
+              "7": 0.473,
+              "8": 0.471,
+              "9": 0.48,
+              "10": 0.401,
+              "11": 0.232,
+              "12": 0.473,
+              "13": 0.473,
+              "14": 0.0,
+              "15": 0.473,
+              "16": 0.472,
+              "17": 0.476,
+              "18": 0.455,
+              "19": 0.303,
+              "20": 0.162,
+              "21": 0.735,
+              "22": 0.006,
+              "23": 0.0,
+              "24": 0.005,
+              "25": 0.009,
+              "26": 0.0,
+              "27": 0.005,
+              "28": 0.005,
+              "29": 0.005,
+              "30": 0.005,
+              "31": 0.0,
+              "32": 0.0,
+              "33": 0.0
+            },
+            "velocity": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 0.629,
+              "4": 0.0,
+              "5": 0.026,
+              "6": 0.025,
+              "7": 0.708,
+              "8": 0.705,
+              "9": 0.715,
+              "10": 0.629,
+              "11": 0.429,
+              "12": 0.707,
+              "13": 0.707,
+              "14": 0.0,
+              "15": 0.708,
+              "16": 0.707,
+              "17": 0.711,
+              "18": 0.689,
+              "19": 0.516,
+              "20": 0.339,
+              "21": 0.972,
+              "22": 0.03,
+              "23": 0.0,
+              "24": 0.028,
+              "25": 0.049,
+              "26": 0.0,
+              "27": 0.028,
+              "28": 0.028,
+              "29": 0.029,
+              "30": 0.028,
+              "31": 0.0,
+              "32": 0.0,
+              "33": 0.0
+            },
+            "umode": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 1.0,
+              "4": 0.0,
+              "5": 0.0,
+              "6": 1.0,
+              "7": 0.0,
+              "8": 0.0,
+              "9": 0.0,
+              "10": 0.0,
+              "11": 0.0,
+              "12": 0.0,
+              "13": 0.0,
+              "14": 0.0,
+              "15": 0.0,
+              "16": 0.0,
+              "17": 0.0,
+              "18": 0.0,
+              "19": 0.0,
+              "20": 0.0,
+              "21": 1.0,
+              "22": 0.0,
+              "23": 0.0,
+              "24": 1.0,
+              "25": 0.0,
+              "26": 1.0,
+              "27": 0.0,
+              "28": 0.0,
+              "29": 0.0,
+              "30": 1.0,
+              "31": 0.0,
+              "32": 0.0,
+              "33": 0.0
+            },
+            "ustate": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 0.0,
+              "4": 0.0,
+              "5": 0.0,
+              "6": 0.0,
+              "7": 0.0,
+              "8": 0.0,
+              "9": 0.0,
+              "10": 0.0,
+              "11": 0.0,
+              "12": 0.0,
+              "13": 0.0,
+              "14": 0.0,
+              "15": 0.0,
+              "16": 0.0,
+              "17": 0.0,
+              "18": 0.0,
+              "19": 0.0,
+              "20": 0.0,
+              "21": 1.0,
+              "22": 0.0,
+              "23": 0.0,
+              "24": 0.0,
+              "25": 0.0,
+              "26": 0.0,
+              "27": 0.0,
+              "28": 0.0,
+              "29": 0.0,
+              "30": 0.0,
+              "31": 0.0,
+              "32": 0.0,
+              "33": 0.0
+            },
+            "z": {
+              "0": 0.0,
+              "1": 0.0,
+              "2": 0.0,
+              "3": 21.0,
+              "4": 21.0,
+              "5": -79.9,
+              "6": -80.0,
+              "7": 20.0,
+              "8": 19.8,
+              "9": 19.6,
+              "10": 19.4,
+              "11": 19.2,
+              "12": 19.2,
+              "13": 19.2,
+              "14": 20.5,
+              "15": 19.0,
+              "16": 18.8,
+              "17": 18.6,
+              "18": 18.4,
+              "19": 18.2,
+              "20": 18.0,
+              "21": 18.0,
+              "22": -82.0,
+              "23": 20.0,
+              "24": -82.2,
+              "25": 17.9,
+              "26": 0.0,
+              "27": -82.3,
+              "28": -82.3,
+              "29": -82.3,
+              "30": -82.4,
+              "31": 17.7,
+              "32": 0.0,
+              "33": 0.0
+            }
+          }
+        }
+      }
+    }
+  }
+}

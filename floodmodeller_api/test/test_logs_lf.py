@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -8,7 +8,7 @@ from floodmodeller_api import IEF, LF1
 
 @pytest.fixture
 def lf1_fp(test_workspace):
-    return os.path.join(test_workspace, "ex3.lf1")
+    return Path(test_workspace, "ex3.lf1")
 
 
 def test_lf1_info_dict(lf1_fp):
@@ -39,7 +39,7 @@ def test_lf1_from_ief(lf1_fp, test_workspace):
     """LF1: Check IEF.get_lf1()"""
     lf1 = LF1(lf1_fp)
 
-    ief_fp = os.path.join(test_workspace, "ex3.ief")
+    ief_fp = Path(test_workspace, "ex3.ief")
     ief = IEF(ief_fp)
     lf1_from_ief = ief.get_log()
 
