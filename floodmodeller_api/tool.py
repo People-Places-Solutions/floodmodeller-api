@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 import argparse
 import sys
 import tkinter as tk
 from dataclasses import dataclass
-from typing import List, Optional
 
 
 @dataclass()
@@ -26,8 +27,8 @@ class Parameter:
 
     name: str
     dtype: type
-    description: Optional[str] = None
-    help_text: Optional[str] = None
+    description: str | None = None
+    help_text: str | None = None
     required: bool = True
 
     def __eq__(self, other: object) -> bool:
@@ -96,7 +97,7 @@ class Gui:
         master: tk.Tk,
         title: str,
         description: str,
-        parameters: List[Parameter],
+        parameters: list[Parameter],
         run_function,
     ):
         self.master = master
@@ -212,7 +213,7 @@ class FMTool:
 
     """
 
-    parameters: List[Parameter] = []
+    parameters: list[Parameter] = []
 
     @property
     def name(self):

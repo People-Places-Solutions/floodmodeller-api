@@ -14,11 +14,15 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 from . import units
 from ._base import FMFile
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class IED(FMFile):
@@ -37,7 +41,7 @@ class IED(FMFile):
     _filetype: str = "IED"
     _suffix: str = ".ied"
 
-    def __init__(self, ied_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, ied_filepath: str | Path | None = None):
         try:
             if ied_filepath is not None:
                 FMFile.__init__(self, ied_filepath)
@@ -46,8 +50,8 @@ class IED(FMFile):
 
             else:
                 # No filepath specified, create new 'blank' IED in memory
-                self._ied_struct: List[Dict[str, Any]] = []
-                self._raw_data: List[str] = []
+                self._ied_struct: list[dict[str, Any]] = []
+                self._raw_data: list[str] = []
 
             self._get_unit_definitions()
 
@@ -66,7 +70,7 @@ class IED(FMFile):
         """Returns string representation of the current IED data"""
         try:
             block_shift = 0
-            existing_units: Dict[str, List[str]] = {
+            existing_units: dict[str, list[str]] = {
                 "boundaries": [],
                 "structures": [],
                 "sections": [],
@@ -273,7 +277,7 @@ class IED(FMFile):
 
         self._ied_struct = ied_struct
 
-    def diff(self, other: "IED", force_print: bool = False) -> None:
+    def diff(self, other: IED, force_print: bool = False) -> None:
         """Compares the IED class against another IED class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IED class are
         deemed equivalent if all of their attributes are equal except for the filepath and
@@ -297,7 +301,7 @@ class IED(FMFile):
 
         self._update()
 
-    def save(self, filepath: Union[str, Path]) -> None:
+    def save(self, filepath: str | Path) -> None:
         """Saves the IED to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the IED() class will continue working from the saved location, therefore any further calls to IED.update() will update in the latest saved location
         rather than the original source IED used to construct the class"""

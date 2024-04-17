@@ -232,7 +232,7 @@ def test_loc_line_converter(tmpdir, xml, gdf1, start, end, rotation):
         "nrows": 12,
         "ncols": 16,
         "rotation": rotation,
-        "active_area": Path(tmpdir + "\\active_area.shp"),
+        "active_area": Path(tmpdir, "active_area.shp"),
     }
 
 
@@ -298,8 +298,8 @@ def test_topography_converter(mocker, tmpdir, xml, gdf1, gdf2, tuple_input):
     inputs = (gdf1, gdf2) if tuple_input else gdf1
     outputs = (gdf1, gdf2) if tuple_input else (gdf1,)
 
-    raster_path = str(Path.joinpath(Path(tmpdir), "raster.asc"))
-    vector_path = str(Path.joinpath(Path(tmpdir), "topography_0.shp"))
+    raster_path = str(Path(tmpdir, "raster.asc"))
+    vector_path = str(Path(tmpdir, "topography_0.shp"))
 
     combine_layers = mocker.patch(f"{path_to_cc}.TopographyConverterXML2D.combine_layers")
     topography_converter = TopographyConverterXML2D(
