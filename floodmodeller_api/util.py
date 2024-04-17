@@ -19,8 +19,10 @@ from __future__ import annotations
 import sys
 import webbrowser
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from ._base import FMFile
+if TYPE_CHECKING:
+    from ._base import FMFile
 
 
 def open_docs():
