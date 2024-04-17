@@ -57,7 +57,7 @@ def parameterised_objs_and_expected(test_workspace):
         (IED(test_workspace / "network.ied"), test_workspace / "network_ied_expected.json"),
         (DAT(test_workspace / "EX3.DAT"), test_workspace / "EX3_DAT_expected.json"),
         (DAT(test_workspace / "EX6.DAT"), test_workspace / "EX6_DAT_expected.json"),
-        (IEF(test_workspace / "EX3.IEF"), test_workspace / "EX3_IEF_expected.json"),
+        (IEF(test_workspace / "ex3.ief"), test_workspace / "EX3_IEF_expected.json"),
         (XML2D(test_workspace / "Domain1_Q.xml"), test_workspace / "Domain1_Q_xml_expected.json"),
         (XML2D(test_workspace / "Linked1D2D.xml"), test_workspace / "Linked1D2D_xml_expected.json"),
     ]
