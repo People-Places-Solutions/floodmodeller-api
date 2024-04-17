@@ -27,7 +27,7 @@ def test_init_backup(backup_control):
     assert backup_control.backup_csv_path.exists()
 
 
-def test_generate_file_id(file, test_workspace):
+def test_generate_file_id(test_workspace):
     """Does this generate a consistent file ID for the same file on disk?"""
     # Test that the file ID is the same for the same path input
     file1 = File(Path(test_workspace, "EX1.DAT"))
@@ -67,7 +67,7 @@ def test_backup_locations(file):
         assert f1.read() == f2.read()
 
 
-def test_no_duplicate_backup(file, test_workspace):
+def test_no_duplicate_backup(test_workspace):
     """The backup method should only backup if the file has changed"""
     # Don't Make Duplicate -------------------
     # Check that the file isn't backed up again if it hasn't changed

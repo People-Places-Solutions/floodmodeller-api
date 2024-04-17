@@ -18,13 +18,13 @@ def tab_csv_output(test_workspace):
     return tab_csv_output
 
 
-def test_load_zzn_using_dll(zzn_fp, tab_csv_output, test_workspace):
+def test_load_zzn_using_dll(zzn_fp, tab_csv_output, tmpdir):
     """ZZN: Check loading zzn okay using dll"""
     zzn = ZZN(zzn_fp)
     zzn.export_to_csv(
         result_type="max",
-        save_location=os.path.join(test_workspace, "test_output.csv"),
+        save_location=os.path.join(tmpdir, "test_output.csv"),
     )
-    output = pd.read_csv(os.path.join(test_workspace, "test_output.csv"))
+    output = pd.read_csv(os.path.join(tmpdir, "test_output.csv"))
     output = round(output, 3)
     pd.testing.assert_frame_equal(output, tab_csv_output, rtol=0.0001)
