@@ -58,7 +58,7 @@ class UrbanUnit:
     def __str__(self):
         return self._write()
 
-    def _read(self):
+    def _read(self, unit_block):
         raise NotImplementedError
 
     def _write(self):

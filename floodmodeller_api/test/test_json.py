@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from floodmodeller_api import DAT, IED, IEF, XML2D, INP, ZZN
+from floodmodeller_api import DAT, IED, IEF, INP, XML2D
 from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.util import read_file
 
@@ -76,8 +76,8 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
         # keys to ignore when testing for equivalence
         keys_to_remove = ["_filepath", "file", "_log_path"]
         for key in keys_to_remove:
-            del json_dict_from_obj[key]
-            del json_dict_from_file[key]
+            json_dict_from_obj.pop(key, None)
+            json_dict_from_file.pop(key, None)
 
         assert json_dict_from_obj == json_dict_from_file
 
@@ -93,7 +93,9 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
     ],
 )
 def test_obj_reproduces_from_json_for_all_test_api_files(
-    test_workspace, api_class, file_extension_glob
+    test_workspace,
+    api_class,
+    file_extension_glob,
 ):
     """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
     for file in Path(test_workspace).glob(file_extension_glob):

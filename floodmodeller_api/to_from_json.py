@@ -42,11 +42,11 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         if the object is serializable, it creates the object to go to the function to_json and to create the JSON file,
         otherwise, it will move back through this function recursively until the object is finally serializable.
     """
-    from ._base import FMFile  # noqa: I001
+    from ._base import FMFile
+    from .backup import File
+    from .units import IIC
     from .units._base import Unit
     from .urban1d._base import UrbanSubsection, UrbanUnit
-    from .units import IIC
-    from .backup import File
 
     if is_jsonable(obj):
         return obj
