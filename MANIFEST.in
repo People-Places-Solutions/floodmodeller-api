@@ -4,5 +4,7 @@ include requirements.txt
 include floodmodeller_api/test/test_data/*
 include floodmodeller_api/toolbox/gui/*
 recursive-include floodmodeller_api *.dll
+recursive-include floodmodeller_api *.so
+recursive-include floodmodeller_api *.so.5
 exclude sample_code/*
 

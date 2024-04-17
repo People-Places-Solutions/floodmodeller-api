@@ -25,6 +25,7 @@ setup(
         "floodmodeller_api.toolbox.results_analysis",
         "floodmodeller_api.test",
         "floodmodeller_api.test.test_data",
+        "floodmodeller_api.libs",
     ],
     entry_points={
         "console_scripts": [
