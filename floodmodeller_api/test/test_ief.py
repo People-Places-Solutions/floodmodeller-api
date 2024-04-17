@@ -23,10 +23,11 @@ def data_before(ief_fp: Path) -> str:
 
 
 @pytest.fixture()
-def exe_path(tmpdir) -> Path:
-    exe_path = Path(tmpdir, "ISISf32.exe")
-    exe_path.touch()
-    return exe_path
+def exe_bin(tmpdir) -> Path:
+    for exe in ["ISISf32.exe", "ISISf32_DoubleP.exe"]:
+        exe_path = Path(tmpdir, exe)
+        exe_path.touch()
+    return Path(tmpdir)
 
 
 def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
@@ -34,8 +35,16 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
     assert ief._write() == data_before
 
 
-def test_simulate(ief: IEF, ief_fp: Path, exe_path: Path, test_workspace: str):
+@pytest.mark.parametrize(
+    ("precision", "exe"),
+    [
+        ("DEFAULT", "ISISf32.exe"),
+        ("SINGLE", "ISISf32.exe"),
+        ("DOUBLE", "ISISf32_DoubleP.exe"),
+    ],
+)
+def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str | None, exe: str):
     with patch("floodmodeller_api.ief.Popen") as p_open:
-        ief.simulate(enginespath=exe_path.parent)
-        assert p_open.call_args[0][0] == (f'"{exe_path}" -sd "{ief_fp}"')
-        assert p_open.call_args[1]["cwd"] == test_workspace
+        exe_path = Path(exe_bin, exe)
+        ief.simulate(enginespath=str(exe_bin), precision=precision)
+        p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
