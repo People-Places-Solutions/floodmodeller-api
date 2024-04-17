@@ -1,11 +1,25 @@
+"""
+Flood Modeller Python API
+Copyright (C) 2024 Jacobs U.K. Limited
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
+address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
+"""
+
 import json
 from pathlib import Path
 from typing import Any, Union
 
 import pandas as pd
 from pandas import Index
-
-import floodmodeller_api  # noqa: F401.  Needed to execute eval() at line 115 in from_json
 
 from .version import __version__
 
@@ -125,7 +139,9 @@ def recursive_from_json(obj: Union[dict, Any]) -> Any:
 
     if "API Class" in obj:
         class_type = obj["API Class"]
-        return eval(f"{class_type}").from_json(obj)
+        from .mapping import api_class_mapping
+
+        return api_class_mapping[class_type].from_json(obj)
 
     if "class" in obj and obj["class"] == "pandas.DataFrame":
         df = pd.DataFrame.from_dict(obj["object"])
