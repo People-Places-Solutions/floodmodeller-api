@@ -14,14 +14,18 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from pathlib import Path
-from typing import Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .._base import FMFile
 from .lf_helpers import state_factory
 from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class LF(FMFile):
@@ -38,7 +42,7 @@ class LF(FMFile):
 
     def __init__(
         self,
-        lf_filepath: Optional[Union[str, Path]],
+        lf_filepath: str | Path | None,
         data_to_extract: dict,
         steady: bool = False,
     ):
@@ -168,8 +172,11 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self) -> pd.DataFrame:
+    def to_dataframe(self, *, include_tuflow: bool = False) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
+
+        Args:
+            include_tuflow (bool): Include diagnostics for linked TUFLOW models
 
         Returns:
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
@@ -178,7 +185,9 @@ class LF(FMFile):
         # TODO: make more like ZZN.to_dataframe
 
         data_type_all = {
-            k: getattr(self, k) for k, v in self._data_to_extract.items() if v["data_type"] == "all"
+            k: getattr(self, k)
+            for k, v in self._data_to_extract.items()
+            if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
         }
 
         df = pd.concat(data_type_all, axis=1)
@@ -233,6 +242,9 @@ class LF1(LF):
         mass_error (pandas.DataFrame): Mass error
         timestep (pandas.DataFrame): Timestep
         elapsed (pandas.DataFrame): Elapsed
+        tuflow_vol (pandas.DataFrame): TUFLOW HPC Vol
+        tuflow_n_wet (pandas.DataFrame): TUFLOW HPC nWet
+        tuflow_dt (pandas.DataFrame): TUFLOW HPC dt
         simulated (pandas.DataFrame): Simulated
         iterations (pandas.DataFrame): PlotI1
         convergence (pandas.DataFrame): PlotC1
@@ -252,7 +264,7 @@ class LF1(LF):
     _filetype: str = "LF1"
     _suffix: str = ".lf1"
 
-    def __init__(self, lf_filepath: Optional[Union[str, Path]], steady: bool = False):
+    def __init__(self, lf_filepath: str | Path | None, steady: bool = False):
         if steady is False:
             data_to_extract = lf1_unsteady_data_to_extract
         else:
@@ -290,7 +302,7 @@ class LF2(LF):
     _filetype: str = "LF2"
     _suffix: str = ".lf2"
 
-    def __init__(self, lf_filepath: Optional[Union[str, Path]]):
+    def __init__(self, lf_filepath: str | Path | None):
         data_to_extract = {
             **lf1_unsteady_data_to_extract,
             **lf2_data_to_extract,

@@ -44,23 +44,19 @@ class TuflowParser:
         return name in self._dict
 
     @overload
-    def get_value(self, name: str, index: int = -1) -> str:
-        ...
+    def get_value(self, name: str, index: int = -1) -> str: ...
 
     @overload
-    def get_value(self, name: str, cast: Type[T], index: int = -1) -> T:
-        ...
+    def get_value(self, name: str, cast: Type[T], index: int = -1) -> T: ...
 
     def get_value(self, name, cast=str, index=-1):
         return cast(self._dict[name][index])
 
     @overload
-    def get_tuple(self, name: str, sep: str, index: int = -1) -> Tuple[str, ...]:
-        ...
+    def get_tuple(self, name: str, sep: str, index: int = -1) -> Tuple[str, ...]: ...
 
     @overload
-    def get_tuple(self, name: str, sep: str, cast: Type[T], index: int = -1) -> Tuple[T, ...]:
-        ...
+    def get_tuple(self, name: str, sep: str, cast: Type[T], index: int = -1) -> Tuple[T, ...]: ...
 
     def get_tuple(self, name, sep, cast=str, index=-1):
         return tuple([cast(x.strip()) for x in self._dict[name][index].split(sep)])

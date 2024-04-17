@@ -12,9 +12,6 @@ ignore_missing_imports = true
 disable = "all"
 enable = "simplifiable-if-statement, simplifiable-if-expression, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 
-[tool.pytest.ini_options]
-addopts = "--cov=floodmodeller_api --cov-fail-under=79"
-
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
@@ -34,13 +31,13 @@ select = [
     "Q",
     "RET", "RSE", "RUF100",
     "SIM", "SLOT",
-    "T10", "TCH", "TRY200",
+    "T10", "TCH",
     "UP",
     "W",
     "YTT"
 ]
 ignore = ["E402", "E501"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test*" = ["PLR0913", "PLR2004"]

@@ -76,7 +76,6 @@ This prints the following pandas dataframe object:
     0 days 23:55:00       -0.03        0 days 00:05:00 0 days 00:00:03   3.0     11.0            0.0027             0.0020   19.79    21.86
     1 days 00:00:00       -0.03        0 days 00:05:00 0 days 00:00:03   3.0     11.0            0.0028             0.0020   19.04    21.06
 
-
 **Example 2 - Reading log file and printing dictionary**
 
 The ``LF1`` class can also be used to directly access the fixed data stored within the .lf1 file, using the ``info`` dictionary.
@@ -123,7 +122,6 @@ This prints the following dictionary:
         'mass_balance_error_2': -0.0
     }
 
-
 **Example 3 - Plotting convergence**
 
 The dataframe attributes of ``LF1`` can be easily plotted.
@@ -140,3 +138,17 @@ The dataframe attributes of ``LF1`` can be easily plotted.
 
 .. image:: convergence.png
    :width: 500
+
+**Example 4 - Reading TUFLOW HPC**
+
+The ``LF1`` class also includes information from linked TUFLOW HPC models.
+This will be included in the ``info`` attribute automatically, and can be included in the dataframe via the ``include_tuflow`` argument.
+
+.. code:: python
+
+    from floodmodeller_api import LF1
+
+    lf1 = LF1("path/to/log.lf1")
+
+    print(lf1.to_dataframe(include_tuflow=True))
+    print(lf1.info)

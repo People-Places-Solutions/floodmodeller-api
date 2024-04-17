@@ -10,6 +10,9 @@
 html[data-theme="light"] {
     --pst-color-primary: black;
     --pst-color-link: #0A7DFF;
+    --sd-color-secondary: #0ad287;
+    --sd-color-secondary-text: #fff;
+    --sd-color-secondary-highlight: #6c757d;
 }
 
 @font-face {
@@ -23,18 +26,6 @@ html[data-theme="light"] {
 
 body {
     font-family: 'JCR';
-}
-
-.btn-secondary {
-    background-color: #0ad287;
-    border-color: #0ad287;
-    color: #fff;
-}
-
-.btn-secondary:hover {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #fff;
 }
 
 .prev-next-area a p.prev-next-title {

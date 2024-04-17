@@ -10,7 +10,7 @@ from floodmodeller_api.units import QTBDY
 
 @pytest.fixture
 def dat_fp(test_workspace):
-    return Path(test_workspace, "network.DAT")
+    return Path(test_workspace, "network.dat")
 
 
 @pytest.fixture
