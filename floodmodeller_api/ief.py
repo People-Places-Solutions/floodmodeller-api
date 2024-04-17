@@ -14,13 +14,15 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import datetime as dt
 import os
 import subprocess
 import time
 from pathlib import Path
 from subprocess import Popen
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import pandas as pd
 from tqdm import trange
@@ -51,7 +53,7 @@ class IEF(FMFile):
     ERROR_MAX = 2000
     WARNING_MAX = 3000
 
-    def __init__(self, ief_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, ief_filepath: str | Path | None = None):
         try:
             if ief_filepath is not None:
                 FMFile.__init__(self, ief_filepath)
@@ -325,7 +327,7 @@ class IEF(FMFile):
         if not existing_attr_deleted:
             super().__delattr__(name)
 
-    def diff(self, other: "IEF", force_print: bool = False) -> None:
+    def diff(self, other: IEF, force_print: bool = False) -> None:
         """Compares the IEF class against another IEF class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IEF class are
         deemed equivalent if all of their attributes are equal except for the filepath and
@@ -345,7 +347,7 @@ class IEF(FMFile):
         """Updates the existing IEF based on any altered attributes"""
         self._update()
 
-    def save(self, filepath: Union[str, Path]) -> None:
+    def save(self, filepath: str | Path) -> None:
         """Saves the IEF to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the IEF() class will continue working from the saved location, therefore any further calls to IEF.update() will update in the latest saved location
         rather than the original source IEF used to construct the class
@@ -362,8 +364,8 @@ class IEF(FMFile):
         precision: str = "DEFAULT",
         enginespath: str = "",
         range_function: Callable = trange,
-        range_settings: Optional[dict] = None,
-    ) -> Optional[subprocess.Popen]:
+        range_settings: dict | None = None,
+    ) -> subprocess.Popen | None:
         """Simulate the IEF file directly as a subprocess
 
         Args:

@@ -14,8 +14,13 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import sys
 import webbrowser
 
 
 def open_docs():
     webbrowser.open_new_tab("https://api.floodmodeller.com/api/")
+
+
+def is_windows() -> bool:
+    return sys.platform.startswith("win")

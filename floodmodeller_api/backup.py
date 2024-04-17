@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import filecmp
 import re
 import tempfile
@@ -21,7 +23,6 @@ from datetime import datetime
 from hashlib import sha1
 from pathlib import Path
 from shutil import copy
-from typing import Union
 
 import pandas as pd
 
@@ -187,7 +188,7 @@ class File(BackupControl):
         >>> file.restore('path/to/my/restored_file.txt')
     """
 
-    def __init__(self, path: Union[str, Path], **args):
+    def __init__(self, path: str | Path, **args):
         # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
         # Check  if the file exists

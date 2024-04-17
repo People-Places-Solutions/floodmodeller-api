@@ -14,15 +14,16 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import datetime as dt
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
 
 import pandas as pd
 
 
 class Data(ABC):
-    def __init__(self, header: str, subheaders: Optional[list]):
+    def __init__(self, header: str, subheaders: list | None):
         self.header = header
         self.no_values = 0
         self._subheaders = subheaders
@@ -37,7 +38,7 @@ class Data(ABC):
 
 
 class LastData(Data):
-    def __init__(self, header: str, subheaders: Optional[list]):
+    def __init__(self, header: str, subheaders: list | None):
         super().__init__(header, subheaders)
         self._value = None  # single value
 
@@ -50,9 +51,9 @@ class LastData(Data):
 
 
 class AllData(Data):
-    def __init__(self, header: str, subheaders: Optional[list]):
+    def __init__(self, header: str, subheaders: list | None):
         super().__init__(header, subheaders)
-        self._value: List[object] = []  # list
+        self._value: list[object] = []
 
     def update(self, data):
         self._value.append(data)
@@ -60,8 +61,8 @@ class AllData(Data):
 
     def get_value(
         self,
-        index_key: Optional[str] = None,
-        index_df: Optional[pd.Series] = None,
+        index_key: str | None = None,
+        index_df: pd.Series | None = None,
     ) -> pd.DataFrame:
         df = pd.DataFrame(self._value)
 
@@ -101,7 +102,7 @@ class AllData(Data):
         return df
 
 
-def data_factory(data_type: str, header: str, subheaders: Optional[list] = None):
+def data_factory(data_type: str, header: str, subheaders: list | None = None):
     if data_type == "last":
         return LastData(header, subheaders)
     if data_type == "all":
@@ -167,9 +168,9 @@ class Parser(ABC):
         name: str,
         prefix: str,
         data_type: str,
-        exclude: Optional[str] = None,
-        is_index: Optional[bool] = False,
-        before_index: Optional[bool] = False,
+        exclude: str | None = None,
+        is_index: bool | None = False,
+        before_index: bool | None = False,
     ):
         self._name = name
 
@@ -330,7 +331,7 @@ class TimeFloatMultParser(Parser):
 
         self.data = data_factory(self.data_type, self._name, self._subheaders)  # overwrite
 
-    def _process_line(self, raw: str) -> List[Union[dt.timedelta, float]]:
+    def _process_line(self, raw: str) -> list[dt.timedelta | float]:
         """Converts string to list of one timedelta and then floats"""
 
         as_float = [float(x) for x in raw.split()]

@@ -11,7 +11,7 @@ from floodmodeller_api.units import QTBDY
 
 @pytest.fixture
 def dat_fp(test_workspace):
-    return os.path.join(test_workspace, "network.DAT")
+    return os.path.join(test_workspace, "network.dat")
 
 
 @pytest.fixture

@@ -14,8 +14,9 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Optional, Union
 
 from . import units
 from ._base import FMFile
@@ -42,7 +43,7 @@ class INP(FMFile):
     _filetype: str = "INP"
     _suffix: str = ".inp"
 
-    def __init__(self, inp_filepath: Optional[Union[str, Path]] = None):
+    def __init__(self, inp_filepath: str | Path | None = None):
         try:
             if inp_filepath is not None:
                 FMFile.__init__(self, inp_filepath)
@@ -228,7 +229,7 @@ class INP(FMFile):
 
         self._inp_struct = inp_struct
 
-    def diff(self, other: "INP", force_print: bool = False) -> None:
+    def diff(self, other: INP, force_print: bool = False) -> None:
         """Compares the INP class against another INP class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an INP class are
         deemed equivalent if all of their attributes are equal except for the filepath and
@@ -252,7 +253,7 @@ class INP(FMFile):
 
         self._update()
 
-    def save(self, filepath: Union[str, Path]) -> None:
+    def save(self, filepath: str | Path) -> None:
         """Saves the INP to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the INP() class will continue working from the saved location, therefore any further calls to INP.update() will
         update in the latest saved location rather than the original source INP used to construct the class

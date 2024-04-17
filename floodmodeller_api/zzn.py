@@ -14,14 +14,17 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import ctypes as ct
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 from ._base import FMFile
+from .util import is_windows
 
 
 class ZZN(FMFile):
@@ -37,12 +40,13 @@ class ZZN(FMFile):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
-    def __init__(self, zzn_filepath: Optional[Union[str, Path]]):  # noqa: PLR0915
+    def __init__(self, zzn_filepath: str | Path | None):  # noqa: PLR0915
         try:
             FMFile.__init__(self, zzn_filepath)
 
             # Get zzn_dll path
-            zzn_dll = Path(Path(__file__).resolve().parent, "zzn_read.dll")
+            lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
+            zzn_dll = Path(__file__).resolve().parent / "libs" / lib
             # Using str() method as CDLL doesn't seem to like accepting Path object
             zzn_read = ct.CDLL(str(zzn_dll))
 
@@ -54,7 +58,7 @@ class ZZN(FMFile):
                     "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.",
                 )
 
-            self.meta: Dict[str, Any] = {}  # Dict object to hold all metadata
+            self.meta: dict[str, Any] = {}  # Dict object to hold all metadata
             self.data = {}  # Dict object to hold all data
 
             # PROCESS_ZZL
@@ -71,7 +75,7 @@ class ZZN(FMFile):
             self.meta["nvars"] = ct.c_int(0)
             self.meta["tzero"] = (ct.c_int * 5)()
             self.meta["errstat"] = ct.c_int(0)
-            zzn_read.PROCESS_ZZL(
+            zzn_read.process_zzl(
                 ct.byref(self.meta["zzl_name"]),
                 ct.byref(self.meta["model_title"]),
                 ct.byref(self.meta["nnodes"]),
@@ -89,13 +93,18 @@ class ZZN(FMFile):
             self.meta["labels"] = (
                 ct.c_char * self.meta["label_length"].value * self.meta["nnodes"].value
             )()
-            zzn_read.PROCESS_LABELS(
+            zzn_read.process_labels(
                 ct.byref(self.meta["zzl_name"]),
                 ct.byref(self.meta["nnodes"]),
-                ct.byref(self.meta["labels"]),
                 ct.byref(self.meta["label_length"]),
                 ct.byref(self.meta["errstat"]),
             )
+            for i in range(self.meta["nnodes"].value):
+                zzn_read.get_zz_label(
+                    ct.byref(ct.c_int(i + 1)),
+                    ct.byref(self.meta["labels"][i]),
+                    ct.byref(self.meta["errstat"]),
+                )
             # PREPROCESS_ZZN
             last_hr = (
                 (self.meta["ltimestep"].value - self.meta["timestep0"].value)
@@ -108,7 +117,7 @@ class ZZN(FMFile):
                 self.meta["ltimestep"].value,
             )
             self.meta["isavint"] = (ct.c_int * 2)()
-            zzn_read.PREPROCESS_ZZN(
+            zzn_read.preprocess_zzn(
                 ct.byref(self.meta["output_hrs"]),
                 ct.byref(self.meta["aitimestep"]),
                 ct.byref(self.meta["dt"]),
@@ -134,7 +143,7 @@ class ZZN(FMFile):
             self.data["min_results"] = (ct.c_float * nx * ny)()
             self.data["max_times"] = (ct.c_int * nx * ny)()
             self.data["min_times"] = (ct.c_int * nx * ny)()
-            zzn_read.PROCESS_ZZN(
+            zzn_read.process_zzn(
                 ct.byref(self.meta["zzn_name"]),
                 ct.byref(self.meta["node_ID"]),
                 ct.byref(self.meta["nnodes"]),
@@ -174,7 +183,7 @@ class ZZN(FMFile):
         variable: str = "all",
         include_time: bool = False,
         multilevel_header: bool = True,
-    ) -> Union[pd.Series, pd.DataFrame]:
+    ) -> pd.Series | pd.DataFrame:
         """Loads zzn results to pandas dataframe object.
 
         Args:
@@ -264,7 +273,7 @@ class ZZN(FMFile):
 
     def export_to_csv(
         self,
-        save_location: Union[str, Path] = "default",
+        save_location: str | Path = "default",
         result_type: str = "all",
         variable: str = "all",
         include_time: bool = False,
