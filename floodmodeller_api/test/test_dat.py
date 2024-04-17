@@ -116,7 +116,7 @@ def test_remove_unit(dat_ex3):
 
 def test_diff(test_workspace, capsys):
     dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
-    dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.dat"))
+    dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
     dat_ex4.diff(dat_ex4_changed)
     assert capsys.readouterr().out == (
         "Files not equivalent, 12 difference(s) found:\n"
