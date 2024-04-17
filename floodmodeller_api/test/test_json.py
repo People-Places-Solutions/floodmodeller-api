@@ -74,7 +74,7 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
         json_dict_from_file = json.load(open(json_expected))["Object Attributes"]  # noqa: SIM115
 
         # keys to ignore when testing for equivalence
-        keys_to_remove = ["_filepath", "file"]
+        keys_to_remove = ["_filepath", "file", "_log_path"]
         for key in keys_to_remove:
             del json_dict_from_obj[key]
             del json_dict_from_file[key]

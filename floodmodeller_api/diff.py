@@ -38,9 +38,9 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
             )
         elif isinstance(item_a, (pd.DataFrame, pd.Series)):
             if isinstance(item_a.index, pd.RangeIndex):
-                item_a.index = item_a.index.astype('int')
+                item_a.index = item_a.index.astype("int")
             if isinstance(item_b.index, pd.RangeIndex):
-                item_b.index = item_b.index.astype('int')
+                item_b.index = item_b.index.astype("int")
             if not item_a.equals(item_b) and not len(item_a) + len(item_b) == 0:
                 result = False
                 if isinstance(item_a, pd.Series):

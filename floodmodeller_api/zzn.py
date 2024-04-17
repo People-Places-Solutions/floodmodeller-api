@@ -40,7 +40,9 @@ class ZZN(FMFile):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
-    def __init__(self, zzn_filepath: str | Path | None = None, from_json: bool = False):  # noqa: PLR0915
+    def __init__(
+        self, zzn_filepath: str | Path | None = None, from_json: bool = False
+    ):  # noqa: PLR0915
         try:
             if from_json:
                 return

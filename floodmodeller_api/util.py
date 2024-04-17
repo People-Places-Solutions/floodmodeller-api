@@ -50,6 +50,7 @@ def read_file(filepath: str | Path) -> FMFile:
 
     """
     from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
+
     suffix_to_class = {
         ".ief": IEF,
         ".dat": DAT,

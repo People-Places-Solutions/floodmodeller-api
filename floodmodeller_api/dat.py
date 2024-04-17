@@ -42,7 +42,12 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: str | Path | None = None, with_gxy: bool = False, from_json: bool = False):
+    def __init__(
+        self,
+        dat_filepath: str | Path | None = None,
+        with_gxy: bool = False,
+        from_json: bool = False,
+    ):
         try:
             if from_json:
                 return
@@ -806,9 +811,9 @@ class DAT(FMFile):
             if unit._unit != "COMMENT":
                 # update the iic's tables
                 iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-                self.initial_conditions.data.loc[len(self.initial_conditions.data)] = (
-                    iic_data  # flaged
-                )
+                self.initial_conditions.data.loc[
+                    len(self.initial_conditions.data)
+                ] = iic_data  # flaged
 
             # update all
             if unit._unit != "COMMENT":

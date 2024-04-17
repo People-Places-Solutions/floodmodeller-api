@@ -84,10 +84,10 @@ class UrbanUnit:
             diff=diff,
         )
         return (result, diff) if return_diff else result
-    
+
     def to_json(self) -> str:
         return to_json(self)
-    
+
     @classmethod
     def from_json(cls, json_string: str):
         object_dict = from_json(json_string)
@@ -200,10 +200,10 @@ class UrbanSubsection:
             diff=diff,
         )
         return (result, diff) if return_diff else result
-    
+
     def to_json(self) -> str:
         return to_json(self)
-    
+
     @classmethod
     def from_json(cls, json_string: str):
         object_dict = from_json(json_string)

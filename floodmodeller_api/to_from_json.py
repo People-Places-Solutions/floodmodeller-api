@@ -68,7 +68,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     if isinstance(obj, set):
         # create list and append
         return {"python_set": [recursive_to_json(item, is_top_level=False) for item in sorted(obj)]}
-    
+
     # Case list or dict of non-jsonable stuff
     if isinstance(obj, list):
         # create list and append
@@ -79,7 +79,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return {key: recursive_to_json(value, is_top_level=False) for key, value in obj.items()}
 
     # Either a type of FM API Class
-    if isinstance(obj, (FMFile, Unit, IIC, File,UrbanSubsection, UrbanUnit)):  # noqa: RET503
+    if isinstance(obj, (FMFile, Unit, IIC, File, UrbanSubsection, UrbanUnit)):  # noqa: RET503
         # Information from the flood modeller object will be included in the JSON output
         # slicing undertaken to remove quotation marks
         return_dict: dict[str, Any] = {"API Class": str(obj.__class__)[8:-2]}
@@ -137,7 +137,7 @@ def recursive_from_json(obj: Union[dict, Any]) -> Any:
         sr.index.name = obj["index_name"]
         sr.name = obj["variable_name"]
         return sr
-    
+
     if "python_set" in obj:
         return set(obj["python_set"])
 
