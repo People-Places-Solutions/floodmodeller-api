@@ -36,17 +36,31 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
 
 
 @pytest.mark.parametrize(
-    ("precision", "amend", "exe"),
+    ("precision", "method", "amend", "exe"),
     [
-        ("DEFAULT", False, "ISISf32.exe"),
-        ("DEFAULT", True, "ISISf32_DoubleP.exe"),
-        ("SINGLE", False, "ISISf32.exe"),
-        ("SINGLE", True, "ISISf32.exe"),
-        ("DOUBLE", False, "ISISf32_DoubleP.exe"),
-        ("DOUBLE", True, "ISISf32_DoubleP.exe"),
+        ("DEFAULT", "WAIT", False, "ISISf32.exe"),
+        ("DEFAULT", "WAIT", True, "ISISf32_DoubleP.exe"),
+        ("SINGLE", "WAIT", False, "ISISf32.exe"),
+        ("SINGLE", "WAIT", True, "ISISf32.exe"),
+        ("DOUBLE", "WAIT", False, "ISISf32_DoubleP.exe"),
+        ("DOUBLE", "WAIT", True, "ISISf32_DoubleP.exe"),
+        ("DEFAULT", "RETURN_PROCESS", False, "ISISf32.exe"),
+        ("DEFAULT", "RETURN_PROCESS", True, "ISISf32_DoubleP.exe"),
+        ("SINGLE", "RETURN_PROCESS", False, "ISISf32.exe"),
+        ("SINGLE", "RETURN_PROCESS", True, "ISISf32.exe"),
+        ("DOUBLE", "RETURN_PROCESS", False, "ISISf32_DoubleP.exe"),
+        ("DOUBLE", "RETURN_PROCESS", True, "ISISf32_DoubleP.exe"),
     ],
 )
-def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: bool, exe: str):
+def test_simulate(
+    ief: IEF,
+    ief_fp: Path,
+    exe_bin: Path,
+    precision: str,
+    method: str,
+    amend: bool,
+    exe: str,
+):
     if amend:
         ief.launchdoubleprecisionversion = "1"
 
@@ -58,11 +72,13 @@ def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: 
         p_open.return_value.poll.side_effect = [None, None, 0]
 
         exe_path = Path(exe_bin, exe)
-        ief.simulate(enginespath=str(exe_bin), precision=precision)
+        ief.simulate(method=method, precision=precision, enginespath=str(exe_bin))
 
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
-        assert p_open.return_value.poll.call_count == 3
-        assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
+
+        if method == "WAIT":
+            assert p_open.return_value.poll.call_count == 3
+            assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
