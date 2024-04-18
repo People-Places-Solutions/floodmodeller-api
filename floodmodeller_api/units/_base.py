@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -21,6 +21,7 @@ from __future__ import annotations
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
+from ..to_from_json import from_json, to_json
 from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
@@ -29,7 +30,9 @@ class Unit:
     _subtype: str | None = None
     _name: str | None = None
 
-    def __init__(self, unit_block=None, n=12, **kwargs):
+    def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
+        if from_json:
+            return
         self._label_len = n
         if unit_block is not None:
             self._read(unit_block, **kwargs)
@@ -209,3 +212,17 @@ class Unit:
         self._last_rule_row = rule_row
 
         return rules
+
+    def to_json(self) -> str:
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

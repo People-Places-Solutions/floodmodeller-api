@@ -1,0 +1,61 @@
+{
+  "API Class": "floodmodeller_api.ief.IEF",
+  "API Version": "0.4.2.post1",
+  "Object Attributes": {
+    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\ex3.ief",
+    "file": {
+      "API Class": "floodmodeller_api.backup.File",
+      "Object Attributes": {
+        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\ex3.ief",
+        "ext": ".ief",
+        "dttm_str": "2024-04-17-14-09-24",
+        "file_id": "eac08c4521744755c4c9fba0abd046dd378df1ce",
+        "backup_filename": "eac08c4521744755c4c9fba0abd046dd378df1ce_2024-04-17-14-09-24.ief",
+        "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
+        "backup_dirname": "floodmodeller_api_backup",
+        "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
+        "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
+      }
+    },
+    "_ief_properties": [
+      "[ISIS Event Header]",
+      "Title",
+      "Datafile",
+      "Results",
+      "[ISIS Event Details]",
+      "RunType",
+      "initialconditions",
+      "Start",
+      "Finish",
+      "InitialTimestep",
+      "MinimumTimestep",
+      "SaveInterval",
+      "AdaptiveTimestep",
+      "RefineBridgeSecProps",
+      "SolveDHEqualsZeroAtStart",
+      "RulesAtTimeZero",
+      "RulesOnFirstIteration",
+      "ResetTimesAfterPos",
+      "UseFPSModularLimit",
+      "UseRemoteQ"
+    ],
+    "Title": "ex3",
+    "Datafile": "EX3.DAT",
+    "Results": "ex3",
+    "RunType": "Unsteady",
+    "initialconditions": "EX3.zzs",
+    "Start": "0",
+    "Finish": "24",
+    "InitialTimestep": "20",
+    "MinimumTimestep": "5",
+    "SaveInterval": "300",
+    "AdaptiveTimestep": "1",
+    "RefineBridgeSecProps": "0",
+    "SolveDHEqualsZeroAtStart": "0",
+    "RulesAtTimeZero": "0",
+    "RulesOnFirstIteration": "1",
+    "ResetTimesAfterPos": "0",
+    "UseFPSModularLimit": "0",
+    "UseRemoteQ": "0"
+  }
+}

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,7 +17,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 
-def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()):  # noqa: C901
+def check_item_with_dataframe_equal(  # noqa: C901, PLR0912
+    item_a,
+    item_b,
+    name,
+    diff,
+    special_types=(),
+):
     result = True
     try:
         if isinstance(item_a, dict):
@@ -37,7 +43,11 @@ def check_item_with_dataframe_equal(item_a, item_b, name, diff, special_types=()
                 special_types,
             )
         elif isinstance(item_a, (pd.DataFrame, pd.Series)):
-            if not item_a.equals(item_b):
+            if isinstance(item_a.index, pd.RangeIndex):
+                item_a.index = item_a.index.astype("int")
+            if isinstance(item_b.index, pd.RangeIndex):
+                item_b.index = item_b.index.astype("int")
+            if not item_a.equals(item_b) and len(item_a) + len(item_b) != 0:
                 result = False
                 if isinstance(item_a, pd.Series):
                     item_a = pd.DataFrame(item_a).reset_index()

@@ -8,7 +8,7 @@ from floodmodeller_api import XML2D
 
 @pytest.fixture
 def xml_fp(test_workspace):
-    return os.path.join(test_workspace, "Domain1_Q.xml")
+    return Path(test_workspace, "Domain1_Q.xml")
 
 
 @pytest.fixture

@@ -38,7 +38,7 @@ setup(
         "Flood Modeller Homepage": "https://www.floodmodeller.com/",
         "Contact & Support": "https://www.floodmodeller.com/contact",
     },
-    license="GNU General Public License V3. Copyright (C) 2023 Jacobs U.K. Limited.",
+    license="GNU General Public License V3. Copyright (C) 2024 Jacobs U.K. Limited.",
     license_file="LICENSE.txt",
     description="Extends the functionality of Flood Modeller to python users",
     long_description=readme_txt,

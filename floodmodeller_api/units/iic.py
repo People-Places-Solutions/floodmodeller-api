@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
+from ..to_from_json import from_json, to_json
 from .helpers import join_10_char, split_10_char
 
 # Initial Conditions Class
@@ -25,7 +26,9 @@ from .helpers import join_10_char, split_10_char
 class IIC:
     """Class to hold initial conditions data"""
 
-    def __init__(self, ic_block, n=12):
+    def __init__(self, ic_block=None, n=12, from_json: bool = False):
+        if from_json:
+            return
         self._label_len = n
         self._read(ic_block)
 
@@ -102,3 +105,17 @@ class IIC:
             diff=diff,
         )
         return (result, diff) if return_diff else result
+
+    def to_json(self) -> str:
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2023 Jacobs U.K. Limited
+Copyright (C) 2024 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -42,8 +42,15 @@ class DAT(FMFile):
     _filetype: str = "DAT"
     _suffix: str = ".dat"
 
-    def __init__(self, dat_filepath: str | Path | None = None, with_gxy: bool = False):
+    def __init__(
+        self,
+        dat_filepath: str | Path | None = None,
+        with_gxy: bool = False,
+        from_json: bool = False,
+    ):
         try:
+            if from_json:
+                return
             if dat_filepath is not None:
                 FMFile.__init__(self, dat_filepath)
                 self._read()

@@ -79,7 +79,7 @@ You must specify the `scope = "session"` parameter:
 ```python
 @pytest.fixture(scope="session")
 def test_workspace():
-    return os.path.join(os.path.dirname(__file__), "test_data")
+    return Path(os.path.dirname(__file__), "test_data")
 ```
 
 #### Test Data

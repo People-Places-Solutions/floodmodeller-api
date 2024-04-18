@@ -155,7 +155,7 @@ The following example shows how the `IEF` class could be used to create a new se
     for ief_path in ief_files:
         ief_name = os.path.basename(ief_path) # get existing filename
         new_ief_name = ief_name.replace('.ief', '_v2.ief') # update filename with 'v2' appended
-        new_ief_path = os.path.join(folder, new_ief_name) # get updated filepath
+        new_ief_path = Path(folder, new_ief_name) # get updated filepath
 
         ief = IEF(ief_path) # Initiate IEF Class Object
         ief.title += '_v2' # Update title
