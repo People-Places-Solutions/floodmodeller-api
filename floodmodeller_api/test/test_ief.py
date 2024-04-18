@@ -36,15 +36,36 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
 
 
 @pytest.mark.parametrize(
-    ("precision", "exe"),
+    ("precision", "amend", "exe"),
     [
-        ("DEFAULT", "ISISf32.exe"),
-        ("SINGLE", "ISISf32.exe"),
-        ("DOUBLE", "ISISf32_DoubleP.exe"),
+        ("DEFAULT", False, "ISISf32.exe"),
+        ("DEFAULT", True, "ISISf32_DoubleP.exe"),
+        ("SINGLE", False, "ISISf32.exe"),
+        ("SINGLE", True, "ISISf32.exe"),
+        ("DOUBLE", False, "ISISf32_DoubleP.exe"),
+        ("DOUBLE", True, "ISISf32_DoubleP.exe"),
     ],
 )
-def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, exe: str):
+def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: bool, exe: str):
+    if amend:
+        ief.launchdoubleprecisionversion = "1"
     with patch("floodmodeller_api.ief.Popen") as p_open:
         exe_path = Path(exe_bin, exe)
         ief.simulate(enginespath=str(exe_bin), precision=precision)
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
+
+
+def test_simulate_error_without_save():
+    ief = IEF()
+    ief._filepath = None
+    msg = (
+        r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        r"\nAPI Error: Problem encountered when trying to simulate IEF file None\."
+        r"\n"
+        r"\nDetails: \d\.\d\.\d\..*-floodmodeller_api/ief\.py-\d+"
+        r"\nMsg: IEF must be saved to a specific filepath before simulate\(\) can be called\."
+        r"\n"
+        r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
+    )
+    with pytest.raises(Exception, match=msg):
+        ief.simulate()
