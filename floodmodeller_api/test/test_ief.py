@@ -49,10 +49,19 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
 def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: bool, exe: str):
     if amend:
         ief.launchdoubleprecisionversion = "1"
-    with patch("floodmodeller_api.ief.Popen") as p_open:
+
+    with (
+        patch("floodmodeller_api.ief.Popen") as p_open,
+        patch("floodmodeller_api.ief.IEF.LOG_TIMEOUT", new=0),
+        patch("floodmodeller_api.ief.time.sleep"),
+    ):
+        p_open.return_value.poll.side_effect = [None, None, 0]
+
         exe_path = Path(exe_bin, exe)
         ief.simulate(enginespath=str(exe_bin), precision=precision)
+
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
+        # assert p_open.poll.call_count == 3
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):

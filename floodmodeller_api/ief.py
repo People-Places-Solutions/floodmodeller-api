@@ -52,6 +52,7 @@ class IEF(FMFile):
     OLD_FILE = 5
     ERROR_MAX = 2000
     WARNING_MAX = 3000
+    LOG_TIMEOUT = 10
 
     def __init__(self, ief_filepath: str | Path | None = None, from_json: bool = False):
         try:
@@ -538,7 +539,7 @@ class IEF(FMFile):
 
         # wait for log file to exist
         log_file_exists = False
-        max_time = time.time() + 10
+        max_time = time.time() + self.LOG_TIMEOUT
 
         while not log_file_exists:
             time.sleep(0.1)
@@ -553,7 +554,7 @@ class IEF(FMFile):
 
         # wait for new log file
         old_log_file = True
-        max_time = time.time() + 10
+        max_time = time.time() + self.LOG_TIMEOUT
 
         while old_log_file:
             time.sleep(0.1)
