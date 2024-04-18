@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import pytest
 
@@ -53,7 +53,7 @@ def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: 
     with (
         patch("floodmodeller_api.ief.Popen") as p_open,
         patch("floodmodeller_api.ief.IEF.LOG_TIMEOUT", new=0),
-        patch("floodmodeller_api.ief.time.sleep"),
+        patch("floodmodeller_api.ief.time.sleep") as sleep,
     ):
         p_open.return_value.poll.side_effect = [None, None, 0]
 
@@ -62,6 +62,7 @@ def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: 
 
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
         assert p_open.return_value.poll.call_count == 3
+        assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
