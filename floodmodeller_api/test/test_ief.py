@@ -55,12 +55,26 @@ def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: 
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
 
 
+def test_simulate_error_without_bin(tmpdir, ief: IEF, ief_fp: Path):
+    msg = (
+        r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        r"\nAPI Error: Problem encountered when trying to simulate IEF file .*\."
+        r"\n"
+        r"\nDetails: \d\.\d\.\d\..*-floodmodeller_api/ief\.py-\d+"
+        r"\nMsg: Flood Modeller engine not found! Expected location: .*"
+        r"\n"
+        r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
+    )
+    with pytest.raises(Exception, match=msg):
+        ief.simulate(enginespath=str(tmpdir))
+
+
 def test_simulate_error_without_save():
     ief = IEF()
     ief._filepath = None
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        r"\nAPI Error: Problem encountered when trying to simulate IEF file None\."
+        r"\nAPI Error: Problem encountered when trying to simulate IEF file .*\."
         r"\n"
         r"\nDetails: \d\.\d\.\d\..*-floodmodeller_api/ief\.py-\d+"
         r"\nMsg: IEF must be saved to a specific filepath before simulate\(\) can be called\."
