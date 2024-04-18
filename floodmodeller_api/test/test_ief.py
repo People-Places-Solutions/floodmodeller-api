@@ -61,7 +61,7 @@ def test_simulate(ief: IEF, ief_fp: Path, exe_bin: Path, precision: str, amend: 
         ief.simulate(enginespath=str(exe_bin), precision=precision)
 
         p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
-        # assert p_open.poll.call_count == 3
+        assert p_open.return_value.poll.call_count == 3
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
