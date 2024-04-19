@@ -404,7 +404,7 @@ class IEF(FMFile):
                 for attr in dir(self):
                     if (
                         attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"  # Unless DP specified
-                        and getattr(self, attr) == "1"
+                        and int(getattr(self, attr)) == 1
                     ):
                         precision = "DOUBLE"
                         break

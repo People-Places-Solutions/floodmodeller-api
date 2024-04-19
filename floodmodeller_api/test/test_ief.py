@@ -62,7 +62,7 @@ def test_simulate(
     exe: str,
 ):
     if amend:
-        ief.launchdoubleprecisionversion = "1"
+        ief.launchdoubleprecisionversion = 1
 
     with (
         patch("floodmodeller_api.ief.Popen") as p_open,
