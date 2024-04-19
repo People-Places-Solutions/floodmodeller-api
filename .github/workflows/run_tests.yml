@@ -31,7 +31,7 @@ jobs:
     
       - name: Run unit tests with coverage
         if: matrix.os == 'windows-latest'
-        run: pytest . -v --cov=floodmodeller_api --cov-fail-under=79
+        run: pytest . -v --cov=floodmodeller_api --cov-fail-under=82
     
       - name: Run unit tests without coverage
         if: matrix.os == 'ubuntu-latest'

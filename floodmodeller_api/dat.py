@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from . import units
 from ._base import FMFile
@@ -47,7 +48,7 @@ class DAT(FMFile):
         dat_filepath: str | Path | None = None,
         with_gxy: bool = False,
         from_json: bool = False,
-    ):
+    ) -> None:
         try:
             if from_json:
                 return
@@ -221,7 +222,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def _next_in_dat_struct(self, current_unit) -> Unit | None:
+    def _next_in_dat_struct(self, current_unit: Unit) -> Unit | None:
         """Finds next unit in the dat file using the index position.
 
         Returns:
@@ -238,7 +239,7 @@ class DAT(FMFile):
 
         return None
 
-    def _prev_in_dat_struct(self, current_unit) -> Unit | None:
+    def _prev_in_dat_struct(self, current_unit: Unit) -> Unit | None:
         """Finds previous unit in the dat file using the index position.
 
         Returns:
@@ -253,7 +254,7 @@ class DAT(FMFile):
 
         return None
 
-    def _ds_label_match(self, current_unit) -> Unit | list[Unit] | None:
+    def _ds_label_match(self, current_unit: Unit) -> Unit | list[Unit] | None:
         """Pulls out all units with ds label that matches the input unit.
 
         Returns:
@@ -274,7 +275,11 @@ class DAT(FMFile):
             return _ds_list[0]
         return _ds_list
 
-    def _name_label_match(self, current_unit, name_override=None) -> Unit | list[Unit] | None:
+    def _name_label_match(
+        self,
+        current_unit: Unit,
+        name_override: str | None = None,
+    ) -> Unit | list[Unit] | None:
         """Pulls out all units with same name as the input unit.
 
         Returns:
@@ -325,16 +330,12 @@ class DAT(FMFile):
             self._update_dat_struct()
             self._update_unit_names()
 
-            dat_string = ""
-            for line in self._raw_data:
-                dat_string += line + "\n"
-
-            return dat_string
+            return "\n".join(self._raw_data)
 
         except Exception as e:
             self._handle_exception(e, when="write")
 
-    def _create_from_blank(self, with_gxy=False):
+    def _create_from_blank(self, with_gxy: bool = False) -> None:
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
         self._dat_struct = [
@@ -359,7 +360,7 @@ class DAT(FMFile):
         else:
             self._gxy_data = None
 
-    def _get_general_parameters(self):
+    def _get_general_parameters(self) -> None:
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
@@ -387,7 +388,7 @@ class DAT(FMFile):
         self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0.0)
         self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
-    def _update_general_parameters(self):
+    def _update_general_parameters(self) -> None:
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters["RAD File"]
         general_params_1 = units.helpers.join_10_char(
@@ -592,7 +593,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):  # noqa: C901, PLR0912
+    def _update_dat_struct(self) -> None:  # noqa: C901, PLR0912
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -605,7 +606,7 @@ class DAT(FMFile):
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
-        unit_block = {}
+        unit_block: dict[str, Any] = {}
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
             if in_general is True:
@@ -679,12 +680,12 @@ class DAT(FMFile):
 
     def _close_struct_block(  # noqa: PLR0913
         self,
-        dat_struct,
-        unit_type,
-        unit_block,
-        in_block,
-        idx,
-    ):
+        dat_struct: list[dict],
+        unit_type: str,
+        unit_block: dict,
+        in_block: bool,
+        idx: int,
+    ) -> tuple[dict, bool]:
         """Helper method to close block in dat struct"""
         if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
@@ -697,7 +698,7 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
-    def remove_unit(self, unit):
+    def remove_unit(self, unit: Unit) -> None:
         """Remove a unit from the dat file.
 
         Args:
@@ -737,12 +738,12 @@ class DAT(FMFile):
 
     def insert_unit(  # noqa: C901, PLR0912, PLR0913
         self,
-        unit,
-        add_before=None,
-        add_after=None,
-        add_at=None,
-        defer_update=False,
-    ):
+        unit: Unit,
+        add_before: Unit | None = None,
+        add_after: Unit | None = None,
+        add_at: int | None = None,
+        defer_update: bool = False,
+    ) -> None:
         """Inserts a unit into the dat file.
 
         Args:
@@ -759,10 +760,13 @@ class DAT(FMFile):
         """
         try:
             # catch errors
-            if all(arg is None for arg in (add_before, add_after, add_at)):
+            provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
+            if provided_params == 0:
                 raise SyntaxError(
-                    "No possitional argument given. Please provide either add_before, add_at or add_after",
+                    "No positional argument given. Please provide either add_before, add_at or add_after",
                 )
+            if provided_params > 1:
+                raise SyntaxError("Only one of add_at, add_before, or add_after required")
             if not isinstance(unit, Unit):
                 raise TypeError("unit isn't a unit")
             if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
@@ -773,7 +777,7 @@ class DAT(FMFile):
             unit_class = unit._unit
             if unit_class != "COMMENT":
                 _validate_unit(unit)
-                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]  # get rid
+                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
                 unit_group = getattr(self, unit_group_name)
                 if unit.name in unit_group:
                     raise NameError(
@@ -826,6 +830,29 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="insert unit")
 
+    def insert_units(
+        self,
+        units: list[Unit],
+        add_before: Unit | None = None,
+        add_after: Unit | None = None,
+        add_at: int | None = None,
+    ) -> None:
+        """Inserts a list of units into the dat file.
+
+        Args:
+            units (list[Unit]): List of FloodModeller units.
+            add_before (Unit): FloodModeller unit to add before.
+            add_after (Unit): FloodModeller unit to add after.
+            add_at (integer): Positional argument (starting at 0) of where to add in
+                the dat file. To add at the end of the network you can use -1.
+        """
+        ordered = (add_at is None and add_after is None) or (isinstance(add_at, int) and add_at < 0)
+        ordered_units = units if ordered else units[::-1]
+        for unit in ordered_units:
+            self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
+        self._update_raw_data()
+        self._update_dat_struct()
+
     def _update_gisinfo_label(  # noqa: PLR0913
         self,
         unit_type,
@@ -863,7 +890,13 @@ class DAT(FMFile):
 
         self._raw_data[start : end + 1] = new_gisinfo_block
 
-    def _update_gxy_label(self, unit_type, unit_subtype, prev_lbl, new_lbl):
+    def _update_gxy_label(
+        self,
+        unit_type: str,
+        unit_subtype: str,
+        prev_lbl: str,
+        new_lbl: str,
+    ) -> None:
         """Update labels in GXY file if unit is renamed"""
 
         if self._gxy_data is not None:
