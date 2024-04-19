@@ -764,10 +764,13 @@ class DAT(FMFile):
         """
         try:
             # catch errors
-            if all(arg is None for arg in (add_before, add_after, add_at)):
+            provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
+            if provided_params == 0:
                 raise SyntaxError(
-                    "No possitional argument given. Please provide either add_before, add_at or add_after",
+                    "No positional argument given. Please provide either add_before, add_at or add_after",
                 )
+            if provided_params > 1:
+                raise SyntaxError("Only one of add_at, add_before, or add_after required")
             if not isinstance(unit, Unit):
                 raise TypeError("unit isn't a unit")
             if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
@@ -778,7 +781,7 @@ class DAT(FMFile):
             unit_class = unit._unit
             if unit_class != "COMMENT":
                 _validate_unit(unit)
-                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]  # get rid
+                unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
                 unit_group = getattr(self, unit_group_name)
                 if unit.name in unit_group:
                     raise NameError(
@@ -838,6 +841,15 @@ class DAT(FMFile):
         add_after: Unit | None = None,
         add_at: int | None = None,
     ) -> None:
+        """Inserts a list of units into the dat file.
+
+        Args:
+            units (list[Unit]): List of FloodModeller units.
+            add_before (Unit): FloodModeller unit to add before.
+            add_after (Unit): FloodModeller unit to add after.
+            add_at (integer): Positional argument (starting at 0) of where to add in
+                the dat file. To add at the end of the network you can use -1.
+        """
         units_in_order = units if (add_after is None and add_at is None) else units[::-1]
         for unit in units_in_order:
             self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
