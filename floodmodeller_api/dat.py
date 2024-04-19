@@ -828,12 +828,13 @@ class DAT(FMFile):
 
     def insert_units(
         self,
-        units : list[Unit],
+        units: list[Unit],
         add_before: Unit | None = None,
         add_after: Unit | None = None,
         add_at: int | None = None,
     ) -> None:
-        for unit in units:
+        units_in_order = units if add_after is None else units[::-1]
+        for unit in units_in_order:
             self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
         self._update_raw_data()
         self._update_dat_struct()

@@ -23,6 +23,14 @@ def dat_ex3(test_workspace):
 
 
 @pytest.fixture()
+def units(dat_ex3):
+    unit_1 = dat_ex3.sections["20"]
+    unit_2 = dat_ex3.sections["40"]
+    unit_3 = dat_ex3.sections["60"]
+    return [unit_1, unit_2, unit_3]
+
+
+@pytest.fixture()
 def dat_ex6(test_workspace):
     dat = DAT(Path(test_workspace, "EX6.DAT"))
     with (
@@ -81,24 +89,38 @@ def test_dat_read_doesnt_change_data(test_workspace, tmpdir):
         assert first_output == second_output
 
 
-def test_insert_unit(dat_ex3, dat_ex6):
-    unit = dat_ex3.sections["20"]
-    dat_ex6.insert_unit(unit, add_before=dat_ex6.sections["P4000"])
+def test_insert_unit_before(units, dat_ex6):
+    dat_ex6.insert_unit(units[0], add_before=dat_ex6.sections["P4000"])
     assert "20" in dat_ex6.sections
-    assert dat_ex6._all_units[8:10] == [unit, dat_ex6.sections["P4000"]]
+    assert dat_ex6._all_units[8:10] == [units[0], dat_ex6.sections["P4000"]]
     dat_ex6._update_raw_data.assert_called_once()
     dat_ex6._update_dat_struct.assert_called_once()
 
 
-def test_insert_units(dat_ex3, dat_ex6):
-    unit_1 = dat_ex3.sections["20"]
-    unit_2 = dat_ex3.sections["40"]
-    unit_3 = dat_ex3.sections["60"]
-    dat_ex6.insert_units([unit_1, unit_2, unit_3], add_before=dat_ex6.sections["P4000"])
+def test_insert_unit_after(units, dat_ex6):
+    dat_ex6.insert_unit(units[0], add_after=dat_ex6.sections["P4000"])
+    assert "20" in dat_ex6.sections
+    assert dat_ex6._all_units[8:10] == [dat_ex6.sections["P4000"], units[0]]
+    dat_ex6._update_raw_data.assert_called_once()
+    dat_ex6._update_dat_struct.assert_called_once()
+
+
+def test_insert_units_before(units, dat_ex6):
+    dat_ex6.insert_units(units, add_before=dat_ex6.sections["P4000"])
     assert "20" in dat_ex6.sections
     assert "40" in dat_ex6.sections
     assert "60" in dat_ex6.sections
-    assert dat_ex6._all_units[8:12] == [unit_1, unit_2, unit_3, dat_ex6.sections["P4000"]]
+    assert dat_ex6._all_units[8:12] == [*units, dat_ex6.sections["P4000"]]
+    dat_ex6._update_raw_data.assert_called_once()
+    dat_ex6._update_dat_struct.assert_called_once()
+
+
+def test_insert_units_after(units, dat_ex6):
+    dat_ex6.insert_units(units, add_after=dat_ex6.sections["P4000"])
+    assert "20" in dat_ex6.sections
+    assert "40" in dat_ex6.sections
+    assert "60" in dat_ex6.sections
+    assert dat_ex6._all_units[8:12] == [dat_ex6.sections["P4000"], *units]
     dat_ex6._update_raw_data.assert_called_once()
     dat_ex6._update_dat_struct.assert_called_once()
 
