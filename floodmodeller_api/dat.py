@@ -697,7 +697,7 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
-    def remove_unit(self, unit):
+    def remove_unit(self, unit: Unit) -> None:
         """Remove a unit from the dat file.
 
         Args:
@@ -737,12 +737,12 @@ class DAT(FMFile):
 
     def insert_unit(  # noqa: C901, PLR0912, PLR0913
         self,
-        unit,
-        add_before=None,
-        add_after=None,
-        add_at=None,
-        defer_update=False,
-    ):
+        unit: Unit,
+        add_before: Unit | None = None,
+        add_after: Unit | None = None,
+        add_at: int | None = None,
+        defer_update: bool = False,
+    ) -> None:
         """Inserts a unit into the dat file.
 
         Args:
@@ -828,11 +828,11 @@ class DAT(FMFile):
 
     def insert_units(
         self,
-        units,
-        add_before=None,
-        add_after=None,
-        add_at=None,
-    ):
+        units : list[Unit],
+        add_before: Unit | None = None,
+        add_after: Unit | None = None,
+        add_at: int | None = None,
+    ) -> None:
         for unit in units:
             self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
         self._update_raw_data()

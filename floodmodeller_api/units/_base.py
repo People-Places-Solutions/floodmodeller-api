@@ -26,7 +26,7 @@ from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_
 
 
 class Unit:
-    _unit: str | None = None
+    _unit: str
     _subtype: str | None = None
     _name: str | None = None
 
