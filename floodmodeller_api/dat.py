@@ -330,11 +330,7 @@ class DAT(FMFile):
             self._update_dat_struct()
             self._update_unit_names()
 
-            dat_string = ""
-            for line in self._raw_data:
-                dat_string += line + "\n"
-
-            return dat_string
+            return "\n".join(self._raw_data)
 
         except Exception as e:
             self._handle_exception(e, when="write")
