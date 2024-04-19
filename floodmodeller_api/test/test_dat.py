@@ -180,6 +180,16 @@ def test_insert_units_at(units, dat_ex6):
     dat_ex6._update_dat_struct.assert_called_once()
 
 
+def test_insert_units_at_end(units, dat_ex6):
+    dat_ex6.insert_units(units, add_at=-1)
+    assert "20" in dat_ex6.sections
+    assert "40" in dat_ex6.sections
+    assert "60" in dat_ex6.sections
+    assert dat_ex6._all_units[-3:] == units
+    dat_ex6._update_raw_data.assert_called_once()
+    dat_ex6._update_dat_struct.assert_called_once()
+
+
 def test_remove_unit(dat_ex3):
     unit = dat_ex3.sections["20"]
     prev_dat_struct_len = len(dat_ex3._dat_struct)
