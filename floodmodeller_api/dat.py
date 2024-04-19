@@ -846,8 +846,9 @@ class DAT(FMFile):
             add_at (integer): Positional argument (starting at 0) of where to add in
                 the dat file. To add at the end of the network you can use -1.
         """
-        units_in_order = units if (add_after is None and add_at is None) else units[::-1]
-        for unit in units_in_order:
+        ordered = (add_at is None and add_after is None) or (isinstance(add_at, int) and add_at < 0)
+        ordered_units = units if ordered else units[::-1]
+        for unit in ordered_units:
             self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
         self._update_raw_data()
         self._update_dat_struct()

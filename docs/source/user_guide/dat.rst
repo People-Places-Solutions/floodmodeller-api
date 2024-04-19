@@ -194,6 +194,8 @@ Reference
    .. automethod:: save
     
    .. automethod:: insert_unit
+    
+   .. automethod:: insert_units
 
    .. automethod:: remove_unit
 
@@ -227,4 +229,23 @@ entire section. This is a simple method to quickly represent siltation in the ch
 
     dat.save('path/to/datafile_300mm_siltation.dat') # Save to new location
 
+**Example 2 - Inserting multiple units** 
 
+In this example, multiple units from one DAT file are inserted into another DAT file.
+
+.. code:: python
+
+    # Import modules
+    from floodmodeller_api import DAT
+
+    # Initialise DAT class
+    dat_1 = DAT('path/to/datafile1.dat')
+    dat_2 = DAT('path/to/datafile2.dat')
+
+    # Insert units from dat_2 into dat_1
+    dat_1.insert_units(
+        units=[dat_2.sections["20"], dat_2.sections["30"]],
+        add_before=dat_1.sections["P4000"],
+    )
+
+    dat_1.save('path/to/new_datfile1.dat') # Save to new location
