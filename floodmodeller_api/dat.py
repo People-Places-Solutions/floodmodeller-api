@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from . import units
 from ._base import FMFile
@@ -596,7 +597,7 @@ class DAT(FMFile):
             elif block["Type"] not in ("GENERAL", "GISINFO"):
                 raise Exception(f"Unexpected unit type encountered: {block['Type']}")
 
-    def _update_dat_struct(self):  # noqa: C901, PLR0912
+    def _update_dat_struct(self) -> None:  # noqa: C901, PLR0912
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
 
@@ -609,7 +610,7 @@ class DAT(FMFile):
         comment_n = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
-        unit_block = {}
+        unit_block: dict[str, Any] = {}
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
             if in_general is True:
@@ -683,12 +684,12 @@ class DAT(FMFile):
 
     def _close_struct_block(  # noqa: PLR0913
         self,
-        dat_struct,
-        unit_type,
-        unit_block,
-        in_block,
-        idx,
-    ):
+        dat_struct: list[dict],
+        unit_type: str,
+        unit_block: dict,
+        in_block: bool,
+        idx: int,
+    ) -> tuple[dict, bool]:
         """Helper method to close block in dat struct"""
         if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
@@ -880,7 +881,13 @@ class DAT(FMFile):
 
         self._raw_data[start : end + 1] = new_gisinfo_block
 
-    def _update_gxy_label(self, unit_type, unit_subtype, prev_lbl, new_lbl):
+    def _update_gxy_label(
+        self,
+        unit_type: str,
+        unit_subtype: str,
+        prev_lbl: str,
+        new_lbl: str,
+    ) -> None:
         """Update labels in GXY file if unit is renamed"""
 
         if self._gxy_data is not None:
