@@ -9,3 +9,4 @@ twine upload --repository testpypi dist/* # to upload to test.PyPI
 twine upload dist/* # to upload to main PyPI
 
 pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple floodmodeller-api # Install from test.pypi
+pytest --pyargs floodmodeller_api # Run the tests

@@ -16,9 +16,9 @@ It is recommended to regularly update directly from PyPI as this will ensure you
 
    pip install floodmodeller-api --upgrade
 
-To ensure the package has installed successfully, open up a python console and try importing it:
+To ensure the package has installed successfully, have a go at running all of the package tests:
 
-.. code:: python
+.. code:: console
 
-   import floodmodeller_api
+   pytest --pyargs floodmodeller_api
 
