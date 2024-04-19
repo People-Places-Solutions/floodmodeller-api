@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import pytest
@@ -37,12 +36,12 @@ def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     assert inp._write() == data_before
 
 
-def test_all_inp_files_in_folder_have_same_output(test_workspace):
+def test_all_inp_files_in_folder_have_same_output(test_workspace, tmpdir):
     """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
     for inpfile in Path(test_workspace).glob("*.inp"):
         inp = INP(inpfile)
         first_output = inp._write()
-        inp.save("__temp.inp")
-        second_output = INP("__temp.inp")._write()
+        new_path = Path(tmpdir) / "tmp.inp"
+        inp.save(new_path)
+        second_output = INP(new_path)._write()
         assert first_output == second_output
-        os.remove("__temp.inp")

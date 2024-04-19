@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 import pytest
@@ -38,18 +37,18 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
     assert x2d._write() == data_before
 
 
-def test_xml2d_all_files(test_workspace):
+def test_xml2d_all_files(test_workspace, tmpdir):
     """XML2D: Check all '.xml' files in folder by reading the _write() output into a
     new XML2D instance and checking it stays the same."""
     for xmlfile in Path(test_workspace).glob("*.xml"):
         x2d = XML2D(xmlfile)
         first_output = x2d._write()
-        x2d.save("__temp.xml")
-        second_x2d = XML2D("__temp.xml")
+        new_path = Path(tmpdir) / "tmp.xml"
+        x2d.save(new_path)
+        second_x2d = XML2D(new_path)
         assert x2d == second_x2d
         second_output = second_x2d._write()
         assert first_output == second_output
-        os.remove("__temp.xml")
 
 
 # New tests being added for the add/remove functionalility

@@ -1,7 +1,6 @@
 import copy
 import csv
-import os
-from tempfile import NamedTemporaryFile
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -173,7 +172,7 @@ def test_bridge_data(slb, structure):
     assert output == ["Mannings: 0", "h: 0.00 x w: 0.00"]
 
 
-def test_add_conduits(slb, conduit_filled):
+def test_add_conduits(slb, conduit_filled, tmpdir):
     slb._dat = DAT()
     prev_c = copy.deepcopy(conduit_filled)
     prev_c.dist_to_next = 0
@@ -188,15 +187,14 @@ def test_add_conduits(slb, conduit_filled):
     conduit_non_subtype = copy.deepcopy(conduit_filled)
     conduit_non_subtype._subtype = "NON_SUBTYPE"
     slb._dat.conduits["test_conduit_NON_SUBTYPE"] = conduit_non_subtype
-    tmp = NamedTemporaryFile(suffix=".csv", delete=False)
-    with open(tmp.name, "w") as temp:
-        slb._writer = csv.writer(temp)
+
+    tmp_csv = Path(tmpdir) / "temp_structure_data.csv"
+    with tmp_csv.open("w") as file:
+        slb._writer = csv.writer(file)
         slb._add_conduits()
-    tmp.close()
-    os.unlink(tmp.name)
 
 
-def test_add_structures(slb, structure):
+def test_add_structures(slb, structure, tmpdir):
     slb._dat = DAT()
     structure.soffit = 3
     structure.weir_coefficient = 1
@@ -230,6 +228,7 @@ def test_add_structures(slb, structure):
     struc_none._unit = "NONE"
     slb._dat.structures["test_structure_none"] = struc_none
 
-    with open((NamedTemporaryFile(suffix=".csv", delete=True)).name, "w") as tmp:
-        slb._writer = csv.writer(tmp)
+    tmp_csv = Path(tmpdir) / "temp_structure_data.csv"
+    with tmp_csv.open("w") as file:
+        slb._writer = csv.writer(file)
         slb._add_structures()
