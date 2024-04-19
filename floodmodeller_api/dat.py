@@ -47,7 +47,7 @@ class DAT(FMFile):
         dat_filepath: str | Path | None = None,
         with_gxy: bool = False,
         from_json: bool = False,
-    ):
+    ) -> None:
         try:
             if from_json:
                 return
@@ -221,7 +221,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="calculating next unit")
 
-    def _next_in_dat_struct(self, current_unit) -> Unit | None:
+    def _next_in_dat_struct(self, current_unit: Unit) -> Unit | None:
         """Finds next unit in the dat file using the index position.
 
         Returns:
@@ -238,7 +238,7 @@ class DAT(FMFile):
 
         return None
 
-    def _prev_in_dat_struct(self, current_unit) -> Unit | None:
+    def _prev_in_dat_struct(self, current_unit: Unit) -> Unit | None:
         """Finds previous unit in the dat file using the index position.
 
         Returns:
@@ -253,7 +253,7 @@ class DAT(FMFile):
 
         return None
 
-    def _ds_label_match(self, current_unit) -> Unit | list[Unit] | None:
+    def _ds_label_match(self, current_unit: Unit) -> Unit | list[Unit] | None:
         """Pulls out all units with ds label that matches the input unit.
 
         Returns:
@@ -274,7 +274,11 @@ class DAT(FMFile):
             return _ds_list[0]
         return _ds_list
 
-    def _name_label_match(self, current_unit, name_override=None) -> Unit | list[Unit] | None:
+    def _name_label_match(
+        self,
+        current_unit: Unit,
+        name_override: str | None = None,
+    ) -> Unit | list[Unit] | None:
         """Pulls out all units with same name as the input unit.
 
         Returns:
@@ -334,7 +338,7 @@ class DAT(FMFile):
         except Exception as e:
             self._handle_exception(e, when="write")
 
-    def _create_from_blank(self, with_gxy=False):
+    def _create_from_blank(self, with_gxy: bool = False) -> None:
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
         self._dat_struct = [
@@ -359,7 +363,7 @@ class DAT(FMFile):
         else:
             self._gxy_data = None
 
-    def _get_general_parameters(self):
+    def _get_general_parameters(self) -> None:
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
@@ -387,7 +391,7 @@ class DAT(FMFile):
         self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0.0)
         self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
-    def _update_general_parameters(self):
+    def _update_general_parameters(self) -> None:
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters["RAD File"]
         general_params_1 = units.helpers.join_10_char(
