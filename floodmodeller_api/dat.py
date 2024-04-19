@@ -833,7 +833,7 @@ class DAT(FMFile):
         add_after: Unit | None = None,
         add_at: int | None = None,
     ) -> None:
-        units_in_order = units if add_after is None else units[::-1]
+        units_in_order = units if (add_after is None and add_at is None) else units[::-1]
         for unit in units_in_order:
             self.insert_unit(unit, add_before, add_after, add_at, defer_update=True)
         self._update_raw_data()
