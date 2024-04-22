@@ -2,7 +2,7 @@ name: Unit Tests
 
 on:
   push:
-    branches: [ "*" ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -11,18 +11,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12"]
+        OS: [windows-latest, ubuntu-latest]
   
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.OS }}
 
     steps:
       - uses: actions/checkout@v3
       
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.PYTHON_VERSION }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.PYTHON_VERSION }}
       
       - name: Install dependencies
         run: |
@@ -30,11 +30,11 @@ jobs:
           pip install -r requirements.txt
     
       - name: Run unit tests with coverage
-        if: matrix.os == 'windows-latest'
+        if: matrix.OS == 'windows-latest'
         run: pytest . -v --cov=floodmodeller_api --cov-fail-under=82
     
       - name: Run unit tests without coverage
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.OS == 'ubuntu-latest'
         run: |
           export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
           pytest . -v
