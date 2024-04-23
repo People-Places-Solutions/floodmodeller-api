@@ -43,4 +43,6 @@ jobs:
 
     - name: Run tests
       run: |
+        mkdir empty_dir
+        cd empty_dir
         pytest --pyargs floodmodeller_api
