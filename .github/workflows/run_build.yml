@@ -11,6 +11,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      package_version: ${{ steps.extract_version.outputs.package_version }}
 
     steps:
     - name: Check out the repository
@@ -28,10 +30,11 @@ jobs:
         pip install build twine
 
     - name: Extract version
+      id: extract_version
       run: |
         set -eo pipefail
         PACKAGE_VERSION=$(python -c 'from floodmodeller_api.version import __version__; print(__version__)')
-        echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+        echo "::set-output name=package_version::$PACKAGE_VERSION"
 
     - name: Build the package
       run: python -m build
@@ -57,7 +60,7 @@ jobs:
         pip install
         -i https://test.pypi.org/simple/
         --extra-index-url https://pypi.org/simple
-        floodmodeller-api==${{ env.PACKAGE_VERSION }}
+        "floodmodeller-api==${{ needs.build.outputs.package_version }}"
 
     - name: Run tests
       run: pytest --pyargs floodmodeller_api
