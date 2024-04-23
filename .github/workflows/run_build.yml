@@ -47,10 +47,10 @@ jobs:
 
   install:
     needs: build
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.OS }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        OS: [ubuntu-latest, windows-latest]
 
     steps:
     - name: Set up Python ${{ env.PYTHON_VERSION }}
@@ -75,7 +75,9 @@ jobs:
 
     - name: Export path to libs (Ubuntu)
       if: matrix.OS == 'ubuntu-latest'
-      run: export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
+      run: |
+        LIB_PATH=$(python -c "from pathlib import Path; import floodmodeller_api; print(Path(floodmodeller_api.__file__).parent / 'libs')")
+        echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${LIB_PATH}" >> $GITHUB_ENV
 
     - name: Run tests
       run: pytest --pyargs floodmodeller_api
