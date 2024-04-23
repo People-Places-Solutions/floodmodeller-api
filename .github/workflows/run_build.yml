@@ -5,12 +5,12 @@ on:
     branches: [ main ]
     paths: [ "floodmodeller_api/version.py" ]
 
+env:
+  PYTHON_VERSION: "3.11"
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    env:
-      PYTHON_VERSION: "3.11"
 
     steps:
     - name: Check out the repository
@@ -27,22 +27,30 @@ jobs:
         pip install build twine
 
     - name: Build the package
-      run: |
-        python -m build
+      run: python -m build
 
     - name: Publish the package to TestPyPI
       env:
         TWINE_USERNAME: "__token__"
         TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      run: |
-        twine upload --repository testpypi dist/*
+      run: twine upload --repository testpypi dist/*
+
+  install:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Install the package from TestPyPI
-      run: |
-        pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple floodmodeller-api
+      run: >
+        pip install
+        -i https://test.pypi.org/simple/
+        --extra-index-url https://pypi.org/simple
+        floodmodeller-api
 
     - name: Run tests
-      run: |
-        mkdir empty_dir
-        cd empty_dir
-        pytest --pyargs floodmodeller_api
+      run: pytest --pyargs floodmodeller_api
