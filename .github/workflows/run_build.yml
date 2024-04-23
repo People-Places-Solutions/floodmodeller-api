@@ -7,6 +7,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
+  PYPI_PAUSE: 60
 
 jobs:
   build:
@@ -49,6 +50,7 @@ jobs:
     needs: build
     runs-on: ${{ matrix.OS }}
     strategy:
+      fail-fast: false
       matrix:
         OS: [ubuntu-latest, windows-latest]
 
@@ -60,11 +62,11 @@ jobs:
 
     - name: Pause before installation (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
-      run: sleep 30
+      run: sleep ${{ env.PYPI_PAUSE }}
   
     - name: Pause before installation (Windows)
       if: matrix.os == 'windows-latest'
-      run: Start-Sleep -Seconds 30
+      run: Start-Sleep -Seconds ${{ env.PYPI_PAUSE }}
 
     - name: Install the package from TestPyPI
       run: >
