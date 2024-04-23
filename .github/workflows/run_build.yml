@@ -16,6 +16,11 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
 
+    - name: Extract version
+      run: >
+        echo "PACKAGE_VERSION=$(python -c 'from version import __version__; print(__version__)')"
+        >> $GITHUB_ENV
+  
     - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v2
       with:
@@ -50,7 +55,7 @@ jobs:
         pip install
         -i https://test.pypi.org/simple/
         --extra-index-url https://pypi.org/simple
-        floodmodeller-api
+        floodmodeller-api==${{ env.PACKAGE_VERSION }}
 
     - name: Run tests
       run: pytest --pyargs floodmodeller_api
