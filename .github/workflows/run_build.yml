@@ -64,7 +64,7 @@ jobs:
   
     - name: Pause before installation (Windows)
       if: matrix.os == 'windows-latest'
-      run: timeout /t 30
+      run: Start-Sleep -Seconds 30
 
     - name: Install the package from TestPyPI
       run: >
