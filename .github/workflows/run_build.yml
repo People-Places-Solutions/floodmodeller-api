@@ -18,9 +18,10 @@ jobs:
 
     - name: Extract version
       run: |
-        set -e
-        echo "PACKAGE_VERSION=$(python -c 'from version import __version__; print(__version__)')" >> $GITHUB_ENV
-  
+        set -eo pipefail
+        PACKAGE_VERSION=$(python -c 'from version import __version__; print(__version__)')
+        echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+
     - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v2
       with:
