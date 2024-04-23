@@ -58,6 +58,14 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
+    - name: Pause before installation (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: sleep 30
+  
+    - name: Pause before installation (Windows)
+      if: matrix.os == 'windows-latest'
+      run: timeout /t 30
+
     - name: Install the package from TestPyPI
       run: >
         pip install
@@ -65,7 +73,7 @@ jobs:
         --extra-index-url https://pypi.org/simple
         "floodmodeller-api==${{ needs.build.outputs.package_version }}"
 
-    - name: Export path to libs
+    - name: Export path to libs (Ubuntu)
       if: matrix.OS == 'ubuntu-latest'
       run: export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
 

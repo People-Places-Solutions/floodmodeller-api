@@ -29,11 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
     
-      - name: Run unit tests with coverage
+      - name: Run unit tests with coverage (Windows)
         if: matrix.OS == 'windows-latest'
         run: pytest . -v --cov=floodmodeller_api --cov-fail-under=82
     
-      - name: Run unit tests without coverage
+      - name: Run unit tests without coverage (Ubuntu)
         if: matrix.OS == 'ubuntu-latest'
         run: |
           export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
