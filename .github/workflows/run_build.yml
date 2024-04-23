@@ -34,7 +34,7 @@ jobs:
       run: |
         set -eo pipefail
         PACKAGE_VERSION=$(python -c 'from floodmodeller_api.version import __version__; print(__version__)')
-        echo "::set-output name=package_version::$PACKAGE_VERSION"
+        echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
     - name: Build the package
       run: python -m build
@@ -47,7 +47,10 @@ jobs:
 
   install:
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
     - name: Set up Python ${{ env.PYTHON_VERSION }}
@@ -61,6 +64,10 @@ jobs:
         -i https://test.pypi.org/simple/
         --extra-index-url https://pypi.org/simple
         "floodmodeller-api==${{ needs.build.outputs.package_version }}"
+
+    - name: Export path to libs
+      if: matrix.OS == 'ubuntu-latest'
+      run: export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:floodmodeller_api/libs"
 
     - name: Run tests
       run: pytest --pyargs floodmodeller_api
