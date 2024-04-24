@@ -139,6 +139,8 @@ The dataframe attributes of ``LF1`` can be easily plotted.
 .. image:: convergence.png
    :width: 500
 
+
+
 **Example 4 - Reading TUFLOW HPC**
 
 The ``LF1`` class also includes information from linked TUFLOW HPC models.

@@ -104,6 +104,10 @@ Reference
 
    .. automethod:: diff
 
+   .. automethod:: to_json
+
+   .. automethod:: from_json
+
 Examples
 -----------
 

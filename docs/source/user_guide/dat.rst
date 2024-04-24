@@ -203,7 +203,12 @@ Reference
 
    .. automethod:: next
 
-   .. automethod:: prev        
+   .. automethod:: prev
+
+   .. automethod:: to_json
+
+   .. automethod:: from_json
+      
 
 Examples
 -----------

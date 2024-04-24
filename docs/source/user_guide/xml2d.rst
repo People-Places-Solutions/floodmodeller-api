@@ -204,6 +204,10 @@ Reference
 
    .. automethod:: simulate
 
+   .. automethod:: to_json
+
+   .. automethod:: from_json
+
 Examples
 -----------
 **Example 1 - Updating DTM file** 

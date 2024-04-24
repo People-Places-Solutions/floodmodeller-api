@@ -58,27 +58,31 @@ You can restore backups via the the `.file.restore()` method. Currently this res
     # Restore an older backup
     backups[6].restore(to = "restore-file.DAT")
 
-JSON
-----
-Any flood modeller object can be transformed to a JavaScript Object Notation (JSON) file, and vice 
-versa.  This allows to convert a flood modeller object to JSON format which could be potentially 
-used on a web page.  To do this it is needed to call the method ``.to_json()`` which will convert 
-any no-serializable object to into a serializable object to be able to create the JSON file.
-Besides, on the other way around, a flood modeller object can be created from a JSON file.  
-The method used for this conversion is ``.from_json()``.
 
-To convert a flood modeller object to a JSON file.
+JSON methods
+-------------
+Any flood modeller object can be converted to a JavaScript Object Notation (JSON) string, and vice 
+versa. To convert to JSON, simply call the ``.to_json()`` method on any API class to return a valid
+json string. Conversely, any valid json string produced by the API can be converted back into its
+equivalent API instance using the ``.from_json()`` constructor on any API class.
+
+To convert a flood modeller object to a JSON string:
 
 .. code:: python
 
     dat = DAT('some_network.dat')
 
-    obj_json = to_json(dat)
+    obj_json = dat.to_json()
 
-To convert a JSON file to a flood modeller object.
+To convert a JSON file to a flood modeller object:
 
 .. code:: python
 
-    json_file = some_json_fle.json
+    dat = DAT.from_json(json_string)
 
-    json_obj = from_json(json_file)
+To convert a single River Section unit to JSON:
+
+.. code:: python
+    
+    dat = DAT("some_network.dat")
+    river_unit_json = dat.sections["some_unit"].to_json()

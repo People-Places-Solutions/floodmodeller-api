@@ -112,6 +112,10 @@ Reference
 
    .. automethod:: diff
 
+   .. automethod:: to_json
+
+   .. automethod:: from_json
+
 Examples
 -----------
 **Example 1 - Update all IEFs in a folder to point to a new DAT file**
