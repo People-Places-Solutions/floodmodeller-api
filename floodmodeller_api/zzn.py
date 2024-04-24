@@ -53,8 +53,16 @@ class ZZN(FMFile):
             # Get zzn_dll path
             lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
             zzn_dll = Path(__file__).resolve().parent / "libs" / lib
-            # Using str() method as CDLL doesn't seem to like accepting Path object
-            zzn_read = ct.CDLL(str(zzn_dll))
+
+            # Catch LD_LIBRARY_PATH error for linux
+            try:
+                zzn_read = ct.CDLL(str(zzn_dll))
+            except OSError as e:
+                msg_1 = "libifport.so.5: cannot open shared object file: No such file or directory"
+                if msg_1 in str(e):
+                    msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
+                    raise OSError(msg_2) from e
+                raise
 
             # Get zzl path
             zzn = self._filepath
