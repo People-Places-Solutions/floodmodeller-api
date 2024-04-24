@@ -8,11 +8,11 @@ This page details the changes for version 0.4.3 of Flood Modeller Python API
 Updates
 --------------
 - ZZN support for linux (codespaces)
-- (`to/from json methods <https://api.floodmodeller.com/user_guide/additional_functionality.html#json-methods>`__)
-- LF classes can now also access Tuflow HPC info using the (`include_tuflow flag <https://api.floodmodeller.com/user_guide/lf.html#floodmodeller_api.LF1.to_dataframe>`__)
+- `to/from json methods <https://api.floodmodeller.com/user_guide/additional_functionality.html#json-methods>`__
+- LF classes can now also access Tuflow HPC info using the `include_tuflow flag <https://api.floodmodeller.com/user_guide/lf.html#floodmodeller_api.LF1.to_dataframe>`__
 - Testing improvements
 - Package build improvements
 - Improved GitHub integration (automated testing, linting, build)
 - Faster performance for inserting multiple units into DAT file
 - Faster performance for ``DAT.save()`` and ``DAT.update()``
-- Added (`Contributing Guide <https://github.com/People-Places-Solutions/floodmodeller-api/blob/main/CONTRIBUTING.md>`__)
+- Added `Contributing Guide <https://github.com/People-Places-Solutions/floodmodeller-api/blob/main/CONTRIBUTING.md>`__
