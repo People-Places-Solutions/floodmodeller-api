@@ -32,7 +32,6 @@
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
   
-  // "postCreateCommand": "pip install -e . && pip install -r requirements.txt && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> ~/.bashrc"
-  "postCreateCommand": "pip install -e . && pip install -r requirements.txt"
+  "postCreateCommand": "pip install -e . && pip install -r requirements.txt && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> ~/.bashrc"
     
 }
