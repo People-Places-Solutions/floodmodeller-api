@@ -1,7 +1,9 @@
-name: Build (PyPI)
+name: Build (Test PyPI)
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths: [ "floodmodeller_api/version.py" ]
 
 env:
   PYTHON_VERSION: "3.11"
@@ -38,11 +40,11 @@ jobs:
     - name: Build the package
       run: python -m build
 
-    - name: Publish the package to PyPI
+    - name: Publish the package to Test PyPI
       env:
         TWINE_USERNAME: "__token__"
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: twine upload dist/*
+        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: twine upload --repository testpypi dist/*
 
   install:
     needs: build
@@ -58,11 +60,11 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install the package from PyPI
+    - name: Install the package from Test PyPI
       run: |
         end=$((SECONDS+${{ env.PYPI_TIMEOUT }}))
         while true; do
-          if pip install "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
+          if pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
             break
           fi
           if [ $SECONDS -ge $end ]; then
@@ -82,17 +84,3 @@ jobs:
 
     - name: Run tests
       run: pytest --pyargs floodmodeller_api
-
-  release:
-    needs: [build, install]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out the repository
-      uses: actions/checkout@v2
-
-    - name: Create Git tag
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git tag -a v${{ needs.build.outputs.package_version }} -m "Release v${{ needs.build.outputs.package_version }}"
-        git push origin v${{ needs.build.outputs.package_version }}
