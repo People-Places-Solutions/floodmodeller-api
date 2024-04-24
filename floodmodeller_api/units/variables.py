@@ -17,12 +17,11 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
+from ..to_from_json import Jsonable
 from .helpers import join_10_char
 
-# Variables, Rules & Varrules Classes
 
-
-class Variables:
+class Variables(Jsonable):
     """Class to hold VARIABLES"""
 
     def __init__(self, var_block):

@@ -182,3 +182,37 @@ def convert_dataframe_index(index: Index) -> Index:
         return index.astype("float")
     except ValueError:
         return index
+
+
+class Jsonable:
+    """Base class used to provide underlying to_json and from_json methods"""
+
+    def __init__(self, **kwargs):
+        pass
+
+    def to_json(self) -> str:
+        """Converts the object instance into a JSON string representation.
+
+        Returns:
+            str: A JSON string representing the object instance.
+        """
+        return to_json(self)
+
+    @classmethod
+    def from_json(cls, json_string: str):
+        """Creates an object instance from a JSON string.
+
+        Args:
+            json_string (str): A JSON string representation of the object.
+
+        Returns:
+            An object instance of the class.
+        """
+        object_dict = from_json(json_string)
+        api_object = cls(from_json=True)
+
+        # Loop through the dictionary and update the object
+        for key, value in object_dict.items():
+            setattr(api_object, key, value)
+
+        return api_object

@@ -129,13 +129,7 @@ class INP(FMFile):
             self._update_inp_struct()
 
             # Write _raw_data out to INP file.
-            inp_string = ""
-            for line in self._raw_data:
-                inp_string += line + "\n"
-
-            "\n".join(self._raw_data)
-
-            return inp_string
+            return "\n".join(self._raw_data) + "\n"
 
         except Exception as e:
             self._handle_exception(e, when="write")

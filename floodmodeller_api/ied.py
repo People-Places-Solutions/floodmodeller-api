@@ -140,11 +140,7 @@ class IED(FMFile):
                         unit_group[unit.name] = unit
                         del unit_group[name]
 
-            ied_string = ""
-            for line in self._raw_data:
-                ied_string += line + "\n"
-
-            return ied_string
+            return "\n".join(self._raw_data) + "\n"
 
         except Exception as e:
             self._handle_exception(e, when="write")

@@ -23,14 +23,14 @@ from typing import NoReturn
 
 from .backup import File
 from .diff import check_item_with_dataframe_equal
-from .to_from_json import from_json, to_json
+from .to_from_json import Jsonable
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
 from .version import __version__
 
 
-class FMFile:
+class FMFile(Jsonable):
     """Base class for all Flood Modeller File types"""
 
     _filetype: str | None = None
@@ -182,17 +182,3 @@ class FMFile:
             diff.append((f"{self._filetype}->{key}", f"Error encountered: {e.args[0]}"))
 
         return (result, diff) if return_diff else result
-
-    def to_json(self) -> str:
-        return to_json(self)
-
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object

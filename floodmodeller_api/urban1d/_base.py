@@ -19,10 +19,10 @@ from __future__ import annotations
 """ Holds the base unit class for all FM 1D units Units """
 
 from ..diff import check_item_with_dataframe_equal
-from ..to_from_json import from_json, to_json
+from ..to_from_json import Jsonable
 
 
-class UrbanUnit:
+class UrbanUnit(Jsonable):
     _unit: str | None = None
     _subtype: str | None = None
     _name: str | None = None
@@ -85,22 +85,8 @@ class UrbanUnit:
         )
         return (result, diff) if return_diff else result
 
-    def to_json(self) -> str:
-        return to_json(self)
 
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object
-
-
-class UrbanSubsection:
+class UrbanSubsection(Jsonable):
     _name: str | None = None
     _urban_unit_class: type[UrbanUnit] | None = None
 
@@ -200,17 +186,3 @@ class UrbanSubsection:
             diff=diff,
         )
         return (result, diff) if return_diff else result
-
-    def to_json(self) -> str:
-        return to_json(self)
-
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object

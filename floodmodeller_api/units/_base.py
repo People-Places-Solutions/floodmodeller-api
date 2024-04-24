@@ -21,11 +21,11 @@ from __future__ import annotations
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
-from ..to_from_json import from_json, to_json
+from ..to_from_json import Jsonable
 from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
 
 
-class Unit:
+class Unit(Jsonable):
     _unit: str
     _subtype: str | None = None
     _name: str | None = None
@@ -212,17 +212,3 @@ class Unit:
         self._last_rule_row = rule_row
 
         return rules
-
-    def to_json(self) -> str:
-        return to_json(self)
-
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object

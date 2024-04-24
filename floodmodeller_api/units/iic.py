@@ -17,13 +17,13 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
-from ..to_from_json import from_json, to_json
+from ..to_from_json import Jsonable
 from .helpers import join_10_char, split_10_char
 
 # Initial Conditions Class
 
 
-class IIC:
+class IIC(Jsonable):
     """Class to hold initial conditions data"""
 
     def __init__(self, ic_block=None, n=12, from_json: bool = False):
@@ -105,17 +105,3 @@ class IIC:
             diff=diff,
         )
         return (result, diff) if return_diff else result
-
-    def to_json(self) -> str:
-        return to_json(self)
-
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object

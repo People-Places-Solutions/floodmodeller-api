@@ -26,10 +26,10 @@ from shutil import copy
 
 import pandas as pd
 
-from .to_from_json import from_json, to_json
+from .to_from_json import Jsonable
 
 
-class BackupControl:
+class BackupControl(Jsonable):
     """
     The BackupControl class provides functionality for creating and managing file backups.
 
@@ -271,17 +271,3 @@ class File(BackupControl):
         backup_logs = pd.read_csv(self.backup_csv_path)
         backup_logs = backup_logs[backup_logs.file_id != self.file_id]
         backup_logs.to_csv(self.backup_csv_path, index=False)
-
-    def to_json(self) -> str:
-        return to_json(self)
-
-    @classmethod
-    def from_json(cls, json_string: str):
-        object_dict = from_json(json_string)
-        api_object = cls(from_json=True)
-
-        # Loop through the dictionary and update the object
-        for key, value in object_dict.items():
-            setattr(api_object, key, value)
-
-        return api_object
