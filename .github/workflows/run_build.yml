@@ -7,7 +7,7 @@ on:
 
 env:
   PYTHON_VERSION: "3.11"
-  PYPI_PAUSE: 60
+  PYPI_PAUSE: 120
 
 jobs:
   build:
