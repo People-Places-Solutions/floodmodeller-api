@@ -27,6 +27,7 @@ from .to_from_json import Jsonable
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
+from .util import handle_exception
 from .version import __version__
 
 
@@ -99,27 +100,25 @@ class FMFile(Jsonable):
 
         print(f"{self._filetype} File Saved to: {filepath}")
 
+    @handle_exception(when="compare")
     def _diff(self, other, force_print=False):
-        try:
-            if self._filetype != other._filetype:
-                raise TypeError("Cannot compare objects of different filetypes")
-            diff = self._get_diff(other)
-            if diff[0]:
-                print("No difference, files are equivalent")
+        if self._filetype != other._filetype:
+            raise TypeError("Cannot compare objects of different filetypes")
+        diff = self._get_diff(other)
+        if diff[0]:
+            print("No difference, files are equivalent")
+        else:
+            print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
+            if len(diff[1]) > self.MAX_DIFF and not force_print:
+                print(f"[Showing first {self.MAX_DIFF} differences...] ")
+                print(
+                    "\n".join(
+                        [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
+                    ),
+                )
+                print("\n...To see full list of all differences add force_print=True")
             else:
-                print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
-                if len(diff[1]) > self.MAX_DIFF and not force_print:
-                    print(f"[Showing first {self.MAX_DIFF} differences...] ")
-                    print(
-                        "\n".join(
-                            [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
-                        ),
-                    )
-                    print("\n...To see full list of all differences add force_print=True")
-                else:
-                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
-        except Exception as e:
-            self._handle_exception(e, when="compare")
+                print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call

@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 import pandas as pd
 
 from .._base import FMFile
+from ..util import handle_exception
 from .lf_helpers import state_factory
 from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
 
@@ -40,24 +41,21 @@ class LF(FMFile):
         Initiates 'LF' class object
     """
 
+    @handle_exception(when="read")
     def __init__(
         self,
         lf_filepath: str | Path | None,
         data_to_extract: dict,
         steady: bool = False,
     ):
-        try:
-            FMFile.__init__(self, lf_filepath)
+        FMFile.__init__(self, lf_filepath)
 
-            self._data_to_extract = data_to_extract
-            self._init_counters()
-            self._init_parsers()
-            self._state = state_factory(steady, self._extracted_data)
+        self._data_to_extract = data_to_extract
+        self._init_counters()
+        self._init_parsers()
+        self._state = state_factory(steady, self._extracted_data)
 
-            self._read()
-
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        self._read()
 
     def _read(self, force_reread: bool = False, suppress_final_step: bool = False):
         # Read LF file

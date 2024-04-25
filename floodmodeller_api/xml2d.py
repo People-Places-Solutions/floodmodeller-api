@@ -31,6 +31,7 @@ from tqdm import trange
 from floodmodeller_api._base import FMFile
 
 from .logs import error_2d_dict, lf_factory
+from .util import handle_exception
 from .xml2d_template import xml2d_template
 
 
@@ -70,19 +71,16 @@ class XML2D(FMFile):
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
+    @handle_exception(when="read")
     def __init__(self, xml_filepath: str | Path | None = None, from_json: bool = False):
-        try:
-            if from_json:
-                return
-            if xml_filepath is not None:
-                FMFile.__init__(self, xml_filepath)
-                self._read()
-                self._log_path = self._filepath.with_suffix(".lf2")
-            else:
-                self._read(from_blank=True)
-
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        if from_json:
+            return
+        if xml_filepath is not None:
+            FMFile.__init__(self, xml_filepath)
+            self._read()
+            self._log_path = self._filepath.with_suffix(".lf2")
+        else:
+            self._read(from_blank=True)
 
     def _read(self, from_blank=False):
         # Read xml data
@@ -460,6 +458,7 @@ class XML2D(FMFile):
         self._read()
         self._log_path = self._filepath.with_suffix(".lf2")
 
+    @handle_exception(when="simulate")
     def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
@@ -508,78 +507,74 @@ class XML2D(FMFile):
         self.range_function = range_function
         self.range_settings = range_settings if range_settings else {}
 
-        try:
-            if self._filepath is None:
-                raise UserWarning(
-                    "xml2D must be saved to a specific filepath before simulate() can be called.",
-                )
-            if precision.upper() == "DEFAULT":
-                precision = "SINGLE"  # defaults to single precision
-                for _, domain in self.domains.items():
-                    if domain["run_data"].get("double_precision") == "required":
-                        precision = "DOUBLE"
-                        break
-
-            if enginespath == "":
-                # Default location
-                _enginespath = r"C:\Program Files\Flood Modeller\bin"
-            else:
-                _enginespath = enginespath
-                if not Path(_enginespath).exists():
-                    raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
-                    )
-
-            # checking if all schemes used are fast, if so will use FAST.exe
-            # TODO: Add in option to choose to use or not to use if you can
-            is_fast = True
+        if self._filepath is None:
+            raise UserWarning(
+                "xml2D must be saved to a specific filepath before simulate() can be called.",
+            )
+        if precision.upper() == "DEFAULT":
+            precision = "SINGLE"  # defaults to single precision
             for _, domain in self.domains.items():
-                if domain["run_data"]["scheme"] != "FAST":
-                    is_fast = False
+                if domain["run_data"].get("double_precision") == "required":
+                    precision = "DOUBLE"
                     break
 
-            if is_fast is True:
-                isis2d_fp = str(Path(_enginespath, "FAST.exe"))
-            elif precision.upper() == "SINGLE":
-                isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
-            else:
-                isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
+        if enginespath == "":
+            # Default location
+            _enginespath = r"C:\Program Files\Flood Modeller\bin"
+        else:
+            _enginespath = enginespath
+            if not Path(_enginespath).exists():
+                raise Exception(
+                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
+                )
 
-            if not Path(isis2d_fp).exists():
-                raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
+        # checking if all schemes used are fast, if so will use FAST.exe
+        # TODO: Add in option to choose to use or not to use if you can
+        is_fast = True
+        for _, domain in self.domains.items():
+            if domain["run_data"]["scheme"] != "FAST":
+                is_fast = False
+                break
 
-            console_output = console_output.lower()
-            run_command = (
-                f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
-            )
-            stdout = DEVNULL if console_output == "simple" else None
+        if is_fast is True:
+            isis2d_fp = str(Path(_enginespath, "FAST.exe"))
+        elif precision.upper() == "SINGLE":
+            isis2d_fp = str(Path(_enginespath, "ISIS2d.exe"))
+        else:
+            isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
-            if method.upper() == "WAIT":
-                print("Executing simulation ... ")
-                # execute simulation
-                process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+        if not Path(isis2d_fp).exists():
+            raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
 
-                # progress bar based on log files:
-                if console_output == "simple":
-                    self._init_log_file()
-                    self._update_progress_bar(process)
+        console_output = console_output.lower()
+        run_command = (
+            f'"{isis2d_fp}" {"-q" if console_output != "detailed" else ""} "{self._filepath}"'
+        )
+        stdout = DEVNULL if console_output == "simple" else None
 
-                while process.poll() is None:
-                    # process is still running
-                    time.sleep(1)
+        if method.upper() == "WAIT":
+            print("Executing simulation ... ")
+            # execute simulation
+            process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
 
-                exitcode = process.returncode
-                self._interpret_exit_code(exitcode, raise_on_failure)
+            # progress bar based on log files:
+            if console_output == "simple":
+                self._init_log_file()
+                self._update_progress_bar(process)
 
-            elif method.upper() == "RETURN_PROCESS":
-                print("Executing simulation ...")
-                # execute simulation
-                return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+            while process.poll() is None:
+                # process is still running
+                time.sleep(1)
 
-            return None
+            exitcode = process.returncode
+            self._interpret_exit_code(exitcode, raise_on_failure)
 
-        except Exception as e:
-            self._handle_exception(e, when="simulate")
+        elif method.upper() == "RETURN_PROCESS":
+            print("Executing simulation ...")
+            # execute simulation
+            return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+
+        return None
 
     def get_log(self):
         """If log files for the simulation exist, this function returns them as a LF2 class object
