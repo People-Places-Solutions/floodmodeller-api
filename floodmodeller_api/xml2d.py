@@ -385,26 +385,21 @@ class XML2D(FMFile):
                     except AttributeError:
                         self._data[attr] = None
 
+    @handle_exception(when="write")
     def _write(self) -> str:
-        orig_xml_tree = deepcopy(self._xmltree)
+        self._update_dict()
+        self._recursive_update_xml(self._data, self._raw_data, "ROOT")
+        self._recursive_remove_data_xml(self._data, self._xmltree.getroot())
+        etree.indent(self._xmltree, space="    ")
         try:
-            self._update_dict()
-            self._recursive_update_xml(self._data, self._raw_data, "ROOT")
-            self._recursive_remove_data_xml(self._data, self._xmltree.getroot())
-            etree.indent(self._xmltree, space="    ")
-            try:
-                self._validate()
-            except Exception:
-                self._recursive_reorder_xml()
-                self._validate()
+            self._validate()
+        except Exception:
+            self._recursive_reorder_xml()
+            self._validate()
 
-            self._raw_data = deepcopy(self._data)  # reset raw data to equal data
+        self._raw_data = deepcopy(self._data)  # reset raw data to equal data
 
-            return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
-
-        except Exception as e:
-            self._xmltree = orig_xml_tree
-            self._handle_exception(e, when="write")
+        return f'<?xml version="1.0" standalone="yes"?>\n{etree.tostring(self._xmltree.getroot()).decode()}'
 
     def _get_multi_value_keys(self):
         self._multi_value_keys = []
