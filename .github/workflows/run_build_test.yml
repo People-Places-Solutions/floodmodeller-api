@@ -1,7 +1,9 @@
-name: Build (PyPI)
+name: Build (Test PyPI)
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths: [ "floodmodeller_api/version.py" ]
 
 env:
   PYTHON_VERSION: "3.11"
@@ -38,23 +40,11 @@ jobs:
     - name: Build the package
       run: python -m build
 
-    - name: Publish the package to PyPI
+    - name: Publish the package to Test PyPI
       env:
         TWINE_USERNAME: "__token__"
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: twine upload dist/*
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: ncipollo/release-action@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        commit: main
-        tag: v${{ steps.extract_version.outputs.package_version }}
-        generateReleaseNotes: true
-        artifacts: dist/*
-        draft: true
+        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      run: twine upload --repository testpypi dist/*
 
   install:
     needs: build
@@ -70,11 +60,11 @@ jobs:
       with:
         python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: Install the package from PyPI
+    - name: Install the package from Test PyPI
       run: |
         end=$((SECONDS+${{ env.PYPI_TIMEOUT }}))
         while true; do
-          if pip install "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
+          if pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
             break
           fi
           if [ $SECONDS -ge $end ]; then
