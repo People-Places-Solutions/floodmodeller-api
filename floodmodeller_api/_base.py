@@ -137,7 +137,7 @@ class FMFile(Jsonable):
             f"\n\nDetails: {__version__}-{fname}-{line_no}"
             f"\nMsg: {err}"
             "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api",
-        )
+        ) from err
 
     def __eq__(self, other, return_diff=False):
         result = True
