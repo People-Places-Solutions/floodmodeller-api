@@ -9,7 +9,8 @@
 
 html[data-theme="light"] {
     --pst-color-primary: black;
-    --pst-color-link: #0A7DFF;
+    --pst-color-link: #0061cf;
+    --pst-color-secondary: #0ad287;
     --sd-color-secondary: #0ad287;
     --sd-color-secondary-text: #fff;
     --sd-color-secondary-highlight: #6c757d;
