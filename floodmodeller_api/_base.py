@@ -27,8 +27,7 @@ from .to_from_json import Jsonable
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-from .util import handle_exception
-from .version import __version__
+from .util import FloodModellerAPIError, handle_exception
 
 
 class FMFile(Jsonable):
@@ -124,20 +123,7 @@ class FMFile(Jsonable):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def _handle_exception(self, err, when) -> NoReturn:
-        tb = err.__traceback__
-        while tb.tb_next is not None:
-            tb = tb.tb_next
-        line_no = tb.tb_lineno
-        tb_path = Path(tb.tb_frame.f_code.co_filename)
-        fname = "/".join(tb_path.parts[-2:])
-
-        raise Exception(
-            "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-            f"\nAPI Error: Problem encountered when trying to {when} {self._filetype} file {self._filepath}."
-            f"\n\nDetails: {__version__}-{fname}-{line_no}"
-            f"\nMsg: {err}"
-            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api",
-        ) from err
+        raise FloodModellerAPIError(err, when, self._filetype, self._filepath) from err
 
     def __eq__(self, other, return_diff=False):
         result = True

@@ -5,6 +5,7 @@ import pytest
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units import QTBDY
+from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture
@@ -132,7 +133,7 @@ def test_insert_unit_too_many_arguments_error(dat_ex6, units, kwargs):
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         dat_ex6.insert_unit(units[0], **kwargs)
 
 
@@ -146,7 +147,7 @@ def test_insert_unit_no_arguments_error(dat_ex6, units):
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         dat_ex6.insert_unit(units[0])
 
 

@@ -4,6 +4,7 @@ from unittest.mock import call, patch
 import pytest
 
 from floodmodeller_api import IEF
+from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture()
@@ -91,7 +92,7 @@ def test_simulate_error_without_bin(tmpdir, ief: IEF):
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         ief.simulate(enginespath=str(Path(tmpdir, "bin")))
 
 
@@ -105,7 +106,7 @@ def test_simulate_error_without_exe(tmpdir, ief: IEF):
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         ief.simulate(enginespath=str(tmpdir))
 
 
@@ -121,5 +122,5 @@ def test_simulate_error_without_save():
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         ief.simulate()
