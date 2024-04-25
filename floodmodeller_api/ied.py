@@ -103,9 +103,9 @@ class IED(FMFile):
                     new_unit_data = []
 
                 new_block_len = len(new_unit_data)
-                self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ] = new_unit_data
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_unit_data
+                )
                 # adjust block shift for change in number of lines in bdy block
                 block_shift += new_block_len - prev_block_len
 

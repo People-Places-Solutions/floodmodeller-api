@@ -107,9 +107,7 @@ class INP(FMFile):
                 else:  # Of unit type
                     subsection = getattr(
                         self,
-                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
-                            "attribute"
-                        ],
+                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["attribute"],
                     )  # Get unit object
                     new_subsection_data = (
                         subsection._write()
@@ -117,9 +115,9 @@ class INP(FMFile):
 
                 new_block_len = len(new_subsection_data)
 
-                self._raw_data[
-                    block["start"] + block_shift : block["end"] + 1 + block_shift
-                ] = new_subsection_data  # Replace existing subsection with new subsection string
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_subsection_data  # Replace existing subsection with new subsection string
+                )
                 block_shift += (
                     new_block_len - prev_block_len
                 )  # adjust block shift for change in number of lines in block

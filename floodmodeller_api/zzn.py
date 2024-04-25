@@ -183,9 +183,7 @@ class ZZN(FMFile):
         self.meta["savint_range"] = self.meta["savint_range"].value
 
         self.meta["zzn_name"] = self.meta["zzn_name"].value.decode()
-        self.meta["labels"] = [
-            label.value.decode().strip() for label in list(self.meta["labels"])
-        ]
+        self.meta["labels"] = [label.value.decode().strip() for label in list(self.meta["labels"])]
         self.meta["model_title"] = self.meta["model_title"].value.decode()
 
     def to_dataframe(  # noqa: PLR0911

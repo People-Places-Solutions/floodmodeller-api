@@ -82,6 +82,7 @@ def is_windows() -> bool:
 
 def handle_exception(when: str) -> Callable:
     """Decorator factory to wrap a method with exception handling."""
+
     def decorator(method: Callable) -> Callable:
         @wraps(method)
         def wrapped_method(self: FMFile, *args, **kwargs):
@@ -89,5 +90,7 @@ def handle_exception(when: str) -> Callable:
                 return method(self, *args, **kwargs)
             except Exception as e:
                 self._handle_exception(e, when)
+
         return wrapped_method
+
     return decorator
