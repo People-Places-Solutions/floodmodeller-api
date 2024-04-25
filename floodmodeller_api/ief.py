@@ -569,10 +569,10 @@ class IEF(FMFile):
         # create LF instance
         self._lf = lf_factory(lf_filepath, suffix, steady)
 
-    def _no_log_file(self, reason):
+    def _no_log_file(self, reason: str) -> None:
         """Warning that there will be no progress bar"""
 
-        print("No progress bar as " + reason + ". Simulation will continue as usual.")
+        print(f"No progress bar as {reason}. Simulation will continue as usual.")
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""
