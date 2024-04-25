@@ -126,7 +126,7 @@ def test_insert_unit_at(units, dat_ex6):
 def test_insert_unit_too_many_arguments_error(dat_ex6, units, kwargs):
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        r"\nAPI Error: Problem encountered when trying to insert unit DAT file .*\."
+        r"\nAPI Error: Problem encountered when trying to insert unit into DAT file .*\."
         r"\n"
         r"\nDetails: .*-floodmodeller_api/dat\.py-\d+"
         r"\nMsg: Only one of add_at, add_before, or add_after required"
@@ -140,7 +140,7 @@ def test_insert_unit_too_many_arguments_error(dat_ex6, units, kwargs):
 def test_insert_unit_no_arguments_error(dat_ex6, units):
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        r"\nAPI Error: Problem encountered when trying to insert unit DAT file .*\."
+        r"\nAPI Error: Problem encountered when trying to insert unit into DAT file .*\."
         r"\n"
         r"\nDetails: .*-floodmodeller_api/dat\.py-\d+"
         r"\nMsg: No positional argument given\. Please provide either add_before, add_at or add_after"

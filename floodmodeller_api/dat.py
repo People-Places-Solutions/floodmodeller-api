@@ -112,7 +112,7 @@ class DAT(FMFile):
 
     # def _get_unit_from_connectivity(self, method) #use this as method prev and next
 
-    @handle_exception(when="calculating next unit")
+    @handle_exception(when="calculate next unit in")
     def next(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds next unit in the reach.
 
@@ -148,7 +148,7 @@ class DAT(FMFile):
 
         return self._name_label_match(unit)
 
-    @handle_exception(when="calculating previous unit")
+    @handle_exception(when="calculate previous unit in")
     def prev(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds previous unit in the reach.
 
@@ -687,7 +687,7 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
-    @handle_exception(when="remove unit")
+    @handle_exception(when="remove unit from")
     def remove_unit(self, unit: Unit) -> None:
         """Remove a unit from the dat file.
 
@@ -721,7 +721,7 @@ class DAT(FMFile):
         self._update_dat_struct()
         self.general_parameters["Node Count"] -= 1
 
-    @handle_exception(when="insert unit")
+    @handle_exception(when="insert unit into")
     def insert_unit(  # noqa: C901, PLR0912, PLR0913
         self,
         unit: Unit,
