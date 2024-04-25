@@ -18,10 +18,13 @@ from __future__ import annotations
 
 import sys
 import webbrowser
+from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from typing import Callable
+
     from ._base import FMFile
 
 
@@ -75,3 +78,16 @@ def read_file(filepath: str | Path) -> FMFile:
 
 def is_windows() -> bool:
     return sys.platform.startswith("win")
+
+
+def handle_exception(when: str) -> Callable:
+    """Decorator factory to wrap a method with exception handling."""
+    def decorator(method: Callable) -> Callable:
+        @wraps(method)
+        def wrapped_method(self: FMFile, *args, **kwargs):
+            try:
+                return method(self, *args, **kwargs)
+            except Exception as e:
+                self._handle_exception(e, when)
+        return wrapped_method
+    return decorator
