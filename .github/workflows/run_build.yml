@@ -52,7 +52,6 @@ jobs:
       with:
         commit: main
         tag: v${{ steps.extract_version.outputs.package_version }}
-        name: Release v${{ steps.extract_version.outputs.package_version }}
         generateReleaseNotes: true
         artifacts: dist/*
         draft: true
