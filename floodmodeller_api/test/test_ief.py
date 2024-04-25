@@ -1,5 +1,6 @@
+import datetime as dt
 from pathlib import Path
-from unittest.mock import call, patch
+from unittest.mock import Mock, call, patch
 
 import pytest
 
@@ -98,20 +99,57 @@ def test_simulate(
         assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
 
 
-def test_log_file_unsupported():
-    pass
+def test_log_file_unknown(capsys):
+    ief = IEF()
+    ief.RunType = "X"
+
+    ief._init_log_file()
+    actual = capsys.readouterr().out
+    expected = 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
+    assert actual == expected
 
 
-def test_log_file_slow_to_exist():
-    pass
+def test_log_file_unsupported(capsys):
+    ief = IEF()
+    ief.RunType = "Steady"
+
+    ief._init_log_file()
+    actual = capsys.readouterr().out
+    expected = "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
+    assert actual == expected
 
 
-def test_log_file_timeout():
-    pass
+def test_log_file_timeout(capsys, sleep, log_timeout):
+    ief = IEF()
+    ief.RunType = "Unsteady"
+    lf_filepath = Mock()
+    lf_filepath.is_file.return_value = False
+
+    with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
+        ief._init_log_file()
+
+    actual = capsys.readouterr().out
+    expected = "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
+    assert actual == expected
 
 
-def test_log_file_from_old_run():
-    pass
+def _test_log_file_from_old_run(capsys, sleep, log_timeout):
+    ief = IEF()
+    ief.RunType = "Unsteady"
+    lf_filepath = Mock()
+    lf_filepath.is_file.return_value = True
+    lf_filepath.stat.return_value.st_mtime = 30
+
+    with (
+        patch("floodmodeller_api.ief.dt.datetime.now") as now,
+        patch.object(ief, "_get_result_filepath", return_value=lf_filepath),
+    ):
+        now.return_value = dt.datetime.fromtimestamp(20)
+        ief._init_log_file()
+
+    actual = capsys.readouterr().out
+    expected = "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
+    assert actual == expected
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
