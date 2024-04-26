@@ -1,11 +1,9 @@
 from pathlib import Path
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import call, patch
 
 import pytest
-from freezegun import freeze_time
 
 from floodmodeller_api import IEF
-from floodmodeller_api.logs import init_log_file
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -43,12 +41,6 @@ def p_open():
 def sleep():
     with patch("floodmodeller_api.ief.time.sleep") as sleep:
         yield sleep
-
-
-@pytest.fixture()
-def log_timeout():
-    with patch("floodmodeller_api.logs.lf.LOG_TIMEOUT", new=0):
-        yield
 
 
 def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
@@ -98,57 +90,6 @@ def test_simulate(
     if method == "WAIT":
         assert p_open.return_value.poll.call_count == 3
         assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
-
-
-def test_log_file_unsupported(capsys):
-    lf = init_log_file(None, "lf1", True)
-
-    assert lf is None
-    assert (
-        capsys.readouterr().out
-        == "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
-    )
-
-
-@pytest.mark.usefixtures("sleep", "log_timeout")
-def test_log_file_timeout(capsys):
-    lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = False
-    lf = init_log_file(lf_filepath, "lf1", False)
-
-    assert lf is None
-    assert (
-        capsys.readouterr().out
-        == "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
-    )
-
-
-@pytest.mark.usefixtures("sleep", "log_timeout")
-@freeze_time("1970-01-01 00:00:00", tick=True)
-def test_log_file_from_old_run(capsys):
-    lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = True
-    lf_filepath.stat.return_value.st_mtime = -10
-    lf = init_log_file(lf_filepath, "lf1", False)
-
-    assert lf is None
-    assert (
-        capsys.readouterr().out
-        == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
-    )
-
-
-@pytest.mark.usefixtures("sleep", "log_timeout")
-@freeze_time("1970-01-01 00:00:00", tick=True)
-def test_log_file_found():
-    lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = True
-    lf_filepath.stat.return_value.st_mtime = -1
-    with patch("floodmodeller_api.logs.lf.LF1") as lf1:
-        lf = init_log_file(lf_filepath, "lf1", False)
-
-    assert lf is not None
-    lf1.assert_called_once_with(lf_filepath, False)
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
