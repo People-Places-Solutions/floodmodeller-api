@@ -1,8 +1,8 @@
-import datetime as dt
 from pathlib import Path
 from unittest.mock import Mock, call, patch
 
 import pytest
+from freezegun import freeze_time
 
 from floodmodeller_api import IEF
 from floodmodeller_api.util import FloodModellerAPIError
@@ -104,9 +104,10 @@ def test_log_file_unknown(capsys):
     ief.RunType = "X"
 
     ief._init_log_file()
-    actual = capsys.readouterr().out
-    expected = 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
-    assert actual == expected
+    assert (
+        capsys.readouterr().out
+        == 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
+    )
 
 
 def test_log_file_unsupported(capsys):
@@ -114,9 +115,10 @@ def test_log_file_unsupported(capsys):
     ief.RunType = "Steady"
 
     ief._init_log_file()
-    actual = capsys.readouterr().out
-    expected = "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
-    assert actual == expected
+    assert (
+        capsys.readouterr().out
+        == "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
+    )
 
 
 def test_log_file_timeout(capsys, sleep, log_timeout):
@@ -128,28 +130,27 @@ def test_log_file_timeout(capsys, sleep, log_timeout):
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
 
-    actual = capsys.readouterr().out
-    expected = "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
-    assert actual == expected
+    assert (
+        capsys.readouterr().out
+        == "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
+    )
 
 
-def _test_log_file_from_old_run(capsys, sleep, log_timeout):
+@freeze_time("1970-01-01 00:00:00", tick=True)
+def _test_log_file_from_old_run(capsys, sleep):
     ief = IEF()
     ief.RunType = "Unsteady"
     lf_filepath = Mock()
     lf_filepath.is_file.return_value = True
     lf_filepath.stat.return_value.st_mtime = 30
 
-    with (
-        patch("floodmodeller_api.ief.dt.datetime.now") as now,
-        patch.object(ief, "_get_result_filepath", return_value=lf_filepath),
-    ):
-        now.return_value = dt.datetime.fromtimestamp(20)
+    with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
 
-    actual = capsys.readouterr().out
-    expected = "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
-    assert actual == expected
+    assert (
+        capsys.readouterr().out
+        == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
+    )
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):
