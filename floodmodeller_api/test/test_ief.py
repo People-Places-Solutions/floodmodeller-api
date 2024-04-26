@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import Mock, call, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from freezegun import freeze_time
@@ -55,6 +55,7 @@ def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
     assert ief._write() == data_before
 
 
+@pytest.mark.usefixtures("log_timeout")
 @pytest.mark.parametrize(
     ("precision", "method", "amend", "exe"),
     [
@@ -78,7 +79,6 @@ def test_simulate(
     exe_bin: Path,
     p_open,
     sleep,
-    log_timeout,
     precision: str,
     method: str,
     amend: bool,
@@ -101,7 +101,7 @@ def test_simulate(
 
 def test_log_file_unknown(capsys):
     ief = IEF()
-    ief.RunType = "X"
+    ief.RunType = "X"  # unknown unsupported type
 
     ief._init_log_file()
     assert (
@@ -112,7 +112,7 @@ def test_log_file_unknown(capsys):
 
 def test_log_file_unsupported(capsys):
     ief = IEF()
-    ief.RunType = "Steady"
+    ief.RunType = "Steady"  # known unsupported type
 
     ief._init_log_file()
     assert (
@@ -121,11 +121,12 @@ def test_log_file_unsupported(capsys):
     )
 
 
-def test_log_file_timeout(capsys, sleep, log_timeout):
+@pytest.mark.usefixtures("sleep", "log_timeout")
+def test_log_file_timeout(capsys):
     ief = IEF()
-    ief.RunType = "Unsteady"
-    lf_filepath = Mock()
-    lf_filepath.is_file.return_value = False
+    ief.RunType = "Unsteady"  # supported type
+    lf_filepath = MagicMock()
+    lf_filepath.is_file.return_value = False  # but file doesn't exist
 
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
@@ -136,13 +137,14 @@ def test_log_file_timeout(capsys, sleep, log_timeout):
     )
 
 
+@pytest.mark.usefixtures("sleep", "log_timeout")
 @freeze_time("1970-01-01 00:00:00", tick=True)
-def _test_log_file_from_old_run(capsys, sleep):
+def test_log_file_from_old_run(capsys):
     ief = IEF()
-    ief.RunType = "Unsteady"
-    lf_filepath = Mock()
-    lf_filepath.is_file.return_value = True
-    lf_filepath.stat.return_value.st_mtime = 30
+    ief.RunType = "Unsteady"  # supported type
+    lf_filepath = MagicMock()
+    lf_filepath.is_file.return_value = True  # file exists
+    lf_filepath.stat.return_value.st_mtime = -10  # but it's old
 
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
@@ -151,6 +153,24 @@ def _test_log_file_from_old_run(capsys, sleep):
         capsys.readouterr().out
         == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
     )
+
+
+@pytest.mark.usefixtures("sleep", "log_timeout")
+@freeze_time("1970-01-01 00:00:00", tick=True)
+def test_log_file_found():
+    ief = IEF()
+    ief.RunType = "Unsteady"  # supported type
+    lf_filepath = MagicMock()
+    lf_filepath.is_file.return_value = True  # file exists
+    lf_filepath.stat.return_value.st_mtime = -1  # and it's new
+
+    with (
+        patch.object(ief, "_get_result_filepath", return_value=lf_filepath),
+        patch("floodmodeller_api.logs.lf.LF1") as lf1,
+    ):
+        ief._init_log_file()
+
+    lf1.assert_called_once_with(lf_filepath, False)
 
 
 def test_simulate_error_without_bin(tmpdir, ief: IEF):

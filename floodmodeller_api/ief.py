@@ -540,7 +540,7 @@ class IEF(FMFile):
             log_file_exists = lf_filepath.is_file()
 
             # timeout
-            if time.time() > max_time:
+            if (not log_file_exists) and (time.time() > max_time):
                 self._no_log_file("log file is expected but not detected")
                 self._lf = None
                 return
@@ -561,7 +561,7 @@ class IEF(FMFile):
             old_log_file = time_diff_sec > self.OLD_FILE
 
             # timeout
-            if time.time() > max_time:
+            if old_log_file and (time.time() > max_time):
                 self._no_log_file("log file is from previous run")
                 self._lf = None
                 return
