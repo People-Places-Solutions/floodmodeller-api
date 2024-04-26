@@ -426,7 +426,7 @@ class IEF(FMFile):
             process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
             # progress bar based on log files
-            steady = (self.RunType == "Steady")
+            steady = self.RunType == "Steady"
             self._lf = create_lf(self._log_path, "lf1") if not steady else None
             self._update_progress_bar(process)
 

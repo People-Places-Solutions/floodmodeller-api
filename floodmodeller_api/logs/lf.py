@@ -321,7 +321,7 @@ def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
     def _no_log_file(reason: str) -> None:
         print(f"No progress bar as {reason}. Simulation will continue as usual.")
 
-    # ensure progress bar is supported for that type
+    # ensure progress bar is supported
     if suffix not in {"lf1", "lf2"}:
         _no_log_file("log file must have suffix lf1 or lf2")
         return None
