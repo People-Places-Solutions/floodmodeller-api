@@ -6,7 +6,7 @@ can be used, code reference and examples.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    dat
    xml2d

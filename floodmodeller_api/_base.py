@@ -39,8 +39,7 @@ class FMFile(Jsonable):
 
     def __init__(self, filepath: str | Path | None = None, **kwargs):
         if filepath is not None:
-            self._filepath = Path(filepath).resolve()  # save filepath to class
-            # Check if filepath valid
+            self._filepath = Path(filepath)
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
 
             if not self._filepath.suffix.lower() == self._suffix:
@@ -62,7 +61,9 @@ class FMFile(Jsonable):
                 self.file = file
 
     def __repr__(self):
-        return f"<floodmodeller_api Class: {self._filetype}(filepath={self._filepath})>"
+        filepath = "<in_memory>" if not hasattr(self, "_filepath") else self._filepath
+        return f"<floodmodeller_api Class: {self._filetype}(filepath={filepath})>"
+
 
     def _write(self):
         raise NotImplementedError
