@@ -104,6 +104,8 @@ def test_log_file_unknown(capsys):
     ief.RunType = "X"  # unknown unsupported type
 
     ief._init_log_file()
+
+    assert ief._lf is None
     assert (
         capsys.readouterr().out
         == 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
@@ -115,6 +117,8 @@ def test_log_file_unsupported(capsys):
     ief.RunType = "Steady"  # known unsupported type
 
     ief._init_log_file()
+
+    assert ief._lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
@@ -131,6 +135,7 @@ def test_log_file_timeout(capsys):
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
 
+    assert ief._lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
@@ -149,6 +154,7 @@ def test_log_file_from_old_run(capsys):
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
         ief._init_log_file()
 
+    assert ief._lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
@@ -170,6 +176,7 @@ def test_log_file_found():
     ):
         ief._init_log_file()
 
+    assert ief._lf is not None
     lf1.assert_called_once_with(lf_filepath, False)
 
 

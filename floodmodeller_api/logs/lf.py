@@ -318,10 +318,13 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
     raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
 
 
-def determine_suffix_steady(run_type: str) -> tuple[str, bool]:
+def determine_suffix_steady(ief_run_type: str) -> tuple[str, bool]:
     """Determine suffix and whether run is steady"""
-    if run_type == "Unsteady":
+    if ief_run_type == "Unsteady":
         return "lf1", False
-    if run_type == "Steady":
+    if ief_run_type == "Steady":
         return "lf1", True
-    raise ValueError(f'Unexpected run type "{run_type}"')
+    raise ValueError(f'Unexpected run type "{ief_run_type}"')
+
+def no_log_file(reason: str) -> None:
+    print(f"No progress bar as {reason}. Simulation will continue as usual.")

@@ -29,7 +29,7 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import determine_suffix_steady, lf_factory
+from .logs import determine_suffix_steady, lf_factory, no_log_file
 from .util import handle_exception
 from .zzn import ZZN
 
@@ -501,13 +501,13 @@ class IEF(FMFile):
         try:
             suffix, steady = determine_suffix_steady(self.RunType)
         except ValueError:
-            self._no_log_file(f'run type "{self.RunType}" not supported')
+            no_log_file(f'run type "{self.RunType}" not supported')
             self._lf = None
             return
 
         # ensure progress bar is supported for that type
         if not (suffix == "lf1" and steady is False):
-            self._no_log_file("only 1D unsteady runs are supported")
+            no_log_file("only 1D unsteady runs are supported")
             self._lf = None
             return
 
@@ -525,7 +525,7 @@ class IEF(FMFile):
 
             # timeout
             if (not log_file_exists) and (time.time() > max_time):
-                self._no_log_file("log file is expected but not detected")
+                no_log_file("log file is expected but not detected")
                 self._lf = None
                 return
 
@@ -546,17 +546,12 @@ class IEF(FMFile):
 
             # timeout
             if old_log_file and (time.time() > max_time):
-                self._no_log_file("log file is from previous run")
+                no_log_file("log file is from previous run")
                 self._lf = None
                 return
 
         # create LF instance
         self._lf = lf_factory(lf_filepath, suffix, steady)
-
-    def _no_log_file(self, reason: str) -> None:
-        """Warning that there will be no progress bar"""
-
-        print(f"No progress bar as {reason}. Simulation will continue as usual.")
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""
