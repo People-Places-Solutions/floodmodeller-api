@@ -100,24 +100,8 @@ def test_simulate(
         assert sleep.call_args_list[-3:] == [call(0.1), call(1), call(1)]
 
 
-def test_log_file_unknown(capsys):
-    ief = IEF()
-    ief.RunType = "X"  # unknown unsupported type
-
-    lf = init_log_file(ief)
-
-    assert lf is None
-    assert (
-        capsys.readouterr().out
-        == 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
-    )
-
-
 def test_log_file_unsupported(capsys):
-    ief = IEF()
-    ief.RunType = "Steady"  # known unsupported type
-
-    lf = init_log_file(ief)
+    lf = init_log_file(None, "lf1", True)
 
     assert lf is None
     assert (
@@ -128,13 +112,9 @@ def test_log_file_unsupported(capsys):
 
 @pytest.mark.usefixtures("sleep", "log_timeout")
 def test_log_file_timeout(capsys):
-    ief = IEF()
-    ief.RunType = "Unsteady"  # supported type
     lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = False  # but file doesn't exist
-
-    with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
-        lf = init_log_file(ief)
+    lf_filepath.is_file.return_value = False
+    lf = init_log_file(lf_filepath, "lf1", False)
 
     assert lf is None
     assert (
@@ -146,14 +126,10 @@ def test_log_file_timeout(capsys):
 @pytest.mark.usefixtures("sleep", "log_timeout")
 @freeze_time("1970-01-01 00:00:00", tick=True)
 def test_log_file_from_old_run(capsys):
-    ief = IEF()
-    ief.RunType = "Unsteady"  # supported type
     lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = True  # file exists
-    lf_filepath.stat.return_value.st_mtime = -10  # but it's old
-
-    with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
-        lf = init_log_file(ief)
+    lf_filepath.is_file.return_value = True
+    lf_filepath.stat.return_value.st_mtime = -10
+    lf = init_log_file(lf_filepath, "lf1", False)
 
     assert lf is None
     assert (
@@ -165,17 +141,11 @@ def test_log_file_from_old_run(capsys):
 @pytest.mark.usefixtures("sleep", "log_timeout")
 @freeze_time("1970-01-01 00:00:00", tick=True)
 def test_log_file_found():
-    ief = IEF()
-    ief.RunType = "Unsteady"  # supported type
     lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = True  # file exists
-    lf_filepath.stat.return_value.st_mtime = -1  # and it's new
-
-    with (
-        patch.object(ief, "_get_result_filepath", return_value=lf_filepath),
-        patch("floodmodeller_api.logs.lf.LF1") as lf1,
-    ):
-        lf = init_log_file(ief)
+    lf_filepath.is_file.return_value = True
+    lf_filepath.stat.return_value.st_mtime = -1
+    with patch("floodmodeller_api.logs.lf.LF1") as lf1:
+        lf = init_log_file(lf_filepath, "lf1", False)
 
     assert lf is not None
     lf1.assert_called_once_with(lf_filepath, False)

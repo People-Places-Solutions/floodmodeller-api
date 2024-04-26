@@ -28,7 +28,7 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import determine_suffix_steady, init_log_file, lf_factory
+from .logs import init_log_file, lf_factory
 from .util import handle_exception
 from .zzn import ZZN
 
@@ -58,9 +58,8 @@ class IEF(FMFile):
             return
         if ief_filepath is not None:
             FMFile.__init__(self, ief_filepath)
-
             self._read()
-
+            self._log_path = self._get_result_filepath("lf1")
         else:
             self._create_from_blank()
 
@@ -427,7 +426,7 @@ class IEF(FMFile):
             process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
             # progress bar based on log files
-            self._lf = init_log_file(self)
+            self._lf = init_log_file(self._log_path, "lf1", steady=(self.RunType == "Steady"))
             self._update_progress_bar(process)
 
             while process.poll() is None:
@@ -481,15 +480,10 @@ class IEF(FMFile):
             floodmodeller_api.LF1 class object
         """
 
-        suffix, steady = determine_suffix_steady(self.RunType)
+        if not self._log_path.exists():
+            raise FileNotFoundError("Log file (LF1) not found")
 
-        # Get lf location
-        lf_path = self._get_result_filepath(suffix)
-
-        if not lf_path.exists():
-            raise FileNotFoundError("Log file (" + suffix + ") not found")
-
-        return lf_factory(lf_path, suffix, steady)
+        return lf_factory(self._log_path, "lf1", steady=(self.RunType == "Steady"))
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""

@@ -30,8 +30,6 @@ from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract,
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from floodmodeller_api import IEF
-
 
 OLD_FILE = 5
 LOG_TIMEOUT = 10
@@ -326,36 +324,17 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
     raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
 
 
-def determine_suffix_steady(ief_run_type: str) -> tuple[str, bool]:
-    """Determine suffix and whether run is steady"""
-    if ief_run_type == "Unsteady":
-        return "lf1", False
-    if ief_run_type == "Steady":
-        return "lf1", True
-    raise ValueError(f'Unexpected run type "{ief_run_type}"')
-
-
 def no_log_file(reason: str) -> None:
     print(f"No progress bar as {reason}. Simulation will continue as usual.")
 
 
-def init_log_file(ief: IEF) -> LF1 | None:
+def init_log_file(filepath: Path, suffix: str, steady: bool) -> LF1 | None:
     """Checks for a new log file, waiting for its creation if necessary"""
-
-    # determine log file type based on ief.RunType
-    try:
-        suffix, steady = determine_suffix_steady(ief.RunType)
-    except ValueError:
-        no_log_file(f'run type "{ief.RunType}" not supported')
-        return None
 
     # ensure progress bar is supported for that type
     if not (suffix == "lf1" and steady is False):
         no_log_file("only 1D unsteady runs are supported")
         return None
-
-    # find what log filepath should be
-    lf_filepath = ief._get_result_filepath(suffix)
 
     # wait for log file to exist
     log_file_exists = False
@@ -364,7 +343,7 @@ def init_log_file(ief: IEF) -> LF1 | None:
     while not log_file_exists:
         time.sleep(0.1)
 
-        log_file_exists = lf_filepath.is_file()
+        log_file_exists = filepath.is_file()
 
         # timeout
         if (not log_file_exists) and (time.time() > max_time):
@@ -379,7 +358,7 @@ def init_log_file(ief: IEF) -> LF1 | None:
         time.sleep(0.1)
 
         # difference between now and when log file was last modified
-        last_modified_timestamp = lf_filepath.stat().st_mtime
+        last_modified_timestamp = filepath.stat().st_mtime
         last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
         time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
@@ -392,4 +371,4 @@ def init_log_file(ief: IEF) -> LF1 | None:
             return None
 
     # create LF instance
-    return lf_factory(lf_filepath, suffix, steady)
+    return lf_factory(filepath, suffix, steady)
