@@ -30,6 +30,8 @@ from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract,
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from floodmodeller_api import IEF
+
 
 class LF(FMFile):
     """Reads and processes Flood Modeller log file
@@ -333,14 +335,14 @@ def no_log_file(reason: str) -> None:
     print(f"No progress bar as {reason}. Simulation will continue as usual.")
 
 
-def init_log_file(self) -> LF | None:
+def init_log_file(ief: IEF) -> LF1 | None:
     """Checks for a new log file, waiting for its creation if necessary"""
 
-    # determine log file type based on self.RunType
+    # determine log file type based on ief.RunType
     try:
-        suffix, steady = determine_suffix_steady(self.RunType)
+        suffix, steady = determine_suffix_steady(ief.RunType)
     except ValueError:
-        no_log_file(f'run type "{self.RunType}" not supported')
+        no_log_file(f'run type "{ief.RunType}" not supported')
         return None
 
     # ensure progress bar is supported for that type
@@ -349,11 +351,11 @@ def init_log_file(self) -> LF | None:
         return None
 
     # find what log filepath should be
-    lf_filepath = self._get_result_filepath(suffix)
+    lf_filepath = ief._get_result_filepath(suffix)
 
     # wait for log file to exist
     log_file_exists = False
-    max_time = time.time() + self.LOG_TIMEOUT
+    max_time = time.time() + ief.LOG_TIMEOUT
 
     while not log_file_exists:
         time.sleep(0.1)
@@ -367,7 +369,7 @@ def init_log_file(self) -> LF | None:
 
     # wait for new log file
     old_log_file = True
-    max_time = time.time() + self.LOG_TIMEOUT
+    max_time = time.time() + ief.LOG_TIMEOUT
 
     while old_log_file:
         time.sleep(0.1)
@@ -377,8 +379,8 @@ def init_log_file(self) -> LF | None:
         last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
         time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-        # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
-        old_log_file = time_diff_sec > self.OLD_FILE
+        # it's old if it's over ief.OLD_FILE seconds old (TODO: is this robust?)
+        old_log_file = time_diff_sec > ief.OLD_FILE
 
         # timeout
         if old_log_file and (time.time() > max_time):
