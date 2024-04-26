@@ -49,10 +49,8 @@ class IEF(FMFile):
 
     _filetype: str = "IEF"
     _suffix: str = ".ief"
-    OLD_FILE = 5
     ERROR_MAX = 2000
     WARNING_MAX = 3000
-    LOG_TIMEOUT = 10
 
     @handle_exception(when="read")
     def __init__(self, ief_filepath: str | Path | None = None, from_json: bool = False):

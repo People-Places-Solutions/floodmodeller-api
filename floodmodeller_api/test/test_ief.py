@@ -47,7 +47,7 @@ def sleep():
 
 @pytest.fixture()
 def log_timeout():
-    with patch("floodmodeller_api.ief.IEF.LOG_TIMEOUT", new=0):
+    with patch("floodmodeller_api.logs.lf.LOG_TIMEOUT", new=0):
         yield
 
 

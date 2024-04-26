@@ -33,6 +33,10 @@ if TYPE_CHECKING:
     from floodmodeller_api import IEF
 
 
+OLD_FILE = 5
+LOG_TIMEOUT = 10
+
+
 class LF(FMFile):
     """Reads and processes Flood Modeller log file
 
@@ -355,7 +359,7 @@ def init_log_file(ief: IEF) -> LF1 | None:
 
     # wait for log file to exist
     log_file_exists = False
-    max_time = time.time() + ief.LOG_TIMEOUT
+    max_time = time.time() + LOG_TIMEOUT
 
     while not log_file_exists:
         time.sleep(0.1)
@@ -369,7 +373,7 @@ def init_log_file(ief: IEF) -> LF1 | None:
 
     # wait for new log file
     old_log_file = True
-    max_time = time.time() + ief.LOG_TIMEOUT
+    max_time = time.time() + LOG_TIMEOUT
 
     while old_log_file:
         time.sleep(0.1)
@@ -379,8 +383,8 @@ def init_log_file(ief: IEF) -> LF1 | None:
         last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
         time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-        # it's old if it's over ief.OLD_FILE seconds old (TODO: is this robust?)
-        old_log_file = time_diff_sec > ief.OLD_FILE
+        # it's old if it's over OLD_FILE seconds old (TODO: is this robust?)
+        old_log_file = time_diff_sec > OLD_FILE
 
         # timeout
         if old_log_file and (time.time() > max_time):
