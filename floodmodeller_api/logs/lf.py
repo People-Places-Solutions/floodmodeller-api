@@ -315,25 +315,15 @@ class LF2(LF):
         super().__init__(lf_filepath, data_to_extract, steady=False)
 
 
-def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
-    if suffix == "lf1":
-        return LF1(filepath, steady)
-    if suffix == "lf2":
-        return LF2(filepath)
-    flow_type = "steady" if steady else "unsteady"
-    raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
-
-
-def no_log_file(reason: str) -> None:
-    print(f"No progress bar as {reason}. Simulation will continue as usual.")
-
-
-def init_log_file(filepath: Path, suffix: str, steady: bool) -> LF1 | None:
+def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
     """Checks for a new log file, waiting for its creation if necessary"""
 
+    def _no_log_file(reason: str) -> None:
+        print(f"No progress bar as {reason}. Simulation will continue as usual.")
+
     # ensure progress bar is supported for that type
-    if not (suffix == "lf1" and steady is False):
-        no_log_file("only 1D unsteady runs are supported")
+    if suffix not in {"lf1", "lf2"}:
+        _no_log_file("log file must have suffix lf1 or lf2")
         return None
 
     # wait for log file to exist
@@ -347,7 +337,7 @@ def init_log_file(filepath: Path, suffix: str, steady: bool) -> LF1 | None:
 
         # timeout
         if (not log_file_exists) and (time.time() > max_time):
-            no_log_file("log file is expected but not detected")
+            _no_log_file("log file is expected but not detected")
             return None
 
     # wait for new log file
@@ -367,8 +357,8 @@ def init_log_file(filepath: Path, suffix: str, steady: bool) -> LF1 | None:
 
         # timeout
         if old_log_file and (time.time() > max_time):
-            no_log_file("log file is from previous run")
+            _no_log_file("log file is from previous run")
             return None
 
     # create LF instance
-    return lf_factory(filepath, suffix, steady)
+    return LF1(filepath) if suffix == "lf1" else LF2(filepath)

@@ -16,7 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-import datetime as dt
 import io
 import os
 import time
@@ -30,7 +29,7 @@ from tqdm import trange
 
 from floodmodeller_api._base import FMFile
 
-from .logs import error_2d_dict, lf_factory
+from .logs import LF2, create_lf, error_2d_dict
 from .util import handle_exception
 from .xml2d_template import xml2d_template
 
@@ -554,7 +553,7 @@ class XML2D(FMFile):
 
             # progress bar based on log files:
             if console_output == "simple":
-                self._init_log_file()
+                self._lf = create_lf(self._log_path, "lf2")
                 self._update_progress_bar(process)
 
             while process.poll() is None:
@@ -580,52 +579,7 @@ class XML2D(FMFile):
         if not self._log_path.exists():
             raise FileNotFoundError("Log file (LF2) not found")
 
-        return lf_factory(self._log_path, "lf2", False)
-
-    def _init_log_file(self):
-        """Checks for a new log file, waiting for its creation if necessary"""
-        # wait for log file to exist
-        log_file_exists = False
-        max_time = time.time() + 10
-
-        while not log_file_exists:
-            time.sleep(0.1)
-            log_file_exists = self._log_path.is_file()
-
-            # timeout
-            if time.time() > max_time:
-                self._no_log_file("log file is expected but not detected")
-                self._lf = None
-                return
-
-        # wait for new log file
-        old_log_file = True
-        max_time = time.time() + 10
-
-        while old_log_file:
-            time.sleep(0.1)
-
-            # difference between now and when log file was last modified
-            last_modified_timestamp = self._log_path.stat().st_mtime
-            last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
-            time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
-
-            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > self.OLD_FILE
-
-            # timeout
-            if time.time() > max_time:
-                self._no_log_file("log file is from previous run")
-                self._lf = None
-                return
-
-        # create LF instance
-        self._lf = lf_factory(self._log_path, "lf2", False)
-
-    def _no_log_file(self, reason):
-        """Warning that there will be no progress bar"""
-
-        print("No progress bar as " + reason + ". Simulation will continue as usual.")
+        return LF2(self._log_path)
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""

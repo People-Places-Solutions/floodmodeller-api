@@ -6,7 +6,7 @@ import pytest
 from freezegun import freeze_time
 
 from floodmodeller_api import IEF, LF1
-from floodmodeller_api.logs import init_log_file
+from floodmodeller_api.logs import create_lf
 
 
 @pytest.fixture
@@ -52,12 +52,12 @@ def test_lf1_from_ief(lf1_fp, test_workspace):
 
 
 def test_log_file_unsupported(capsys):
-    lf = init_log_file(None, "lf1", True)
+    lf = create_lf(None, "lf3")
 
     assert lf is None
     assert (
         capsys.readouterr().out
-        == "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
+        == "No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
     )
 
 
@@ -65,7 +65,7 @@ def test_log_file_unsupported(capsys):
 def test_log_file_timeout(capsys):
     lf_filepath = MagicMock()
     lf_filepath.is_file.return_value = False
-    lf = init_log_file(lf_filepath, "lf1", False)
+    lf = create_lf(lf_filepath, "lf1")
 
     assert lf is None
     assert (
@@ -80,7 +80,7 @@ def test_log_file_from_old_run(capsys):
     lf_filepath = MagicMock()
     lf_filepath.is_file.return_value = True
     lf_filepath.stat.return_value.st_mtime = -10
-    lf = init_log_file(lf_filepath, "lf1", False)
+    lf = create_lf(lf_filepath, "lf1")
 
     assert lf is None
     assert (
@@ -96,7 +96,7 @@ def test_log_file_found():
     lf_filepath.is_file.return_value = True
     lf_filepath.stat.return_value.st_mtime = -1
     with patch("floodmodeller_api.logs.lf.LF1") as lf1:
-        lf = init_log_file(lf_filepath, "lf1", False)
+        lf = create_lf(lf_filepath, "lf1")
 
     assert lf is not None
-    lf1.assert_called_once_with(lf_filepath, False)
+    lf1.assert_called_once_with(lf_filepath)

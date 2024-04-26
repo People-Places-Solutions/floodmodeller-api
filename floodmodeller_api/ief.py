@@ -28,7 +28,7 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import init_log_file, lf_factory
+from .logs import LF1, create_lf
 from .util import handle_exception
 from .zzn import ZZN
 
@@ -426,7 +426,8 @@ class IEF(FMFile):
             process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
             # progress bar based on log files
-            self._lf = init_log_file(self._log_path, "lf1", steady=(self.RunType == "Steady"))
+            steady = (self.RunType == "Steady")
+            self._lf = create_lf(self._log_path, "lf1") if not steady else None
             self._update_progress_bar(process)
 
             while process.poll() is None:
@@ -483,7 +484,8 @@ class IEF(FMFile):
         if not self._log_path.exists():
             raise FileNotFoundError("Log file (LF1) not found")
 
-        return lf_factory(self._log_path, "lf1", steady=(self.RunType == "Steady"))
+        steady = self.RunType == "Steady"
+        return LF1(self._log_path, steady)
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""
