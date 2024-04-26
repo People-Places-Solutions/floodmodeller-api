@@ -5,6 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 from floodmodeller_api import IEF
+from floodmodeller_api.logs import init_log_file
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -103,9 +104,9 @@ def test_log_file_unknown(capsys):
     ief = IEF()
     ief.RunType = "X"  # unknown unsupported type
 
-    ief._init_log_file()
+    lf = init_log_file(ief)
 
-    assert ief._lf is None
+    assert lf is None
     assert (
         capsys.readouterr().out
         == 'No progress bar as run type "X" not supported. Simulation will continue as usual.\n'
@@ -116,9 +117,9 @@ def test_log_file_unsupported(capsys):
     ief = IEF()
     ief.RunType = "Steady"  # known unsupported type
 
-    ief._init_log_file()
+    lf = init_log_file(ief)
 
-    assert ief._lf is None
+    assert lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as only 1D unsteady runs are supported. Simulation will continue as usual.\n"
@@ -133,9 +134,9 @@ def test_log_file_timeout(capsys):
     lf_filepath.is_file.return_value = False  # but file doesn't exist
 
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
-        ief._init_log_file()
+        lf = init_log_file(ief)
 
-    assert ief._lf is None
+    assert lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
@@ -152,9 +153,9 @@ def test_log_file_from_old_run(capsys):
     lf_filepath.stat.return_value.st_mtime = -10  # but it's old
 
     with patch.object(ief, "_get_result_filepath", return_value=lf_filepath):
-        ief._init_log_file()
+        lf = init_log_file(ief)
 
-    assert ief._lf is None
+    assert lf is None
     assert (
         capsys.readouterr().out
         == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
@@ -174,9 +175,9 @@ def test_log_file_found():
         patch.object(ief, "_get_result_filepath", return_value=lf_filepath),
         patch("floodmodeller_api.logs.lf.LF1") as lf1,
     ):
-        ief._init_log_file()
+        lf = init_log_file(ief)
 
-    assert ief._lf is not None
+    assert lf is not None
     lf1.assert_called_once_with(lf_filepath, False)
 
 

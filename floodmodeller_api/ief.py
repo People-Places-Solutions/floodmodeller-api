@@ -16,7 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-import datetime as dt
 import os
 import subprocess
 import time
@@ -29,7 +28,7 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import determine_suffix_steady, lf_factory, no_log_file
+from .logs import determine_suffix_steady, init_log_file, lf_factory
 from .util import handle_exception
 from .zzn import ZZN
 
@@ -430,7 +429,7 @@ class IEF(FMFile):
             process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
             # progress bar based on log files
-            self._init_log_file()
+            self._lf = init_log_file(self)
             self._update_progress_bar(process)
 
             while process.poll() is None:
@@ -493,65 +492,6 @@ class IEF(FMFile):
             raise FileNotFoundError("Log file (" + suffix + ") not found")
 
         return lf_factory(lf_path, suffix, steady)
-
-    def _init_log_file(self):
-        """Checks for a new log file, waiting for its creation if necessary"""
-
-        # determine log file type based on self.RunType
-        try:
-            suffix, steady = determine_suffix_steady(self.RunType)
-        except ValueError:
-            no_log_file(f'run type "{self.RunType}" not supported')
-            self._lf = None
-            return
-
-        # ensure progress bar is supported for that type
-        if not (suffix == "lf1" and steady is False):
-            no_log_file("only 1D unsteady runs are supported")
-            self._lf = None
-            return
-
-        # find what log filepath should be
-        lf_filepath = self._get_result_filepath(suffix)
-
-        # wait for log file to exist
-        log_file_exists = False
-        max_time = time.time() + self.LOG_TIMEOUT
-
-        while not log_file_exists:
-            time.sleep(0.1)
-
-            log_file_exists = lf_filepath.is_file()
-
-            # timeout
-            if (not log_file_exists) and (time.time() > max_time):
-                no_log_file("log file is expected but not detected")
-                self._lf = None
-                return
-
-        # wait for new log file
-        old_log_file = True
-        max_time = time.time() + self.LOG_TIMEOUT
-
-        while old_log_file:
-            time.sleep(0.1)
-
-            # difference between now and when log file was last modified
-            last_modified_timestamp = lf_filepath.stat().st_mtime
-            last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
-            time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
-
-            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > self.OLD_FILE
-
-            # timeout
-            if old_log_file and (time.time() > max_time):
-                no_log_file("log file is from previous run")
-                self._lf = None
-                return
-
-        # create LF instance
-        self._lf = lf_factory(lf_filepath, suffix, steady)
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""
