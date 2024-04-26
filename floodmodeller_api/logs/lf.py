@@ -316,3 +316,12 @@ def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
         return LF2(filepath)
     flow_type = "steady" if steady else "unsteady"
     raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
+
+
+def determine_suffix_steady(run_type: str) -> tuple[str, bool]:
+    """Determine suffix and whether run is steady"""
+    if run_type == "Unsteady":
+        return "lf1", False
+    if run_type == "Steady":
+        return "lf1", True
+    raise ValueError(f'Unexpected run type "{run_type}"')

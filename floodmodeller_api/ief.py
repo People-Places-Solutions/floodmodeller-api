@@ -29,7 +29,7 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import lf_factory
+from .logs import determine_suffix_steady, lf_factory
 from .util import handle_exception
 from .zzn import ZZN
 
@@ -484,7 +484,7 @@ class IEF(FMFile):
             floodmodeller_api.LF1 class object
         """
 
-        suffix, steady = self._determine_lf_type()
+        suffix, steady = determine_suffix_steady(self.RunType)
 
         # Get lf location
         lf_path = self._get_result_filepath(suffix)
@@ -494,28 +494,12 @@ class IEF(FMFile):
 
         return lf_factory(lf_path, suffix, steady)
 
-    def _determine_lf_type(self):  # (str, bool) or (None, None):
-        """Determine the log file type"""
-
-        if self.RunType == "Unsteady":
-            suffix = "lf1"
-            steady = False
-
-        elif self.RunType == "Steady":
-            suffix = "lf1"
-            steady = True
-
-        else:
-            raise ValueError(f'Unexpected run type "{self.RunType}"')
-
-        return suffix, steady
-
     def _init_log_file(self):
         """Checks for a new log file, waiting for its creation if necessary"""
 
         # determine log file type based on self.RunType
         try:
-            suffix, steady = self._determine_lf_type()
+            suffix, steady = determine_suffix_steady(self.RunType)
         except ValueError:
             self._no_log_file(f'run type "{self.RunType}" not supported')
             self._lf = None
