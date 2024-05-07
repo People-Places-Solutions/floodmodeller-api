@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import pandas as pd
 from pandas import Index
@@ -119,7 +119,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return return_dict
 
 
-def from_json(obj: Union[str, dict]) -> dict:
+def from_json(obj: str | dict) -> dict:
     """
     Function to convert a JSON string back into Python objects
 
@@ -138,7 +138,7 @@ def from_json(obj: Union[str, dict]) -> dict:
     return recursive_from_json(obj_dict)
 
 
-def recursive_from_json(obj: Union[dict, Any]) -> Any:
+def recursive_from_json(obj: dict | Any) -> Any:
     """
     Function to undertake a recursion through the different elements of the JSON object
 

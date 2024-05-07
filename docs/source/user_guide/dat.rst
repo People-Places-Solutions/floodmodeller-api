@@ -3,7 +3,7 @@
    .. ipython:: python
       
       import os
-      os.chdir("../floodmodeller_api/test/test_data")
+      os.chdir("floodmodeller_api/test/test_data")
 
 DAT Class
 =====================================================
@@ -34,7 +34,7 @@ found in the :doc:`Individual Unit Classes <units>` section.
 
 .. ipython:: python 
 
-    dat = DAT("ex18.dat")
+    dat = DAT("EX18.DAT")
     dat.sections
     dat.conduits
     dat.structures
