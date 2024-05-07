@@ -34,7 +34,7 @@ found in the :doc:`Individual Unit Classes <units>` section.
 
 .. ipython:: python 
 
-    dat = DAT("ex18.dat")
+    dat = DAT("EX18.dat")
     dat.sections
     dat.conduits
     dat.structures
