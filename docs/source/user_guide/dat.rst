@@ -3,7 +3,7 @@
    .. ipython:: python
       
       import os
-      os.chdir("../floodmodeller_api/test/test_data")
+      os.chdir("floodmodeller_api/test/test_data")
 
 DAT Class
 =====================================================
