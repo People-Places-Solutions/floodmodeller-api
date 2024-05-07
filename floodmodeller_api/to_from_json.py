@@ -45,6 +45,23 @@ def is_jsonable(obj: Any) -> bool:
         return False
 
 
+def pandas_to_json(obj: pd.DataFrame | pd.Series) -> dict:
+    if isinstance(obj, pd.DataFrame):
+        if isinstance(obj.columns, pd.MultiIndex):
+            # Handle multi index columns (i.e. ZZN dataframe results)
+            obj.columns = pd.Index(map(str, obj.columns.values))
+
+        return {"class": "pandas.DataFrame", "object": obj.to_dict()}
+
+    # otherwise returns as series
+    return {
+        "class": "pandas.Series",
+        "variable_name": obj.name,
+        "index_name": obj.index.name,
+        "object": obj.to_dict(),
+    }
+
+
 def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0911
     """
     Function to undertake a recursion through the different elements of the python object
@@ -65,15 +82,8 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     if is_jsonable(obj):
         return obj
 
-    if isinstance(obj, pd.DataFrame):
-        return {"class": "pandas.DataFrame", "object": obj.to_dict()}
-    if isinstance(obj, pd.Series):
-        return {
-            "class": "pandas.Series",
-            "variable_name": obj.name,
-            "index_name": obj.index.name,
-            "object": obj.to_dict(),
-        }
+    if isinstance(obj, (pd.DataFrame, pd.Series)):
+        return pandas_to_json(obj)
 
     # To convert WindowsPath, no serializable, objects to string, serializable.
     if isinstance(obj, Path):

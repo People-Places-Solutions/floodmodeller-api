@@ -64,7 +64,6 @@ class FMFile(Jsonable):
         filepath = "<in_memory>" if not hasattr(self, "_filepath") else self._filepath
         return f"<floodmodeller_api Class: {self._filetype}(filepath={filepath})>"
 
-
     def _write(self):
         raise NotImplementedError
 

@@ -24,6 +24,7 @@ import numpy as np
 import pandas as pd
 
 from ._base import FMFile
+from .to_from_json import to_json
 from .util import is_windows
 
 
@@ -385,3 +386,34 @@ class ZZN(FMFile):
                 if var not in input_vars:
                     del output[var]
         return output
+
+    def to_json(
+        self,
+        result_type: str = "all",
+        variable: str = "all",
+        include_time: bool = False,
+        multilevel_header: bool = True,
+    ) -> str:
+        """Loads zzn results to JSON object.
+
+        Args:
+            result_type (str, optional): {'all'} | 'max' | 'min'
+                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
+                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
+                headers with the variable as first level and node label as second header. If False, the column
+                names will be formatted "{node label}_{variable}". Defaults to True.
+
+        Returns:
+            str: A JSON string representing the ZZN results.
+        """
+        df = self.to_dataframe(result_type, variable, include_time, multilevel_header)
+        return to_json(df)
+
+    @classmethod
+    def from_json(cls, json_string: str = ""):
+        # Not possible
+        raise NotImplementedError("It is not possible to build a ZZN class instance from JSON")
