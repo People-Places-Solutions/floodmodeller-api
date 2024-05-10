@@ -21,6 +21,8 @@ Reference
 
    .. automethod:: export_to_csv
 
+   .. automethod:: to_json
+
 Examples
 -----------
 **Example 1 - Reading and exporting 1D results**

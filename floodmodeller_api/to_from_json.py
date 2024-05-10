@@ -14,9 +14,11 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import pandas as pd
 from pandas import Index
@@ -45,6 +47,23 @@ def is_jsonable(obj: Any) -> bool:
         return False
 
 
+def pandas_to_json(obj: pd.DataFrame | pd.Series) -> dict:
+    if isinstance(obj, pd.DataFrame):
+        if isinstance(obj.columns, pd.MultiIndex):
+            # Handle multi index columns (i.e. ZZN dataframe results)
+            obj.columns = pd.Index(map(str, obj.columns.values))
+
+        return {"class": "pandas.DataFrame", "object": obj.to_dict()}
+
+    # otherwise returns as series
+    return {
+        "class": "pandas.Series",
+        "variable_name": obj.name,
+        "index_name": obj.index.name,
+        "object": obj.to_dict(),
+    }
+
+
 def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0911
     """
     Function to undertake a recursion through the different elements of the python object
@@ -65,15 +84,8 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     if is_jsonable(obj):
         return obj
 
-    if isinstance(obj, pd.DataFrame):
-        return {"class": "pandas.DataFrame", "object": obj.to_dict()}
-    if isinstance(obj, pd.Series):
-        return {
-            "class": "pandas.Series",
-            "variable_name": obj.name,
-            "index_name": obj.index.name,
-            "object": obj.to_dict(),
-        }
+    if isinstance(obj, (pd.DataFrame, pd.Series)):
+        return pandas_to_json(obj)
 
     # To convert WindowsPath, no serializable, objects to string, serializable.
     if isinstance(obj, Path):
@@ -107,7 +119,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return return_dict
 
 
-def from_json(obj: Union[str, dict]) -> dict:
+def from_json(obj: str | dict) -> dict:
     """
     Function to convert a JSON string back into Python objects
 
@@ -126,7 +138,7 @@ def from_json(obj: Union[str, dict]) -> dict:
     return recursive_from_json(obj_dict)
 
 
-def recursive_from_json(obj: Union[dict, Any]) -> Any:
+def recursive_from_json(obj: dict | Any) -> Any:
     """
     Function to undertake a recursion through the different elements of the JSON object
 
