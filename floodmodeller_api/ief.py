@@ -448,7 +448,7 @@ class IEF(FMFile):
         return None
 
     def _get_result_filepath(self, suffix):
-        if hasattr(self, "Results") and self.Results != "":  # because blank IEF has 'Results=""'
+        if hasattr(self, "Results") and self.Results != '""':  # because blank IEF has 'Results=""'
             path = Path(self.Results).with_suffix("." + suffix)
             if not path.is_absolute():
                 # set cwd to ief location and resolve path
