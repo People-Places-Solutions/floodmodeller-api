@@ -27,6 +27,7 @@ from .helpers import (
     split_10_char,
     split_n_char,
 )
+from .conveyance import calculate_cross_section_conveyance
 
 
 class RIVER(Unit):
@@ -243,6 +244,12 @@ class RIVER(Unit):
             return riv_block
 
         return self._raw_block
+
+    @property
+    def conveyance(self) -> pd.Series:
+        return calculate_cross_section_conveyance(
+            x=self.data.X.values, y=self.data.Y.values, n=self.data["Mannings n"].values
+        )
 
 
 class INTERPOLATE(Unit):
