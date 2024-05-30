@@ -247,6 +247,16 @@ class RIVER(Unit):
 
     @property
     def conveyance(self) -> pd.Series:
+        """Calculate and return the conveyance curve of the cross-section.
+
+        Warning:
+            Although this calculation adopts the same method as in Flood Modeller, the values 
+            may differ slightly from those calculated within the Flood Modeller user interface due 
+            to small differences in implementation.
+
+        Returns:
+            pd.Series: A pandas Series containing the conveyance values indexed by water levels.
+        """
         return calculate_cross_section_conveyance(
             x=self.data.X.values,
             y=self.data.Y.values,
