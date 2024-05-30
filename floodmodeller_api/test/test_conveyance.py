@@ -13,9 +13,9 @@ from floodmodeller_api.units.conveyance import (
 # Helper function to create simple cross-section data
 def create_simple_cross_section():
     x = np.array([0, 1, 2, 3, 4])
-    y = np.array([1, 2, 1, 2, 1])
+    y = np.array([5, 3, 1, 2, 6])
     n = np.array([0.03, 0.03, 0.03, 0.03, 0.03])
-    panel_markers = np.array([True, False, True, False, True])
+    panel_markers = np.array([False, False, False, False, False])
     return x, y, n, panel_markers
 
 def test_calculate_cross_section_conveyance():
@@ -27,9 +27,9 @@ def test_calculate_cross_section_conveyance():
     
 def test_calculate_conveyance_by_panel():
     x = np.array([0, 1, 2])
-    y = np.array([1, 2, 1])
+    y = np.array([5, 3, 1])
     n = np.array([0.03, 0.03])
-    wls = np.array([1.0, 1.5, 2.0])
+    wls = np.array([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4., 4.5, 5.0])
     
     result = calculate_conveyance_by_panel(x, y, n, wls)
     
@@ -38,10 +38,10 @@ def test_calculate_conveyance_by_panel():
     assert all(isinstance(val, float) for val in result), "All conveyance values should be floats"
     
 def test_calculate_conveyance_part():
-    wetted_polygon = Polygon([(0, 1), (1, 2), (2, 1), (0, 1)])
-    water_plane = LineString([(0, 1.5), (2, 1.5)])
-    glass_wall_left = LineString([(0, 1), (0, 2)])
-    glass_wall_right = LineString([(2, 1), (2, 2)])
+    wetted_polygon = Polygon([(1, 3), (2, 1), (3, 2), (4, 6), (1, 3)])
+    water_plane = LineString([(0, 3), (5, 3)])
+    glass_wall_left = LineString([(1, 3), (1, 7)])
+    glass_wall_right = LineString([(4, 6), (4, 7)])
     average_mannings = 0.03
     
     result = calculate_conveyance_part(
