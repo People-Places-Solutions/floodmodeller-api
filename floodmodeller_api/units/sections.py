@@ -248,7 +248,10 @@ class RIVER(Unit):
     @property
     def conveyance(self) -> pd.Series:
         return calculate_cross_section_conveyance(
-            x=self.data.X.values, y=self.data.Y.values, n=self.data["Mannings n"].values
+            x=self.data.X.values,
+            y=self.data.Y.values,
+            n=self.data["Mannings n"].values,
+            panel_markers=self.data.Panel.values,
         )
 
 
