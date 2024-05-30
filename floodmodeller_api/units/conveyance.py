@@ -6,7 +6,7 @@ from shapely import LineString, Polygon, intersection
 def calculate_cross_section_conveyance(
     x: np.array, y: np.array, n: np.array, panel_markers: np.array
 ) -> pd.Series:
-    wls = insert_intermediate_wls(np.unique(y), threshold=0.1)
+    wls = insert_intermediate_wls(np.unique(y), threshold=0.05)
     panel_markers = np.array([True, *panel_markers[1:-1], True])
     panel_indices = np.where(panel_markers)[0]
     conveyance_by_panel = []
@@ -37,38 +37,54 @@ def calculate_conveyance_by_panel(
 
     conveyance_values = []
     for wl in wls:
+        if wl <= np.min(y):
+            conveyance_values.append(0.0)
+            continue
         water_surface = Polygon(zip([start, start, end, end], [wl, min_y, min_y, wl]))
         water_plane = intersection(channel_polygon, LineString(zip([start, end], [wl, wl])))
-        glass_wall_left_clip = intersection(water_surface, glass_wall_left)
-        glass_wall_right_clip = intersection(water_surface, glass_wall_right)
-
         wetted_polygon = intersection(channel_polygon, water_surface)
-        area = wetted_polygon.area
+        average_mannings = np.mean(n[np.where(y < wl)])
 
-        if wetted_polygon.geom_type == "GeometryCollection":
-            wetted_polygon_perimeter = sum([p.boundary.length for p in wetted_polygon.geoms])
-        else:
-            wetted_polygon_perimeter = wetted_polygon.boundary.length
+        multiple_parts = wetted_polygon.geom_type in ["GeometryCollection", "MultiPolygon"]
+        parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
 
-        wetted_perimeter = (
-            wetted_polygon_perimeter
-            - water_plane.length
-            - glass_wall_left_clip.length
-            - glass_wall_right_clip.length
-        )
-
-        if wetted_perimeter < 1e-8:
-            conveyance_values.append(0)
-            continue
-
-        # TODO: this needs to be updated to be proper weighted manning calc and RPL
-        rpl = 1
-        weighted_mannings = np.mean(n[np.where(y < wl)]) * wetted_perimeter * np.sqrt(rpl)
-
-        k = (area ** (5 / 3) / wetted_perimeter ** (2 / 3)) * (wetted_perimeter / weighted_mannings)
-        conveyance_values.append(k)
+        conveyance = 0
+        for part in parts:
+            conveyance += calculate_conveyance_part(
+                part, water_plane, glass_wall_left, glass_wall_right, average_mannings
+            )
+        conveyance_values.append(conveyance)
 
     return conveyance_values
+
+
+def calculate_conveyance_part(
+    wetted_polygon: Polygon,
+    water_plane: LineString,
+    glass_wall_left: LineString,
+    glass_wall_right: LineString,
+    average_mannings: float,
+) -> float:
+    water_plane_clip = intersection(water_plane, wetted_polygon)
+    glass_wall_left_clip = intersection(glass_wall_left, wetted_polygon)
+    glass_wall_right_clip = intersection(glass_wall_right, wetted_polygon)
+    perimeter_loss = (
+        water_plane_clip.length
+        + glass_wall_left_clip.length
+        + glass_wall_right_clip.length
+    )
+
+    wetted_perimeter = wetted_polygon.boundary.length - perimeter_loss
+    if wetted_perimeter < 1e-8:
+        return 0.0
+
+    area = wetted_polygon.area
+    # TODO: this needs to be updated to be proper weighted manning calc and RPL
+    rpl = 1
+
+    weighted_mannings = average_mannings * wetted_perimeter * np.sqrt(rpl)
+
+    return (area ** (5 / 3) / wetted_perimeter ** (2 / 3)) * (wetted_perimeter / weighted_mannings)
 
 
 def insert_intermediate_wls(arr, threshold):
