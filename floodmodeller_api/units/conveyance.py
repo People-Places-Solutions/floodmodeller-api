@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from shapely import LineString, Polygon, intersection
+from shapely import LineString, Polygon, intersection, MultiLineString
 
 
 def calculate_cross_section_conveyance(
@@ -70,6 +70,9 @@ def calculate_conveyance_by_panel(
     glass_wall_left = LineString(zip([x[0], x[1]], [y[0], y[1]]))
     glass_wall_right = LineString(zip([x[-2], x[-1]], [y[-2], y[-1]]))
 
+    # Remove glass wall sections from coords
+    x, y, n = x[1:-1], y[1:-1], n[1:-1]
+
     conveyance_values = []
     for wl in wls:
         if wl <= np.min(y):
@@ -86,7 +89,7 @@ def calculate_conveyance_by_panel(
         conveyance = 0
         for part in parts:
             conveyance += calculate_conveyance_part(
-                part, water_plane, glass_wall_left, glass_wall_right, average_mannings
+                part, water_plane, glass_wall_left, glass_wall_right, x, n
             )
         conveyance_values.append(conveyance)
 
@@ -98,7 +101,8 @@ def calculate_conveyance_part(
     water_plane: LineString,
     glass_wall_left: LineString,
     glass_wall_right: LineString,
-    average_mannings: float,
+    x: np.ndarray,
+    n: np.ndarray,
 ) -> float:
     """
     Calculate the conveyance for a part of the wetted area.
@@ -108,7 +112,8 @@ def calculate_conveyance_part(
         water_plane (LineString): The line representing the water plane.
         glass_wall_left (LineString): The left boundary of the channel.
         glass_wall_right (LineString): The right boundary of the channel.
-        average_mannings (float): The average Manning's n value.
+        x (np.ndarray): 1D array of channel chainage
+        n (np.ndarray): 1D array of channel mannings
 
     Returns:
         float: The conveyance value for the wetted part.
@@ -125,10 +130,13 @@ def calculate_conveyance_part(
         return 0.0
 
     area = wetted_polygon.area
-    # TODO: this needs to be updated to be proper weighted manning calc and RPL
-    rpl = 1
 
-    weighted_mannings = average_mannings * wetted_perimeter * np.sqrt(rpl)
+    wetted_polyline = (
+        wetted_polygon.exterior.difference(water_plane_clip)
+        .difference(glass_wall_left_clip)
+        .difference(glass_wall_left_clip)
+    )
+    weighted_mannings = calculate_weighted_mannings(x, n, wetted_polyline)
 
     return (area ** (5 / 3) / wetted_perimeter ** (2 / 3)) * (wetted_perimeter / weighted_mannings)
 
@@ -164,3 +172,49 @@ def insert_intermediate_wls(arr: np.ndarray, threshold: float):
     result = np.array([arr[0]] + new_points)
 
     return result
+
+
+def calculate_weighted_mannings(x: np.ndarray, n: np.ndarray, wetted_polyline: LineString) -> float:
+    """Calculate the weighted Manning's n value for a wetted polyline."""
+    # TODO: handle varying RPL
+    rpl = 1  # simple assumption for now...
+    segments = line_to_segments(wetted_polyline)
+    weighted_mannings = 0
+    for segment in segments:
+        mannings_value = get_mannings_by_segment_x_coords(
+            x, n, segment.coords[0][0], segment.coords[1][0]
+        )
+        weighted_mannings += mannings_value * segment.length * np.sqrt(rpl)
+
+    return weighted_mannings
+
+
+def line_to_segments(line: LineString | MultiLineString) -> list[LineString]:
+    """Convert a LineString or MultiLineString into a list of LineString segments."""
+    if isinstance(line, LineString):
+        segments = []
+        for start, end in zip(line.coords[:-1], line.coords[1:]):
+            points = sorted([start, end], key=lambda x: x[0])
+            segments.append(LineString(points))
+        return segments
+    elif isinstance(line, MultiLineString):
+        segments = []
+        for linestring in line.geoms:
+            segments.extend(line_to_segments(linestring))
+        return segments
+    else:
+        raise TypeError("Input must be a LineString or MultiLineString")
+
+
+def get_mannings_by_segment_x_coords(
+    x: np.ndarray, n: np.ndarray, start_x: float, end_x: float
+) -> float:
+    """Get the Manning's n value for a segment based on its start x-coordinate."""
+    if start_x == end_x:
+        # Vertical segment take first x match
+        index = np.searchsorted(x, start_x) - (start_x not in x)
+    else:
+        # Otherwise non-vertical segment, take last match
+        index = np.searchsorted(x, start_x, side="right") - 1
+
+    return n[index]
