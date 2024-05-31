@@ -19,6 +19,7 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
+from .conveyance import calculate_cross_section_conveyance
 from .helpers import (
     _to_float,
     _to_int,
@@ -27,7 +28,6 @@ from .helpers import (
     split_10_char,
     split_n_char,
 )
-from .conveyance import calculate_cross_section_conveyance
 
 
 class RIVER(Unit):
@@ -250,8 +250,8 @@ class RIVER(Unit):
         """Calculate and return the conveyance curve of the cross-section.
 
         Warning:
-            Although this calculation adopts the same method as in Flood Modeller, the values 
-            may differ slightly from those calculated within the Flood Modeller user interface due 
+            Although this calculation adopts the same method as in Flood Modeller, the values
+            may differ slightly from those calculated within the Flood Modeller user interface due
             to small differences in implementation.
 
         Returns:

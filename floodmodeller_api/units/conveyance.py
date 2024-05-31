@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from shapely import LineString, Polygon, intersection, MultiLineString
+from shapely import LineString, MultiLineString, Polygon, intersection
 
 
 def calculate_cross_section_conveyance(
@@ -81,7 +81,6 @@ def calculate_conveyance_by_panel(
         water_surface = Polygon(zip([start, start, end, end], [wl, min_y, min_y, wl]))
         water_plane = intersection(channel_polygon, LineString(zip([start, end], [wl, wl])))
         wetted_polygon = intersection(channel_polygon, water_surface)
-
 
         multiple_parts = wetted_polygon.geom_type in ["GeometryCollection", "MultiPolygon"]
         parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
