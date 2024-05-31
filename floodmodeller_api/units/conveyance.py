@@ -62,8 +62,8 @@ def calculate_conveyance_by_panel(
     """
     x = np.array([x[0], *x, x[-1]])  # insert additional start/end points
     n = np.array([0, *n, 0])
-    max_y = np.max(y) + 1
-    min_y = np.min(y) - 1
+    max_y = np.max(wls) + 1
+    min_y = np.min(wls) - 1
     y = np.array([max_y, *y, max_y])
     channel_polygon = Polygon(zip(x, y))
     start, end = x[0] - 0.1, x[-1] + 0.1
@@ -81,7 +81,7 @@ def calculate_conveyance_by_panel(
         water_surface = Polygon(zip([start, start, end, end], [wl, min_y, min_y, wl]))
         water_plane = intersection(channel_polygon, LineString(zip([start, end], [wl, wl])))
         wetted_polygon = intersection(channel_polygon, water_surface)
-        average_mannings = np.mean(n[np.where(y < wl)])
+
 
         multiple_parts = wetted_polygon.geom_type in ["GeometryCollection", "MultiPolygon"]
         parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
@@ -134,7 +134,7 @@ def calculate_conveyance_part(
     wetted_polyline = (
         wetted_polygon.exterior.difference(water_plane_clip)
         .difference(glass_wall_left_clip)
-        .difference(glass_wall_left_clip)
+        .difference(glass_wall_right_clip)
     )
     weighted_mannings = calculate_weighted_mannings(x, n, wetted_polyline)
 
