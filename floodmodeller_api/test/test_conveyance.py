@@ -44,12 +44,16 @@ def test_calculate_conveyance_by_panel():
 def test_calculate_conveyance_part():
     wetted_polygon = Polygon([(1, 3), (2, 1), (3, 2), (4, 6), (1, 3)])
     water_plane = LineString([(0, 3), (5, 3)])
-    glass_wall_left = LineString([(1, 3), (1, 7)])
-    glass_wall_right = LineString([(4, 6), (4, 7)])
-    average_mannings = 0.03
+    glass_walls = LineString([(1, 3), (1, 7)]), LineString([(4, 6), (4, 7)])
+    x = np.array([1, 2, 3, 4])
+    n = np.array([0.03, 0.03, 0.03, 0.03])
 
     result = calculate_conveyance_part(
-        wetted_polygon, water_plane, glass_wall_left, glass_wall_right, average_mannings
+        wetted_polygon,
+        water_plane,
+        glass_walls,
+        x,
+        n,
     )
 
     assert isinstance(result, float), "Result should be a float"

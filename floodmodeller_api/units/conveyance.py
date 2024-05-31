@@ -2,9 +2,14 @@ import numpy as np
 import pandas as pd
 from shapely import LineString, MultiLineString, Polygon, intersection
 
+MINIMUM_PERIMETER_THRESHOLD = 1e-8
+
 
 def calculate_cross_section_conveyance(
-    x: np.ndarray, y: np.ndarray, n: np.ndarray, panel_markers: np.array
+    x: np.ndarray,
+    y: np.ndarray,
+    n: np.ndarray,
+    panel_markers: np.ndarray,
 ) -> pd.Series:
     """
     Calculate the conveyance of a cross-section by summing the conveyance
@@ -46,7 +51,10 @@ def calculate_cross_section_conveyance(
 
 
 def calculate_conveyance_by_panel(
-    x: np.ndarray, y: np.ndarray, n: np.ndarray, wls: np.array
+    x: np.ndarray,
+    y: np.ndarray,
+    n: np.ndarray,
+    wls: np.ndarray,
 ) -> list[float]:
     """
     Calculate the conveyance for a single panel of a cross-section at specified water levels.
@@ -67,8 +75,10 @@ def calculate_conveyance_by_panel(
     y = np.array([max_y, *y, max_y])
     channel_polygon = Polygon(zip(x, y))
     start, end = x[0] - 0.1, x[-1] + 0.1
-    glass_wall_left = LineString(zip([x[0], x[1]], [y[0], y[1]]))
-    glass_wall_right = LineString(zip([x[-2], x[-1]], [y[-2], y[-1]]))
+    glass_walls = (
+        LineString(zip([x[0], x[1]], [y[0], y[1]])),  # left
+        LineString(zip([x[-2], x[-1]], [y[-2], y[-1]])),  # right
+    )
 
     # Remove glass wall sections from coords
     x, y, n = x[1:-1], y[1:-1], n[1:-1]
@@ -85,11 +95,9 @@ def calculate_conveyance_by_panel(
         multiple_parts = wetted_polygon.geom_type in ["GeometryCollection", "MultiPolygon"]
         parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
 
-        conveyance = 0
+        conveyance = 0.0
         for part in parts:
-            conveyance += calculate_conveyance_part(
-                part, water_plane, glass_wall_left, glass_wall_right, x, n
-            )
+            conveyance += calculate_conveyance_part(part, water_plane, glass_walls, x, n)
         conveyance_values.append(conveyance)
 
     return conveyance_values
@@ -98,8 +106,7 @@ def calculate_conveyance_by_panel(
 def calculate_conveyance_part(
     wetted_polygon: Polygon,
     water_plane: LineString,
-    glass_wall_left: LineString,
-    glass_wall_right: LineString,
+    glass_walls: tuple[LineString, LineString],
     x: np.ndarray,
     n: np.ndarray,
 ) -> float:
@@ -118,14 +125,14 @@ def calculate_conveyance_part(
         float: The conveyance value for the wetted part.
     """
     water_plane_clip = intersection(water_plane, wetted_polygon)
-    glass_wall_left_clip = intersection(glass_wall_left, wetted_polygon)
-    glass_wall_right_clip = intersection(glass_wall_right, wetted_polygon)
+    glass_wall_left_clip = intersection(glass_walls[0], wetted_polygon)
+    glass_wall_right_clip = intersection(glass_walls[1], wetted_polygon)
     perimeter_loss = (
         water_plane_clip.length + glass_wall_left_clip.length + glass_wall_right_clip.length
     )
 
     wetted_perimeter = wetted_polygon.boundary.length - perimeter_loss
-    if wetted_perimeter < 1e-8:
+    if wetted_perimeter < MINIMUM_PERIMETER_THRESHOLD:
         return 0.0
 
     area = wetted_polygon.area
@@ -168,9 +175,7 @@ def insert_intermediate_wls(arr: np.ndarray, threshold: float):
         new_points.append(end)
 
     # Combine the original starting point with the new points
-    result = np.array([arr[0]] + new_points)
-
-    return result
+    return np.array([arr[0]] + new_points)
 
 
 def calculate_weighted_mannings(x: np.ndarray, n: np.ndarray, wetted_polyline: LineString) -> float:
@@ -181,7 +186,10 @@ def calculate_weighted_mannings(x: np.ndarray, n: np.ndarray, wetted_polyline: L
     weighted_mannings = 0
     for segment in segments:
         mannings_value = get_mannings_by_segment_x_coords(
-            x, n, segment.coords[0][0], segment.coords[1][0]
+            x,
+            n,
+            segment.coords[0][0],
+            segment.coords[1][0],
         )
         weighted_mannings += mannings_value * segment.length * np.sqrt(rpl)
 
@@ -196,17 +204,19 @@ def line_to_segments(line: LineString | MultiLineString) -> list[LineString]:
             points = sorted([start, end], key=lambda x: x[0])
             segments.append(LineString(points))
         return segments
-    elif isinstance(line, MultiLineString):
+    if isinstance(line, MultiLineString):
         segments = []
         for linestring in line.geoms:
             segments.extend(line_to_segments(linestring))
         return segments
-    else:
-        raise TypeError("Input must be a LineString or MultiLineString")
+    raise TypeError("Input must be a LineString or MultiLineString")
 
 
 def get_mannings_by_segment_x_coords(
-    x: np.ndarray, n: np.ndarray, start_x: float, end_x: float
+    x: np.ndarray,
+    n: np.ndarray,
+    start_x: float,
+    end_x: float,
 ) -> float:
     """Get the Manning's n value for a segment based on its start x-coordinate."""
     if start_x == end_x:
