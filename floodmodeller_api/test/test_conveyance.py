@@ -1,8 +1,12 @@
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import pytest
+from scipy.spatial.distance import directed_hausdorff
 from shapely.geometry import LineString, Polygon
 
+from floodmodeller_api import DAT
 from floodmodeller_api.units.conveyance import (
     calculate_conveyance_by_panel,
     calculate_conveyance_part,
@@ -11,17 +15,12 @@ from floodmodeller_api.units.conveyance import (
 )
 
 
-# Helper function to create simple cross-section data
-def create_simple_cross_section():
+def test_calculate_cross_section_conveyance():
     x = np.array([0, 1, 2, 3, 4])
     y = np.array([5, 3, 1, 2, 6])
     n = np.array([0.03, 0.03, 0.03, 0.03, 0.03])
     panel_markers = np.array([False, False, False, False, False])
-    return x, y, n, panel_markers
 
-
-def test_calculate_cross_section_conveyance():
-    x, y, n, panel_markers = create_simple_cross_section()
     result = calculate_cross_section_conveyance(x, y, n, panel_markers)
 
     assert isinstance(result, pd.Series), "Result should be a pandas Series"
@@ -48,13 +47,7 @@ def test_calculate_conveyance_part():
     x = np.array([1, 2, 3, 4])
     n = np.array([0.03, 0.03, 0.03, 0.03])
 
-    result = calculate_conveyance_part(
-        wetted_polygon,
-        water_plane,
-        glass_walls,
-        x,
-        n,
-    )
+    result = calculate_conveyance_part(wetted_polygon, water_plane, glass_walls, x, n)
 
     assert isinstance(result, float), "Result should be a float"
     assert result >= 0, "Conveyance should be non-negative"
@@ -63,6 +56,7 @@ def test_calculate_conveyance_part():
 def test_insert_intermediate_wls():
     arr = np.array([1.0, 2.0, 3.0])
     threshold = 0.5
+
     result = insert_intermediate_wls(arr, threshold)
 
     assert isinstance(result, np.ndarray), "Result should be a numpy array"
@@ -70,6 +64,30 @@ def test_insert_intermediate_wls():
     assert all(np.diff(result) <= threshold), "All gaps should be <= to the threshold"
 
 
-# Run the tests
-if __name__ == "__main__":
-    pytest.main()
+@pytest.fixture(scope="module")
+def dat(test_workspace: Path):
+    return DAT(test_workspace / "conveyance_test.dat")
+
+
+@pytest.fixture(scope="module")
+def from_gui(test_workspace: Path):
+    return pd.read_csv(test_workspace / "expected_conveyance.csv")
+
+
+@pytest.mark.parametrize("section", ("a", "a2", "b", "b2", "c", "d", "d2"))
+def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
+    threshold = 5
+
+    actual = dat.sections[section].conveyance
+    expected = (
+        from_gui.set_index(f"{section}_stage")[f"{section}_conveyance"].dropna().drop_duplicates()
+    )
+    common_index = sorted(set(actual.index).union(expected.index))
+    actual_interpolated = actual.reindex(common_index).interpolate(method="linear")
+    expected_interpolated = expected.reindex(common_index).interpolate(method="linear")
+
+    u = np.array(list(zip(actual_interpolated.index, actual_interpolated)))
+    v = np.array(list(zip(expected_interpolated.index, expected_interpolated)))
+    hausdorff_distance = directed_hausdorff(u, v)[0]
+
+    assert hausdorff_distance < threshold
