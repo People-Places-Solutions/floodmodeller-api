@@ -91,3 +91,15 @@ def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
     hausdorff_distance = directed_hausdorff(u, v)[0]
 
     assert hausdorff_distance < threshold
+
+
+@pytest.mark.parametrize("section", ("a", "a2", "b", "b2", "c", "d", "d2"))
+def test_results_match_gui_at_shared_points(section: str, dat: DAT, from_gui: pd.DataFrame):
+    tolerance = 1e-3  # 0.001
+    actual = dat.sections[section].conveyance
+    expected = (
+        from_gui.set_index(f"{section}_stage")[f"{section}_conveyance"].dropna().drop_duplicates()
+    )
+    shared_index = sorted(set(actual.index).intersection(expected.index))
+    diff = expected[shared_index] - actual[shared_index]
+    assert (abs(diff) < tolerance).all()  # asserts all conveyance values within 0.001 difference
