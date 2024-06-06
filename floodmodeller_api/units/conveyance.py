@@ -34,7 +34,11 @@ def calculate_cross_section_conveyance(
             result = calculate_cross_section_conveyance(x, y, n, panel_markers)
             print(result)
     """
+    # Create a set of water levels to calculate conveyance at,
+    # currently using 50mm minimum increments plus WLs at every data point
     wls = insert_intermediate_wls(np.unique(y), threshold=0.05)
+
+    # Panel markers are forced true to the bounds to make the process work
     panel_markers = np.array([True, *panel_markers[1:-1], True])
     panel_indices = np.where(panel_markers)[0]
     conveyance_by_panel = []
@@ -68,13 +72,20 @@ def calculate_conveyance_by_panel(
     Returns:
         list[float]: A list of conveyance values for each water level.
     """
-    x = np.array([x[0], *x, x[-1]])  # insert additional start/end points
-    n = np.array([0, *n, 0])
+
     max_y = np.max(wls) + 1
     min_y = np.min(wls) - 1
+
+    # insert additional start/end points to represent the glass wall sides
+    x = np.array([x[0], *x, x[-1]])
     y = np.array([max_y, *y, max_y])
+    n = np.array([0, *n, 0])
+
+    # Define a polygon for the channel including artificial sides and top
     channel_polygon = Polygon(zip(x, y))
-    start, end = x[0] - 0.1, x[-1] + 0.1
+    start, end = x[0] - 0.1, x[-1] + 0.1  # Useful points enclosing the x bounds with small buffer
+
+    # Define linestring geometries representing glass walls, so they can be subtracted later
     glass_walls = (
         LineString(zip([x[0], x[1]], [y[0], y[1]])),  # left
         LineString(zip([x[-2], x[-1]], [y[-2], y[-1]])),  # right
@@ -86,8 +97,11 @@ def calculate_conveyance_by_panel(
     conveyance_values = []
     for wl in wls:
         if wl <= np.min(y):
+            # no channel capacity (essentially zero depth) so no need to calculate
             conveyance_values.append(0.0)
             continue
+
+        # Some geometries to represent the channel at a given water level
         water_surface = Polygon(zip([start, start, end, end], [wl, min_y, min_y, wl]))
         water_plane = intersection(channel_polygon, LineString(zip([start, end], [wl, wl])))
         wetted_polygon = intersection(channel_polygon, water_surface)
@@ -96,6 +110,9 @@ def calculate_conveyance_by_panel(
         parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
 
         conveyance = 0.0
+
+        # 'parts' here refers to when a water level results in 2 separate channel sections,
+        # e.g. where the cross section has a 'peak' part way through
         for part in parts:
             conveyance += calculate_conveyance_part(part, water_plane, glass_walls, x, n)
         conveyance_values.append(conveyance)
@@ -124,26 +141,32 @@ def calculate_conveyance_part(
     Returns:
         float: The conveyance value for the wetted part.
     """
-    water_plane_clip = intersection(water_plane, wetted_polygon)
-    glass_wall_left_clip = intersection(glass_walls[0], wetted_polygon)
-    glass_wall_right_clip = intersection(glass_walls[1], wetted_polygon)
+    water_plane_clip: LineString = intersection(water_plane, wetted_polygon)
+    glass_wall_left_clip: LineString = intersection(glass_walls[0], wetted_polygon)
+    glass_wall_right_clip: LineString = intersection(glass_walls[1], wetted_polygon)
+
+    # wetted perimeter should only account for actual section of channel, so we need to remove any
+    # length related to the water surface and any glass walls due to panel
     perimeter_loss = (
         water_plane_clip.length + glass_wall_left_clip.length + glass_wall_right_clip.length
     )
 
     wetted_perimeter = wetted_polygon.boundary.length - perimeter_loss
     if wetted_perimeter < MINIMUM_PERIMETER_THRESHOLD:
+        # Would occur if water level is above lowest point on section, but intersects a near-zero
+        # perimeter, e.g. touching the bottom of an elevated side channel
         return 0.0
 
     area = wetted_polygon.area
 
-    wetted_polyline = (
+    wetted_polyline: LineString = (
         wetted_polygon.exterior.difference(water_plane_clip)
         .difference(glass_wall_left_clip)
         .difference(glass_wall_right_clip)
     )
     weighted_mannings = calculate_weighted_mannings(x, n, wetted_polyline)
 
+    # apply conveyance equation
     return (area ** (5 / 3) / wetted_perimeter ** (2 / 3)) * (wetted_perimeter / weighted_mannings)
 
 
@@ -182,6 +205,8 @@ def calculate_weighted_mannings(x: np.ndarray, n: np.ndarray, wetted_polyline: L
     """Calculate the weighted Manning's n value for a wetted polyline."""
     # TODO: handle varying RPL
     rpl = 1  # simple assumption for now...
+
+    # We want the polyline to be split into each individual segment
     segments = line_to_segments(wetted_polyline)
     weighted_mannings = 0
     for segment in segments:
@@ -219,6 +244,10 @@ def get_mannings_by_segment_x_coords(
     end_x: float,
 ) -> float:
     """Get the Manning's n value for a segment based on its start x-coordinate."""
+
+    # This method doesn't handle cases where we have multiple manning's values at a vertical section
+    # and will always just take the first at any verticle, but it is probably quite rare for this
+    # not to be the case
     if start_x == end_x:
         # Vertical segment take first x match
         index = np.searchsorted(x, start_x) - (start_x not in x)
