@@ -19,7 +19,7 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .conveyance import calculate_cross_section_conveyance
+from .conveyance import calculate_cross_section_conveyance_chached
 from .helpers import (
     _to_float,
     _to_int,
@@ -257,11 +257,12 @@ class RIVER(Unit):
         Returns:
             pd.Series: A pandas Series containing the conveyance values indexed by water levels.
         """
-        return calculate_cross_section_conveyance(
-            x=self.data.X.values,
-            y=self.data.Y.values,
-            n=self.data["Mannings n"].values,
-            panel_markers=self.data.Panel.values,
+        return calculate_cross_section_conveyance_chached(
+            x=tuple(self.data.X.values),
+            y=tuple(self.data.Y.values),
+            n=tuple(self.data["Mannings n"].values),
+            rpl=tuple(self.data.RPL.values),
+            panel_markers=tuple(self.data.Panel.values),
         )
 
 
