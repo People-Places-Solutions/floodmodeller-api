@@ -1,0 +1,12 @@
+**************************************
+What's new in 0.4.4 (June 2024)
+**************************************
+
+This page details the changes for version 0.4.4 of Flood Modeller Python API
+
+
+Updates
+--------------
+- Added `conveyance curve calculation <https://api.floodmodeller.com/api/user_guide/dat.html#conveyance-curves>`__ to river sections
+- Added JSON support for ZZN results
+- Improved exception handling

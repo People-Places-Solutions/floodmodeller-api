@@ -41,6 +41,8 @@ Section units
 ~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.RIVER
+  
+   .. autoproperty:: conveyance
 
 ``INTERPOLATE()``
 ~~~~~~~~~~~~~~~~~

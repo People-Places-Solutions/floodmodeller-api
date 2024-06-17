@@ -19,6 +19,7 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
+from .conveyance import calculate_cross_section_conveyance_chached
 from .helpers import (
     _to_float,
     _to_int,
@@ -243,6 +244,26 @@ class RIVER(Unit):
             return riv_block
 
         return self._raw_block
+
+    @property
+    def conveyance(self) -> pd.Series:
+        """Calculate and return the conveyance curve of the cross-section.
+
+        Note:
+            This uses the same method as applied in Flood Modeller so will be able to pick out any
+            undesirable spikes in conveyance. The only difference compared with Flood Modeller may
+            be the number of sampled points.
+
+        Returns:
+            pd.Series: A pandas Series containing the conveyance values indexed by water levels.
+        """
+        return calculate_cross_section_conveyance_chached(
+            x=tuple(self.data.X.values),
+            y=tuple(self.data.Y.values),
+            n=tuple(self.data["Mannings n"].values),
+            rpl=tuple(self.data.RPL.values),
+            panel_markers=tuple(self.data.Panel.values),
+        )
 
 
 class INTERPOLATE(Unit):
