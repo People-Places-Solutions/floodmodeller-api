@@ -100,6 +100,6 @@ To convert a single River Section unit to JSON:
 .. ipython:: python
     
     from floodmodeller_api import DAT
-    dat = DAT("EX18.dat")
+    dat = DAT("EX18.DAT")
     river_unit_json = dat.sections["S3"].to_json()
     print(river_unit_json)
