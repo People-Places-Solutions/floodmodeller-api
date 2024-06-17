@@ -1,3 +1,10 @@
+.. ifconfig:: internal
+
+   .. ipython:: python
+      
+      import os
+      os.chdir("floodmodeller_api/test/test_data")
+
 Additional Functionality
 =========================
 
@@ -14,21 +21,26 @@ attributes such as the filepath do not need to be the same for them to be consid
 Two instances of the same class can now be tested using ``==`` to check whether they are 
 equal.
 
-.. code:: python 
+.. ipython:: python 
 
-    dat_a = DAT('some_network.dat')
-    dat_b = DAT('another_similar_network.dat')
+    from floodmodeller_api import DAT
 
-    if dat_a == dat_b:  # returns True/False
-        print('Files are equivalent')
-    else:
-        print('Files not equivalent')
+    dat_a = DAT("EX18.DAT")
+    dat_b = DAT("EX18.DAT")
+
+    dat_a == dat_b
+
+    # Make some changes to one
+    dat_a.sections["S3"].dist_to_next += 20
+    dat_a.general_parameters["Min Depth"] = 0.2
+
+    dat_a == dat_b
 
 
 In addition, a detailed breakdown of any differences can be found using the ``.diff()`` 
 method:
 
-.. code:: python
+.. ipython:: python
     
     dat_a.diff(dat_b)  # prints a list of differences to terminal
  
@@ -68,21 +80,26 @@ equivalent API instance using the ``.from_json()`` constructor on any API class.
 
 To convert a flood modeller object to a JSON string:
 
-.. code:: python
+.. ipython:: python
+    
+    from floodmodeller_api import IEF
+    ief = IEF("network.ief")
 
-    dat = DAT('some_network.dat')
-
-    obj_json = dat.to_json()
+    json_string = ief.to_json()
+    print(json_string)
 
 To convert a JSON file to a flood modeller object:
 
-.. code:: python
+.. ipython:: python
 
-    dat = DAT.from_json(json_string)
+    ief = IEF.from_json(json_string)
+    ief
 
 To convert a single River Section unit to JSON:
 
-.. code:: python
+.. ipython:: python
     
-    dat = DAT("some_network.dat")
-    river_unit_json = dat.sections["some_unit"].to_json()
+    from floodmodeller_api import DAT
+    dat = DAT("EX18.DAT")
+    river_unit_json = dat.sections["S3"].to_json()
+    print(river_unit_json)
