@@ -19,3 +19,4 @@ ipython==8.24.0; python_version != '3.9'
 ipython==8.18.1; python_version == '3.9'
 matplotlib==3.8.3
 scipy==1.13.1
+freezegun==1.5.0

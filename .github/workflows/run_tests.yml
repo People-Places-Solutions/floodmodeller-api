@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.PYTHON_VERSION }}
+          cache: pip
       
       - name: Install dependencies
         run: |
@@ -31,7 +32,7 @@ jobs:
     
       - name: Run unit tests with coverage (Windows)
         if: matrix.OS == 'windows-latest'
-        run: pytest . -v --cov=floodmodeller_api --cov-fail-under=82
+        run: pytest . -v --cov=floodmodeller_api --cov-fail-under=83
     
       - name: Run unit tests without coverage (Ubuntu)
         if: matrix.OS == 'ubuntu-latest'

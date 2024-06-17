@@ -27,7 +27,7 @@ from .to_from_json import Jsonable
 from .units._base import Unit
 from .units.iic import IIC
 from .urban1d._base import UrbanSubsection, UrbanUnit
-from .version import __version__
+from .util import FloodModellerAPIError, handle_exception
 
 
 class FMFile(Jsonable):
@@ -99,46 +99,31 @@ class FMFile(Jsonable):
 
         print(f"{self._filetype} File Saved to: {filepath}")
 
+    @handle_exception(when="compare")
     def _diff(self, other, force_print=False):
-        try:
-            if self._filetype != other._filetype:
-                raise TypeError("Cannot compare objects of different filetypes")
-            diff = self._get_diff(other)
-            if diff[0]:
-                print("No difference, files are equivalent")
+        if self._filetype != other._filetype:
+            raise TypeError("Cannot compare objects of different filetypes")
+        diff = self._get_diff(other)
+        if diff[0]:
+            print("No difference, files are equivalent")
+        else:
+            print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
+            if len(diff[1]) > self.MAX_DIFF and not force_print:
+                print(f"[Showing first {self.MAX_DIFF} differences...] ")
+                print(
+                    "\n".join(
+                        [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
+                    ),
+                )
+                print("\n...To see full list of all differences add force_print=True")
             else:
-                print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
-                if len(diff[1]) > self.MAX_DIFF and not force_print:
-                    print(f"[Showing first {self.MAX_DIFF} differences...] ")
-                    print(
-                        "\n".join(
-                            [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
-                        ),
-                    )
-                    print("\n...To see full list of all differences add force_print=True")
-                else:
-                    print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
-        except Exception as e:
-            self._handle_exception(e, when="compare")
+                print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def _handle_exception(self, err, when) -> NoReturn:
-        tb = err.__traceback__
-        while tb.tb_next is not None:
-            tb = tb.tb_next
-        line_no = tb.tb_lineno
-        tb_path = Path(tb.tb_frame.f_code.co_filename)
-        fname = "/".join(tb_path.parts[-2:])
-
-        raise Exception(
-            "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-            f"\nAPI Error: Problem encountered when trying to {when} {self._filetype} file {self._filepath}."
-            f"\n\nDetails: {__version__}-{fname}-{line_no}"
-            f"\nMsg: {err}"
-            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api",
-        )
+        raise FloodModellerAPIError(err, when, self._filetype, self._filepath) from err
 
     def __eq__(self, other, return_diff=False):
         result = True

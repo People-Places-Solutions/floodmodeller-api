@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Any
 
 from . import units
 from ._base import FMFile
+from .util import handle_exception
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -41,24 +42,21 @@ class IED(FMFile):
     _filetype: str = "IED"
     _suffix: str = ".ied"
 
+    @handle_exception(when="read")
     def __init__(self, ied_filepath: str | Path | None = None, from_json: bool = False):
-        try:
-            if from_json:
-                return
-            if ied_filepath is not None:
-                FMFile.__init__(self, ied_filepath)
+        if from_json:
+            return
+        if ied_filepath is not None:
+            FMFile.__init__(self, ied_filepath)
 
-                self._read()
+            self._read()
 
-            else:
-                # No filepath specified, create new 'blank' IED in memory
-                self._ied_struct: list[dict[str, Any]] = []
-                self._raw_data: list[str] = []
+        else:
+            # No filepath specified, create new 'blank' IED in memory
+            self._ied_struct: list[dict[str, Any]] = []
+            self._raw_data: list[str] = []
 
-            self._get_unit_definitions()
-
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        self._get_unit_definitions()
 
     def _read(self):
         # Read IED data
@@ -68,82 +66,79 @@ class IED(FMFile):
         # Generate IED structure
         self._update_ied_struct()
 
+    @handle_exception(when="write")
     def _write(self) -> str:  # noqa: C901, PLR0912
         """Returns string representation of the current IED data"""
-        try:
-            block_shift = 0
-            existing_units: dict[str, list[str]] = {
-                "boundaries": [],
-                "structures": [],
-                "sections": [],
-                "conduits": [],
-                "losses": [],
-            }
+        block_shift = 0
+        existing_units: dict[str, list[str]] = {
+            "boundaries": [],
+            "structures": [],
+            "sections": [],
+            "conduits": [],
+            "losses": [],
+        }
 
-            for block in self._ied_struct:
-                # Check for all supported boundary types
-                if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                    unit_data = self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ]
-                    prev_block_len = len(unit_data)
-                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                        unit_name = unit_data[2][:12].strip()
-                    else:
-                        unit_name = unit_data[1][:12].strip()
+        for block in self._ied_struct:
+            # Check for all supported boundary types
+            if block["Type"] in units.SUPPORTED_UNIT_TYPES:
+                unit_data = self._raw_data[
+                    block["start"] + block_shift : block["end"] + 1 + block_shift
+                ]
+                prev_block_len = len(unit_data)
+                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                    unit_name = unit_data[2][:12].strip()
+                else:
+                    unit_name = unit_data[1][:12].strip()
 
-                    # Get unit object
-                    unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
-                    if unit_name in unit_group:
-                        # block still exists
-                        new_unit_data = unit_group[unit_name]._write()
-                        existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
-                            unit_name,
+                # Get unit object
+                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
+                if unit_name in unit_group:
+                    # block still exists
+                    new_unit_data = unit_group[unit_name]._write()
+                    existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
+                        unit_name,
+                    )
+                else:
+                    # Bdy block has been deleted
+                    new_unit_data = []
+
+                new_block_len = len(new_unit_data)
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_unit_data
+                )
+                # adjust block shift for change in number of lines in bdy block
+                block_shift += new_block_len - prev_block_len
+
+        # Add any new units
+        for group_name, _units in existing_units.items():
+            for name, unit in getattr(self, group_name).items():
+                if name not in _units:
+                    # Newly added unit
+                    # Ensure that the 'name' attribute matches name key in boundaries
+                    self._raw_data.extend(unit._write())
+
+        # Update ied_struct
+        self._update_ied_struct()
+
+        # Update unit names
+        for unit_group, unit_group_name in [
+            (self.boundaries, "boundaries"),
+            (self.sections, "sections"),
+            (self.structures, "structures"),
+            (self.conduits, "conduits"),
+            (self.losses, "losses"),
+        ]:
+            for name, unit in unit_group.copy().items():
+                if name != unit.name:
+                    # Check if new name already exists as a label
+                    if unit.name in unit_group:
+                        raise Exception(
+                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
                         )
-                    else:
-                        # Bdy block has been deleted
-                        new_unit_data = []
+                    unit_group[unit.name] = unit
+                    del unit_group[name]
 
-                    new_block_len = len(new_unit_data)
-                    self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ] = new_unit_data
-                    # adjust block shift for change in number of lines in bdy block
-                    block_shift += new_block_len - prev_block_len
-
-            # Add any new units
-            for group_name, _units in existing_units.items():
-                for name, unit in getattr(self, group_name).items():
-                    if name not in _units:
-                        # Newly added unit
-                        # Ensure that the 'name' attribute matches name key in boundaries
-                        self._raw_data.extend(unit._write())
-
-            # Update ied_struct
-            self._update_ied_struct()
-
-            # Update unit names
-            for unit_group, unit_group_name in [
-                (self.boundaries, "boundaries"),
-                (self.sections, "sections"),
-                (self.structures, "structures"),
-                (self.conduits, "conduits"),
-                (self.losses, "losses"),
-            ]:
-                for name, unit in unit_group.copy().items():
-                    if name != unit.name:
-                        # Check if new name already exists as a label
-                        if unit.name in unit_group:
-                            raise Exception(
-                                f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
-                            )
-                        unit_group[unit.name] = unit
-                        del unit_group[name]
-
-            return "\n".join(self._raw_data) + "\n"
-
-        except Exception as e:
-            self._handle_exception(e, when="write")
+        return "\n".join(self._raw_data) + "\n"
 
     def _get_unit_definitions(self):
         # Get unit definitions
