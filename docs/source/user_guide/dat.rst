@@ -1,10 +1,3 @@
-.. ifconfig:: internal
-
-   .. ipython:: python
-      
-      import os
-      os.chdir("floodmodeller_api/test/test_data")
-
 DAT Class
 =====================================================
 Summary
@@ -114,6 +107,72 @@ DAT settings and can be edited by assigning them new values.
 
     dat.general_parameters # Access dictionary of general DAT parameters
 
+
+Conveyance curves
+""""""""""""""""""
+
+.. admonition:: *New in version 0.4.4*
+
+   Calculated conveyance curves for river sections can now be accessed with the `.conveyance`
+   attribute.
+
+Calculating the conveyance curve of a river cross section can be useful when identifying 'spikes' in
+the conveyance curve, or looking where panel markers may need to be added. The conveyance curve for 
+a ruver unit can be accessed by simply calling ``.conveyance``. For example, to access the 
+conveyance curve and plot it, you could do the following:
+
+.. code:: python
+
+    import matplotlib.pyplot as plt
+
+    # Read in data
+    dat = DAT("network.dat")
+    section_data = dat.sections["CSRD10"].data
+    conveyance_data = dat.sections["CSRD10"].conveyance
+
+    def plot_section_with_conveyance(section_data, conveyance_data):
+        # Set up matplotlib plot
+        fig, ax1 = plt.subplots()
+
+        ax1.plot(section_data.X, section_data.Y, 'brown')
+        ax1.fill_between(section_data.X, section_data.Y, section_data.Y.min() - 0.1, color='brown', alpha=0.5)
+        ax1.set_xlabel('Chainage (m)', color='brown')
+        ax1.set_ylabel('Stage (mAOD)')
+
+        ax2 = ax1.twiny()
+        ax2.plot(conveyance_data.values, conveyance_data.index, 'b-')
+        ax2.set_xlabel('Conveyance (m3/s)', color='b')
+
+        # display it
+        plt.show()
+    # Plot with function
+    plot_section_with_conveyance(section_data, conveyance_data)
+
+.. image:: conveyance_1.png
+   :width: 500
+
+In this example we see a spike in the conveyance at around 70.75mAOD, we can add a panel marker here 
+and see how the conveyance curve is improved:
+
+.. code:: python
+
+    # Add a panel marker at the point in the section where there is a sharp peak
+    section_data.loc[section_data.index[5], "Panel"] = True
+    # recalculate conveyance curve
+    conveyance_data = dat.sections["CSRD10"].conveyance
+
+    # Plot with function
+    plot_section_with_conveyance(section_data, conveyance_data)
+
+.. image:: conveyance_2.png
+   :width: 500
+
+Now we can see that the conveyance curve is improved! With a simple script this process of
+identifying conveyance spikes and adding panel markers could be automated.
+
+Rules and varrules
+"""""""""""""""""""
+
 Within a unit, there is also support for logical RULES & VARRULES. There is also support for VARIABLES 
 in the DAT file as well.
 
@@ -142,9 +201,7 @@ in the DAT file as well.
             0: array(["TravelTimer", "TIMER", "0", "0"], dtype=object)
             1: array(["DumVar", "integer", "", "n/a"], dtype=object)
         }
-
-
-
+        
 Reference
 --------------
 .. autoclass:: floodmodeller_api.DAT
