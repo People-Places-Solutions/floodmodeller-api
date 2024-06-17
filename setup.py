@@ -52,5 +52,6 @@ setup(
         "pytest-mock==3.*",
         "shapely==2.*",
         "scipy==1.*",
+        "freesegun==1.*",
     ],
 )
