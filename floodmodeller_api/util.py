@@ -18,10 +18,15 @@ from __future__ import annotations
 
 import sys
 import webbrowser
+from functools import wraps
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from .version import __version__
+
 if TYPE_CHECKING:
+    from typing import Callable
+
     from ._base import FMFile
 
 
@@ -75,3 +80,40 @@ def read_file(filepath: str | Path) -> FMFile:
 
 def is_windows() -> bool:
     return sys.platform.startswith("win")
+
+
+def handle_exception(when: str) -> Callable:
+    """Decorator factory to wrap a method with exception handling."""
+
+    def decorator(method: Callable) -> Callable:
+        @wraps(method)
+        def wrapped_method(self: FMFile, *args, **kwargs):
+            try:
+                return method(self, *args, **kwargs)
+            except Exception as e:
+                self._handle_exception(e, when)
+
+        return wrapped_method
+
+    return decorator
+
+
+class FloodModellerAPIError(Exception):
+    """Custom exception class for Flood Modeller API errors."""
+
+    def __init__(self, original_exception, when, filetype, filepath) -> None:
+        tb = original_exception.__traceback__
+        while tb.tb_next is not None:
+            tb = tb.tb_next
+        line_no = tb.tb_lineno
+        tb_path = Path(tb.tb_frame.f_code.co_filename)
+        fname = "/".join(tb_path.parts[-2:])
+
+        message = (
+            "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+            f"\nAPI Error: Problem encountered when trying to {when} {filetype} file {filepath}."
+            f"\n\nDetails: {__version__}-{fname}-{line_no}"
+            f"\nMsg: {original_exception}"
+            "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api"
+        )
+        super().__init__(message)

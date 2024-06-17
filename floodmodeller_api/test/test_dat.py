@@ -5,6 +5,7 @@ import pytest
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units import QTBDY
+from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture
@@ -125,28 +126,28 @@ def test_insert_unit_at(units, dat_ex6):
 def test_insert_unit_too_many_arguments_error(dat_ex6, units, kwargs):
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        r"\nAPI Error: Problem encountered when trying to insert unit DAT file .*\."
+        r"\nAPI Error: Problem encountered when trying to insert unit into DAT file .*\."
         r"\n"
         r"\nDetails: .*-floodmodeller_api/dat\.py-\d+"
         r"\nMsg: Only one of add_at, add_before, or add_after required"
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         dat_ex6.insert_unit(units[0], **kwargs)
 
 
 def test_insert_unit_no_arguments_error(dat_ex6, units):
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-        r"\nAPI Error: Problem encountered when trying to insert unit DAT file .*\."
+        r"\nAPI Error: Problem encountered when trying to insert unit into DAT file .*\."
         r"\n"
         r"\nDetails: .*-floodmodeller_api/dat\.py-\d+"
         r"\nMsg: No positional argument given\. Please provide either add_before, add_at or add_after"
         r"\n"
         r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
     )
-    with pytest.raises(Exception, match=msg):
+    with pytest.raises(FloodModellerAPIError, match=msg):
         dat_ex6.insert_unit(units[0])
 
 

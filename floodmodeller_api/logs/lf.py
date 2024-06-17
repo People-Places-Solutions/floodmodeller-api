@@ -16,16 +16,23 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import datetime as dt
+import time
 from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from .._base import FMFile
+from ..util import handle_exception
 from .lf_helpers import state_factory
 from .lf_params import lf1_steady_data_to_extract, lf1_unsteady_data_to_extract, lf2_data_to_extract
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+OLD_FILE = 5
+LOG_TIMEOUT = 10
 
 
 class LF(FMFile):
@@ -40,24 +47,21 @@ class LF(FMFile):
         Initiates 'LF' class object
     """
 
+    @handle_exception(when="read")
     def __init__(
         self,
         lf_filepath: str | Path | None,
         data_to_extract: dict,
         steady: bool = False,
     ):
-        try:
-            FMFile.__init__(self, lf_filepath)
+        FMFile.__init__(self, lf_filepath)
 
-            self._data_to_extract = data_to_extract
-            self._init_counters()
-            self._init_parsers()
-            self._state = state_factory(steady, self._extracted_data)
+        self._data_to_extract = data_to_extract
+        self._init_counters()
+        self._init_parsers()
+        self._state = state_factory(steady, self._extracted_data)
 
-            self._read()
-
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        self._read()
 
     def _read(self, force_reread: bool = False, suppress_final_step: bool = False):
         # Read LF file
@@ -311,10 +315,50 @@ class LF2(LF):
         super().__init__(lf_filepath, data_to_extract, steady=False)
 
 
-def lf_factory(filepath: str, suffix: str, steady: bool) -> LF:
-    if suffix == "lf1":
-        return LF1(filepath, steady)
-    if suffix == "lf2":
-        return LF2(filepath)
-    flow_type = "steady" if steady else "unsteady"
-    raise ValueError(f"Unexpected log file type {suffix} for {flow_type} flow")
+def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
+    """Checks for a new log file, waiting for its creation if necessary"""
+
+    def _no_log_file(reason: str) -> None:
+        print(f"No progress bar as {reason}. Simulation will continue as usual.")
+
+    # ensure progress bar is supported
+    if suffix not in {"lf1", "lf2"}:
+        _no_log_file("log file must have suffix lf1 or lf2")
+        return None
+
+    # wait for log file to exist
+    log_file_exists = False
+    max_time = time.time() + LOG_TIMEOUT
+
+    while not log_file_exists:
+        time.sleep(0.1)
+
+        log_file_exists = filepath.is_file()
+
+        # timeout
+        if (not log_file_exists) and (time.time() > max_time):
+            _no_log_file("log file is expected but not detected")
+            return None
+
+    # wait for new log file
+    old_log_file = True
+    max_time = time.time() + LOG_TIMEOUT
+
+    while old_log_file:
+        time.sleep(0.1)
+
+        # difference between now and when log file was last modified
+        last_modified_timestamp = filepath.stat().st_mtime
+        last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
+        time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
+
+        # it's old if it's over OLD_FILE seconds old (TODO: is this robust?)
+        old_log_file = time_diff_sec > OLD_FILE
+
+        # timeout
+        if old_log_file and (time.time() > max_time):
+            _no_log_file("log file is from previous run")
+            return None
+
+    # create LF instance
+    return LF1(filepath) if suffix == "lf1" else LF2(filepath)

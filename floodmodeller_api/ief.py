@@ -16,7 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-import datetime as dt
 import os
 import subprocess
 import time
@@ -29,7 +28,8 @@ from tqdm import trange
 
 from ._base import FMFile
 from .ief_flags import flags
-from .logs import lf_factory
+from .logs import LF1, create_lf
+from .util import handle_exception
 from .zzn import ZZN
 
 
@@ -49,24 +49,19 @@ class IEF(FMFile):
 
     _filetype: str = "IEF"
     _suffix: str = ".ief"
-    OLD_FILE = 5
     ERROR_MAX = 2000
     WARNING_MAX = 3000
-    LOG_TIMEOUT = 10
 
+    @handle_exception(when="read")
     def __init__(self, ief_filepath: str | Path | None = None, from_json: bool = False):
-        try:
-            if from_json:
-                return
-            if ief_filepath is not None:
-                FMFile.__init__(self, ief_filepath)
-
-                self._read()
-
-            else:
-                self._create_from_blank()
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        if from_json:
+            return
+        if ief_filepath is not None:
+            FMFile.__init__(self, ief_filepath)
+            self._read()
+            self._log_path = self._get_result_filepath("lf1")
+        else:
+            self._create_from_blank()
 
     def _read(self):
         # Read IEF data
@@ -112,42 +107,39 @@ class IEF(FMFile):
                 prev_comment = None
         del raw_data
 
+    @handle_exception(when="write")
     def _write(self) -> str:
         """Returns string representation of the current IEF data
 
         Returns:
             str: Full string representation of IEF in its most recent state (including changes not yet saved to disk)
         """
-        try:
-            # update _ief_properties
-            self._update_ief_properties()
+        # update _ief_properties
+        self._update_ief_properties()
 
-            ief_string = ""
-            event = 0  # Used as a counter for multiple eventdata files
-            for idx, prop in enumerate(self._ief_properties):
-                if prop.startswith("["):
-                    # writes the [] bound headers to ief string
+        ief_string = ""
+        event = 0  # Used as a counter for multiple eventdata files
+        for idx, prop in enumerate(self._ief_properties):
+            if prop.startswith("["):
+                # writes the [] bound headers to ief string
+                ief_string += prop + "\n"
+            elif prop.lstrip().startswith(";"):
+                if self._ief_properties[idx + 1].lower() != "eventdata":
+                    # Only write comment if not preceding event data
                     ief_string += prop + "\n"
-                elif prop.lstrip().startswith(";"):
-                    if self._ief_properties[idx + 1].lower() != "eventdata":
-                        # Only write comment if not preceding event data
-                        ief_string += prop + "\n"
-                elif prop.lower() == "eventdata":
-                    event_data = getattr(self, prop)
-                    # Add multiple EventData if present
-                    for event_idx, key in enumerate(event_data):
-                        if event_idx == event:
-                            ief_string += f";{key}\n{prop}={str(event_data[key])}\n"
-                            break
-                    event += 1
+            elif prop.lower() == "eventdata":
+                event_data = getattr(self, prop)
+                # Add multiple EventData if present
+                for event_idx, key in enumerate(event_data):
+                    if event_idx == event:
+                        ief_string += f";{key}\n{prop}={str(event_data[key])}\n"
+                        break
+                event += 1
 
-                else:
-                    # writes property and value to ief string
-                    ief_string += f"{prop}={str(getattr(self, prop))}\n"
-            return ief_string
-
-        except Exception as e:
-            self._handle_exception(e, when="write")
+            else:
+                # writes property and value to ief string
+                ief_string += f"{prop}={str(getattr(self, prop))}\n"
+        return ief_string
 
     def _create_from_blank(self):
         # No filepath specified, create new 'blank' IEF in memory
@@ -360,6 +352,7 @@ class IEF(FMFile):
         """
         self._save(filepath)
 
+    @handle_exception(when="simulate")
     def simulate(  # noqa: C901, PLR0912, PLR0913
         self,
         method: str = "WAIT",
@@ -392,73 +385,70 @@ class IEF(FMFile):
         Returns:
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.
         """
-        try:
-            self._range_function = range_function
-            self._range_settings = range_settings if range_settings else {}
-            if self._filepath is None:
-                raise UserWarning(
-                    "IEF must be saved to a specific filepath before simulate() can be called.",
+        self._range_function = range_function
+        self._range_settings = range_settings if range_settings else {}
+        if self._filepath is None:
+            raise UserWarning(
+                "IEF must be saved to a specific filepath before simulate() can be called.",
+            )
+        if precision.upper() == "DEFAULT":
+            precision = "SINGLE"  # Defaults to single...
+            for attr in dir(self):
+                if (
+                    attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"  # Unless DP specified
+                    and int(getattr(self, attr)) == 1
+                ):
+                    precision = "DOUBLE"
+                    break
+
+        if enginespath == "":
+            _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
+        else:
+            _enginespath = enginespath
+            if not Path(_enginespath).exists():
+                raise Exception(
+                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
                 )
-            if precision.upper() == "DEFAULT":
-                precision = "SINGLE"  # Defaults to single...
-                for attr in dir(self):
-                    if (
-                        attr.upper() == "LAUNCHDOUBLEPRECISIONVERSION"  # Unless DP specified
-                        and int(getattr(self, attr)) == 1
-                    ):
-                        precision = "DOUBLE"
-                        break
 
-            if enginespath == "":
-                _enginespath = r"C:\Program Files\Flood Modeller\bin"  # Default location
-            else:
-                _enginespath = enginespath
-                if not Path(_enginespath).exists():
-                    raise Exception(
-                        f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
-                    )
+        if precision.upper() == "SINGLE":
+            isis32_fp = str(Path(_enginespath, "ISISf32.exe"))
+        else:
+            isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
-            if precision.upper() == "SINGLE":
-                isis32_fp = str(Path(_enginespath, "ISISf32.exe"))
-            else:
-                isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
+        if not Path(isis32_fp).exists():
+            raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
 
-            if not Path(isis32_fp).exists():
-                raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
+        run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
-            run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
+        if method.upper() == "WAIT":
+            print("Executing simulation...")
+            # execute simulation
+            process = Popen(run_command, cwd=os.path.dirname(self._filepath))
 
-            if method.upper() == "WAIT":
-                print("Executing simulation...")
-                # execute simulation
-                process = Popen(run_command, cwd=os.path.dirname(self._filepath))
+            # progress bar based on log files
+            steady = self.RunType == "Steady"
+            self._lf = create_lf(self._log_path, "lf1") if not steady else None
+            self._update_progress_bar(process)
 
-                # progress bar based on log files
-                self._init_log_file()
-                self._update_progress_bar(process)
+            while process.poll() is None:
+                # Process still running
+                time.sleep(1)
 
-                while process.poll() is None:
-                    # Process still running
-                    time.sleep(1)
+            result, summary = self._summarise_exy()
 
-                result, summary = self._summarise_exy()
+            if result == 1 and raise_on_failure:
+                raise RuntimeError(summary)
+            print(summary)
 
-                if result == 1 and raise_on_failure:
-                    raise RuntimeError(summary)
-                print(summary)
+        elif method.upper() == "RETURN_PROCESS":
+            print("Executing simulation...")
+            # execute simulation
+            return Popen(run_command, cwd=os.path.dirname(self._filepath))
 
-            elif method.upper() == "RETURN_PROCESS":
-                print("Executing simulation...")
-                # execute simulation
-                return Popen(run_command, cwd=os.path.dirname(self._filepath))
-
-            return None
-
-        except Exception as e:
-            self._handle_exception(e, when="simulate")
+        return None
 
     def _get_result_filepath(self, suffix):
-        if hasattr(self, "Results"):
+        if hasattr(self, "Results") and self.Results != '""':  # because blank IEF has 'Results=""'
             path = Path(self.Results).with_suffix("." + suffix)
             if not path.is_absolute():
                 # set cwd to ief location and resolve path
@@ -491,95 +481,11 @@ class IEF(FMFile):
             floodmodeller_api.LF1 class object
         """
 
-        suffix, steady = self._determine_lf_type()
+        if not self._log_path.exists():
+            raise FileNotFoundError("Log file (LF1) not found")
 
-        # Get lf location
-        lf_path = self._get_result_filepath(suffix)
-
-        if not lf_path.exists():
-            raise FileNotFoundError("Log file (" + suffix + ") not found")
-
-        return lf_factory(lf_path, suffix, steady)
-
-    def _determine_lf_type(self):  # (str, bool) or (None, None):
-        """Determine the log file type"""
-
-        if self.RunType == "Unsteady":
-            suffix = "lf1"
-            steady = False
-
-        elif self.RunType == "Steady":
-            suffix = "lf1"
-            steady = True
-
-        else:
-            raise ValueError(f'Unexpected run type "{self.RunType}"')
-
-        return suffix, steady
-
-    def _init_log_file(self):
-        """Checks for a new log file, waiting for its creation if necessary"""
-
-        # determine log file type based on self.RunType
-        try:
-            suffix, steady = self._determine_lf_type()
-        except ValueError:
-            self._no_log_file(f'run type "{self.RunType}" not supported')
-            self._lf = None
-            return
-
-        # ensure progress bar is supported for that type
-        if not (suffix == "lf1" and steady is False):
-            self._no_log_file("only 1D unsteady runs are supported")
-            self._lf = None
-            return
-
-        # find what log filepath should be
-        lf_filepath = self._get_result_filepath(suffix)
-
-        # wait for log file to exist
-        log_file_exists = False
-        max_time = time.time() + self.LOG_TIMEOUT
-
-        while not log_file_exists:
-            time.sleep(0.1)
-
-            log_file_exists = lf_filepath.is_file()
-
-            # timeout
-            if time.time() > max_time:
-                self._no_log_file("log file is expected but not detected")
-                self._lf = None
-                return
-
-        # wait for new log file
-        old_log_file = True
-        max_time = time.time() + self.LOG_TIMEOUT
-
-        while old_log_file:
-            time.sleep(0.1)
-
-            # difference between now and when log file was last modified
-            last_modified_timestamp = lf_filepath.stat().st_mtime
-            last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
-            time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
-
-            # it's old if it's over self.OLD_FILE seconds old (TODO: is this robust?)
-            old_log_file = time_diff_sec > self.OLD_FILE
-
-            # timeout
-            if time.time() > max_time:
-                self._no_log_file("log file is from previous run")
-                self._lf = None
-                return
-
-        # create LF instance
-        self._lf = lf_factory(lf_filepath, suffix, steady)
-
-    def _no_log_file(self, reason):
-        """Warning that there will be no progress bar"""
-
-        print("No progress bar as " + reason + ". Simulation will continue as usual.")
+        steady = self.RunType == "Steady"
+        return LF1(self._log_path, steady)
 
     def _update_progress_bar(self, process: Popen):
         """Updates progress bar based on log file"""

@@ -23,6 +23,7 @@ from ._base import FMFile
 from .units.helpers import _to_str, join_n_char_ljust
 from .urban1d import subsections
 from .urban1d.general_parameters import DEFAULT_OPTIONS
+from .util import handle_exception
 from .validation import _validate_unit
 
 
@@ -43,20 +44,18 @@ class INP(FMFile):
     _filetype: str = "INP"
     _suffix: str = ".inp"
 
+    @handle_exception(when="read")
     def __init__(self, inp_filepath: str | Path | None = None, from_json: bool = False):
-        try:
-            if from_json:
-                return
-            if inp_filepath is not None:
-                FMFile.__init__(self, inp_filepath)
-                self._read()
+        if from_json:
+            return
+        if inp_filepath is not None:
+            FMFile.__init__(self, inp_filepath)
+            self._read()
 
-            else:
-                self._create_from_blank()
+        else:
+            self._create_from_blank()
 
-            self._get_section_definitions()
-        except Exception as e:
-            self._handle_exception(e, when="read")
+        self._get_section_definitions()
 
     def _read(self):
         # Read INP file
@@ -66,73 +65,68 @@ class INP(FMFile):
         # Generate INP file structure
         self._update_inp_struct()
 
+    @handle_exception(when="write")
     def _write(self) -> str:
         """Returns string representation of the current INP data
 
         Returns:
             str: Full string representation of INP in its most recent state (including changes not yet saved to disk)
         """
-        try:
-            _validate_unit(self, urban=True)
+        _validate_unit(self, urban=True)
 
-            block_shift = 0  # Used to allow changes in the length of subsections.
+        block_shift = 0  # Used to allow changes in the length of subsections.
 
-            for block in self._inp_struct:
-                if block["Subsection_Type"] in subsections.SUPPORTED_SUBSECTIONS:
-                    subsection_data = self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ]
-                    prev_block_len = len(subsection_data)
+        for block in self._inp_struct:
+            if block["Subsection_Type"] in subsections.SUPPORTED_SUBSECTIONS:
+                subsection_data = self._raw_data[
+                    block["start"] + block_shift : block["end"] + 1 + block_shift
+                ]
+                prev_block_len = len(subsection_data)
 
-                    if (
-                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
-                        == "general"
-                    ):
-                        # General parameters
+                if (
+                    subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["group"]
+                    == "general"
+                ):
+                    # General parameters
 
-                        if block["Subsection_Type"] == "[OPTIONS]":
-                            # Options subsection
+                    if block["Subsection_Type"] == "[OPTIONS]":
+                        # Options subsection
 
-                            new_subsection_data = [
-                                "[OPTIONS]",
-                                ";;Option             Value",
-                            ]
+                        new_subsection_data = [
+                            "[OPTIONS]",
+                            ";;Option             Value",
+                        ]
 
-                            for param, value in self.options.items():
-                                if value is not None:
-                                    option_line = join_n_char_ljust(21, param.upper(), value)
-                                    new_subsection_data.append(option_line)
+                        for param, value in self.options.items():
+                            if value is not None:
+                                option_line = join_n_char_ljust(21, param.upper(), value)
+                                new_subsection_data.append(option_line)
 
-                            new_subsection_data.append("")  # blank line before next section
+                        new_subsection_data.append("")  # blank line before next section
 
-                    else:  # Of unit type
-                        subsection = getattr(
-                            self,
-                            subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]][
-                                "attribute"
-                            ],
-                        )  # Get unit object
-                        new_subsection_data = (
-                            subsection._write()
-                        )  # String representation of unit object
+                else:  # Of unit type
+                    subsection = getattr(
+                        self,
+                        subsections.SUPPORTED_SUBSECTIONS[block["Subsection_Type"]]["attribute"],
+                    )  # Get unit object
+                    new_subsection_data = (
+                        subsection._write()
+                    )  # String representation of unit object
 
-                    new_block_len = len(new_subsection_data)
+                new_block_len = len(new_subsection_data)
 
-                    self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ] = new_subsection_data  # Replace existing subsection with new subsection string
-                    block_shift += (
-                        new_block_len - prev_block_len
-                    )  # adjust block shift for change in number of lines in block
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_subsection_data  # Replace existing subsection with new subsection string
+                )
+                block_shift += (
+                    new_block_len - prev_block_len
+                )  # adjust block shift for change in number of lines in block
 
-            # Regenerate INP file structure
-            self._update_inp_struct()
+        # Regenerate INP file structure
+        self._update_inp_struct()
 
-            # Write _raw_data out to INP file.
-            return "\n".join(self._raw_data) + "\n"
-
-        except Exception as e:
-            self._handle_exception(e, when="write")
+        # Write _raw_data out to INP file.
+        return "\n".join(self._raw_data) + "\n"
 
     def _create_from_blank(self):
         raise NotImplementedError(
