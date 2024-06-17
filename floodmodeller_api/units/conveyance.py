@@ -293,5 +293,9 @@ def calculate_cross_section_conveyance_chached(
     """
 
     return calculate_cross_section_conveyance(
-        np.array(x), np.array(y), np.array(n), np.array(rpl), np.array(panel_markers)
+        np.array(x),
+        np.array(y),
+        np.array(n),
+        np.array(rpl),
+        np.array(panel_markers),
     )
