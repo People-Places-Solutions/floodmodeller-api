@@ -25,8 +25,8 @@ equal.
 
     from floodmodeller_api import DAT
 
-    dat_a = DAT("EX18.dat")
-    dat_b = DAT("EX18.dat")
+    dat_a = DAT("EX18.DAT")
+    dat_b = DAT("EX18.DAT")
 
     dat_a == dat_b
 
