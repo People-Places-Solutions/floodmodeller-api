@@ -250,7 +250,7 @@ class RIVER(Unit):
         """Calculate and return the conveyance curve of the cross-section.
 
         Note:
-            This uses the same method as applied in Flood Modeller so will be able to pick out any 
+            This uses the same method as applied in Flood Modeller so will be able to pick out any
             undesirable spikes in conveyance. The only difference compared with Flood Modeller may
             be the number of sampled points.
 
