@@ -118,7 +118,7 @@ Conveyance curves
 
 Calculating the conveyance curve of a river cross section can be useful when identifying 'spikes' in
 the conveyance curve, or looking where panel markers may need to be added. The conveyance curve for 
-a ruver unit can be accessed by simply calling ``.conveyance``. For example, to access the 
+a river unit can be accessed by simply calling ``.conveyance``. For example, to access the 
 conveyance curve and plot it, you could do the following:
 
 .. code:: python
@@ -134,17 +134,18 @@ conveyance curve and plot it, you could do the following:
         # Set up matplotlib plot
         fig, ax1 = plt.subplots()
 
-        ax1.plot(section_data.X, section_data.Y, 'brown')
-        ax1.fill_between(section_data.X, section_data.Y, section_data.Y.min() - 0.1, color='brown', alpha=0.5)
-        ax1.set_xlabel('Chainage (m)', color='brown')
-        ax1.set_ylabel('Stage (mAOD)')
+        ax1.plot(section_data.X, section_data.Y, "brown")
+        ax1.fill_between(section_data.X, section_data.Y, section_data.Y.min() - 0.1, color="brown", alpha=0.5)
+        ax1.set_xlabel("Chainage (m)", color="brown")
+        ax1.set_ylabel("Stage (mAOD)")
 
         ax2 = ax1.twiny()
-        ax2.plot(conveyance_data.values, conveyance_data.index, 'b-')
-        ax2.set_xlabel('Conveyance (m3/s)', color='b')
+        ax2.plot(conveyance_data.values, conveyance_data.index, "b-")
+        ax2.set_xlabel("Conveyance (m3/s)", color="b")
 
         # display it
         plt.show()
+
     # Plot with function
     plot_section_with_conveyance(section_data, conveyance_data)
 
