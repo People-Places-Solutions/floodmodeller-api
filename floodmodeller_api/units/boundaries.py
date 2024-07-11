@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
+from floodmodeller_api.validation.parameters import parameter_options
 
 from ._base import Unit
 from .helpers import (
@@ -211,6 +212,11 @@ class HTBDY(Unit):
         self.data = pd.DataFrame(data_list, columns=["Stage", "Time"])
         self.data = self.data.set_index("Time")
         self.data = self.data["Stage"]  # Convert to series
+
+        # Fix legacy Flood Modeller bug where timeunit is present in extendmethod place
+        if self.extendmethod in parameter_options["timeunit"]["options"][1]:
+            self.timeunit = self.extendmethod
+            self.extendmethod = "EXTEND"
 
     def _write(self):
         """Function to write a valid HTBDY block"""
