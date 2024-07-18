@@ -12,16 +12,17 @@ class HydrographPlus:
 
         return {row.split("=")[0]: row.split("=")[1] for row in metadata_df.iloc[:, 0]}
 
-    def get_df_hydrographs_plus(self, event):
+    def get_df_hydrographs_plus(self):
         time_row_index = self.data_file.index[self.data_file.apply(lambda row: row.str.contains("Time \(hours\)")).any(axis=1)][0]
         self.columns = self.data_file.iloc[time_row_index]
         df_events = self.data_file.iloc[time_row_index+1:].reset_index(drop=True)
+        df_events.columns = self.columns
         for col in df_events.columns[1:]:
             df_events[col] = pd.to_numeric(df_events[col], errors="coerce")
 
         return df_events
 
-    def get_event(df_flows: pd.DataFrame, event: str) -> pd.Series:
+    def get_event(self, df_flows: pd.DataFrame, event: str) -> pd.DataFrame:
         def _remove_string_from_list_items(lst, string) -> list[str]:
             return [item.replace(string, "") for item in lst]
 
@@ -45,8 +46,9 @@ if __name__ == "__main__":
     metadata = baseline_unchecked.get_metada()
     print(metadata)
     print("################################################")
-    hydrographs = baseline_unchecked.get_df_hydrographs_plus(baseline_unchecked, event)
+    hydrographs = baseline_unchecked.get_df_hydrographs_plus()
     print(hydrographs)
     print("################################################")
-    #event = 
-    
+    event_plus = baseline_unchecked.get_event(hydrographs, event)
+    print(event_plus)
+    print("################################################")
