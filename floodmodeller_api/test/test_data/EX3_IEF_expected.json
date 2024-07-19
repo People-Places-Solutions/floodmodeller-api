@@ -1,16 +1,16 @@
 {
   "API Class": "floodmodeller_api.ief.IEF",
-  "API Version": "0.4.2.post1",
+  "API Version": "0.4.4.post1",
   "Object Attributes": {
-    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\ex3.ief",
+    "_filepath": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX3.IEF",
     "file": {
       "API Class": "floodmodeller_api.backup.File",
       "Object Attributes": {
-        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\ex3.ief",
-        "ext": ".ief",
-        "dttm_str": "2024-04-17-14-09-24",
-        "file_id": "eac08c4521744755c4c9fba0abd046dd378df1ce",
-        "backup_filename": "eac08c4521744755c4c9fba0abd046dd378df1ce_2024-04-17-14-09-24.ief",
+        "path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX3.IEF",
+        "ext": ".IEF",
+        "dttm_str": "2024-07-19-17-39-26",
+        "file_id": "22473ba408be67bbb924eec0934c662982415159",
+        "backup_filename": "22473ba408be67bbb924eec0934c662982415159_2024-07-19-17-39-26.IEF",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -56,6 +56,7 @@
     "RulesOnFirstIteration": "1",
     "ResetTimesAfterPos": "0",
     "UseFPSModularLimit": "0",
-    "UseRemoteQ": "0"
+    "UseRemoteQ": "0",
+    "_log_path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\ex3.lf1"
   }
 }
