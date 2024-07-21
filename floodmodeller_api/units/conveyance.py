@@ -124,12 +124,11 @@ def calculate_conveyance_by_panel(
         multiple_parts = wetted_polygon.geom_type in ["GeometryCollection", "MultiPolygon"]
         parts = wetted_polygon.geoms if multiple_parts else [wetted_polygon]
 
-        conveyance = 0.0
-
         # 'parts' here refers to when a water level results in 2 separate channel sections,
         # e.g. where the cross section has a 'peak' part way through
-        for part in parts:
-            conveyance += calculate_conveyance_part(part, water_plane, glass_walls, x, n, rpl)
+        conveyance = sum(
+            calculate_conveyance_part(part, water_plane, glass_walls, x, n, rpl) for part in parts
+        )
         conveyance_values.append(conveyance)
 
     return conveyance_values
