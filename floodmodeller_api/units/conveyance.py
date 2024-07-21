@@ -235,16 +235,12 @@ def calculate_weighted_mannings(
 def line_to_segments(line: LineString | MultiLineString) -> list[LineString]:
     """Convert a LineString or MultiLineString into a list of LineString segments."""
     if isinstance(line, LineString):
-        segments = []
-        for start, end in zip(line.coords[:-1], line.coords[1:]):
-            points = sorted([start, end], key=lambda x: x[0])
-            segments.append(LineString(points))
-        return segments
+        return [
+            LineString(sorted([start, end], key=lambda x: x[0]))
+            for start, end in zip(line.coords[:-1], line.coords[1:])
+        ]
     if isinstance(line, MultiLineString):
-        segments = []
-        for linestring in line.geoms:
-            segments.extend(line_to_segments(linestring))
-        return segments
+        return [segment for geom in line.geoms for segment in line_to_segments(geom)]
     raise TypeError("Input must be a LineString or MultiLineString")
 
 
