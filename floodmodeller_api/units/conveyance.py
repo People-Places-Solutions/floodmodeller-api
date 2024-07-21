@@ -48,20 +48,18 @@ def calculate_cross_section_conveyance(
     # Panel markers are forced true to the bounds to make the process work
     panel_markers = np.array([True, *panel_markers[1:-1], True])
     panel_indices = np.where(panel_markers)[0]
-    conveyance_by_panel = []
-    for panel_start, panel_end in zip(panel_indices[:-1], panel_indices[1:] + 1):
-        panel_x = x[panel_start:panel_end]
-        panel_y = y[panel_start:panel_end]
-        panel_n = n[panel_start:panel_end]
-        # RPL value is only valid for the start of a panel, and set to 1 if it's zero
-        panel_rpl = (
+    conveyance_by_panel = [
+        calculate_conveyance_by_panel(
+            x[panel_start:panel_end],
+            y[panel_start:panel_end],
+            n[panel_start:panel_end],
             1.0
             if (panel_start == 0 and not panel_markers[0]) or rpl[panel_start] == 0
-            else float(rpl[panel_start])
+            else float(rpl[panel_start]),
+            wls,
         )
-        conveyance_by_panel.append(
-            calculate_conveyance_by_panel(panel_x, panel_y, panel_n, panel_rpl, wls),
-        )
+        for panel_start, panel_end in zip(panel_indices[:-1], panel_indices[1:] + 1)
+    ]
 
     # Sum conveyance across panels
     conveyance_values = [sum(values) for values in zip(*conveyance_by_panel)]
@@ -207,17 +205,14 @@ def insert_intermediate_wls(arr: np.ndarray, threshold: float):
     num_points = (gaps // threshold).astype(int)
 
     # Prepare lists to hold the new points and results
-    new_points = []
-
-    for i, start in enumerate(arr[:-1]):
-        end = arr[i + 1]
-        if num_points[i] > 0:
-            points = np.linspace(start, end, num_points[i] + 2)[1:-1]
-            new_points.extend(points)
-        new_points.append(end)
+    new_points_nested = [
+        np.linspace(start, end, num_points[i] + 2, endpoint=False)
+        for i, (start, end) in enumerate(zip(arr[:-1], arr[1:]))
+    ]
+    new_points = [point for sublist in new_points_nested for point in sublist]
 
     # Combine the original starting point with the new points
-    return np.array([arr[0]] + new_points)
+    return np.array(new_points + [arr[-1]])
 
 
 def calculate_weighted_mannings(
