@@ -239,8 +239,8 @@ class RIVER(Unit):
         """Data table for the river cross section.
 
         Returns:
-            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y', 
-            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation', 
+            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y',
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation',
             'SP. Marker'
         """
         if self._active_data is None:
@@ -289,10 +289,10 @@ class RIVER(Unit):
         """Data table for active subset of the river cross section, defined by deactivation markers.
 
         Returns:
-            pd.DataFrame: Pandas dataframe for the active cross section data with columns: 'X', 'Y', 
-            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation', 
+            pd.DataFrame: Pandas dataframe for the active cross section data with columns: 'X', 'Y',
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation',
             'SP. Marker'
-        
+
         Example:
             In this example we read in a river section that has deactivation markers
 
