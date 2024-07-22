@@ -241,11 +241,11 @@ class RIVER(Unit):
     def data(self):
         if self._active_data is None:
             return self._data
-        
+
         # Replace the active section with the self._active_data df
         left_bank_idx, right_bank_idx = self._get_left_right_active_index()
         self._data = pd.concat(
-            [self._data[:left_bank_idx], self._active_data, self._data[right_bank_idx + 1 :]]
+            [self._data[:left_bank_idx], self._active_data, self._data[right_bank_idx + 1 :]],
         ).reset_index(drop=True)
         self._active_data = None
         return self._data
@@ -254,7 +254,7 @@ class RIVER(Unit):
     def data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
             raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame."
+                "The updated data table for a cross section must be a pandas DataFrame.",
             )
         if new_df.columns != self._required_columns:
             raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
@@ -293,18 +293,18 @@ class RIVER(Unit):
     def active_data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
             raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame."
+                "The updated data table for a cross section must be a pandas DataFrame.",
             )
         if new_df.columns.to_list() != self._required_columns:
             raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
-        
+
         # Ensure activation markers are present
         new_df = new_df.copy()
         new_df.iloc[0, 8] = "LEFT"
         new_df.iloc[-1, 8] = "RIGHT"
         self._active_data = new_df
 
-    def _get_left_right_active_index(self) -> tuple[int]:
+    def _get_left_right_active_index(self) -> tuple[int, int]:
         bank_data = self._data.Deactivation.to_list()
         lb_flag = "LEFT" in bank_data
         rb_flag = "RIGHT" in bank_data

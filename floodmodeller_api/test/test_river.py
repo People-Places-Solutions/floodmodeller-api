@@ -1,8 +1,7 @@
-import pytest
 import pandas as pd
+import pytest
 
 from floodmodeller_api.units.sections import RIVER
-
 
 river_unit_data_cases = [
     (
@@ -87,7 +86,7 @@ def test_edit_active_data():
             "     2.000         5     0.030     0.000                 0.0       0.0          ",
             "     3.000         6     0.030     0.000                 0.0       0.0     RIGHT",
             "     4.000        10     0.030     0.000                 0.0       0.0          ",
-        ]
+        ],
     )
     unit.active_data.iloc[0, 1] = 99
     assert unit.data.iloc[1, 1] == 99
@@ -108,7 +107,7 @@ def test_active_data_with_no_markers():
             "     2.000         5     0.030",
             "     3.000         6     0.030",
             "     4.000        10     0.030",
-        ]
+        ],
     )
     assert len(unit.active_data) == 5
     unit.data.iloc[1, 8] = "LEFT"
@@ -144,8 +143,8 @@ def test_create_from_blank_with_params():
         density=1010.0,
         data=pd.DataFrame(
             {
-                "X": [0., 1., 2.],
-                "Y": [5., 2., 5.],
+                "X": [0.0, 1.0, 2.0],
+                "Y": [5.0, 2.0, 5.0],
                 "Mannings n": [0.01, 0.01, 0.01],
                 "Panel": ["", "", ""],
                 "RPL": [0.0, 0.0, 0.0],
@@ -154,7 +153,7 @@ def test_create_from_blank_with_params():
                 "Northing": [0.0, 0.0, 0.0],
                 "Deactivation": ["", "", ""],
                 "SP. Marker": ["", "", ""],
-            }
+            },
         ),
     )
 
