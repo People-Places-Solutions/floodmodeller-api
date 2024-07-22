@@ -48,6 +48,8 @@ def calculate_cross_section_conveyance(
     # Panel markers are forced true to the bounds to make the process work
     panel_markers = np.array([True, *panel_markers[1:-1], True])
     panel_indices = np.where(panel_markers)[0]
+    panel_start_indices = panel_indices[:-1]
+    panel_end_indices = panel_indices[1:] + 1
     conveyance_by_panel = [
         calculate_conveyance_by_panel(
             x[panel_start:panel_end],
@@ -58,7 +60,7 @@ def calculate_cross_section_conveyance(
             else float(rpl[panel_start]),
             wls,
         )
-        for panel_start, panel_end in zip(panel_indices[:-1], panel_indices[1:] + 1)
+        for panel_start, panel_end in zip(panel_start_indices, panel_end_indices)
     ]
 
     # Sum conveyance across panels
