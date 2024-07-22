@@ -100,7 +100,6 @@ class RIVER(Unit):
             "dist_to_next": dist_to_next,
             "slope": slope,
             "density": density,
-            "data": data,
         }.items():
             setattr(self, param, val)
 
