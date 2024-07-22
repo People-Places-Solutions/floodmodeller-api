@@ -51,9 +51,6 @@ class RIVER(Unit):
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object
-
-    Methods:
-        convert_to_muskingham: Not currently supported but planned for future release
     """
 
     _unit = "RIVER"
@@ -238,7 +235,14 @@ class RIVER(Unit):
         return self._raw_block
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
+        """Data table for the river cross section.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y', 
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation', 
+            'SP. Marker'
+        """
         if self._active_data is None:
             return self._data
 
@@ -282,7 +286,36 @@ class RIVER(Unit):
 
     @property
     def active_data(self) -> pd.DataFrame:
-        """Get the cross section data for only the active part of the section."""
+        """Data table for active subset of the river cross section, defined by deactivation markers.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the active cross section data with columns: 'X', 'Y', 
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation', 
+            'SP. Marker'
+        
+        Example:
+            In this example we read in a river section that has deactivation markers
+
+            .. ipython:: python
+
+                from floodmodeller_api.units import RIVER
+                river_unit = RIVER(
+                    [
+                        "RIVER normal case",
+                        "SECTION",
+                        "SomeUnit",
+                        "     0.000            0.000100  1000.000",
+                        "        5",
+                        "     0.000        10     0.030     0.000                 0.0       0.0          ",
+                        "     1.000         9     0.030     0.000                 0.0       0.0      LEFT",
+                        "     2.000         5     0.030     0.000                 0.0       0.0          ",
+                        "     3.000         6     0.030     0.000                 0.0       0.0     RIGHT",
+                        "     4.000        10     0.030     0.000                 0.0       0.0          ",
+                    ]
+                )
+                river_unit.data
+                river_unit.active_data
+        """
         if self._active_data is not None:
             return self._active_data
         left_bank_idx, right_bank_idx = self._get_left_right_active_index()
