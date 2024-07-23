@@ -51,18 +51,6 @@ the argument 'gui':
     fmapi-structure_log gui
 
 
-**From code**
-
-.. code:: python 
-
-    from floodmodeller_api.toolbox import TuflowToFloodModeller
-
-    TuflowToFloodModeller.run(
-        tcf_path="path/to/tcf.tcf",
-        folder="path/to/model",
-        name="model_name",
-    )
-
 .. _develop_a_tool:
 
 Developing Custom Tools
