@@ -167,3 +167,7 @@ def test_model_converter(tmpdir, model_name, tcf, mocker):
 
 def test_model_converter_wrapper(tmpdir, model_name, tcf):
     TuflowToFloodModeller.run(tcf_path=tcf, folder=tmpdir, name=model_name)
+
+
+if __name__ == "__name__":
+    pytest.main()
