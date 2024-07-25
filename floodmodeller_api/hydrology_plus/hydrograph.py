@@ -1,21 +1,34 @@
 import pandas as pd
 
+from floodmodeller_api._base import FMFile
+from floodmodeller_api.util import handle_exception
 
-class HydrographPlus:
+
+class HydrographPlus(FMFile):
     """Class to hande the output of Hydrology +."""
-    
-    
-    
-    def __init__(self, data_file):
-        self.data_file = pd.read_csv(data_file, header=None)
+
+    _filetype: str = "HydrographPlus"
+    _suffix: str = ".csv"
+
+    @handle_exception(when="read")
+    def __init__(self, csv_file_path, from_json: bool = False):
+        if from_json:
+            return
+        FMFile.__init__(self, csv_file_path)
+        self._read()
+
+    def _read(self):
+        self.data_file = pd.read_csv(self._filepath, header=None)
         self.metadata = self._get_metadata()
         self.data_flows = self._get_df_hydrographs_plus()
+
 
     def _get_metadata(self) -> dict[str, str]:
         metadata_row_index = self.data_file.index[self.data_file.apply(lambda row: row.str.contains("Return Period")).any(axis=1)][0]
         metadata_df = self.data_file.iloc[1:metadata_row_index, 0:1]
 
         return {row.split("=")[0]: row.split("=")[1] for row in metadata_df.iloc[:, 0]}
+
 
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
         time_row_index = self.data_file.index[self.data_file.apply(lambda row: row.str.contains("Time \(hours\)")).any(axis=1)][0]
@@ -26,6 +39,7 @@ class HydrographPlus:
             df_events[col] = pd.to_numeric(df_events[col], errors="coerce")
 
         return df_events
+
 
     def get_event(self, event: str) -> pd.DataFrame:
         def _remove_string_from_list_items(lst, string) -> list[str]:
