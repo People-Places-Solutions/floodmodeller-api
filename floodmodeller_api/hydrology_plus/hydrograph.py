@@ -1,3 +1,19 @@
+"""
+Flood Modeller Python API
+Copyright (C) 2024 Jacobs U.K. Limited
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
+address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
+"""
+
 import pandas as pd
 
 from floodmodeller_api._base import FMFile
@@ -5,7 +21,14 @@ from floodmodeller_api.util import handle_exception
 
 
 class HydrographPlus(FMFile):
-    """Class to hande the output of Hydrology +."""
+    """Class to handle the output of Hydrology +.
+    Args:
+        The csv file produced by Hydrology + in Flood Modeller
+
+    Output:
+        Initiates 'HydrographPlus' object
+        The event/s needed to run simulations in Flood Modeller
+    """
 
     _filetype: str = "HydrographPlus"
     _suffix: str = ".csv"
@@ -24,6 +47,7 @@ class HydrographPlus(FMFile):
 
 
     def _get_metadata(self) -> dict[str, str]:
+        """To extract the metada from the hydrology + results"""
         metadata_row_index = self.data_file.index[self.data_file.apply(lambda row: row.str.contains("Return Period")).any(axis=1)][0]
         metadata_df = self.data_file.iloc[1:metadata_row_index, 0:1]
 
@@ -31,6 +55,7 @@ class HydrographPlus(FMFile):
 
 
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
+        """To extract all the events generated in hydrology +"""
         time_row_index = self.data_file.index[self.data_file.apply(lambda row: row.str.contains("Time \(hours\)")).any(axis=1)][0]
         self.columns = self.data_file.iloc[time_row_index]
         df_events = self.data_file.iloc[time_row_index+1:].reset_index(drop=True)
@@ -42,6 +67,7 @@ class HydrographPlus(FMFile):
 
 
     def get_event(self, event: str) -> pd.DataFrame:
+        """To extract a particular event to be simulated in Flood Modeller"""
         def _remove_string_from_list_items(lst, string) -> list[str]:
             return [item.replace(string, "") for item in lst]
 
@@ -55,13 +81,6 @@ class HydrographPlus(FMFile):
         column_index = [0, index_event]
 
         return self.data_flows.iloc[:, column_index]
-    
-    # def get_event(self, event: str) -> pd.DataFrame:
-    #     column_name = f"{event} - Flow (m3/s)"
-    #     if column_name not in self.data.columns:
-    #         raise
-    #     self.data.loc[:, column_name]
-
 
 
 if __name__ == "__main__":
