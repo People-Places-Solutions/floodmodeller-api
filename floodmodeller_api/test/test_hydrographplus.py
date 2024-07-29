@@ -7,7 +7,6 @@ from floodmodeller_api.hydrology_plus.hydrograph import HydrographPlus
 import pytest
 
 
-
 @pytest.fixture()
 def load_csv_tests():
     """To load the csv with the data to be compared with the class"""
@@ -61,9 +60,11 @@ def get_event_csv(get_datafame_csv, event="2020 Upper - 11 - 1"):
 
 
 @pytest.fixture()
-def create_hydrographplus_object():
+def create_hydrographplus_object(load_csv_tests):
     """To create the object to make the comparison with the csv data"""
-    return HydrographPlus(load_csv_tests)
+    hydro_obj = HydrographPlus(load_csv_tests)
+
+    return hydro_obj
 
 
 def test_data_metada(get_metada_csv, create_hydrographplus_object):
