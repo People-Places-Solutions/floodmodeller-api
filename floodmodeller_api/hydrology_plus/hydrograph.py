@@ -89,7 +89,7 @@ class HydrographPlus(FMFile):
 if __name__ == "__main__":
     event = "2020 Upper - 11 - 1"
     baseline_unchecked = HydrographPlus(
-        r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline unchecked.csv",
+        r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv",
     )
     print("################################################")
     print(baseline_unchecked.metadata)
