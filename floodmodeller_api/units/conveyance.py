@@ -227,18 +227,18 @@ def calculate_weighted_mannings(
     # We want the polyline to be split into each individual segment
     segments = line_to_segments(wetted_polyline)
     return sum(
-        get_mannings_by_segment_x_coords(x, n, segment.coords[0][0], segment.coords[1][0])
-        * segment.length
+        get_mannings_by_segment_x_coords(x, n, segment[0][0], segment[1][0])
+        * np.linalg.norm(segment[1] - segment[0])
         * np.sqrt(rpl)
         for segment in segments
     )
 
 
-def line_to_segments(line: LineString | MultiLineString) -> np.ndarray[LineString]:
+def line_to_segments(line: LineString | MultiLineString) -> np.ndarray[list]:
     """Convert a LineString or MultiLineString into a list of LineString segments."""
     if isinstance(line, LineString):
         segments = [
-            LineString(sorted([start, end], key=lambda x: x[0]))
+            np.array(sorted([start, end], key=lambda x: x[0]))
             for start, end in zip(line.coords[:-1], line.coords[1:])
         ]
     elif isinstance(line, MultiLineString):
