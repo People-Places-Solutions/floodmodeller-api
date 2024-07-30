@@ -234,16 +234,18 @@ def calculate_weighted_mannings(
     )
 
 
-def line_to_segments(line: LineString | MultiLineString) -> list[LineString]:
+def line_to_segments(line: LineString | MultiLineString) -> np.ndarray[LineString]:
     """Convert a LineString or MultiLineString into a list of LineString segments."""
     if isinstance(line, LineString):
-        return [
+        segments = [
             LineString(sorted([start, end], key=lambda x: x[0]))
             for start, end in zip(line.coords[:-1], line.coords[1:])
         ]
-    if isinstance(line, MultiLineString):
-        return [segment for geom in line.geoms for segment in line_to_segments(geom)]
-    raise TypeError("Input must be a LineString or MultiLineString")
+    elif isinstance(line, MultiLineString):
+        segments = [segment for geom in line.geoms for segment in line_to_segments(geom)]
+    else:
+        raise TypeError("Input must be a LineString or MultiLineString")
+    return np.array(segments)
 
 
 def get_mannings_by_segment_x_coords(
