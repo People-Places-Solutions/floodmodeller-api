@@ -224,14 +224,14 @@ def calculate_weighted_mannings(
 ) -> float:
     """Calculate the weighted Manning's n value for a wetted polyline."""
 
-    # We want the polyline to be split into each individual segment
     segments = line_to_segments(wetted_polyline)
-    return sum(
-        get_mannings_by_segment_x_coords(x, n, segment[0][0], segment[1][0])
-        * np.linalg.norm(segment[1] - segment[0])
-        * np.sqrt(rpl)
-        for segment in segments
-    )
+    segment_starts = segments[:, 0, 0]
+    segment_ends = segments[:, 1, 0]
+
+    mannings_values = get_mannings_by_segment_x_coords(x, n, segment_starts, segment_ends)
+    segment_lengths = np.linalg.norm(segments[:, 1] - segments[:, 0], axis=1)
+
+    return np.sum(mannings_values * segment_lengths * np.sqrt(rpl))
 
 
 def line_to_segments(line: LineString | MultiLineString) -> np.ndarray:
@@ -248,22 +248,24 @@ def line_to_segments(line: LineString | MultiLineString) -> np.ndarray:
 def get_mannings_by_segment_x_coords(
     x: np.ndarray,
     n: np.ndarray,
-    start_x: float,
-    end_x: float,
-) -> float:
-    """Get the Manning's n or RPL value for a segment based on its start x-coordinate."""
+    start_x: np.ndarray,
+    end_x: np.ndarray,
+) -> np.ndarray:
+    """Get the Manning's n or RPL value for segments based on their start x-coordinates."""
 
-    # This method doesn't handle cases where we have multiple manning's values at a vertical section
-    # and will always just take the first at any verticle, but it is probably quite rare for this
-    # not to be the case
-    if start_x == end_x:
-        # Vertical segment take first x match
-        index = np.searchsorted(x, start_x) - (start_x not in x)
-    else:
-        # Otherwise non-vertical segment, take last match
-        index = np.searchsorted(x, start_x, side="right") - 1
+    mannings_values = np.zeros_like(start_x)
 
-    return n[index]
+    # Handle vertical segments by taking the first x match
+    vertical_segments = start_x == end_x
+    vertical_indices = np.searchsorted(x, start_x[vertical_segments])
+    mannings_values[vertical_segments] = n[vertical_indices]
+
+    # Handle non-vertical segments by taking the last match
+    non_vertical_segments = start_x != end_x
+    non_vertical_indices = np.searchsorted(x, start_x[non_vertical_segments], side="right") - 1
+    mannings_values[non_vertical_segments] = n[non_vertical_indices]
+
+    return mannings_values
 
 
 @lru_cache
