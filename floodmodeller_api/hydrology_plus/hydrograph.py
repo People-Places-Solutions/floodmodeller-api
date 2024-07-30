@@ -41,7 +41,7 @@ class HydrographPlus(FMFile):
         self._read()
 
     def _read(self):
-        self.data_file = pd.read_csv(self._filepath, header=None)
+        self.data_file = pd.read_csv(self._filepath)
         self.metadata = self._get_metadata()
         self.data_flows = self._get_df_hydrographs_plus()
 
@@ -50,7 +50,7 @@ class HydrographPlus(FMFile):
         metadata_row_index = self.data_file.index[
             self.data_file.apply(lambda row: row.str.contains("Return Period")).any(axis=1)
         ][0]
-        metadata_df = self.data_file.iloc[1:metadata_row_index, 0:1]
+        metadata_df = self.data_file.iloc[:metadata_row_index, 0:1]
 
         return {row.split("=")[0]: row.split("=")[1] for row in metadata_df.iloc[:, 0]}
 
