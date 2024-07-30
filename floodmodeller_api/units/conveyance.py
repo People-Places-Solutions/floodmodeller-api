@@ -239,7 +239,7 @@ def line_to_segments(line: LineString | MultiLineString) -> np.ndarray:
     if isinstance(line, LineString):
         coords = np.array(line.coords)
         segments = np.stack((coords[:-1], coords[1:]), axis=1)
-        return np.sort(segments, axis=1)
+        return np.sort(segments, axis=1)  # FIXME via testing
     if isinstance(line, MultiLineString):
         return np.concatenate([line_to_segments(geom) for geom in line.geoms])
     raise TypeError("Input must be a LineString or MultiLineString")
