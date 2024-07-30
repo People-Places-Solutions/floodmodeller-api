@@ -51,12 +51,21 @@ class RIVER(Unit):
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object
-
-    Methods:
-        convert_to_muskingham: Not currently supported but planned for future release
     """
 
     _unit = "RIVER"
+    _required_columns = [
+        "X",
+        "Y",
+        "Mannings n",
+        "Panel",
+        "RPL",
+        "Marker",
+        "Easting",
+        "Northing",
+        "Deactivation",
+        "SP. Marker",
+    ]
 
     def _create_from_blank(  # noqa: PLR0913
         self,
@@ -88,29 +97,18 @@ class RIVER(Unit):
             "dist_to_next": dist_to_next,
             "slope": slope,
             "density": density,
-            "data": data,
         }.items():
             setattr(self, param, val)
 
-        self.data = (
+        self._data = (
             data
             if isinstance(data, pd.DataFrame)
             else pd.DataFrame(
                 [],
-                columns=[
-                    "X",
-                    "Y",
-                    "Mannings n",
-                    "Panel",
-                    "RPL",
-                    "Marker",
-                    "Easting",
-                    "Northing",
-                    "Deactivation",
-                    "SP. Marker",
-                ],
+                columns=self._required_columns,
             )
         )
+        self._active_data = None
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
@@ -171,20 +169,9 @@ class RIVER(Unit):
                         sp_marker,
                     ],
                 )
-            self.data = pd.DataFrame(
+            self._data = pd.DataFrame(
                 data_list,
-                columns=[
-                    "X",
-                    "Y",
-                    "Mannings n",
-                    "Panel",
-                    "RPL",
-                    "Marker",
-                    "Easting",
-                    "Northing",
-                    "Deactivation",
-                    "SP. Marker",
-                ],
+                columns=self._required_columns,
             )
 
         else:
@@ -194,6 +181,8 @@ class RIVER(Unit):
             )
             self._raw_block = riv_block
             self.name = riv_block[2][: self._label_len].strip()
+
+        self._active_data = None
 
     def _write(self):
         """Function to write a valid RIVER block"""
@@ -214,7 +203,7 @@ class RIVER(Unit):
             )
             # Manual so slope can have more sf
             params = f'{self.dist_to_next:>10.3f}{"":>10}{self.slope:>10.6f}{self.density:>10.3f}'
-            self.nrows = len(self.data)
+            self.nrows = len(self._data)
             riv_block = [header, self.subtype, labels, params, f"{str(self.nrows):>10}"]
 
             riv_data = []
@@ -230,7 +219,7 @@ class RIVER(Unit):
                 northing,
                 deactivation,
                 sp_marker,
-            ) in self.data.itertuples():
+            ) in self._data.itertuples():
                 row = join_10_char(x, y, n)
                 if panel:
                     row += "*"
@@ -246,6 +235,36 @@ class RIVER(Unit):
         return self._raw_block
 
     @property
+    def data(self) -> pd.DataFrame:
+        """Data table for the river cross section.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y',
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation',
+            'SP. Marker'
+        """
+        if self._active_data is None:
+            return self._data
+
+        # Replace the active section with the self._active_data df
+        left_bank_idx, right_bank_idx = self._get_left_right_active_index()
+        self._data = pd.concat(
+            [self._data[:left_bank_idx], self._active_data, self._data[right_bank_idx + 1 :]],
+        ).reset_index(drop=True)
+        self._active_data = None
+        return self._data
+
+    @data.setter
+    def data(self, new_df: pd.DataFrame) -> None:
+        if not isinstance(new_df, pd.DataFrame):
+            raise ValueError(
+                "The updated data table for a cross section must be a pandas DataFrame.",
+            )
+        if new_df.columns != self._required_columns:
+            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+        self._data = new_df
+
+    @property
     def conveyance(self) -> pd.Series:
         """Calculate and return the conveyance curve of the cross-section.
 
@@ -258,12 +277,74 @@ class RIVER(Unit):
             pd.Series: A pandas Series containing the conveyance values indexed by water levels.
         """
         return calculate_cross_section_conveyance_chached(
-            x=tuple(self.data.X.values),
-            y=tuple(self.data.Y.values),
-            n=tuple(self.data["Mannings n"].values),
-            rpl=tuple(self.data.RPL.values),
-            panel_markers=tuple(self.data.Panel.values),
+            x=tuple(self._data.X.values),
+            y=tuple(self._data.Y.values),
+            n=tuple(self._data["Mannings n"].values),
+            rpl=tuple(self._data.RPL.values),
+            panel_markers=tuple(self._data.Panel.values),
         )
+
+    @property
+    def active_data(self) -> pd.DataFrame:
+        """Data table for active subset of the river cross section, defined by deactivation markers.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the active cross section data with columns: 'X', 'Y',
+            'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation',
+            'SP. Marker'
+
+        Example:
+            In this example we read in a river section that has deactivation markers
+
+            .. ipython:: python
+
+                from floodmodeller_api.units import RIVER
+                river_unit = RIVER(
+                    [
+                        "RIVER normal case",
+                        "SECTION",
+                        "SomeUnit",
+                        "     0.000            0.000100  1000.000",
+                        "        5",
+                        "     0.000        10     0.030     0.000                 0.0       0.0          ",
+                        "     1.000         9     0.030     0.000                 0.0       0.0      LEFT",
+                        "     2.000         5     0.030     0.000                 0.0       0.0          ",
+                        "     3.000         6     0.030     0.000                 0.0       0.0     RIGHT",
+                        "     4.000        10     0.030     0.000                 0.0       0.0          ",
+                    ]
+                )
+                river_unit.data
+                river_unit.active_data
+        """
+        if self._active_data is not None:
+            return self._active_data
+        left_bank_idx, right_bank_idx = self._get_left_right_active_index()
+        self._active_data = self._data.iloc[left_bank_idx : right_bank_idx + 1].copy()
+        return self._active_data
+
+    @active_data.setter
+    def active_data(self, new_df: pd.DataFrame) -> None:
+        if not isinstance(new_df, pd.DataFrame):
+            raise ValueError(
+                "The updated data table for a cross section must be a pandas DataFrame.",
+            )
+        if new_df.columns.to_list() != self._required_columns:
+            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+
+        # Ensure activation markers are present
+        new_df = new_df.copy()
+        new_df.iloc[0, 8] = "LEFT"
+        new_df.iloc[-1, 8] = "RIGHT"
+        self._active_data = new_df
+
+    def _get_left_right_active_index(self) -> tuple[int, int]:
+        bank_data = self._data.Deactivation.to_list()
+        lb_flag = "LEFT" in bank_data
+        rb_flag = "RIGHT" in bank_data
+
+        left_bank_idx = (len(bank_data) - 1) - bank_data[::-1].index("LEFT") if lb_flag else 0
+        right_bank_idx = bank_data.index("RIGHT") if rb_flag else len(bank_data) - 1
+        return left_bank_idx, right_bank_idx
 
 
 class INTERPOLATE(Unit):

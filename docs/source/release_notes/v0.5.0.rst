@@ -1,0 +1,19 @@
+**************************************
+What's new in 0.5.0 (TBC 2024)
+**************************************
+
+This page details the changes for version 0.5.0 of Flood Modeller Python API
+
+New features
+--------------
+- Hydrology+ support - users can now use the API to...
+
+Updates
+--------------
+- Added ``.active_data`` property to the RIVER class to allow quick access to the activated subset 
+  of the data
+
+Bug fixes
+--------------
+- Fix an issue related to HTBDY units in models from legacy versions of Flood Modeller 
+  (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/16>`__)

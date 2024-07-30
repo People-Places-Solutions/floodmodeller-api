@@ -41,3 +41,6 @@ ignore = ["E402", "E501"]
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test*" = ["PLR0913", "PLR2004"]
+
+[tool.isort]
+profile = "black"
