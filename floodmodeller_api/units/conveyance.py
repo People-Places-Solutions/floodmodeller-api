@@ -190,7 +190,7 @@ def calculate_conveyance_part(  # noqa: PLR0913
     return (area ** (5 / 3) / wetted_perimeter ** (2 / 3)) * (wetted_perimeter / weighted_mannings)
 
 
-def insert_intermediate_wls(arr: np.ndarray, threshold: float):
+def insert_intermediate_wls(arr: np.ndarray, threshold: float) -> np.ndarray:
     """
     Insert intermediate water levels into an array based on a threshold.
 
@@ -208,14 +208,12 @@ def insert_intermediate_wls(arr: np.ndarray, threshold: float):
     num_points = (gaps // threshold).astype(int)
 
     # Prepare lists to hold the new points and results
-    new_points_nested = [
-        np.linspace(start, end, num_points[i] + 2, endpoint=False)
-        for i, (start, end) in enumerate(zip(arr[:-1], arr[1:]))
+    new_points = [
+        np.linspace(start, end, num + 2, endpoint=False)
+        for start, end, num in zip(arr[:-1], arr[1:], num_points)
     ]
-    new_points = [point for sublist in new_points_nested for point in sublist]
-
-    # Combine the original starting point with the new points
-    return np.array(new_points + [arr[-1]])
+    end = np.array([arr[-1]])
+    return np.concatenate([*new_points, end])
 
 
 def calculate_weighted_mannings(
