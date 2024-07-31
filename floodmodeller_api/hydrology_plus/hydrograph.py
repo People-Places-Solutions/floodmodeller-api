@@ -20,7 +20,7 @@ from floodmodeller_api._base import FMFile
 from floodmodeller_api.util import handle_exception
 
 
-class HydrographPlus(FMFile):
+class HydrographPlusExport(FMFile):
     """Class to handle the output of Hydrology +.
     Args:
         The csv file produced by Hydrology + in Flood Modeller
@@ -30,7 +30,7 @@ class HydrographPlus(FMFile):
         The event/s needed to run simulations in Flood Modeller
     """
 
-    _filetype: str = "HydrographPlus"
+    _filetype: str = "HydrographPlusExport"
     _suffix: str = ".csv"
 
     @handle_exception(when="read")
@@ -59,13 +59,21 @@ class HydrographPlus(FMFile):
         time_row_index = self.data_file.index[
             self.data_file.apply(lambda row: row.str.contains(r"Time \(hours\)")).any(axis=1)
         ][0]
-        self.columns = self.data_file.iloc[time_row_index]
+        col_names = self.data_file.iloc[time_row_index]
+        new_col_names = list(col_names)
         df_events = self.data_file.iloc[time_row_index + 1 :].reset_index(drop=True)
-        df_events.columns = self.columns
+        df_events.columns = new_col_names
         for col in df_events.columns[1:]:
             df_events[col] = pd.to_numeric(df_events[col], errors="coerce")
 
         return df_events
+
+    # def get_event(self, event: str) -> pd.DataFrame:
+    #     """To extract a particular event to be simulated in Flood Modeller"""
+
+    #     #return self.data_flows.loc[:, self.data_flows.columns.str.match(event)]        # it takes all the events with the substring
+    #     return self.data_flows.loc[:, self.data_flows.columns.str.match(f"^{event}$")]   # it takes just an index with empty column
+
 
     def get_event(self, event: str) -> pd.DataFrame:
         """To extract a particular event to be simulated in Flood Modeller"""
@@ -86,9 +94,12 @@ class HydrographPlus(FMFile):
         return self.data_flows.iloc[:, column_index]
 
 
+    #def load_hydrology_plus_csv_export()
+
+
 if __name__ == "__main__":
     event = "2020 Upper - 11 - 1"
-    baseline_unchecked = HydrographPlus(
+    baseline_unchecked = HydrographPlusExport(
         r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv",
     )
     print("################################################")
