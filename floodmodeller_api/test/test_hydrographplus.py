@@ -5,15 +5,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from floodmodeller_api.hydrology_plus.hydrograph import HydrographPlus
-
-
-# @pytest.fixture()
-# def csv_tests():
-#     """To load the csv with the data to be compared with the class"""
-#     test_workspace = Path(os.path.dirname(__file__), "test_data")
-
-#     return pd.read_csv(test_workspace / "Baseline_unchecked.csv", header=None)
+from floodmodeller_api.hydrology_plus.hydrograph import HydrographPlusExport
 
 
 @pytest.fixture()
@@ -40,37 +32,26 @@ def metada_csv():
 
 
 @pytest.fixture()
-def dataframe_csv():
+def datafame_csv():
     """To extract the df with all the flows to be compared with the df of the class"""
     test_workspace = Path(os.path.dirname(__file__), "test_data")
 
-    return pd.read_csv(test_workspace / "df_flows_hplus.csv", header=None)
+    return pd.read_csv(test_workspace / "df_flows_hplus.csv")
 
 
-# @pytest.fixture()
-# def event_csv(datafame_csv, event="2020 Upper - 11 - 1"):
-#     """To extract the event from the original csv to be compared with the output of the class"""
-#     def _remove_string_from_list_items(lst, string) -> list[str]:
-#         return [item.replace(string, "") for item in lst]
+@pytest.fixture()
+def event_csv():
+    """To extract the event from the original csv to be compared with the output of the class"""
+    test_workspace = Path(os.path.dirname(__file__), "test_data")
 
-#     def _find_index(lst, string) -> int:
-#         for i, item in enumerate(lst):
-#             if string in item:
-#                 return i
-#         return -1
-
-#     index_columns = _remove_string_from_list_items(datafame_csv.columns, " - Flow (m3/s)")
-#     index_event = _find_index(index_columns, event)
-#     column_index = [0, index_event]
-
-#     return datafame_csv.iloc[:, column_index]
+    return pd.read_csv(test_workspace / "event_hplus.csv")
 
 
 @pytest.fixture()
 def hydrographplus_object():
     """To create the object to make the comparison with the csv data"""
 
-    return HydrographPlus(Path(os.path.dirname(__file__), r"test_data\Baseline_unchecked.csv"))
+    return HydrographPlusExport(Path(os.path.dirname(__file__), r"test_data\Baseline_unchecked.csv"))
 
 
 def test_data_metadata(metada_csv, hydrographplus_object):
@@ -78,19 +59,14 @@ def test_data_metadata(metada_csv, hydrographplus_object):
     assert metada_csv == hydrographplus_object.metadata
 
 
-def test_data_flows_df(dataframe_csv, hydrographplus_object):
+def test_data_flows_df(datafame_csv, hydrographplus_object):
     """To compare the df with all the flows between the csv and the class"""
-    df_csv_reset = dataframe_csv.reset_index(drop=True)
-    df_obj_reset = hydrographplus_object.data_flows.reset_index(drop=True)
-    
-    df_csv_sorted = df_csv_reset.sort_values(by=df_csv_reset.columns.tolist()).reset_index(drop=True)
-    df_obj_sorted = df_obj_reset.sort_values(by=df_obj_reset.columns.tolist()).reset_index(drop=True)
-    assert df_csv_sorted.equals(df_obj_sorted)
+    assert datafame_csv.equals(hydrographplus_object.data_flows)
 
 
-# def test_data_event(event_csv, hydrographplus_object, event="2020 Upper - 11 - 1"):
-#     """To compare the event between the csv and the class"""
-#     assert event_csv.equals(hydrographplus_object.get_event(event))
+def test_data_event(event_csv, hydrographplus_object, event="2020 Upper - 11 - 1"):
+    """To compare the event between the csv and the class"""
+    assert event_csv.equals(hydrographplus_object.get_event(event))
 
 
 
