@@ -55,9 +55,11 @@ def calculate_cross_section_conveyance(
             x[panel_start:panel_end],
             y[panel_start:panel_end],
             n[panel_start:panel_end],
-            1.0
-            if (panel_start == 0 and not panel_markers[0]) or rpl[panel_start] == 0
-            else float(rpl[panel_start]),
+            (
+                1.0
+                if (panel_start == 0 and not panel_markers[0]) or rpl[panel_start] == 0
+                else float(rpl[panel_start])
+            ),
             wls,
         )
         for panel_start, panel_end in zip(panel_start_indices, panel_end_indices)
@@ -239,7 +241,8 @@ def line_to_segments(line: LineString | MultiLineString) -> np.ndarray:
     if isinstance(line, LineString):
         coords = np.array(line.coords)
         segments = np.stack((coords[:-1], coords[1:]), axis=1)
-        return np.sort(segments, axis=1)  # FIXME via testing
+        indices = np.argsort(segments[:, :, 0], axis=1)
+        return np.take_along_axis(segments, indices[:, :, np.newaxis], axis=1)
     if isinstance(line, MultiLineString):
         return np.concatenate([line_to_segments(geom) for geom in line.geoms])
     raise TypeError("Input must be a LineString or MultiLineString")

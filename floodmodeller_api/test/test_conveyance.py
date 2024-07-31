@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from scipy.spatial.distance import directed_hausdorff
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import LineString, MultiLineString, Polygon
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units.conveyance import (
@@ -12,6 +12,7 @@ from floodmodeller_api.units.conveyance import (
     calculate_conveyance_part,
     calculate_cross_section_conveyance,
     insert_intermediate_wls,
+    line_to_segments,
 )
 
 
@@ -105,3 +106,19 @@ def test_results_match_gui_at_shared_points(section: str, dat: DAT, from_gui: pd
     shared_index = sorted(set(actual.index).intersection(expected.index))
     diff = expected[shared_index] - actual[shared_index]
     assert (abs(diff) < tolerance).all()  # asserts all conveyance values within 0.001 difference
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        LineString([(0, 20), (1, 15), (2, 10)]),
+        MultiLineString([[(0, 20), (1, 15), (2, 10)]]),
+        MultiLineString([[(0, 20), (1, 15)], [(1, 15), (2, 10)]]),
+        MultiLineString([[(1, 15), (0, 20)], [(1, 15), (2, 10)]]),
+        MultiLineString([[(1, 15), (0, 20)], [(2, 10), (1, 15)]]),
+    ],
+)
+def test_line_to_segments(line: LineString | MultiLineString):
+    actual = line_to_segments(line)
+    expected = np.array([[[0, 20], [1, 15]], [[1, 15], [2, 10]]])
+    assert np.array_equal(actual, expected)
