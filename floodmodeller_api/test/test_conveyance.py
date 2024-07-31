@@ -1,4 +1,6 @@
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
@@ -14,6 +16,9 @@ from floodmodeller_api.units.conveyance import (
     insert_intermediate_wls,
     line_to_segments,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def test_calculate_cross_section_conveyance():
