@@ -74,7 +74,6 @@ class HydrographPlusExport(FMFile):
     #     #return self.data_flows.loc[:, self.data_flows.columns.str.match(event)]        # it takes all the events with the substring
     #     return self.data_flows.loc[:, self.data_flows.columns.str.match(f"^{event}$")]   # it takes just an index with empty column
 
-
     def get_event(self, event: str) -> pd.DataFrame:
         """To extract a particular event to be simulated in Flood Modeller"""
 
@@ -93,8 +92,7 @@ class HydrographPlusExport(FMFile):
 
         return self.data_flows.iloc[:, column_index]
 
-
-    #def load_hydrology_plus_csv_export()
+    # def load_hydrology_plus_csv_export()
 
 
 if __name__ == "__main__":
