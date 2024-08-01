@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 import pytest
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal
 from scipy.spatial.distance import directed_hausdorff
 from shapely.geometry import LineString, MultiLineString, Polygon
 
@@ -136,8 +136,8 @@ def test_calculate_geometry():
     x = np.array([1, 2, 3.5, 4, 5, 6, 6.5, 7, 8, 10, 12, 15])
     y = np.array([-0.5, -0.1, 0.2, 0.7, 0.8, -0.2, 0.3, 0.6, 0.3, 0.1, -0.4, -0.6])
     n = np.array([1, 2, 3.5, 0, 0, 0, 0, 0, 0, 5, 6, 7])
-    water_level = np.array([-1, 0, 0])
+    water_level = np.array([-1, 0, 1])
     area, length, weighted_mannings = calculate_geometry(x, y, n, water_level)
-    assert_array_equal(area, np.array([0, 2.185, 2.185]))
-    assert_array_almost_equal(length, np.array([0, 6.808522, 6.808522]))
-    assert_array_almost_equal(weighted_mannings, np.array([0, 31.54187, 31.54187]))
+    assert_array_almost_equal(area, np.array([0, 2.185, 13.65]))
+    assert_array_almost_equal(length, np.array([0, 6.808522, 15.145467]))
+    assert_array_almost_equal(weighted_mannings, np.array([0, 31.54187, 42.966441]))
