@@ -105,14 +105,16 @@ def calculate_geometry(
     is_submerged = (f1 < 0) & (f2 < 0)
     is_submerged_on_left = (f1 < 0) & (f2 >= 0)
     is_submerged_on_right = (f1 >= 0) & (f2 < 0)
+    conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
-    dx_left = np.where(is_submerged_on_left, dx * f1 / (f1 - f2), np.nan)
-    dx_right = np.where(is_submerged_on_right, dx * f2 / (f2 - f1), np.nan)
-    n_left = np.where(is_submerged_on_left, n1 + (n2 - n1) * dx_left / dx, np.nan)
-    n_right = np.where(is_submerged_on_right, n2 + (n1 - n2) * dx_right / dx, np.nan)
+    # needed for partially submerged sections
+    dx_left = dx * f1 / (f1 - f2)
+    dx_right = dx * f2 / (f2 - f1)
+    n_left = n1 + (n2 - n1) * dx_left / dx
+    n_right = n2 + (n1 - n2) * dx_right / dx
 
     area = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right],
+        conditions,
         [
             -0.5 * dx * (f1 + f2),
             -0.5 * dx_left * f1,
@@ -121,7 +123,7 @@ def calculate_geometry(
         default=0,
     )
     length = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right],
+        conditions,
         [
             np.sqrt((f2 - f1) ** 2 + dx**2),
             np.sqrt(f1**2 + dx_left**2),
@@ -130,7 +132,7 @@ def calculate_geometry(
         default=0,
     )
     weighted_mannings = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right],
+        conditions,
         [
             0.5 * (n1 + n2) * length,
             0.5 * (n1 + n_left) * length,
