@@ -13,6 +13,7 @@ from floodmodeller_api.units.conveyance import (
     calculate_conveyance_by_panel,
     calculate_conveyance_part,
     calculate_cross_section_conveyance,
+    calculate_geometry,
     insert_intermediate_wls,
     line_to_segments,
 )
@@ -127,3 +128,15 @@ def test_line_to_segments(line: LineString | MultiLineString):
     actual = line_to_segments(line)
     expected = np.array([[[0, 20], [1, 15]], [[1, 15], [2, 10]]])
     assert np.array_equal(actual, expected)
+
+
+def test_calculate_geometry():
+    # area example from https://blogs.sas.com/content/iml/2022/11/21/area-under-curve.html
+    x = np.array([1, 2, 3.5, 4, 5, 6, 6.5, 7, 8, 10, 12, 15])
+    y = np.array([-0.5, -0.1, 0.2, 0.7, 0.8, -0.2, 0.3, 0.6, 0.3, 0.1, -0.4, -0.6])
+    n = np.array([1, 2, 3.5, 0, 0, 0, 0, 0, 0, 5, 6, 7])
+    water_level = np.array([0])
+    area, length, weighted_mannings = calculate_geometry(x, y, n, water_level)
+    assert area == 2.185
+    assert length == pytest.approx(6.808522)
+    assert weighted_mannings == pytest.approx(31.541871)
