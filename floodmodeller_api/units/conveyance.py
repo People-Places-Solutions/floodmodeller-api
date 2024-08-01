@@ -112,31 +112,31 @@ def calculate_geometry(
     n_right = np.where(is_submerged_on_right, n2 + (n1 - n2) * dx_right / dx, np.nan)
 
     area = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [is_submerged, is_submerged_on_left, is_submerged_on_right],
         [
             -0.5 * dx * (f1 + f2),
             -0.5 * dx_left * f1,
             -0.5 * dx_right * f2,
-            0,
         ],
+        default=0,
     )
     length = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [is_submerged, is_submerged_on_left, is_submerged_on_right],
         [
             np.sqrt((f2 - f1) ** 2 + dx**2),
             np.sqrt(f1**2 + dx_left**2),
             np.sqrt(f2**2 + dx_right**2),
-            0,
         ],
+        default=0,
     )
     weighted_mannings = np.select(
-        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [is_submerged, is_submerged_on_left, is_submerged_on_right],
         [
             0.5 * (n1 + n2) * length,
             0.5 * (n1 + n_left) * length,
             0.5 * (n2 + n_right) * length,
-            0,
         ],
+        default=0,
     )
 
     total_area = np.nansum(area, axis=1)
