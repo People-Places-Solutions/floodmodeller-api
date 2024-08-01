@@ -102,33 +102,48 @@ def calculate_geometry(
 
     dx = x2 - x1
 
-    area = np.zeros_like(f1)
-    length = np.zeros_like(f1)
-    weighted_mannings = np.zeros_like(f1)
+    is_submerged = (f1 < 0) & (f2 < 0)
+    is_submerged_on_left = (f1 < 0) & (f2 >= 0)
+    is_submerged_on_right = (f1 >= 0) & (f2 < 0)
 
-    # completely under wl (trapezium)
-    idx = (f1 < 0) & (f2 < 0)
+    dx_left = np.where(is_submerged_on_left, dx * f1 / (f1 - f2), np.nan)
+    dx_right = np.where(is_submerged_on_right, dx * f2 / (f2 - f1), np.nan)
+    n_left = np.where(is_submerged_on_left, n1 + (n2 - n1) * dx_left / dx, np.nan)
+    n_right = np.where(is_submerged_on_right, n2 + (n1 - n2) * dx_right / dx, np.nan)
 
-    area = np.where(idx, -0.5 * dx * (f1 + f2), np.nan)
-    length = np.where(idx, np.sqrt((f2 - f1) ** 2 + dx**2), np.nan)
-    weighted_mannings = np.where(idx, 0.5 * (n1 + n2) * length, np.nan)
+    area = np.select(
+        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [
+            -0.5 * dx * (f1 + f2),
+            -0.5 * dx_left * f1,
+            -0.5 * dx_right * f2,
+            0,
+        ],
+    )
+    length = np.select(
+        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [
+            np.sqrt((f2 - f1) ** 2 + dx**2),
+            np.sqrt(f1**2 + dx_left**2),
+            np.sqrt(f2**2 + dx_right**2),
+            0,
+        ],
+    )
+    weighted_mannings = np.select(
+        [is_submerged, is_submerged_on_left, is_submerged_on_right, True],
+        [
+            0.5 * (n1 + n2) * length,
+            0.5 * (n1 + n_left) * length,
+            0.5 * (n2 + n_right) * length,
+            0,
+        ],
+    )
 
-    # partially under wl (triangle)
-    idx_a = (f1 < 0) & (f2 >= 0)
-    idx_b = (f1 >= 0) & (f2 < 0)
-    dx_a = np.where(idx_a, dx * f1 / (f1 - f2), np.nan)
-    dx_b = np.where(idx_b, dx * f2 / (f2 - f1), np.nan)
-    n_a = np.where(idx_a, n1 + (n2 - n1) * dx_a / dx, np.nan)
-    n_b = np.where(idx_b, n2 + (n1 - n2) * dx_b / dx, np.nan)
+    total_area = np.nansum(area, axis=1)
+    total_length = np.nansum(length, axis=1)
+    total_wetted_mannings = np.nansum(weighted_mannings, axis=1)
 
-    area = np.where(idx_a, -0.5 * dx_a * f1, area)
-    area = np.where(idx_b, -0.5 * dx_b * f2, area)
-    length = np.where(idx_a, np.sqrt(f1**2 + dx_a**2), length)
-    length = np.where(idx_b, np.sqrt(f2**2 + dx_b**2), length)
-    weighted_mannings = np.where(idx_a, 0.5 * (n1 + n_a) * length, weighted_mannings)
-    weighted_mannings = np.where(idx_b, 0.5 * (n2 + n_b) * length, weighted_mannings)
-
-    return np.nansum(area, axis=1), np.nansum(length, axis=1), np.nansum(weighted_mannings, axis=1)
+    return total_area, total_length, total_wetted_mannings
 
 
 def calculate_conveyance_by_panel(
