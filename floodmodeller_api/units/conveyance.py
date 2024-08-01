@@ -75,60 +75,60 @@ def calculate_geometry(
     x: np.ndarray,
     y: np.ndarray,
     n: np.ndarray,
-    water_level: float,
-) -> tuple[float, float, float]:
+    water_level: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Calculate the area & length of a piecewise linear curve (x, y) that is below y = water_level.
+    Calculate area, length, weighted mannings for piecewise linear curve (x, y) below water_level.
 
     Args:
         x (np.ndarray): 1D array of x-coordinates.
         y (np.ndarray): 1D array of y-coordinates.
         n (np.ndarray): 1D array to integrate over the length.
-        water_level (float): The horizontal reference line.
+        water_level (np.ndarray): The horizontal reference line.
 
     Returns:
-        float: The area above the curve and under the reference line.
-        float: The length of the curve under the reference line.
-        float: Manning's n integrated along the curve under the reference line.
+        np.ndarray: The area above the curve and under the reference line.
+        np.ndarray: The length of the curve under the reference line.
+        np.ndarray: Manning's n integrated along the curve under the reference line.
     """
-    f = y - water_level
+    f = y - water_level[:, np.newaxis]
 
     x1 = x[:-1]
     x2 = x[1:]
-    f1 = f[:-1]
-    f2 = f[1:]
+    f1 = f[:, :-1]
+    f2 = f[:, 1:]
     n1 = n[:-1]
     n2 = n[1:]
 
     dx = x2 - x1
 
-    area = np.zeros_like(x1)
-    length = np.zeros_like(x1)
-    weighted_mannings = np.zeros_like(x1)
+    area = np.zeros_like(f1)
+    length = np.zeros_like(f1)
+    weighted_mannings = np.zeros_like(f1)
 
     # completely under wl (trapezium)
     idx = (f1 < 0) & (f2 < 0)
 
-    area[idx] = -0.5 * dx[idx] * (f1[idx] + f2[idx])
-    length[idx] = np.sqrt((f2[idx] - f1[idx]) ** 2 + dx[idx] ** 2)
-    weighted_mannings[idx] = 0.5 * (n1[idx] + n2[idx]) * length[idx]
+    area = np.where(idx, -0.5 * dx * (f1 + f2), np.nan)
+    length = np.where(idx, np.sqrt((f2 - f1) ** 2 + dx**2), np.nan)
+    weighted_mannings = np.where(idx, 0.5 * (n1 + n2) * length, np.nan)
 
     # partially under wl (triangle)
     idx_a = (f1 < 0) & (f2 >= 0)
     idx_b = (f1 >= 0) & (f2 < 0)
-    dx_a = dx[idx_a] * f1[idx_a] / (f1[idx_a] - f2[idx_a])
-    dx_b = dx[idx_b] * f2[idx_b] / (f2[idx_b] - f1[idx_b])
-    n_a = n1[idx_a] + (n2[idx_a] - n1[idx_a]) * dx_a / dx[idx_a]
-    n_b = n2[idx_b] + (n1[idx_b] - n2[idx_b]) * dx_b / dx[idx_b]
+    dx_a = np.where(idx_a, dx * f1 / (f1 - f2), np.nan)
+    dx_b = np.where(idx_b, dx * f2 / (f2 - f1), np.nan)
+    n_a = np.where(idx_a, n1 + (n2 - n1) * dx_a / dx, np.nan)
+    n_b = np.where(idx_b, n2 + (n1 - n2) * dx_b / dx, np.nan)
 
-    area[idx_a] = -0.5 * dx_a * f1[idx_a]
-    area[idx_b] = -0.5 * dx_b * f2[idx_b]
-    length[idx_a] = np.sqrt(f1[idx_a] ** 2 + dx_a**2)
-    length[idx_b] = np.sqrt(f2[idx_b] ** 2 + dx_b**2)
-    weighted_mannings[idx_a] = 0.5 * (n1[idx_a] + n_a) * length[idx_a]
-    weighted_mannings[idx_b] = 0.5 * (n2[idx_b] + n_b) * length[idx_b]
+    area = np.where(idx_a, -0.5 * dx_a * f1, area)
+    area = np.where(idx_b, -0.5 * dx_b * f2, area)
+    length = np.where(idx_a, np.sqrt(f1**2 + dx_a**2), length)
+    length = np.where(idx_b, np.sqrt(f2**2 + dx_b**2), length)
+    weighted_mannings = np.where(idx_a, 0.5 * (n1 + n_a) * length, weighted_mannings)
+    weighted_mannings = np.where(idx_b, 0.5 * (n2 + n_b) * length, weighted_mannings)
 
-    return np.sum(area), np.sum(length), np.sum(weighted_mannings)
+    return np.nansum(area, axis=1), np.nansum(length, axis=1), np.nansum(weighted_mannings, axis=1)
 
 
 def calculate_conveyance_by_panel(
