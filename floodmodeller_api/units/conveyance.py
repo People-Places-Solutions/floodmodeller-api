@@ -139,9 +139,9 @@ def calculate_geometry(
         default=0,
     )
 
-    total_area = np.nansum(area, axis=1)
-    total_length = np.nansum(length, axis=1)
-    total_wetted_mannings = np.nansum(weighted_mannings, axis=1)
+    total_area = np.sum(area, axis=1)
+    total_length = np.sum(length, axis=1)
+    total_wetted_mannings = np.sum(weighted_mannings, axis=1)
 
     return total_area, total_length, total_wetted_mannings
 
