@@ -91,7 +91,7 @@ def calculate_geometry(
         np.ndarray: The length of the curve under the reference line.
         np.ndarray: Manning's n integrated along the curve under the reference line.
     """
-    f = y - water_level[:, np.newaxis]
+    f = water_level[:, np.newaxis] - y
 
     x1 = x[:-1]
     x2 = x[1:]
@@ -102,9 +102,9 @@ def calculate_geometry(
 
     dx = x2 - x1
 
-    is_submerged = (f1 < 0) & (f2 < 0)
-    is_submerged_on_left = (f1 < 0) & (f2 >= 0)
-    is_submerged_on_right = (f1 >= 0) & (f2 < 0)
+    is_submerged = (f1 > 0) & (f2 > 0)
+    is_submerged_on_left = (f1 > 0) & (f2 <= 0)
+    is_submerged_on_right = (f1 <= 0) & (f2 > 0)
     conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
     # needed for partially submerged sections
@@ -116,9 +116,9 @@ def calculate_geometry(
     area = np.select(
         conditions,
         [
-            -0.5 * dx * (f1 + f2),
-            -0.5 * dx_left * f1,
-            -0.5 * dx_right * f2,
+            0.5 * dx * (f1 + f2),
+            0.5 * dx_left * f1,
+            0.5 * dx_right * f2,
         ],
         default=0,
     )
