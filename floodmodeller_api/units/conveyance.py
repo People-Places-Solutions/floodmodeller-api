@@ -45,30 +45,34 @@ def calculate_cross_section_conveyance(
     panel = panel_markers.cumsum()[:-1]
 
     intersection = (y[:-2] < water_levels[:, np.newaxis]) & (y[1:-1] >= water_levels[:, np.newaxis])
-    false_column = np.full((intersection.shape[0], 1), False)
-    section_markers = np.hstack([false_column, intersection])
+    section_markers = np.hstack([np.full((intersection.shape[0], 1), False), intersection])
     section = section_markers.cumsum(axis=1)
 
     conveyance = np.zeros_like(water_levels)
+
     for i in range(panel.max() + 1):
         in_panel = panel == i
         if not in_panel.any():
             continue
+
         rpl_panel = np.sqrt(rpl[:-1][in_panel][0])
         rpl_panel = 1 if rpl_panel == 0 else rpl_panel
+
         for j in range(section.max() + 1):
-            in_panel_and_section = in_panel & (section == j)
+            in_section = section == j
+            in_panel_and_section = in_panel & in_section
             if not in_panel_and_section.any():
                 continue
+
             total_area = np.where(in_panel_and_section, area, 0).sum(axis=1)
             total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
             total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
-            conveyance_section = (
-                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel)
-            )
 
-            is_valid = total_length >= MINIMUM_PERIMETER_THRESHOLD
-            conveyance += np.where(is_valid, conveyance_section, 0)
+            conveyance += np.where(
+                total_length >= MINIMUM_PERIMETER_THRESHOLD,
+                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel),
+                0,
+            )
 
     return pd.Series(conveyance, index=water_levels)
 
