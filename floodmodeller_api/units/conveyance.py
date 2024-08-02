@@ -100,7 +100,6 @@ def calculate_geometry(
     h1 = h[:, :-1]
     h2 = h[:, 1:]
     n1 = n[:-1]
-    n2 = n[1:]
 
     dx = x2 - x1
 
@@ -110,12 +109,8 @@ def calculate_geometry(
     conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
     # needed for partially submerged sections
-    m_left = h1 / (h1 - h2)
-    m_right = h2 / (h2 - h1)
-    dx_left = dx * m_left
-    dx_right = dx * m_right
-    n_left = n1 + (n2 - n1) * m_left
-    n_right = n2 + (n1 - n2) * m_right
+    dx_left = dx * h1 / (h1 - h2)
+    dx_right = dx * h2 / (h2 - h1)
 
     area = np.select(
         conditions,
@@ -135,15 +130,7 @@ def calculate_geometry(
         ],
         default=0,
     )
-    weighted_mannings = np.select(
-        conditions,
-        [
-            0.5 * (n1 + n2) * length,
-            0.5 * (n1 + n_left) * length,
-            0.5 * (n2 + n_right) * length,
-        ],
-        default=0,
-    )
+    weighted_mannings = n1 * length
 
     return area, length, weighted_mannings
 
