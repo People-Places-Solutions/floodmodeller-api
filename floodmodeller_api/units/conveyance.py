@@ -91,43 +91,43 @@ def calculate_geometry(
         np.ndarray: The length of the curve under the reference line.
         np.ndarray: Manning's n integrated along the curve under the reference line.
     """
-    f = water_level[:, np.newaxis] - y
+    h = water_level[:, np.newaxis] - y
 
     x1 = x[:-1]
     x2 = x[1:]
-    f1 = f[:, :-1]
-    f2 = f[:, 1:]
+    h1 = h[:, :-1]
+    h2 = h[:, 1:]
     n1 = n[:-1]
     n2 = n[1:]
 
     dx = x2 - x1
 
-    is_submerged = (f1 > 0) & (f2 > 0)
-    is_submerged_on_left = (f1 > 0) & (f2 <= 0)
-    is_submerged_on_right = (f1 <= 0) & (f2 > 0)
+    is_submerged = (h1 > 0) & (h2 > 0)
+    is_submerged_on_left = (h1 > 0) & (h2 <= 0)
+    is_submerged_on_right = (h1 <= 0) & (h2 > 0)
     conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
     # needed for partially submerged sections
-    dx_left = dx * f1 / (f1 - f2)
-    dx_right = dx * f2 / (f2 - f1)
+    dx_left = dx * h1 / (h1 - h2)
+    dx_right = dx * h2 / (h2 - h1)
     n_left = n1 + (n2 - n1) * dx_left / dx
     n_right = n2 + (n1 - n2) * dx_right / dx
 
     area = np.select(
         conditions,
         [
-            0.5 * dx * (f1 + f2),
-            0.5 * dx_left * f1,
-            0.5 * dx_right * f2,
+            0.5 * dx * (h1 + h2),
+            0.5 * dx_left * h1,
+            0.5 * dx_right * h2,
         ],
         default=0,
     )
     length = np.select(
         conditions,
         [
-            np.sqrt((f2 - f1) ** 2 + dx**2),
-            np.sqrt(f1**2 + dx_left**2),
-            np.sqrt(f2**2 + dx_right**2),
+            np.sqrt((h2 - h1) ** 2 + dx**2),
+            np.sqrt(h1**2 + dx_left**2),
+            np.sqrt(h2**2 + dx_right**2),
         ],
         default=0,
     )
