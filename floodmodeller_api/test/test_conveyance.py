@@ -7,16 +7,12 @@ import pandas as pd
 import pytest
 from numpy.testing import assert_array_almost_equal
 from scipy.spatial.distance import directed_hausdorff
-from shapely.geometry import LineString, MultiLineString, Polygon
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units.conveyance import (
-    calculate_conveyance_by_panel,
-    calculate_conveyance_part,
     calculate_cross_section_conveyance,
     calculate_geometry,
     insert_intermediate_wls,
-    line_to_segments,
 )
 
 if TYPE_CHECKING:
@@ -33,34 +29,6 @@ def test_calculate_cross_section_conveyance():
 
     assert isinstance(result, pd.Series), "Result should be a pandas Series"
     assert not result.empty, "Result should not be empty"
-
-
-def test_calculate_conveyance_by_panel():
-    x = np.array([0, 1, 2])
-    y = np.array([5, 3, 1])
-    n = np.array([0.03, 0.03])
-    rpl = 1.0
-    wls = np.array([1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])
-
-    result = calculate_conveyance_by_panel(x, y, n, rpl, wls)
-
-    assert isinstance(result, list), "Result should be a list"
-    assert len(result) == len(wls), "Result length should match the length of water levels"
-    assert all(isinstance(val, float) for val in result), "All conveyance values should be floats"
-
-
-def test_calculate_conveyance_part():
-    wetted_polygon = Polygon([(1, 3), (2, 1), (3, 2), (4, 6), (1, 3)])
-    water_plane = LineString([(0, 3), (5, 3)])
-    glass_walls = LineString([(1, 3), (1, 7)]), LineString([(4, 6), (4, 7)])
-    x = np.array([1, 2, 3, 4])
-    n = np.array([0.03, 0.03, 0.03, 0.03])
-    rpl = 1.0
-
-    result = calculate_conveyance_part(wetted_polygon, water_plane, glass_walls, x, n, rpl)
-
-    assert isinstance(result, float), "Result should be a float"
-    assert result >= 0, "Conveyance should be non-negative"
 
 
 def test_insert_intermediate_wls():
@@ -115,29 +83,16 @@ def test_results_match_gui_at_shared_points(section: str, dat: DAT, from_gui: pd
     assert (abs(diff) < tolerance).all()  # asserts all conveyance values within 0.001 difference
 
 
-@pytest.mark.parametrize(
-    "line",
-    [
-        LineString([(0, 20), (1, 15), (2, 10)]),
-        MultiLineString([[(0, 20), (1, 15), (2, 10)]]),
-        MultiLineString([[(0, 20), (1, 15)], [(1, 15), (2, 10)]]),
-        MultiLineString([[(1, 15), (0, 20)], [(1, 15), (2, 10)]]),
-        MultiLineString([[(1, 15), (0, 20)], [(2, 10), (1, 15)]]),
-    ],
-)
-def test_line_to_segments(line: LineString | MultiLineString):
-    actual = line_to_segments(line)
-    expected = np.array([[[0, 20], [1, 15]], [[1, 15], [2, 10]]])
-    assert np.array_equal(actual, expected)
-
-
 def test_calculate_geometry():
     # area example from https://blogs.sas.com/content/iml/2022/11/21/area-under-curve.html
     x = np.array([1, 2, 3.5, 4, 5, 6, 6.5, 7, 8, 10, 12, 15])
     y = np.array([-0.5, -0.1, 0.2, 0.7, 0.8, -0.2, 0.3, 0.6, 0.3, 0.1, -0.4, -0.6])
     n = np.array([1, 2, 3.5, 0, 0, 0, 0, 0, 0, 5, 6, 7])
-    water_level = np.array([-1, 0, 1])
-    area, length, weighted_mannings = calculate_geometry(x, y, n, water_level)
-    assert_array_almost_equal(area, np.array([0, 2.185, 13.65]))
-    assert_array_almost_equal(length, np.array([0, 6.808522, 15.145467]))
-    assert_array_almost_equal(weighted_mannings, np.array([0, 31.54187, 42.966441]))
+    water_levels = np.array([-1, 0, 1])
+    area, length, mannings = calculate_geometry(x, y, n, water_levels)
+    total_area = np.sum(area, axis=1)
+    total_length = np.sum(length, axis=1)
+    total_mannings = np.sum(mannings, axis=1)
+    assert_array_almost_equal(total_area, np.array([0, 2.185, 13.65]))
+    assert_array_almost_equal(total_length, np.array([0, 6.808522, 15.145467]))
+    assert_array_almost_equal(total_mannings, np.array([0, 31.54187, 42.966441]))
