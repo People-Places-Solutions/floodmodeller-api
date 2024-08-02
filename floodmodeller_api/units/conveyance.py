@@ -44,14 +44,16 @@ def calculate_cross_section_conveyance(
     area, length, mannings = calculate_geometry(x, y, n, water_levels)
     panel = panel_markers.cumsum()[:-1]
 
-    section_markers = (y[:-1] < water_levels[:, np.newaxis]) & (y[1:] > water_levels[:, np.newaxis])
-    section = section_markers.cumsum(axis=1) + 1
+    intersection = (y[:-2] < water_levels[:, np.newaxis]) & (y[1:-1] > water_levels[:, np.newaxis])
+    false_column = np.full((intersection.shape[0], 1), False)
+    section_markers = np.hstack([false_column, intersection])
+    section = section_markers.cumsum(axis=1)
 
     conveyance = np.zeros_like(water_levels)
-    for i in range(panel.max()):
-        in_panel = panel == i + 1
-        for j in range(section.max()):
-            in_panel_and_section = in_panel & (section == j + 1)
+    for i in range(panel.max() + 1):
+        in_panel = panel == i
+        for j in range(section.max() + 1):
+            in_panel_and_section = in_panel & (section == j)
             total_area = np.where(in_panel_and_section, area, 0).sum(axis=1)
             total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
             total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
