@@ -47,15 +47,20 @@ def calculate_cross_section_conveyance(
     section_markers = (y[:-1] < water_levels[:, np.newaxis]) & (y[1:] > water_levels[:, np.newaxis])
     section = section_markers.cumsum(axis=1) + 1
 
-    conveyance = 0
+    conveyance = np.zeros_like(water_levels)
     for i in range(panel.max()):
-        in_panel = (panel == i + 1)
+        in_panel = panel == i + 1
         for j in range(section.max()):
             in_panel_and_section = in_panel & (section == j + 1)
-            total_area = np.sum(np.where(in_panel_and_section, area, 0), axis=1)
-            total_length = np.sum(np.where(in_panel_and_section, length, 0), axis=1)
-            total_mannings = np.sum(np.where(in_panel_and_section, mannings, 0), axis=1) * np.sqrt(rpl[i])
-            conveyance += total_area ** (5 / 3) * total_length ** (1 / 3) / total_mannings
+            total_area = np.where(in_panel_and_section, area, 0).sum(axis=1)
+            total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
+            total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
+            conveyance_section = (
+                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * np.sqrt(rpl[i]))
+            )
+
+            is_valid = total_length >= MINIMUM_PERIMETER_THRESHOLD
+            conveyance += np.where(is_valid, conveyance_section, 0)
 
     return pd.Series(conveyance, index=water_levels)
 
