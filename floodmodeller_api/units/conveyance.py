@@ -110,10 +110,12 @@ def calculate_geometry(
     conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
     # needed for partially submerged sections
-    dx_left = dx * h1 / (h1 - h2)
-    dx_right = dx * h2 / (h2 - h1)
-    n_left = n1 + (n2 - n1) * dx_left / dx
-    n_right = n2 + (n1 - n2) * dx_right / dx
+    m_left = h1 / (h1 - h2)
+    m_right = h2 / (h2 - h1)
+    dx_left = dx * m_left
+    dx_right = dx * m_right
+    n_left = n1 + (n2 - n1) * m_left
+    n_right = n2 + (n1 - n2) * m_right
 
     area = np.select(
         conditions,
