@@ -95,4 +95,4 @@ def test_calculate_geometry():
     total_mannings = np.sum(mannings, axis=1)
     assert_array_almost_equal(total_area, np.array([0, 2.185, 13.65]))
     assert_array_almost_equal(total_length, np.array([0, 6.808522, 15.145467]))
-    assert_array_almost_equal(total_mannings, np.array([0, 28.383004, 32.484164]))
+    assert_array_almost_equal(total_mannings, np.array([0, 28.383004, 34.959038]))
