@@ -34,11 +34,11 @@ def metada_csv():
 
 
 @pytest.fixture()
-def datafame_csv():
+def dataframe_csv():
     """To extract the df with all the flows to be compared with the df of the class"""
     test_workspace = Path(os.path.dirname(__file__), "test_data")
 
-    return pd.read_csv(test_workspace / "df_flows_hplus.csv")
+    return pd.read_csv(test_workspace / "df_flows_hplus.csv", index_col=0)
 
 
 @pytest.fixture()
@@ -46,7 +46,11 @@ def event_csv():
     """To extract the event from the original csv to be compared with the output of the class"""
     test_workspace = Path(os.path.dirname(__file__), "test_data")
 
-    return pd.read_csv(test_workspace / "event_hplus.csv")
+    event_file = pd.read_csv(test_workspace / "event_hplus.csv", index_col=0)
+    event_series = event_file["2020 Upper - 11 - 1 - Flow (m3/s)"]
+    event_series.name = "2020 Upper - 11 - 1 - Flow (m3/s)"
+
+    return event_series
 
 
 @pytest.fixture()
@@ -54,7 +58,7 @@ def hydrographplus_object():
     """To create the object to make the comparison with the csv data"""
 
     return HydrographPlusExport(
-        Path(os.path.dirname(__file__), r"test_data\Baseline_unchecked.csv")
+        Path(os.path.dirname(__file__), r"test_data\Baseline_unchecked.csv"),
     )
 
 
@@ -63,11 +67,11 @@ def test_data_metadata(metada_csv, hydrographplus_object):
     assert metada_csv == hydrographplus_object.metadata
 
 
-def test_data_flows_df(datafame_csv, hydrographplus_object):
+def test_data_flows_df(dataframe_csv, hydrographplus_object):
     """To compare the df with all the flows between the csv and the class"""
-    assert datafame_csv.equals(hydrographplus_object.data_flows)
+    assert dataframe_csv.equals(hydrographplus_object.data_flows)
 
 
-def test_data_event(event_csv, hydrographplus_object, event="2020 Upper - 11 - 1"):
+def test_data_event(event_csv, hydrographplus_object):
     """To compare the event between the csv and the class"""
-    assert event_csv.equals(hydrographplus_object.get_event(event))
+    assert event_csv.equals(hydrographplus_object.get_event("2020 Upper - 11 - 1"))
