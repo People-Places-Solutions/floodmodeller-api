@@ -52,13 +52,19 @@ def calculate_cross_section_conveyance(
     conveyance = np.zeros_like(water_levels)
     for i in range(panel.max() + 1):
         in_panel = panel == i
+        if not in_panel.any():
+            continue
+        rpl_panel = np.sqrt(rpl[:-1][in_panel][0])
+        rpl_panel = 1 if rpl_panel == 0 else rpl_panel
         for j in range(section.max() + 1):
             in_panel_and_section = in_panel & (section == j)
+            if not in_panel_and_section.any():
+                continue
             total_area = np.where(in_panel_and_section, area, 0).sum(axis=1)
             total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
             total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
             conveyance_section = (
-                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * np.sqrt(rpl[i]))
+                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel)
             )
 
             is_valid = total_length >= MINIMUM_PERIMETER_THRESHOLD
