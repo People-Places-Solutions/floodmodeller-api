@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+
 import pandas as pd
 
 from floodmodeller_api._base import FMFile
@@ -63,36 +64,16 @@ class HydrographPlusExport(FMFile):
         new_col_names = list(col_names)
         df_events = self.data_file.iloc[time_row_index + 1 :].reset_index(drop=True)
         df_events.columns = new_col_names
-        for col in df_events.columns[1:]:
+        for col in df_events.columns[:]:
             df_events[col] = pd.to_numeric(df_events[col], errors="coerce")
 
-        return df_events
-
-    # def get_event(self, event: str) -> pd.DataFrame:
-    #     """To extract a particular event to be simulated in Flood Modeller"""
-
-    #     #return self.data_flows.loc[:, self.data_flows.columns.str.match(event)]        # it takes all the events with the substring
-    #     return self.data_flows.loc[:, self.data_flows.columns.str.match(f"^{event}$")]   # it takes just an index with empty column
+        return df_events.set_index("Time (hours)")
 
     def get_event(self, event: str) -> pd.DataFrame:
         """To extract a particular event to be simulated in Flood Modeller"""
 
-        def _remove_string_from_list_items(lst, string) -> list[str]:
-            return [item.replace(string, "") for item in lst]
+        return self.data_flows.loc[:, f"{event} - Flow (m3/s)"]
 
-        def _find_index(lst, string) -> int:
-            for i, item in enumerate(lst):
-                if string in item:
-                    return i
-            return -1
-
-        index_columns = _remove_string_from_list_items(self.data_flows.columns, " - Flow (m3/s)")
-        index_event = _find_index(index_columns, event)
-        column_index = [0, index_event]
-
-        return self.data_flows.iloc[:, column_index]
-
-    # def load_hydrology_plus_csv_export()
 
 
 if __name__ == "__main__":
