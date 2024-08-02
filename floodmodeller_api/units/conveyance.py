@@ -41,18 +41,15 @@ def calculate_cross_section_conveyance(
             print(result)
     """
     water_levels = insert_intermediate_wls(np.unique(y), threshold=0.05)
-
     area, length, mannings = calculate_geometry(x, y, n, water_levels)
-
-    panel_id = panel_markers.cumsum()[:-1]
-    no_panels = panel_id.max()
+    panel = panel_markers.cumsum()[:-1]
 
     conveyance = 0
-    for i in range(1, no_panels + 1):
-        in_panel = panel_id == i
+    for i in range(panel.max()):
+        in_panel = panel == i + 1
         total_area = np.sum(area[:, in_panel], axis=1)
         total_length = np.sum(length[:, in_panel], axis=1)
-        total_mannings = np.sum(mannings[:, in_panel], axis=1) * np.sqrt(rpl[i - 1])
+        total_mannings = np.sum(mannings[:, in_panel], axis=1) * np.sqrt(rpl[i])
         conveyance += total_area ** (5 / 3) * total_length ** (1 / 3) / total_mannings
 
     return pd.Series(conveyance, index=water_levels)
