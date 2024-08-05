@@ -68,7 +68,7 @@ class HydrographPlusExport(FMFile):
 
         return df_events.set_index("Time (hours)")
 
-    def get_event(self, event: str) -> pd.DataFrame:
+    def get_event(self, event: str) -> pd.Series:
         """To extract a particular event to be simulated in Flood Modeller"""
 
         return self.data_flows.loc[:, f"{event} - Flow (m3/s)"]
