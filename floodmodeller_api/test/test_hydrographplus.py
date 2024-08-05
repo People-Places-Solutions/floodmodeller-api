@@ -75,5 +75,6 @@ def test_data_flows_df(dataframe_csv: pd.DataFrame, hydrographplus_object: Hydro
 def test_data_event(event_csv: pd.Series, hydrographplus_object: HydrographPlusExport):
     """To compare the event between the csv and the class"""
     pd.testing.assert_series_equal(
-        event_csv, hydrographplus_object.get_event("2020 Upper - 11 - 1"),
+        event_csv,
+        hydrographplus_object.get_event("2020 Upper - 11 - 1"),
     )
