@@ -69,9 +69,11 @@ def test_data_metadata(metada_csv: dict[str, str], hydrographplus_object: Hydrog
 
 def test_data_flows_df(dataframe_csv: pd.DataFrame, hydrographplus_object: HydrographPlusExport):
     """To compare the df with all the flows between the csv and the class"""
-    assert dataframe_csv.equals(hydrographplus_object.data_flows)
+    pd.testing.assert_frame_equal(dataframe_csv, hydrographplus_object.data_flows)
 
 
 def test_data_event(event_csv: pd.Series, hydrographplus_object: HydrographPlusExport):
     """To compare the event between the csv and the class"""
-    assert event_csv.equals(hydrographplus_object.get_event("2020 Upper - 11 - 1"))
+    pd.testing.assert_series_equal(
+        event_csv, hydrographplus_object.get_event("2020 Upper - 11 - 1")
+    )
