@@ -58,7 +58,7 @@ def hydrographplus_object():
     """To create the object to make the comparison with the csv data"""
 
     return HydrographPlusExport(
-        Path(os.path.dirname(__file__), r"test_data\Baseline_unchecked.csv"),
+        Path(os.path.dirname(__file__), r"test_data/Baseline_unchecked.csv"),
     )
 
 
