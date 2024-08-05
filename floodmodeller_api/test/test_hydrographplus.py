@@ -78,4 +78,3 @@ def test_data_event(event_csv: pd.Series, hydrographplus_object: HydrographPlusE
         event_csv,
         hydrographplus_object.get_event("2020 Upper - 11 - 1"),
     )
-
