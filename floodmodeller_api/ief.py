@@ -145,9 +145,9 @@ class IEF(FMFile):
         # No filepath specified, create new 'blank' IEF in memory
         blank_ief = [
             "[ISIS Event Header]",
-            'Title=""',
-            'Datafile=""',
-            'Results=""',
+            "Title=",
+            "Datafile=",
+            "Results=",
             "[ISIS Event Details]",
             "RunType=Steady",
             "Start=0",
@@ -448,7 +448,7 @@ class IEF(FMFile):
         return None
 
     def _get_result_filepath(self, suffix):
-        if hasattr(self, "Results") and self.Results != '""':  # because blank IEF has 'Results=""'
+        if hasattr(self, "Results") and self.Results != "":
             path = Path(self.Results).with_suffix("." + suffix)
             if not path.is_absolute():
                 # set cwd to ief location and resolve path

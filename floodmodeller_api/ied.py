@@ -67,8 +67,34 @@ class IED(FMFile):
         self._update_ied_struct()
 
     @handle_exception(when="write")
-    def _write(self) -> str:  # noqa: C901, PLR0912
+    def _write(self) -> str:
         """Returns string representation of the current IED data"""
+        self._write_raw_data()
+        self._update_ied_struct()
+        self._update_unit_names()
+
+        return "\n".join(self._raw_data) + "\n"
+
+    def _update_unit_names(self) -> None:
+        for unit_group, unit_group_name in [
+            (self.boundaries, "boundaries"),
+            (self.sections, "sections"),
+            (self.structures, "structures"),
+            (self.conduits, "conduits"),
+            (self.losses, "losses"),
+        ]:
+            for name, unit in unit_group.copy().items():
+                if name != unit.name:
+                    # Check if new name already exists as a label
+                    if unit.name in unit_group:
+                        raise Exception(
+                            f'Error: Cannot update label "{name}" to "{unit.name}" because '
+                            f'"{unit.name}" already exists in the Network {unit_group_name} group',
+                        )
+                    unit_group[unit.name] = unit
+                    del unit_group[name]
+
+    def _write_raw_data(self) -> None:
         block_shift = 0
         existing_units: dict[str, list[str]] = {
             "boundaries": [],
@@ -116,29 +142,6 @@ class IED(FMFile):
                     # Newly added unit
                     # Ensure that the 'name' attribute matches name key in boundaries
                     self._raw_data.extend(unit._write())
-
-        # Update ied_struct
-        self._update_ied_struct()
-
-        # Update unit names
-        for unit_group, unit_group_name in [
-            (self.boundaries, "boundaries"),
-            (self.sections, "sections"),
-            (self.structures, "structures"),
-            (self.conduits, "conduits"),
-            (self.losses, "losses"),
-        ]:
-            for name, unit in unit_group.copy().items():
-                if name != unit.name:
-                    # Check if new name already exists as a label
-                    if unit.name in unit_group:
-                        raise Exception(
-                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
-                        )
-                    unit_group[unit.name] = unit
-                    del unit_group[name]
-
-        return "\n".join(self._raw_data) + "\n"
 
     def _get_unit_definitions(self):
         # Get unit definitions
