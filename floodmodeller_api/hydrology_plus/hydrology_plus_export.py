@@ -22,7 +22,7 @@ from floodmodeller_api._base import FMFile
 from floodmodeller_api.util import handle_exception
 
 
-class HydrologyPlusExport (FMFile):
+class HydrologyPlusExport(FMFile):
     """Class to handle the output of Hydrology +
 
     Args:
@@ -50,14 +50,14 @@ class HydrologyPlusExport (FMFile):
 
     def _get_metadata(self) -> dict[str, str]:
         """Extracts the metada from the hydrology + results"""
-        metadata_row_index = self._data_file.index[self._data_file.iloc[:,0] == "Return Period"][0]
+        metadata_row_index = self._data_file.index[self._data_file.iloc[:, 0] == "Return Period"][0]
         metadata_df = self._data_file.iloc[:metadata_row_index, 0].tolist()
 
         return dict([row.split("=") for row in metadata_df])
 
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
         """Extracts all the events generated in hydrology +"""
-        time_row_index = self._data_file.index[self._data_file.iloc[:,0] == "Time (hours)"][0]
+        time_row_index = self._data_file.index[self._data_file.iloc[:, 0] == "Time (hours)"][0]
         col_names = self._data_file.iloc[time_row_index]
         new_col_names = list(col_names)
         df_events = self._data_file.iloc[time_row_index + 1 :].reset_index(drop=True)
