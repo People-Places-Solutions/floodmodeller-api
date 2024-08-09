@@ -65,14 +65,16 @@ def hydrology_plus_export_object():
 
 
 def test_data_metadata(
-    expected_metada: dict[str, str], hydrology_plus_export_object: HydrologyPlusExport,
+    expected_metada: dict[str, str],
+    hydrology_plus_export_object: HydrologyPlusExport,
 ):
     """Compares the metada between the csv and the class"""
     assert expected_metada == hydrology_plus_export_object.metadata
 
 
 def test_data_flows_df(
-    expected_dataframe: pd.DataFrame, hydrology_plus_export_object: HydrologyPlusExport,
+    expected_dataframe: pd.DataFrame,
+    hydrology_plus_export_object: HydrologyPlusExport,
 ):
     """Compares the df with all the flows between the csv and the class"""
     pd.testing.assert_frame_equal(expected_dataframe, hydrology_plus_export_object.data)
