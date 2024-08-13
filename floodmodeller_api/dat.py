@@ -292,10 +292,10 @@ class DAT(FMFile):
             return _name_list[0]
         return _name_list
 
-    def _read(self):
+    def _read(self) -> None:
         # Read DAT data
         with open(self._filepath) as dat_file:
-            self._raw_data = [line.rstrip("\n") for line in dat_file.readlines()]
+            self._raw_data: list[str] = [line.rstrip("\n") for line in dat_file.readlines()]
 
         # Generate DAT structure
         self._update_dat_struct()
@@ -305,7 +305,7 @@ class DAT(FMFile):
         if gxy_path.exists():
             self._gxy_filepath = gxy_path
             with open(self._gxy_filepath) as gxy_file:
-                self._gxy_data = gxy_file.read()
+                self._gxy_data: str | None = gxy_file.read()
         else:
             self._gxy_filepath = None
             self._gxy_data = None
@@ -327,7 +327,7 @@ class DAT(FMFile):
     def _create_from_blank(self, with_gxy: bool = False) -> None:
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
-        self._dat_struct = [
+        self._dat_struct: list[dict[str, Any]] = [
             {"start": 0, "Type": "GENERAL", "end": 6},
             {"Type": "INITIAL CONDITIONS", "start": 7, "end": 8},
         ]
@@ -517,8 +517,21 @@ class DAT(FMFile):
                         block["end"] + block_shift
                     )  # add in to keep a record of the last block read in
 
-    def _get_unit_definitions(self):  # noqa: C901
-        # Get unit definitions
+    def _get_unit_definitions(self):
+        self._initialize_collections()
+        for block in self._dat_struct:
+            unit_data = self._raw_data[block["start"] : block["end"] + 1]
+            unit_type = block["Type"]
+
+            if unit_type in units.SUPPORTED_UNIT_TYPES:
+                self._process_supported_unit(unit_type, unit_data)
+            elif unit_type in units.UNSUPPORTED_UNIT_TYPES:
+                self._process_unsupported_unit(unit_type, unit_data)
+            elif unit_type not in ("GENERAL", "GISINFO"):
+                raise Exception(f"Unexpected unit type encountered: {unit_type}")
+
+    def _initialize_collections(self):
+        # Initialize unit collections
         self.sections = {}
         self.boundaries = {}
         self.structures = {}
@@ -526,96 +539,90 @@ class DAT(FMFile):
         self.losses = {}
         self._unsupported = {}
         self._all_units = []
-        for block in self._dat_struct:
-            unit_data = self._raw_data[block["start"] : block["end"] + 1]
-            if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                # Deal with initial conditions block
-                if block["Type"] == "INITIAL CONDITIONS":
-                    self.initial_conditions = units.IIC(unit_data, n=self._label_len)
-                    continue
 
-                if block["Type"] == "COMMENT":
-                    self._all_units.append(units.COMMENT(unit_data, n=self._label_len))
-                    continue
+    def _process_supported_unit(self, unit_type, unit_data):
+        # Handle initial conditions block
+        if unit_type == "INITIAL CONDITIONS":
+            self.initial_conditions = units.IIC(unit_data, n=self._label_len)
+        elif unit_type == "COMMENT":
+            self._all_units.append(units.COMMENT(unit_data, n=self._label_len))
+        elif unit_type == "VARIABLES":
+            self.variables = units.Variables(unit_data)
+        else:
+            # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+            unit_name = self._get_unit_name(unit_type, unit_data)
+            # Create instance of unit and add to relevant group
+            unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[unit_type]["group"])
+            self._add_unit_to_group(unit_group, unit_type, unit_name, unit_data)
 
-                if block["Type"] == "VARIABLES":
-                    self.variables = units.Variables(unit_data)
-                    continue
+    def _get_unit_name(self, unit_type, unit_data):
+        # Check if the unit type has associated subtypes
+        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip()
+        return unit_data[1][: self._label_len].strip()
 
-                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                    unit_name = unit_data[2][: self._label_len].strip()
-                else:
-                    unit_name = unit_data[1][: self._label_len].strip()
+    def _add_unit_to_group(self, unit_group, unit_type, unit_name, unit_data):
+        # Raise exception if a duplicate label is encountered
+        if unit_name in unit_group:
+            raise Exception(
+                f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}',
+            )
+        # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
+        unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
+        unit_group[unit_name] = eval(
+            f"units.{unit_type_safe}({unit_data}, {self._label_len})",
+        )
+        self._all_units.append(unit_group[unit_name])
 
-                # Create instance of unit and add to relevant group
-                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
-                if unit_name in unit_group:
-                    raise Exception(
-                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}',
-                    )
-                # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
-                unit_type = block["Type"].replace(" ", "_").replace("-", "_")
-                unit_group[unit_name] = eval(
-                    f"units.{unit_type}({unit_data}, {self._label_len})",  # append to our _all._units as well???
-                )
-                self._all_units.append(unit_group[unit_name])
+    def _process_unsupported_unit(self, unit_type, unit_data):
+        # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+        unit_name, subtype = self._get_unsupported_unit_name(unit_type, unit_data)
+        self._unsupported[f"{unit_name} ({unit_type})"] = units.UNSUPPORTED(
+            unit_data,
+            self._label_len,
+            unit_name=unit_name,
+            unit_type=unit_type,
+            subtype=subtype,
+        )
+        self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
 
-            elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
-                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                    unit_name = unit_data[2][: self._label_len].strip()
-                    subtype = True
-                else:
-                    unit_name = unit_data[1][: self._label_len].strip()
-                    subtype = False
+    def _get_unsupported_unit_name(self, unit_type, unit_data):
+        # Check if the unit type has associated subtypes
+        if units.UNSUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip(), True
+        return unit_data[1][: self._label_len].strip(), False
 
-                self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
-                    unit_data,
-                    self._label_len,
-                    unit_name=unit_name,
-                    unit_type=block["Type"],
-                    subtype=subtype,
-                )
-                self._all_units.append(self._unsupported[f"{unit_name} ({block['Type']})"])
-
-            elif block["Type"] not in ("GENERAL", "GISINFO"):
-                raise Exception(f"Unexpected unit type encountered: {block['Type']}")
-
-    def _update_dat_struct(self) -> None:  # noqa: C901, PLR0912
+    def _update_dat_struct(self) -> None:
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
-
         """
-        # Generate DAT structure
-        dat_struct = []
+        self._dat_struct = []
         in_block = False
         in_general = True
         in_comment = False
-        comment_n = None  # Used as counter for number of lines in a comment block
+        comment_n: int | None = None  # Used as counter for number of lines in a comment block
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
         unit_block: dict[str, Any] = {}
+
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
-            if in_general is True:
-                if line == "END GENERAL":
-                    general_block["end"] = idx
-                    dat_struct.append(general_block)
-                    in_general = False
+            if in_general:
+                self._process_general_block(line, idx, general_block)
+                in_general = False if line == "END GENERAL" else in_general
                 continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
-            if in_comment:
+            if in_comment and comment_n is not None:
                 comment_n -= 1
                 if comment_n <= 0:
                     unit_block["end"] = idx + comment_n  # add ending index
-                    # append existing bdy block to the dat_struct
-                    dat_struct.append(unit_block)
-                    unit_block = {}  # reset bdy block
+                    # append existing block to the dat_struct
+                    self._dat_struct.append(unit_block)
+                    unit_block = {}  # reset block
                     in_comment = False
                     in_block = False
                     comment_n = None
@@ -624,7 +631,6 @@ class DAT(FMFile):
             if line == "COMMENT":
                 in_comment = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct,
                     "COMMENT",
                     unit_block,
                     in_block,
@@ -635,7 +641,6 @@ class DAT(FMFile):
             if line == "GISINFO":
                 gisinfo_block = True
                 unit_block, in_block = self._close_struct_block(
-                    dat_struct,
                     "GISINFO",
                     unit_block,
                     in_block,
@@ -643,33 +648,49 @@ class DAT(FMFile):
                 )
 
             if not gisinfo_block:
-                if line.split(" ")[0] in units.ALL_UNIT_TYPES:
-                    # The " " is needed here in case of empty string
-                    unit_type = line.split()[0]
-                elif " ".join(line.split()[:2]) in units.ALL_UNIT_TYPES:
-                    unit_type = " ".join(line.split()[:2])
-                else:
-                    continue
+                unit_type = self._identify_unit_type(line)
+                if unit_type:
+                    unit_block, in_block = self._close_struct_block(
+                        unit_type,
+                        unit_block,
+                        in_block,
+                        idx,
+                    )
 
-                unit_block, in_block = self._close_struct_block(
-                    dat_struct,
-                    unit_type,
-                    unit_block,
-                    in_block,
-                    idx,
-                )
+        self._finalize_last_block(unit_block)
 
+    def _process_general_block(
+        self,
+        line: str,
+        idx: int,
+        general_block: dict[str, Any],
+    ) -> None:
+        # Deal with 'general' header
+        if line == "END GENERAL":
+            general_block["end"] = idx
+            self._dat_struct.append(general_block)
+
+    def _identify_unit_type(self, line: str) -> str | None:
+        # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
+        if line.split(" ")[0] in units.ALL_UNIT_TYPES:
+            # The " " is needed here in case of empty string
+            return line.split()[0]
+        if " ".join(line.split()[:2]) in units.ALL_UNIT_TYPES:
+            return " ".join(line.split()[:2])
+        return None
+
+    def _finalize_last_block(
+        self,
+        unit_block: dict[str, Any],
+    ) -> None:
         if len(unit_block) != 0:
             # Only adds end block if there is a block present (i.e. an empty DAT stays empty)
             # add ending index for final block
             unit_block["end"] = len(self._raw_data) - 1
-            dat_struct.append(unit_block)  # add final block
-
-        self._dat_struct = dat_struct
+            self._dat_struct.append(unit_block)  # add final block
 
     def _close_struct_block(
         self,
-        dat_struct: list[dict],
         unit_type: str,
         unit_block: dict,
         in_block: bool,
@@ -679,7 +700,7 @@ class DAT(FMFile):
         if in_block is True:
             unit_block["end"] = idx - 1  # add ending index
             # append existing bdy block to the dat_struct
-            dat_struct.append(unit_block)
+            self._dat_struct.append(unit_block)
             unit_block = {}  # reset bdy block
         in_block = True
         unit_block["Type"] = unit_type  # start new bdy block
