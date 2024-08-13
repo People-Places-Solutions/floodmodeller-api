@@ -194,7 +194,7 @@ class IED(FMFile):
 
         print()
 
-    def _update_ied_struct(self):  # noqa: C901, PLR0912, PLR0915
+    def _update_ied_struct(self):
         # Generate IED structure
         ied_struct = []
         in_block = False
@@ -202,68 +202,60 @@ class IED(FMFile):
         comment_n = None
         in_comment = False
 
+        def _append_to_struct(bdy_block: dict, ied_struct: list, idx: int) -> tuple[dict, list]:
+            bdy_block["end"] = idx  # add ending index
+            # append existing bdy block to the ied_struct
+            ied_struct.append(bdy_block)
+            bdy_block = {}  # reset bdy block
+            return bdy_block, ied_struct
+
+        def _set_type_and_start(bdy_block: dict, block_type, block_start) -> dict:
+            bdy_block["Type"] = block_type
+            bdy_block["start"] = block_start
+            return bdy_block
+
         for idx, line in enumerate(self._raw_data):
+
+            split_line = line.split(" ")
+
             # Deal with comment blocks explicitly as they could contain unit keywords
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
-                continue
-            if in_comment:
-                comment_n -= 1
-                if comment_n == 0:
-                    bdy_block["end"] = idx  # add ending index
-                    # append existing bdy block to the ied_struct
-                    ied_struct.append(bdy_block)
-                    bdy_block = {}  # reset bdy block
-                    in_comment = False
-                    in_block = False
-                    comment_n = None
-                continue  # move onto next line as still in comment block
 
-            if line == "COMMENT":
+            elif in_comment:
+                comment_n -= 1
+                if comment_n != 0:
+                    continue
+                bdy_block, ied_struct = _append_to_struct(bdy_block, ied_struct, idx)
+                in_comment = False
+                in_block = False
+                comment_n = None
+
+            elif line == "COMMENT":
                 in_comment = True
                 if in_block is True:
-                    bdy_block["end"] = idx - 1  # add ending index
-                    # append existing bdy block to the ied_struct
-                    ied_struct.append(bdy_block)
-                    bdy_block = {}  # reset bdy block
+                    bdy_block, ied_struct = _append_to_struct(bdy_block, ied_struct, idx - 1)
                 # start new block for COMMENT
-                bdy_block["Type"] = line.split(" ")[0]
-                bdy_block["start"] = idx  # add starting index
-                continue
+                bdy_block = _set_type_and_start(bdy_block, split_line[0], idx)
 
-            if len(line.split(" ")[0]) > 1:
-                if line.split(" ")[0] in units.ALL_UNIT_TYPES:
+            elif len(split_line[0]) > 1:
+                if split_line[0] in units.ALL_UNIT_TYPES:
                     if in_block is True:
-                        bdy_block["end"] = idx - 1  # add ending index
-                        # append existing bdy block to the ief_struct
-                        ied_struct.append(bdy_block)
-                        bdy_block = {}  # reset bdy block
+                        bdy_block, ied_struct = _append_to_struct(bdy_block, ied_struct, idx - 1)
                     in_block = True
-                    bdy_block["Type"] = line.split(" ")[0]  # start new bdy block
-                    bdy_block["start"] = idx  # add starting index
+                    bdy_block = _set_type_and_start(bdy_block, split_line[0], idx)
 
-                elif " ".join(line.split(" ")[:2]) in units.ALL_UNIT_TYPES:
+                elif " ".join(split_line[:2]) in units.ALL_UNIT_TYPES:
                     if in_block is True:
-                        bdy_block["end"] = idx - 1  # add ending index
-                        # append existing bdy block to the ief_struct
-                        ied_struct.append(bdy_block)
-                        bdy_block = {}  # reset bdy block
+                        bdy_block, ied_struct = _append_to_struct(bdy_block, ied_struct, idx - 1)
                     in_block = True
-                    bdy_block["Type"] = " ".join(line.split(" ")[:2])  # start new bdy block
-                    bdy_block["start"] = idx  # add starting index
-                else:
-                    continue
+                    bdy_block = _set_type_and_start(bdy_block, " ".join(split_line[:2]), idx)
+
             elif line in units.ALL_UNIT_TYPES:
                 if in_block is True:
-                    bdy_block["end"] = idx - 1  # add ending index
-                    # append existing bdy block to the ief_struct
-                    ied_struct.append(bdy_block)
-                    bdy_block = {}  # reset bdy block
+                    bdy_block, ied_struct = _append_to_struct(bdy_block, ied_struct, idx - 1)
                 in_block = True
-                bdy_block["Type"] = line  # start new bdy block
-                bdy_block["start"] = idx  # add starting index
-            else:
-                continue
+                bdy_block = _set_type_and_start(bdy_block, line, idx)
 
         if len(bdy_block) != 0:
             # Only adds end block if there is a bdy block present (i.e. an empty IED stays empty)
