@@ -60,7 +60,7 @@ class Calibration:
     def __init__(self) -> None:
         pass
 
-    def calibrate_node(  # noqa: PLR0913
+    def calibrate_node(
         self,
         model_event_links,
         gauge_locations_path,

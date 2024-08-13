@@ -63,7 +63,7 @@ class ComponentConverterDAT(ComponentConverter):
 
 
 class NetworkConverterDAT(ComponentConverterDAT):
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         dat: DAT,
         folder: Path,
@@ -174,7 +174,7 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
 
 
 class TopographyConverterXML2D(ComponentConverterXML2D):
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         xml: XML2D,
         folder: Path,

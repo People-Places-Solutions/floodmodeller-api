@@ -667,7 +667,7 @@ class DAT(FMFile):
 
         self._dat_struct = dat_struct
 
-    def _close_struct_block(  # noqa: PLR0913
+    def _close_struct_block(
         self,
         dat_struct: list[dict],
         unit_type: str,
@@ -722,7 +722,7 @@ class DAT(FMFile):
         self.general_parameters["Node Count"] -= 1
 
     @handle_exception(when="insert unit into")
-    def insert_unit(  # noqa: C901, PLR0912, PLR0913
+    def insert_unit(  # noqa: C901, PLR0912
         self,
         unit: Unit,
         add_before: Unit | None = None,
@@ -833,7 +833,7 @@ class DAT(FMFile):
         self._update_raw_data()
         self._update_dat_struct()
 
-    def _update_gisinfo_label(  # noqa: PLR0913
+    def _update_gisinfo_label(
         self,
         unit_type,
         unit_subtype,

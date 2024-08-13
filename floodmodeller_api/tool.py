@@ -54,9 +54,7 @@ def validate_int(value):
     """
     if value.isdigit():
         return True
-    if value == "":
-        return True
-    return False
+    return value == ""
 
 
 def validate_float(value):
@@ -72,9 +70,7 @@ def validate_float(value):
         float(value)
         return True
     except ValueError:
-        if value == "":
-            return True
-        return False
+        return value == ""
 
 
 class Gui:
@@ -92,7 +88,7 @@ class Gui:
 
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(
         self,
         master: tk.Tk,
         title: str,
@@ -145,12 +141,12 @@ class Gui:
             label.pack()
             # Conditional stuff to add validation for different data types.
             # This ensures that you can't enter text if the input should be a number, etc.
-            if data_type == str:
+            if data_type is str:
                 entry = tk.Entry(self.master)
-            elif data_type == int:
+            elif data_type is int:
                 entry = tk.Entry(self.master, validate="key")
                 entry.config(validatecommand=(entry.register(validate_int), "%P"))
-            elif data_type == float:
+            elif data_type is float:
                 entry = tk.Entry(self.master, validate="key")
                 entry.config(validatecommand=(entry.register(validate_float), "%P"))
             else:
