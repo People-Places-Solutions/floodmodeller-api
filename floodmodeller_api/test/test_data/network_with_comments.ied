@@ -1,0 +1,55 @@
+COMMENT
+         5
+Comment with 
+five
+lines
+at the 
+very start
+FSSR16BDY
+resin
+    66.000                    
+       0.0     1.000          SCALEFACT      1.000HYDROGRAPH      1.00      FULL
+ENGLAND
+    99.000     6.500    11.300     0.400     0.050
+     0.000    13.000    30.900     0.000
+   761.000    55.000     0.370   167.400
+FSRER
+   100.000     0.000     0.960
+FSRCW
+     0.000
+F16PR     FIXED
+    30.000
+OBSTP
+     1.000     4.500
+F16BF
+     0.000
+OBSUH
+7         mmarea
+     0.000
+     0.100
+     0.300
+     0.500
+     0.300
+     0.100
+     0.000
+WINRP              0
+         0
+COMMENT
+         1
+Adding a comment part way through to test
+QTBDY 
+CS26
+         4     0.000     0.000   seconds  NOEXTEND    LINEAR     0.000     0.000  OVERRIDE
+     1.000     0.000
+     1.000 46800.000
+     0.000 47160.000
+     0.000 1.000e+09
+QHBDY 
+DS4
+         6     0.000    LINEAR
+     0.000    67.030
+     1.751    67.750
+     5.303    68.220
+    10.351    68.560
+    33.975    69.059
+    65.165    69.487
