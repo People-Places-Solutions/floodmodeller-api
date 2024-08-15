@@ -92,7 +92,7 @@ class IED(FMFile):
                     comment = comment_units[comment_tracker]
                     new_unit_data = comment._write()
                     comment_tracker += 1
-                    
+
                 else:
                     if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                         unit_name = unit_data[2][:12].strip()
