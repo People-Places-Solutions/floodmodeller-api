@@ -1,30 +1,34 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
 import numpy as np
 import pandas as pd
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 MINIMUM_PERIMETER_THRESHOLD = 1e-8
 
 
 def calculate_cross_section_conveyance(
-    x: np.ndarray,
-    y: np.ndarray,
-    n: np.ndarray,
-    rpl: np.ndarray,
-    panel_markers: np.ndarray,
+    x: NDArray[np.float64],
+    y: NDArray[np.float64],
+    n: NDArray[np.float64],
+    rpl: NDArray[np.float64],
+    panel_markers: NDArray[np.float64],
 ) -> pd.Series:
     """
     Calculate the conveyance of a cross-section by summing the conveyance
     across all panels defined by panel markers.
 
     Args:
-        x (np.ndarray): The x-coordinates of the cross-section.
-        y (np.ndarray): The y-coordinates of the cross-section.
-        n (np.ndarray): Manning's n values for each segment.
-        rpl (np.ndarray): Relative Path Length values for each segment.
-        panel_markers (np.ndarray): Boolean array indicating the start of each panel.
+        x (NDArray[np.float64]): The x-coordinates of the cross-section.
+        y (NDArray[np.float64]): The y-coordinates of the cross-section.
+        n (NDArray[np.float64]): Manning's n values for each segment.
+        rpl (NDArray[np.float64]): Relative Path Length values for each segment.
+        panel_markers (NDArray[np.float64]): Boolean array indicating the start of each panel.
 
     Returns:
         pd.Series: A pandas Series containing the conveyance values indexed by water levels.
@@ -78,24 +82,24 @@ def calculate_cross_section_conveyance(
 
 
 def calculate_geometry(
-    x: np.ndarray,
-    y: np.ndarray,
-    n: np.ndarray,
-    water_levels: np.ndarray,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    x: NDArray[np.float64],
+    y: NDArray[np.float64],
+    n: NDArray[np.float64],
+    water_levels: NDArray[np.float64],
+) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
     """
     Calculate area, length, weighted mannings for piecewise linear curve (x, y) below water_level.
 
     Args:
-        x (np.ndarray): 1D array of x-coordinates.
-        y (np.ndarray): 1D array of y-coordinates.
-        n (np.ndarray): 1D array to integrate over the length.
-        water_levels (np.ndarray): The horizontal reference line.
+        x (NDArray[np.float64]): 1D array of x-coordinates.
+        y (NDArray[np.float64]): 1D array of y-coordinates.
+        n (NDArray[np.float64]): 1D array to integrate over the length.
+        water_levels (NDArray[np.float64]): The horizontal reference line.
 
     Returns:
-        np.ndarray: The area above the curve and under the reference line.
-        np.ndarray: The length of the curve under the reference line.
-        np.ndarray: Manning's n integrated along the curve under the reference line.
+        NDArray[np.float64]: The area above the curve and under the reference line.
+        NDArray[np.float64]: The length of the curve under the reference line.
+        NDArray[np.float64]: Manning's n integrated along the curve under the reference line.
     """
     h = water_levels[:, np.newaxis] - y
 
@@ -139,16 +143,16 @@ def calculate_geometry(
     return area, length, weighted_mannings
 
 
-def insert_intermediate_wls(arr: np.ndarray, threshold: float) -> np.ndarray:
+def insert_intermediate_wls(arr: NDArray[np.float64], threshold: float) -> NDArray[np.float64]:
     """
     Insert intermediate water levels into an array based on a threshold.
 
     Args:
-        arr (np.ndarray): The array of original water levels.
+        arr (NDArray[np.float64]): The array of original water levels.
         threshold (float): The maximum allowed gap between water levels.
 
     Returns:
-        np.ndarray: The array with intermediate water levels inserted.
+        NDArray[np.float64]: The array with intermediate water levels inserted.
     """
     # Calculate gaps between consecutive elements
     gaps = np.diff(arr)
