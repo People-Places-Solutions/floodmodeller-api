@@ -59,6 +59,7 @@ def read_file(filepath: str | Path) -> FMFile:
 
     """
     from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
+    from .hydrology_plus import HydrologyPlusExport
 
     suffix_to_class = {
         ".ief": IEF,
@@ -69,6 +70,7 @@ def read_file(filepath: str | Path) -> FMFile:
         ".inp": INP,
         ".lf1": LF1,
         ".lf2": LF2,
+        ".csv": HydrologyPlusExport,
     }
     filepath = Path(filepath)
     api_class = suffix_to_class.get(filepath.suffix.lower())
