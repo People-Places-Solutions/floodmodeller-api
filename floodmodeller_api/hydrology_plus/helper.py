@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from floodmodeller_api.hydrology_plus.hydrology_plus_export import HydrologyPlusExport
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def load_hydrology_plus_csv_export(file: str | Path) -> HydrologyPlusExport:
