@@ -49,9 +49,15 @@ class HydrologyPlusExport(FMFile):
         self._read()
 
     def _read(self):
+        with self._filepath.open("r") as file:
+            header = file.readline().strip(" ,\n\r")
+            if header != "Flood Modeller Hydrology+ hydrograph file":
+                raise ValueError("Input file is not the correct format for Hydrology+ export data.")
+
         self._data_file = pd.read_csv(self._filepath)
         self.metadata = self._get_metadata()
         self.data = self._get_df_hydrographs_plus()
+        self._get_unique_event_components()
 
     def _get_metadata(self) -> dict[str, str]:
         """Extracts the metada from the hydrology + results"""
@@ -84,8 +90,9 @@ class HydrologyPlusExport(FMFile):
             pd.Series: A pandas Series containing the flow data (m³/s) for the specified event.
 
         Raises:
-            ValueError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
-            ValueError: If no matching event is found in the dataset.
+            FloodModellerAPIError: If the csv file is not in the correct format.
+            FloodModellerAPIError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
+            FloodModellerAPIError: If no matching event is found in the dataset.
 
         Note:
             - If the `event` parameter is provided, the method returns the data corresponding to that event.
@@ -109,6 +116,32 @@ class HydrologyPlusExport(FMFile):
                 "No matching event was found based on "
                 f"{return_period=}, {storm_duration=}, {scenario=}",
             )
+
+    def _get_unique_event_components(self):
+        return_periods, storm_durations, scenarios = set(), set(), set()
+        for column in self.data.columns:
+            s, sd, rp, *_ = column.split(" - ")
+            return_periods.add(float(rp))
+            storm_durations.add(float(sd))
+            scenarios.add(s)
+        self._return_periods = sorted(return_periods)
+        self._storm_durations = sorted(storm_durations)
+        self._scenarios = sorted(scenarios)
+
+    @property
+    def return_periods(self) -> list:
+        "Distinct return periods from exported Hydrology+ data"
+        return self._return_periods
+
+    @property
+    def storm_durations(self) -> list:
+        "Distinct storm durations from exported Hydrology+ data"
+        return self._storm_durations
+
+    @property
+    def scenarios(self) -> list:
+        "Distinct scenarios from exported Hydrology+ data"
+        return self._scenarios
 
 
 if __name__ == "__main__":
