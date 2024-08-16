@@ -67,8 +67,34 @@ class IED(FMFile):
         self._update_ied_struct()
 
     @handle_exception(when="write")
-    def _write(self) -> str:  # noqa: C901, PLR0912
+    def _write(self) -> str:
         """Returns string representation of the current IED data"""
+        self._write_raw_data()
+        self._update_ied_struct()
+        self._update_unit_names()
+
+        return "\n".join(self._raw_data) + "\n"
+
+    def _update_unit_names(self) -> None:
+        for unit_group, unit_group_name in [
+            (self.boundaries, "boundaries"),
+            (self.sections, "sections"),
+            (self.structures, "structures"),
+            (self.conduits, "conduits"),
+            (self.losses, "losses"),
+        ]:
+            for name, unit in unit_group.copy().items():
+                if name != unit.name:
+                    # Check if new name already exists as a label
+                    if unit.name in unit_group:
+                        raise Exception(
+                            f'Error: Cannot update label "{name}" to "{unit.name}" because '
+                            f'"{unit.name}" already exists in the Network {unit_group_name} group',
+                        )
+                    unit_group[unit.name] = unit
+                    del unit_group[name]
+
+    def _write_raw_data(self) -> None:
         block_shift = 0
         existing_units: dict[str, list[str]] = {
             "boundaries": [],
@@ -77,6 +103,8 @@ class IED(FMFile):
             "conduits": [],
             "losses": [],
         }
+        comment_tracker = 0
+        comment_units = [unit for unit in self._all_units if unit._unit == "COMMENT"]
 
         for block in self._ied_struct:
             # Check for all supported boundary types
@@ -85,22 +113,29 @@ class IED(FMFile):
                     block["start"] + block_shift : block["end"] + 1 + block_shift
                 ]
                 prev_block_len = len(unit_data)
-                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                    unit_name = unit_data[2][:12].strip()
-                else:
-                    unit_name = unit_data[1][:12].strip()
 
-                # Get unit object
-                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
-                if unit_name in unit_group:
-                    # block still exists
-                    new_unit_data = unit_group[unit_name]._write()
-                    existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
-                        unit_name,
-                    )
+                if block["Type"] == "COMMENT":
+                    comment = comment_units[comment_tracker]
+                    new_unit_data = comment._write()
+                    comment_tracker += 1
+
                 else:
-                    # Bdy block has been deleted
-                    new_unit_data = []
+                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                        unit_name = unit_data[2][:12].strip()
+                    else:
+                        unit_name = unit_data[1][:12].strip()
+
+                    # Get unit object
+                    unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
+                    if unit_name in unit_group:
+                        # block still exists
+                        new_unit_data = unit_group[unit_name]._write()
+                        existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
+                            unit_name,
+                        )
+                    else:
+                        # Bdy block has been deleted
+                        new_unit_data = []
 
                 new_block_len = len(new_unit_data)
                 self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
@@ -117,29 +152,6 @@ class IED(FMFile):
                     # Ensure that the 'name' attribute matches name key in boundaries
                     self._raw_data.extend(unit._write())
 
-        # Update ied_struct
-        self._update_ied_struct()
-
-        # Update unit names
-        for unit_group, unit_group_name in [
-            (self.boundaries, "boundaries"),
-            (self.sections, "sections"),
-            (self.structures, "structures"),
-            (self.conduits, "conduits"),
-            (self.losses, "losses"),
-        ]:
-            for name, unit in unit_group.copy().items():
-                if name != unit.name:
-                    # Check if new name already exists as a label
-                    if unit.name in unit_group:
-                        raise Exception(
-                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
-                        )
-                    unit_group[unit.name] = unit
-                    del unit_group[name]
-
-        return "\n".join(self._raw_data) + "\n"
-
     def _get_unit_definitions(self):
         # Get unit definitions
         self.sections = {}
@@ -153,6 +165,11 @@ class IED(FMFile):
             unit_data = self._raw_data[block["start"] : block["end"] + 1]
             # Check for all supported boundary types, starting just with QTBDY type
             if block["Type"] in units.SUPPORTED_UNIT_TYPES:
+                # Handle comments
+                if block["Type"] == "COMMENT":
+                    self._all_units.append(units.COMMENT(unit_data, n=12))
+                    continue
+
                 # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
                 if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
                     # Takes first 12 characters as name

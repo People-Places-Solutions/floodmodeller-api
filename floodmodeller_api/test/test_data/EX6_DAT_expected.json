@@ -1,16 +1,16 @@
 {
   "API Class": "floodmodeller_api.dat.DAT",
-  "API Version": "0.4.2.post1",
+  "API Version": "0.4.4.post1",
   "Object Attributes": {
-    "_filepath": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX6.DAT",
+    "_filepath": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX6.DAT",
     "file": {
       "API Class": "floodmodeller_api.backup.File",
       "Object Attributes": {
-        "path": "C:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX6.DAT",
+        "path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\EX6.DAT",
         "ext": ".DAT",
-        "dttm_str": "2024-04-17-14-09-24",
-        "file_id": "823c43247cc6b314ee7d6a06a30ba0f022b28a0e",
-        "backup_filename": "823c43247cc6b314ee7d6a06a30ba0f022b28a0e_2024-04-17-14-09-24.DAT",
+        "dttm_str": "2024-07-19-17-39-26",
+        "file_id": "011ecc91e2fb024434f655d89499dd2f32e41802",
+        "backup_filename": "011ecc91e2fb024434f655d89499dd2f32e41802_2024-07-19-17-39-26.DAT",
         "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
         "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
@@ -2643,7 +2643,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -2777,7 +2777,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P1000": {
@@ -2797,7 +2798,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -2931,7 +2932,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P2000": {
@@ -2951,7 +2953,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3085,7 +3087,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P3000": {
@@ -3105,7 +3108,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3239,7 +3242,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P4000": {
@@ -3259,7 +3263,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3393,7 +3397,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P5000": {
@@ -3413,7 +3418,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3547,7 +3552,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P6000": {
@@ -3567,7 +3573,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3701,7 +3707,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P7000": {
@@ -3721,7 +3728,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -3855,7 +3862,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P8000": {
@@ -3875,7 +3883,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4009,7 +4017,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P9000": {
@@ -4029,7 +4038,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4163,7 +4172,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P10000": {
@@ -4183,7 +4193,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4317,7 +4327,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P11000": {
@@ -4337,7 +4348,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4471,7 +4482,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P11951A": {
@@ -4491,7 +4503,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4625,7 +4637,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P11951D": {
@@ -4645,7 +4658,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4779,7 +4792,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P13.000": {
@@ -4799,7 +4813,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -4933,7 +4947,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P14.000": {
@@ -4953,7 +4968,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5087,7 +5102,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P15.000": {
@@ -5107,7 +5123,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5241,7 +5257,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P16.000": {
@@ -5261,7 +5278,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5395,7 +5412,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P17.000": {
@@ -5415,7 +5433,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5549,7 +5567,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P18.000": {
@@ -5569,7 +5588,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5703,7 +5722,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P19.000": {
@@ -5723,7 +5743,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -5857,7 +5877,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P20.000": {
@@ -5877,7 +5898,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6011,7 +6032,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P21.000": {
@@ -6031,7 +6053,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6165,7 +6187,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P22.000": {
@@ -6185,7 +6208,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6319,7 +6342,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P23.000": {
@@ -6339,7 +6363,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6473,7 +6497,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P24.000": {
@@ -6493,7 +6518,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6627,7 +6652,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P25.000": {
@@ -6647,7 +6673,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6781,7 +6807,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P26.000": {
@@ -6801,7 +6828,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -6935,7 +6962,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P27.000": {
@@ -6955,7 +6983,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7089,7 +7117,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P28.000": {
@@ -7109,7 +7138,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7243,7 +7272,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P29.000": {
@@ -7263,7 +7293,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7397,7 +7427,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P30.000": {
@@ -7417,7 +7448,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7551,7 +7582,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P31.000": {
@@ -7571,7 +7603,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7705,7 +7737,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P32.000": {
@@ -7725,7 +7758,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -7859,7 +7892,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P33.000": {
@@ -7879,7 +7913,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8013,7 +8047,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P34.000": {
@@ -8033,7 +8068,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8167,7 +8202,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P35.000": {
@@ -8187,7 +8223,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8321,7 +8357,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P36.000": {
@@ -8341,7 +8378,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8475,7 +8512,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P37.000": {
@@ -8495,7 +8533,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8629,7 +8667,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P38.000": {
@@ -8649,7 +8688,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8783,7 +8822,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P39.000": {
@@ -8803,7 +8843,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -8937,7 +8977,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P40.000": {
@@ -8957,7 +8998,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9091,7 +9132,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P41.000": {
@@ -9111,7 +9153,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9245,7 +9287,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P42.000": {
@@ -9265,7 +9308,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9399,7 +9442,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P43.000": {
@@ -9419,7 +9463,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9553,7 +9597,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P44.000": {
@@ -9573,7 +9618,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9707,7 +9752,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P44865J": {
@@ -9727,7 +9773,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -9861,7 +9907,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P44865D": {
@@ -9881,7 +9928,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10015,7 +10062,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P46.000": {
@@ -10035,7 +10083,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10169,7 +10217,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P47.000": {
@@ -10189,7 +10238,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10323,7 +10372,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P48.000": {
@@ -10343,7 +10393,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10477,7 +10527,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P49.000": {
@@ -10497,7 +10548,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10631,7 +10682,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P50.000": {
@@ -10651,7 +10703,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10785,7 +10837,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P51.000": {
@@ -10805,7 +10858,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -10939,7 +10992,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P52.000": {
@@ -10959,7 +11013,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11093,7 +11147,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P53.000": {
@@ -11113,7 +11168,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11247,7 +11302,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P54.000": {
@@ -11267,7 +11323,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11401,7 +11457,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P55.000": {
@@ -11421,7 +11478,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11555,7 +11612,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P56.000": {
@@ -11575,7 +11633,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11709,7 +11767,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P57.000": {
@@ -11729,7 +11788,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -11863,7 +11922,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P58.000": {
@@ -11883,7 +11943,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12017,7 +12077,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P59.000": {
@@ -12037,7 +12098,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12171,7 +12232,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P60.000": {
@@ -12191,7 +12253,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12325,7 +12387,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P61.000": {
@@ -12345,7 +12408,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12479,7 +12542,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P62.000": {
@@ -12499,7 +12563,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12633,7 +12697,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P63.000": {
@@ -12653,7 +12718,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12787,7 +12852,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P64.000": {
@@ -12807,7 +12873,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -12941,7 +13007,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P65.000": {
@@ -12961,7 +13028,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13095,7 +13162,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P66.000": {
@@ -13115,7 +13183,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13249,7 +13317,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P67.000": {
@@ -13269,7 +13338,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13403,7 +13472,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P68.000": {
@@ -13423,7 +13493,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13557,7 +13627,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P69.000": {
@@ -13577,7 +13648,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13711,7 +13782,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P70.000": {
@@ -13731,7 +13803,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -13865,7 +13937,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P71.000": {
@@ -13885,7 +13958,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14019,7 +14092,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P72.000": {
@@ -14039,7 +14113,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14173,7 +14247,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P73.000": {
@@ -14193,7 +14268,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14327,7 +14402,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P74.000": {
@@ -14347,7 +14423,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14481,7 +14557,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P75.000": {
@@ -14501,7 +14578,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14635,7 +14712,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P76.000": {
@@ -14655,7 +14733,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14789,7 +14867,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P77.000": {
@@ -14809,7 +14888,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -14943,7 +15022,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P78.000": {
@@ -14963,7 +15043,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15097,7 +15177,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P79.000": {
@@ -15117,7 +15198,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15251,7 +15332,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P80.000": {
@@ -15271,7 +15353,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15405,7 +15487,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P81.000": {
@@ -15425,7 +15508,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15559,7 +15642,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P82.000": {
@@ -15579,7 +15663,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15713,7 +15797,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       "P83307": {
@@ -15733,7 +15818,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -15867,7 +15952,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       }
     },
@@ -16900,7 +16986,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17034,7 +17120,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17054,7 +17141,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17188,7 +17275,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17208,7 +17296,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17342,7 +17430,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17362,7 +17451,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17496,7 +17585,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17516,7 +17606,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17650,7 +17740,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17670,7 +17761,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17804,7 +17895,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17824,7 +17916,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -17958,7 +18050,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -17978,7 +18071,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18112,7 +18205,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -18132,7 +18226,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18266,7 +18360,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -18286,7 +18381,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18420,7 +18515,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -18440,7 +18536,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18574,7 +18670,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -18594,7 +18691,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18728,7 +18825,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -18748,7 +18846,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -18882,7 +18980,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19215,7 +19314,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -19349,7 +19448,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19369,7 +19469,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -19503,7 +19603,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19523,7 +19624,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -19657,7 +19758,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19677,7 +19779,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -19811,7 +19913,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19831,7 +19934,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -19965,7 +20068,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -19985,7 +20089,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20119,7 +20223,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20139,7 +20244,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20273,7 +20378,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20293,7 +20399,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20427,7 +20533,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20447,7 +20554,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20581,7 +20688,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20601,7 +20709,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20735,7 +20843,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20755,7 +20864,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -20889,7 +20998,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -20909,7 +21019,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21043,7 +21153,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21063,7 +21174,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21197,7 +21308,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21217,7 +21329,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21351,7 +21463,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21371,7 +21484,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21505,7 +21618,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21525,7 +21639,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21659,7 +21773,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21679,7 +21794,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21813,7 +21928,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21833,7 +21949,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -21967,7 +22083,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -21987,7 +22104,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22121,7 +22238,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22141,7 +22259,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22275,7 +22393,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22295,7 +22414,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22429,7 +22548,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22449,7 +22569,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22583,7 +22703,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22603,7 +22724,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22737,7 +22858,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22757,7 +22879,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -22891,7 +23013,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -22911,7 +23034,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23045,7 +23168,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23065,7 +23189,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23199,7 +23323,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23219,7 +23344,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23353,7 +23478,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23373,7 +23499,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23507,7 +23633,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23527,7 +23654,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23661,7 +23788,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23681,7 +23809,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23815,7 +23943,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23835,7 +23964,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -23969,7 +24098,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -23989,7 +24119,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -24123,7 +24253,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -24143,7 +24274,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -24277,7 +24408,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -24297,7 +24429,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -24431,7 +24563,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -24766,7 +24899,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -24900,7 +25033,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -24920,7 +25054,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25054,7 +25188,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25074,7 +25209,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25208,7 +25343,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25228,7 +25364,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25362,7 +25498,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25382,7 +25519,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25516,7 +25653,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25536,7 +25674,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25670,7 +25808,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25690,7 +25829,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25824,7 +25963,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25844,7 +25984,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -25978,7 +26118,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -25998,7 +26139,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26132,7 +26273,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26152,7 +26294,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26286,7 +26428,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26306,7 +26449,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26440,7 +26583,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26460,7 +26604,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26594,7 +26738,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26614,7 +26759,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26748,7 +26893,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26768,7 +26914,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -26902,7 +27048,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -26922,7 +27069,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27056,7 +27203,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27076,7 +27224,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27210,7 +27358,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27230,7 +27379,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27364,7 +27513,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27384,7 +27534,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27518,7 +27668,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27538,7 +27689,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27672,7 +27823,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27692,7 +27844,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27826,7 +27978,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -27846,7 +27999,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -27980,7 +28133,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28000,7 +28154,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28134,7 +28288,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28154,7 +28309,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28288,7 +28443,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28308,7 +28464,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28442,7 +28598,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28462,7 +28619,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28596,7 +28753,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28616,7 +28774,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28750,7 +28908,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28770,7 +28929,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -28904,7 +29063,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -28924,7 +29084,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29058,7 +29218,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29078,7 +29239,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29212,7 +29373,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29232,7 +29394,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29366,7 +29528,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29386,7 +29549,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29520,7 +29683,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29540,7 +29704,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29674,7 +29838,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29694,7 +29859,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29828,7 +29993,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -29848,7 +30014,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -29982,7 +30148,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -30002,7 +30169,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -30136,7 +30303,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -30156,7 +30324,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -30290,7 +30458,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -30310,7 +30479,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -30444,7 +30613,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -30464,7 +30634,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -30598,7 +30768,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
@@ -30618,7 +30789,7 @@
           "slope": 0.0001,
           "density": 1000.0,
           "nrows": 11,
-          "data": {
+          "_data": {
             "class": "pandas.DataFrame",
             "object": {
               "X": {
@@ -30752,7 +30923,8 @@
                 "10": 0
               }
             }
-          }
+          },
+          "_active_data": null
         }
       },
       {
