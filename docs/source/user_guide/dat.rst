@@ -113,7 +113,7 @@ Conveyance curves
 
 .. admonition:: *New in version 0.4.4*
 
-   Calculated conveyance curves for river sections can now be accessed with the `.conveyance`
+   Calculated conveyance curves for river sections can now be accessed with the ``.conveyance``
    attribute.
 
 Calculating the conveyance curve of a river cross section can be useful when identifying 'spikes' in

@@ -55,8 +55,8 @@ class HydrologyPlusExport(FMFile):
                 raise ValueError("Input file is not the correct format for Hydrology+ export data.")
 
         self._data_file = pd.read_csv(self._filepath)
-        self.metadata = self._get_metadata()
-        self.data = self._get_df_hydrographs_plus()
+        self._metadata = self._get_metadata()
+        self._data = self._get_df_hydrographs_plus()
         self._get_unique_event_components()
 
     def _get_metadata(self) -> dict[str, str]:
@@ -100,7 +100,8 @@ class HydrologyPlusExport(FMFile):
             - The dataset is assumed to have columns named in the format "scenario - storm_duration - return_period - Flow (m3/s)".
         """
         if event:
-            return self.data.loc[:, f"{event} - Flow (m3/s)"]
+            column = next(col for col in self.data.columns if col.lower().startswith(event.lower()))
+            return self.data.loc[:, column]
         if not (return_period and storm_duration and scenario):
             raise ValueError(
                 "Missing required inputs to find event, if no event string is passed then a "
@@ -127,6 +128,16 @@ class HydrologyPlusExport(FMFile):
         self._return_periods = sorted(return_periods)
         self._storm_durations = sorted(storm_durations)
         self._scenarios = sorted(scenarios)
+
+    @property
+    def data(self) -> pd.DataFrame:
+        "Hydrograph flow data for all events as a pandas DataFrame."
+        return self._data
+
+    @property
+    def metadata(self) -> dict[str, str]:
+        "Metadata associated with Hydrology+ csv export."
+        return self._metadata
 
     @property
     def return_periods(self) -> list:

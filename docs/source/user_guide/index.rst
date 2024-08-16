@@ -17,6 +17,7 @@ can be used, code reference and examples.
    lf
    units
    urban1d_units
+   hydrology_plus
    api_toolbox
    list_of_api_tools
    additional_functionality
