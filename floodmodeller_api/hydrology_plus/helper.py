@@ -1,5 +1,7 @@
 """Helps to create the class for the hydrology plus"""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from floodmodeller_api.hydrology_plus.hydrology_plus_export import HydrologyPlusExport
