@@ -10,7 +10,7 @@ from floodmodeller_api.hydrology_plus.hydrology_plus_export import HydrologyPlus
 
 
 @pytest.fixture()
-def expected_metada():
+def expected_metadata():
     """Extracts the metadata from the csv to be compared with the class"""
 
     return {
@@ -31,13 +31,6 @@ def expected_metada():
         "Created Date": "30/04/2024 09:42:23",
         "Checksum": "ef77d9bd-2eb3-4689-a1e3-665d293db810",
     }
-
-
-@pytest.fixture()
-def test_workspace():
-    """Creates the path to the data's tests"""
-
-    return Path(os.path.dirname(__file__), "test_data")
 
 
 @pytest.fixture()
@@ -65,11 +58,11 @@ def hydrology_plus_export_object():
 
 
 def test_data_metadata(
-    expected_metada: dict[str, str],
+    expected_metadata: dict[str, str],
     hydrology_plus_export_object: HydrologyPlusExport,
 ):
-    """Compares the metada between the csv and the class"""
-    assert expected_metada == hydrology_plus_export_object.metadata
+    """Compares the metadata between the csv and the class"""
+    assert expected_metadata == hydrology_plus_export_object.metadata
 
 
 def test_data_flows_df(
@@ -85,4 +78,19 @@ def test_data_event(expected_event: pd.Series, hydrology_plus_export_object: Hyd
     pd.testing.assert_series_equal(
         expected_event,
         hydrology_plus_export_object.get_event("2020 Upper - 11 - 1"),
+    )
+
+
+def test_data_event_from_params(
+    expected_event: pd.Series,
+    hydrology_plus_export_object: HydrologyPlusExport,
+):
+    """Compares the event between the csv and the class"""
+    pd.testing.assert_series_equal(
+        expected_event,
+        hydrology_plus_export_object.get_event(
+            scenario="2020 Upper",
+            storm_duration=11.0,
+            return_period=1.0,
+        ),
     )

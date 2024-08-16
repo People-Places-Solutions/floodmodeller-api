@@ -14,19 +14,24 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from floodmodeller_api._base import FMFile
 from floodmodeller_api.util import handle_exception
 
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 class HydrologyPlusExport(FMFile):
-    """Class to handle the output of Hydrology +
+    """Class to handle the exported output of Hydrology +
 
     Args:
-        csv file (str): produced by Hydrology + in Flood Modeller
+        csv_file_path (str | Path): produced by Hydrology + in Flood Modeller
 
     Output:
         Initiates 'HydrologyPlusExport' object
@@ -37,7 +42,7 @@ class HydrologyPlusExport(FMFile):
     _suffix: str = ".csv"
 
     @handle_exception(when="read")
-    def __init__(self, csv_file_path: Path, from_json: bool = False):
+    def __init__(self, csv_file_path: str | Path, from_json: bool = False):
         if from_json:
             return
         FMFile.__init__(self, csv_file_path)
@@ -58,19 +63,52 @@ class HydrologyPlusExport(FMFile):
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
         """Extracts all the events generated in hydrology +"""
         time_row_index = self._data_file.index[self._data_file.iloc[:, 0] == "Time (hours)"][0]
-        col_names = self._data_file.iloc[time_row_index]
-        new_col_names = list(col_names)
-        df_events = self._data_file.iloc[time_row_index + 1 :].reset_index(drop=True)
-        df_events.columns = new_col_names
-        for col in df_events.columns[:]:
-            df_events[col] = pd.to_numeric(df_events[col], errors="coerce")
+        return pd.read_csv(self._filepath, skiprows=time_row_index + 1, index_col=0)
 
-        return df_events.set_index("Time (hours)")
+    def get_event(
+        self,
+        event: str | None = None,
+        return_period: float | None = None,
+        storm_duration: float | None = None,
+        scenario: str | None = None,
+    ) -> pd.Series:
+        """Extracts a specific event's flow data from the exported Hydrology+ flow data.
 
-    def get_event(self, event: str) -> pd.Series:
-        """Extracts a particular event to be simulated in Flood Modeller"""
+        Args:
+            event (str, optional): Full string identifier for the event in the dataset. If provided, this takes precedence over other parameters.
+            return_period (float, optional): The return period of the event.
+            storm_duration (float, optional): The duration of the storm event in hours.
+            scenario (str, optional): The scenario name, which typically relates to different conditions (e.g., climate change scenario).
 
-        return self.data.loc[:, f"{event} - Flow (m3/s)"]
+        Returns:
+            pd.Series: A pandas Series containing the flow data (m³/s) for the specified event.
+
+        Raises:
+            ValueError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
+            ValueError: If no matching event is found in the dataset.
+
+        Note:
+            - If the `event` parameter is provided, the method returns the data corresponding to that event.
+            - If `event` is not provided, the method attempts to locate the event based on the combination of `return_period`, `storm_duration`, and `scenario`.
+            - The dataset is assumed to have columns named in the format "scenario - storm_duration - return_period - Flow (m3/s)".
+        """
+        if event:
+            return self.data.loc[:, f"{event} - Flow (m3/s)"]
+        if not (return_period and storm_duration and scenario):
+            raise ValueError(
+                "Missing required inputs to find event, if no event string is passed then a "
+                "return_period, storm_duration and scenario are needed. You provided: "
+                f"{return_period=}, {storm_duration=}, {scenario=}",
+            )
+        for column in self.data.columns:
+            s, sd, rp, *_ = column.split(" - ")
+            if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
+                return self.data.loc[:, column]
+        else:
+            raise ValueError(
+                "No matching event was found based on "
+                f"{return_period=}, {storm_duration=}, {scenario=}",
+            )
 
 
 if __name__ == "__main__":
@@ -83,6 +121,10 @@ if __name__ == "__main__":
     print("################################################")
     print(baseline_unchecked.data)
     print("################################################")
-    event_plus = baseline_unchecked.get_event(event)
+    event_plus = baseline_unchecked.get_event(
+        scenario="2020 Upper",
+        storm_duration=11.0,
+        return_period=1,
+    )
     print(event_plus)
     print("################################################")
