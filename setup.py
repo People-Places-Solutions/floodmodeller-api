@@ -27,6 +27,7 @@ setup(
         "floodmodeller_api.test",
         "floodmodeller_api.test.test_data",
         "floodmodeller_api.libs",
+        "floodmodeller_api.hydrology_plus",
     ],
     entry_points={
         "console_scripts": [
