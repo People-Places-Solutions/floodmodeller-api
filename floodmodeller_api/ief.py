@@ -295,6 +295,8 @@ class IEF(FMFile):
 
         # Update NoOfFlowTimeSeries
         self.NoOfFlowTimeProfiles = str(len(flow_time_list[3:]))
+        if not hasattr(self, "NoOfFlowTimeSeries"):
+            self.NoOfFlowTimeSeries = 0
 
     def __getattr__(self, name):
         for attr in self.__dict__.copy():
