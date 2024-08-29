@@ -172,3 +172,4 @@ if __name__ == "__main__":
     )
     print(event_plus)
     print("################################################")
+    print(list(HydrologyPlusExport(r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv").data))

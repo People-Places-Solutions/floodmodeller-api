@@ -24,13 +24,14 @@ from subprocess import Popen
 from typing import Callable
 
 import pandas as pd
+from hydrology_plus.hydrology_plus_export import HydrologyPlusExport
 from tqdm import trange
 
-from ._base import FMFile
-from .ief_flags import flags
-from .logs import LF1, create_lf
-from .util import handle_exception
-from .zzn import ZZN
+from floodmodeller_api._base import FMFile
+from floodmodeller_api.ief_flags import flags
+from floodmodeller_api.logs import LF1, create_lf
+from floodmodeller_api.util import handle_exception
+from floodmodeller_api.zzn import ZZN
 
 
 class IEF(FMFile):
@@ -324,6 +325,30 @@ class IEF(FMFile):
         if not existing_attr_deleted:
             super().__delattr__(name)
 
+    def get_flowtimeprofiles(self,
+                             node_label: str,
+                             csv_path: Path) -> list[dict]:
+
+        self.nodel_label = node_label
+        self.events = list(HydrologyPlusExport(csv_path).data)
+
+        list_dict = []
+        for i, item in enumerate(self.events):
+            item = {
+                "label": self.nodel_label,
+                "index": i,   #  doubt on 0 or 1
+                "Start row index": 23,  # index from original csv, 23, or from dataframe with data, 1/2.
+                "CSV filename": str(csv_path),
+                "File type": "FM2",
+                "Profile": item,
+                "comment": "",
+            }
+
+            list_dict.append(item)
+
+        return list_dict
+
+
     def diff(self, other: IEF, force_print: bool = False) -> None:
         """Compares the IEF class against another IEF class to check whether they are
         equivalent, or if not, what the differences are. Two instances of an IEF class are
@@ -553,3 +578,10 @@ class IEF(FMFile):
             return 1, f"Simulation Failed! - {details}"
 
         return 0, f"Simulation Completed! - {details}"
+
+
+if __name__ == "__main__":
+    ief = IEF(r"C:\Users\caballva\OneDrive - Jacobs\Documents\PROJECTS\FLOOD_MODELLER_API\H+\H+ForFMAPI2\simulations/7082/7082.ief")
+    ief._update_flowtimeprofile_info()
+    print(ief.get_flowtimeprofiles("CR_101", 
+                             Path(r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv")))
