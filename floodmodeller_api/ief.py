@@ -35,6 +35,7 @@ from .ief_flags import flags
 from .logs import LF1, create_lf
 from .util import handle_exception
 from .zzn import ZZN
+from .diff import check_item_with_dataframe_equal
 
 
 def try_numeric(value: str) -> str | int | float:
@@ -86,7 +87,7 @@ class IEF(FMFile):
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
         prev_comment = None
         self._ief_properties: list[str] = []
-        self.eventdata: dict[str, str] = {}
+        self.EventData: dict[str, str] = {}
         self.flowtimeprofiles: list[dict[str, str | int]] = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
@@ -125,6 +126,7 @@ class IEF(FMFile):
                 prev_comment = None
 
         self._check_formatting(raw_data)
+        self._update_ief_properties()  # call this here to ensure ief properties is correct
 
     def _check_formatting(self, raw_data: list[str]) -> None:
         """Check to see if ief formatted with line breaks between groups and spaces around '='."""
@@ -148,10 +150,15 @@ class IEF(FMFile):
         ief_string = ""
         event_index = 0  # Used as a counter for multiple eventdata files
         ftp_index = 0  # Counter for flowtimeprofiles
+        eq = " = " if self._format_equals_spaced else "="
+        section_newline = "\n" if self._format_group_line_breaks else ""
         for idx, prop in enumerate(self._ief_properties):
             if prop.startswith("["):
                 # writes the [] bound headers to ief string
-                ief_string += prop + "\n"
+                if idx > 0:
+                    ief_string += section_newline + prop + "\n"
+                else:
+                    ief_string += prop + "\n"
 
             elif prop.lstrip().startswith(";"):
                 if self._ief_properties[idx + 1].lower() != "eventdata":
@@ -163,24 +170,18 @@ class IEF(FMFile):
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
                     if idx == event_index:
-                        ief_string += f";{key}\nEventData={str(event_data[key])}\n"
+                        ief_string += f";{key}\nEventData{eq}{str(event_data[key])}\n"
                         break
                 event_index += 1
 
             elif prop.lower().startswith("flowtimeprofile"):
                 flowtimeprofile = self.flowtimeprofiles[ftp_index]
-                ief_string += f"{prop}={flowtimeprofile}\n"
+                ief_string += f"{prop}{eq}{flowtimeprofile}\n"
                 ftp_index += 1
 
             else:
                 # writes property and value to ief string
-                ief_string += f"{prop}={str(getattr(self, prop))}\n"
-
-        # Replicate formatting of original
-        if self._format_group_line_breaks:
-            ief_string = ief_string.replace("[", "\n[").strip()
-        if self._format_equals_spaced:
-            ief_string = ief_string.replace("=", " = ")
+                ief_string += f"{prop}{eq}{str(getattr(self, prop))}\n"
 
         return ief_string
 
@@ -228,7 +229,7 @@ class IEF(FMFile):
                     )
                     continue
 
-                if prop.upper() == "EVENTDATA" and prop != "eventdata":
+                if prop.upper() == "EVENTDATA" and prop != "EventData":
                     # (1) This will be triggered in special case where eventdata has been added with different case, but case
                     # needs to be kept as 'EventData', to allow dealing wiht multiple IEDs
                     # (2) In case of EventData being added with correct case where it doesn't already
@@ -331,7 +332,11 @@ class IEF(FMFile):
             )
 
         end_index = None
-        start_index = self._ief_properties.index("[Flow Time Profiles]")
+        start_index = (
+            self._ief_properties.index("[Flow Time Profiles]")
+            if "[Flow Time Profiles]" in self._ief_properties
+            else len(self._ief_properties)
+        )
         for idx, item in enumerate(self._ief_properties[start_index:]):
             if idx != 0 and item.startswith("["):
                 end_index = idx + start_index
@@ -692,6 +697,17 @@ class FlowTimeProfile(Jsonable):
             f"csv_filepath={self.csv_filepath},\n\tfile_type={self.file_type},\n\t"
             f"profile={self.profile},\n\tcomment={self.comment}\n)>"
         )
+
+    def __eq__(self, other, return_diff=False):
+        result = True
+        diff = []
+        result, diff = check_item_with_dataframe_equal(
+            {key: value for key, value in self.__dict__.items() if key != "_csvfile"},
+            {key: value for key, value in other.__dict__.items() if key != "_csvfile"},
+            name="FlowTimeProfile",
+            diff=diff,
+        )
+        return (result, diff) if return_diff else result
 
     def count_series(self) -> int:
         if self.file_type.lower() == "fm1":

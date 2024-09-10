@@ -1,0 +1,20 @@
+[ISIS Event Header]
+Title=ex4
+Datafile=ex4.dat
+Results=network
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=ex4.zzs
+Start=0
+Finish=18
+InitialTimestep=20
+MinimumTimestep=5
+SaveInterval=300
+AdaptiveTimestep=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=0
+RulesAtTimeZero=0
+RulesOnFirstIteration=1
+ResetTimesAfterPos=0
+UseFPSModularLimit=0
+UseRemoteQ=0

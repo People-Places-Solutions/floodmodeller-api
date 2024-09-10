@@ -1,0 +1,25 @@
+[ISIS Event Header]
+Title = T2
+Datafile = ..\..\networks\UptonP8_Panels.dat
+Results = Output\T2
+
+[ISIS Event Details]
+RunType = Unsteady
+InitialConditions = ..\..\initial_conditions\P3BRIDGE_STEADY.zzs
+Start = 0
+Finish = 36
+Timestep = 20
+SaveInterval = 300
+RefineBridgeSecProps = 0
+SolveDHEqualsZeroAtStart = 1
+RulesAtTimeZero = 1
+RulesOnFirstIteration = 0
+ResetTimesAfterPos = 1
+UseFPSModularLimit = 1
+UseRemoteQ = 1
+2DFLOW = 1
+
+[Flow Time Profiles]
+NoOfFlowTimeProfiles = 1
+NoOfFlowTimeSeries = 1
+FlowTimeProfile0 = Upton_19005,17,2,..\..\associated_data\ReFHExport.rural.csv,refh2,Total flow m3/s (2 year) - as 100% rural model,

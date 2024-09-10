@@ -1,0 +1,21 @@
+[ISIS Event Header]
+Title=NEW TEST TITLE
+Datafile=EX6.DAT
+Results=ex6
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=EX6.zzs
+Start=0
+Finish=8760
+Timestep=1800
+SaveInterval=86400
+Sediment=1
+ExtraTimesteps=0
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=0
+RulesAtTimeZero=0
+RulesOnFirstIteration=1
+ResetTimesAfterPos=0
+UseFPSModularLimit=0
+UseRemoteQ=0
+New_Attribute=Wiggly
