@@ -16,6 +16,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import csv
+from io import StringIO
+
 import os
 import subprocess
 import time
@@ -107,7 +110,9 @@ class IEF(FMFile):
                     self._ief_properties.append("EventData")
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
-                    self.flowtimeprofiles.append(FlowTimeProfile(value))
+                    self.flowtimeprofiles.append(
+                        FlowTimeProfile(value, ief_filepath=self._filepath)
+                    )
                     self._ief_properties.append(prop)
                 else:
                     # Sets the property and value as class properties so they can be edited.
@@ -632,15 +637,14 @@ class FlowTimeProfile(Jsonable):
     profile: str
     comment: str
 
-    @handle_exception(when="read")
     def __init__(self, raw_string: str | None = None, **kwargs) -> None:
         if raw_string is not None:
             self._parse_raw_string(raw_string)
 
         elif kwargs:
-            self.labels = kwargs.get("labels", "")
-            self.columns = kwargs.get("columns", "")
-            self.start_row = kwargs.get("start_row", "")
+            self.labels = kwargs.get("labels", [])
+            self.columns = kwargs.get("columns", [])
+            self.start_row = kwargs.get("start_row", 0)
             self.csv_filepath = kwargs.get("csv_filepath", "")
             self.file_type = kwargs.get("file_type", "")
             self.profile = kwargs.get("profile", "")
@@ -653,15 +657,18 @@ class FlowTimeProfile(Jsonable):
         base_path = Path(kwargs.get("ief_filepath", ""))
         self._csvfile = (base_path / self.csv_filepath.strip('"')).resolve()
 
-        if "," in self.csv_filepath:
-            # Ensure path wrapped in quotes if containing comma
-            self.csv_filepath = f'"{self.csv_filepath}"'.replace('""', '"')
+        for attr in ["csv_filepath", "comment"]:
+            value = getattr(self, attr)
+            if "," in value:
+                # Ensure string wrapped in quotes if containing comma
+                setattr(self, attr, f'"{value}"'.replace('""', '"'))
 
     def _parse_raw_string(self, raw_string: str) -> None:
         """Parses a raw string of comma separated values and stores as attributes"""
-        parts = raw_string.split(",")
-        self.labels = parts[0].split(" ")
-        self.columns = [int(col) for col in parts[1].split(" ")]
+        csv_reader = csv.reader(StringIO(raw_string), skipinitialspace=True, quotechar='"')
+        parts = next(csv_reader)  # Read the first (and only) line as a list of fields
+        self.labels = [label for label in parts[0].split(" ") if label != ""]
+        self.columns = [int(col) for col in parts[1].split(" ") if col != ""]
         (
             self.start_row,
             self.csv_filepath,
