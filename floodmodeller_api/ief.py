@@ -17,11 +17,10 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import csv
-from io import StringIO
-
 import os
 import subprocess
 import time
+from io import StringIO
 from pathlib import Path
 from subprocess import Popen
 from typing import Callable
@@ -30,12 +29,12 @@ import pandas as pd
 from tqdm import trange
 
 from ._base import FMFile
-from .to_from_json import Jsonable
+from .diff import check_item_with_dataframe_equal
 from .ief_flags import flags
 from .logs import LF1, create_lf
+from .to_from_json import Jsonable
 from .util import handle_exception
 from .zzn import ZZN
-from .diff import check_item_with_dataframe_equal
 
 
 def try_numeric(value: str) -> str | int | float:
@@ -88,7 +87,7 @@ class IEF(FMFile):
         prev_comment = None
         self._ief_properties: list[str] = []
         self.EventData: dict[str, str] = {}
-        self.flowtimeprofiles: list[dict[str, str | int]] = []
+        self.flowtimeprofiles: list[FlowTimeProfile] = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -112,7 +111,7 @@ class IEF(FMFile):
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
                     self.flowtimeprofiles.append(
-                        FlowTimeProfile(value, ief_filepath=self._filepath)
+                        FlowTimeProfile(value, ief_filepath=self._filepath),
                     )
                     self._ief_properties.append(prop)
                 else:
@@ -213,7 +212,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
         del blank_ief
 
-    def _update_ief_properties(self):  # noqa: C901
+    def _update_ief_properties(self):
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
@@ -324,12 +323,12 @@ class IEF(FMFile):
         self.NoOfFlowTimeProfiles = len(self.flowtimeprofiles)
         try:
             self.NoOfFlowTimeSeries = sum([ftp.count_series() for ftp in self.flowtimeprofiles])
-        except FileNotFoundError:
+        except FileNotFoundError as err:
             raise UserWarning(
                 "Failed to read csv referenced in flowtimeprofile, file either does not exist or is"
                 "unable to be found due to relative path from IEF file. NoOfFlowTimeSeries has not"
-                "been updated."
-            )
+                "been updated.",
+            ) from err
 
         end_index = None
         start_index = (
@@ -347,7 +346,7 @@ class IEF(FMFile):
             "NoOfFlowTimeProfiles",
             "NoOfFlowTimeSeries",
         ]
-        for idx, flowtimeprofile in enumerate(self.flowtimeprofiles):
+        for idx, _ in enumerate(self.flowtimeprofiles):
             flowtimeprofile_list.append(f"FlowTimeProfile{idx}")
 
         # Replace existing slice of ief properties with new slice
@@ -656,7 +655,7 @@ class FlowTimeProfile(Jsonable):
             self.comment = kwargs.get("comment", "")
         else:
             raise ValueError(
-                "You must provide either a single raw string argument or keyword arguments."
+                "You must provide either a single raw string argument or keyword arguments.",
             )
 
         base_path = Path(kwargs.get("ief_filepath", ""))
@@ -674,14 +673,10 @@ class FlowTimeProfile(Jsonable):
         parts = next(csv_reader)  # Read the first (and only) line as a list of fields
         self.labels = [label for label in parts[0].split(" ") if label != ""]
         self.columns = [int(col) for col in parts[1].split(" ") if col != ""]
-        (
-            self.start_row,
-            self.csv_filepath,
-            self.file_type,
-            *extras,
-        ) = map(try_numeric, parts[2:])
-
-        self.profile, self.comment = (extras + ["", ""])[:2]
+        self.start_row = int(parts[2])
+        self.csv_filepath = parts[3]
+        self.file_type = parts[4]
+        self.profile, self.comment = (parts[5:] + ["", ""])[:2]
 
     def __str__(self) -> str:
         """Converts the flow time profile into a valid comma separated ief string"""

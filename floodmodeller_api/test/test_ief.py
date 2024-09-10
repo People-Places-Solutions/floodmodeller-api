@@ -4,8 +4,8 @@ from unittest.mock import call, patch
 import pytest
 
 from floodmodeller_api import IEF
-from floodmodeller_api.util import FloodModellerAPIError
 from floodmodeller_api.ief import FlowTimeProfile
+from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture()
@@ -37,6 +37,7 @@ def sleep():
     with patch("floodmodeller_api.ief.time.sleep") as sleep:
         yield sleep
 
+
 def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
     for ief_file in Path(test_workspace).glob("*.ief"):
@@ -49,19 +50,23 @@ def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
         second_output = second_ief._write()
         assert first_output == second_output
 
+
 def test_update_property(ief):
     """Check if updating a property is correctly reflected in _write"""
     ief.title = "updated_property"
     assert "Title=updated_property" in ief._write()
 
+
 def test_delete_property(ief):
     del ief.slot
     assert "Slot=1" not in ief._write()
+
 
 def test_add_new_group_property(ief):
     ief.FlowScaling1 = "test"
     assert "FlowScaling1=test" in ief._write()
     assert "[Boundary Adjustments]" in ief._write()
+
 
 def test_add_flowtimeprofile(ief):
     prev_output = ief._write()

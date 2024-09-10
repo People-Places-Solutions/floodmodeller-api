@@ -16,7 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -130,27 +129,28 @@ class HydrologyPlusExport(FMFile):
         self._storm_durations = sorted(storm_durations)
         self._scenarios = sorted(scenarios)
 
-    def get_flowtimeprofiles(self,
-                             node_label: str,
-                             csv_path: Path) -> list[dict]:
+    def get_flowtimeprofiles(self, node_label: str, csv_path: Path) -> list[dict]:
 
         self.nodel_label = node_label
         self.events = list(self._data)
 
         # to extract the index of the first row with flow data
         df_row = pd.read_csv(csv_path)
-        index_first_flow = df_row.index[df_row.apply(lambda row: row.str.contains('Time \(hours\)')).any(axis=1)][0]
+        index_first_flow = df_row.index[
+            df_row.apply(lambda row: row.str.contains(r"Time \(hours\)")).any(axis=1)
+        ][0]
 
         list_dict = []
         for i, item in enumerate(self.events):
-            item_dict =   {
+            item_dict = {
                 "label": self.nodel_label,
-                "index": i + 1,   #  doubt on starting by 0, python index, or 1.  ATM, no python index (+1)
+                "index": i
+                + 1,  #  doubt on starting by 0, python index, or 1.  ATM, no python index (+1)
                 "Start row index": index_first_flow + 1,  # python index?
                 "CSV filename": str(csv_path),  # in the ouput it is shown as \\, is that correct?
                 "File type": "FM2",  # I doubt if t is FM" or hplus
                 "Profile": item,
-                "comment": "",   # where should we be taking any potential comment?
+                "comment": "",  # where should we be taking any potential comment?
             }
 
             list_dict.append(item_dict)
@@ -181,25 +181,3 @@ class HydrologyPlusExport(FMFile):
     def scenarios(self) -> list:
         "Distinct scenarios from exported Hydrology+ data"
         return self._scenarios
-
-
-if __name__ == "__main__":
-    event = "2020 Upper - 11 - 1"
-    baseline_unchecked = HydrologyPlusExport(
-        r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv",
-    )
-    print("################################################")
-    print(baseline_unchecked.metadata)
-    print("################################################")
-    print(baseline_unchecked.data)
-    print("################################################")
-    event_plus = baseline_unchecked.get_event(
-        scenario="2020 Upper",
-        storm_duration=11.0,
-        return_period=1,
-    )
-    print(event_plus)
-    print("################################################")
-    print(baseline_unchecked.get_flowtimeprofiles("CR_101",
-                            Path(r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv")))
-    #print(list(HydrologyPlusExport(r"..\floodmodeller-api\floodmodeller_api\test\test_data\Baseline_unchecked.csv").data))
