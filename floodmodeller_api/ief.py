@@ -198,14 +198,17 @@ class IEF(FMFile):
         ]
 
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
+        self._filepath = None
         self._ief_properties = []
         self._format_group_line_breaks = False
         self._format_equals_spaced = False
+        self.EventData: dict[str, str] = {}
+        self.flowtimeprofiles: list[FlowTimeProfile] = []
         for line in blank_ief:
             if "=" in line:
                 prop, value = line.split("=")
                 # Sets the property and value as class properties so they can be edited.
-                setattr(self, prop, value)
+                setattr(self, prop, try_numeric(value))
                 self._ief_properties.append(prop)
             else:
                 # This should add the [] bound headers

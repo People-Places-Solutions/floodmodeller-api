@@ -57,7 +57,7 @@ class XML2D(FMFile):
         xml_filepath (str, optional): Full filepath to xml file.
 
     Output:
-        Initiates 'XML' class object
+        Initiates 'XML2D' class object
 
     Raises:
         TypeError: Raised if xml_filepath does not point to a .xml file
@@ -88,8 +88,12 @@ class XML2D(FMFile):
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
             self._xmltree = etree.parse(self._filepath)
-        self._xsd = etree.parse(self._xsd_loc)
-        self._xsdschema = etree.XMLSchema(self._xsd)
+        try:
+            self._xsd = etree.parse(self._xsd_loc)
+            self._xsdschema = etree.XMLSchema(self._xsd)
+        except OSError:
+            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsdschema = etree.XMLSchema(self._xsd)
         self._get_multi_value_keys()
 
         self._create_dict()

@@ -112,3 +112,6 @@ def test_is_jsonable_with_non_jsonable_object():
             pass
 
     assert not is_jsonable(NonJsonable())
+
+if __name__ == '__main__':
+    create_expected_json_files()
