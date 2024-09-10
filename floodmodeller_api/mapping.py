@@ -2,6 +2,7 @@ from typing import Any
 
 from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
 from .backup import File
+from .ief import FlowTimeProfile
 from .units import (
     BLOCKAGE,
     BRIDGE,
@@ -27,7 +28,6 @@ from .units import (
     WEIR,
     Variables,
 )
-from .ief import FlowTimeProfile
 from .urban1d.conduits import CONDUIT as CONDUIT_URBAN
 from .urban1d.conduits import CONDUITS as CONDUITS_URBAN
 from .urban1d.junctions import JUNCTION, JUNCTIONS

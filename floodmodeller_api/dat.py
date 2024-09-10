@@ -343,7 +343,6 @@ class DAT(FMFile):
             " label   ?      flow     stage froude no  velocity     umode    ustate         z",
         ]
 
-        self._filepath = None
         self._gxy_filepath = None
         if with_gxy:
             self._gxy_data = ""
