@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
-from floodmodeller_api._base import FMFile
-from floodmodeller_api.util import handle_exception
+from .._base import FMFile
+from ..util import handle_exception
 
 if TYPE_CHECKING:
     from pathlib import Path
