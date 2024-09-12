@@ -52,14 +52,15 @@ class IEF(FMFile):
     """Reads and write Flood Modeller event file format '.ief'
 
     Args:
-        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class will be created.. Defaults to None.
+        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class 
+            will be created.. Defaults to None.
 
     Raises:
         TypeError: Raised if ief_filepath not pointing to valide IEF file
         FileNotFoundError: Raised if ief_filepath points to a non-existent location
 
     Output:
-    Initiates 'IEF' class object
+        Initiates 'IEF' class object
     """
 
     _filetype: str = "IEF"
@@ -318,7 +319,7 @@ class IEF(FMFile):
 
     def _update_flowtimeprofile_info(self) -> None:
         """Update the flowtimeprofile data stored in ief properties"""
-        if len(self.flowtimeprofiles) == 0:
+        if not hasattr(self, "flowtimeprofiles") or len(self.flowtimeprofiles) == 0:
             self._remove_flowtimeprofile_info()
             return
 
@@ -369,12 +370,14 @@ class IEF(FMFile):
                     "noofflowtimeseries",
                 ]
             )
-            or (not line.lower().startswith("flowtimeprofile"))
+            and (not line.lower().startswith("flowtimeprofile"))
         ]
-        if hasattr(self, "NoOfFlowTimeProfiles"):
+        if hasattr(self, "noofflowtimeprofiles"):
             del self.NoOfFlowTimeProfiles
-        if hasattr(self, "NoOfFlowTimeSeries"):
+        if hasattr(self, "noofflowtimeseries"):
             del self.NoOfFlowTimeSeries
+
+        self.flowtimeprofiles = []
 
     def __getattr__(self, name):
         for attr in self.__dict__.copy():
@@ -634,7 +637,25 @@ class IEF(FMFile):
 
 
 class FlowTimeProfile(Jsonable):
-    """Handles defining and formatting flow time profiles in IEF files"""
+    """Handles defining and formatting flow time profiles in IEF files
+    
+    Args:
+        raw_string (Optional[str]): A raw CSV-formatted string to initialize the profile attributes.
+        kwargs: Keyword arguments for manually setting the profile attributes.
+
+    Keyword Args:
+        labels (list[str]): A list of string labels for the profile headers.
+        columns (list[int]): A list of integers for the column indices of the profile.
+        start_row (int): The starting row index for reading data from the CSV.
+        csv_filepath (str): The file path to the CSV file containing flow data.
+        file_type (str): The type of the file format, e.g. fm1, fm2, hplus, refh2.
+        profile (str): A description or identifier for the profile.
+        comment (str): An optional comment or note related to the profile.
+        ief_filepath (str): The base directory path for resolving the CSV file.
+
+    Raises:
+        ValueError: If neither a `raw_string` nor keyword arguments are provided.
+    """
 
     labels: list[str]
     columns: list[int]
@@ -645,6 +666,7 @@ class FlowTimeProfile(Jsonable):
     comment: str
 
     def __init__(self, raw_string: str | None = None, **kwargs) -> None:
+        """Initializes the FlowTimeProfile instance from either a raw string or keyword arguments."""
         if raw_string is not None:
             self._parse_raw_string(raw_string)
 

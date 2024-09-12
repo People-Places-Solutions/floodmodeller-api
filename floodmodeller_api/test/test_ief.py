@@ -79,6 +79,15 @@ def test_add_flowtimeprofile(ief):
     assert "FlowTimeProfile0=lbl,2,4,../../path.csv,hplus,scoobydoo,where-are-you" in output
 
 
+def test_delete_all_flowtimeprofiles(test_workspace):
+    ief = IEF(test_workspace/"7082.ief")
+    ief.flowtimeprofiles = []
+    output = ief._write()
+    assert "[Flow Time Profiles]" not in output
+    assert not hasattr(ief, "noofflowtimeprofiles")
+    assert not hasattr(ief, "noofflowtimeseries")
+
+
 @pytest.mark.usefixtures("log_timeout")
 @pytest.mark.parametrize(
     ("precision", "method", "amend", "exe"),
