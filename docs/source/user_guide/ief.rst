@@ -101,6 +101,7 @@ For example, deleting keys using ``del``, adding new keys and editing existing o
     with previous versions of the API in how event data in IEF files is handled. Any existing
     code that treats eventdata as a list will need to be updated in order to run this version.
 
+.. _flowtimeprofile_section:
 
 Flow Time Profile data
 ^^^^^^^^^^^^^^^^^^^^^^^^

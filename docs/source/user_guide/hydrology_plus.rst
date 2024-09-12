@@ -1,3 +1,5 @@
+.. _hplus:
+
 Hydrology+ 
 =============
 Summary

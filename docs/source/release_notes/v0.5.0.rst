@@ -6,12 +6,16 @@ This page details the changes for version 0.5.0 of Flood Modeller Python API
 
 New features
 --------------
-- Hydrology+ support - users can now use the API to...
+- :doc:`Hydrology+ support <../user_guide/hydrology_plus>` - users can now use the API to load 
+  exported Hydrology+ data from Flood Modeller to read the data or generate new simulations 
+  programatically.
 
 Updates
 --------------
-- Added ``.active_data`` property to the RIVER class to allow quick access to the activated subset 
-  of the data
+- Added :meth:`~floodmodeller_api.units.RIVER.active_data` property to the RIVER class to allow 
+  quick access to the activated subset of the data
+- Added :meth:`~floodmodeller_api.IEF.flowtimeprofiles` attribute to IEF class to allow better 
+  support for flow time profile data. :ref:`See more info here<flowtimeprofile_section>`
 
 Bug fixes
 --------------
