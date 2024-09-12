@@ -641,12 +641,11 @@ class FlowTimeProfile(Jsonable):
 
     Args:
         raw_string (Optional[str]): A raw CSV-formatted string to initialize the profile attributes.
-        kwargs: Keyword arguments for manually setting the profile attributes.
 
     Keyword Args:
         labels (list[str]): A list of string labels for the profile headers.
-        columns (list[int]): A list of integers for the column indices of the profile.
-        start_row (int): The starting row index for reading data from the CSV.
+        columns (list[int]): A list of integers (1-indexed) for the column indices of the profile.
+        start_row (int): The starting row index (1-indexed) for reading data from the CSV.
         csv_filepath (str): The file path to the CSV file containing flow data.
         file_type (str): The type of the file format, e.g. fm1, fm2, hplus, refh2.
         profile (str): A description or identifier for the profile.

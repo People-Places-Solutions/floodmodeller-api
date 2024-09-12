@@ -3,7 +3,7 @@ IEF Class
 **********
 Summary
 ---------
-The ``IEF`` class is used to read, write and update Flood Modeller's ief file format. 
+The :class:`~floodmodeller_api.IEF` class is used to read, write and update Flood Modeller's ief file format. 
 The class can be initiated with the full filepath of an ief file to load an existing ief, 
 or with no path to create a new ief file in memory.
 
@@ -25,9 +25,9 @@ with the same name. For example to set the model title, simply type:
 
 .. warning::
    Any changes made to the IEF class object are only made to the object itself and do not change the
-   source IEF file until the``.update()`` method is called. Alternatively if the ``.save()`` method 
-   is called then the changes are saved to a new file (based on the given path) and the original 
-   source IEF remains unchanged
+   source IEF file until the :meth:`~floodmodeller_api.IEF.update` method is called. Alternatively 
+   if the :meth:`~floodmodeller_api.IEF.save` method is called then the changes are saved to a new 
+   file (based on the given path) and the original source IEF remains unchanged
 
 Class properties can be updated in this fashion for existing IEF settings as well as to 
 add new settings. To remove a particular setting from the IEF simply delete the property 
@@ -53,8 +53,8 @@ updating the '2DFLOW' setting in this way is:
 
     setattr(ief, '2DFLOW', 1) # Sets the IEF's '2DFLOW' setting to 1
 
-IEF files can also be simulated directly by calling the ``.simulate()`` method on an active IEF 
-class object. This method assumes that Flood Modeller is installedat the default location 
+IEF files can also be simulated directly by calling the :meth:`~floodmodeller_api.IEF.simulate()` 
+method on an active IEF class object. This method assumes that Flood Modeller is installedat the default location 
 ('C:\\Program Files\\Flood Modeller\\bin'). An optional argument ``'method'`` is used to control 
 whether the python code should pause until the simulation has completed, or to return the simulation
 as a ``subprocess.Popen()`` instance and continue code execution. By default, the 'WAIT' method is 
@@ -127,14 +127,14 @@ Flood Modeller, go to
 `how-to-use-flow-time-series-datafiles <https://help.floodmodeller.com/docs/how-to-use-flow-time-series-datafiles>`_.
 
 With the Flood Modeller API we can also access this data in a helpful way by using the 
-``.flowtimeprofiles`` attribute on an IEF instance, which returns a list of FlowTimeProfile objects.
+``.flowtimeprofiles`` attribute on an IEF instance, which returns a list of :class:`~floodmodeller_api.ief.FlowTimeProfile` objects.
 
 .. ipython:: python
 
     ief = IEF("7082.ief"); # IEF file containing flow time profile data
     ief.flowtimeprofiles
 
-Each ``FlowTimeProfile`` can be used to access the various components that make up a flow time 
+Each :class:`~floodmodeller_api.ief.FlowTimeProfile` can be used to access the various components that make up a flow time 
 profile:
 
 .. ipython:: python
