@@ -80,7 +80,7 @@ def test_add_flowtimeprofile(ief):
 
 
 def test_delete_all_flowtimeprofiles(test_workspace):
-    ief = IEF(test_workspace/"7082.ief")
+    ief = IEF(test_workspace / "7082.ief")
     ief.flowtimeprofiles = []
     output = ief._write()
     assert "[Flow Time Profiles]" not in output

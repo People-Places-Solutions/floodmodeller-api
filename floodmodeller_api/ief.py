@@ -52,7 +52,7 @@ class IEF(FMFile):
     """Reads and write Flood Modeller event file format '.ief'
 
     Args:
-        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class 
+        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class
             will be created.. Defaults to None.
 
     Raises:
@@ -638,7 +638,7 @@ class IEF(FMFile):
 
 class FlowTimeProfile(Jsonable):
     """Handles defining and formatting flow time profiles in IEF files
-    
+
     Args:
         raw_string (Optional[str]): A raw CSV-formatted string to initialize the profile attributes.
         kwargs: Keyword arguments for manually setting the profile attributes.
