@@ -194,7 +194,7 @@ class HydrologyPlusExport(FMFile):
         if template_ief is None:
             template_ief = IEF()
 
-        elif isinstance(template_ief, [Path, str]):
+        elif isinstance(template_ief, (Path, str)):
             template_ief = IEF(template_ief)
 
         generated_iefs = []
@@ -230,11 +230,15 @@ class HydrologyPlusExport(FMFile):
         Returns:
             IEF: An IEF instance.
         """
+        _template_ief: IEF
         if template_ief is None:
-            template_ief = IEF()
+            _template_ief = IEF()
 
-        elif isinstance(template_ief, [Path, str]):
-            template_ief = IEF(template_ief)
+        elif isinstance(template_ief, (Path, str)):
+            _template_ief = IEF(template_ief)
+
+        else:
+            _template_ief = template_ief
 
         flowtimeprofile = self.get_flowtimeprofile(
             node_label,
@@ -243,11 +247,11 @@ class HydrologyPlusExport(FMFile):
             storm_duration,
             scenario,
         )
-        template_ief.flowtimeprofiles.append(flowtimeprofile)
+        _template_ief.flowtimeprofiles.append(flowtimeprofile)
         output_ief_path = self._get_output_ief_path(flowtimeprofile.profile)
-        template_ief.save(output_ief_path)
+        _template_ief.save(output_ief_path)
         generated_ief = IEF(output_ief_path)
-        template_ief.flowtimeprofiles = template_ief.flowtimeprofiles[:-1]
+        _template_ief.flowtimeprofiles = _template_ief.flowtimeprofiles[:-1]
 
         return generated_ief
 
