@@ -4,6 +4,8 @@ import pandas as pd
 import pytest
 
 from floodmodeller_api.hydrology_plus.hydrology_plus_export import HydrologyPlusExport
+from floodmodeller_api.ief import IEF, FlowTimeProfile
+from floodmodeller_api.units import QTBDY
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -73,7 +75,7 @@ def test_data_event(expected_event: pd.Series, hydrology_plus_export_object: Hyd
     """Compares the event between the csv and the class"""
     pd.testing.assert_series_equal(
         expected_event,
-        hydrology_plus_export_object.get_event("2020 Upper - 11 - 1"),
+        hydrology_plus_export_object.get_event_flow("2020 Upper - 11 - 1"),
     )
 
 
@@ -84,7 +86,7 @@ def test_data_event_from_params(
     """Compares the event between the csv and the class"""
     pd.testing.assert_series_equal(
         expected_event,
-        hydrology_plus_export_object.get_event(
+        hydrology_plus_export_object.get_event_flow(
             scenario="2020 Upper",
             storm_duration=11.0,
             return_period=1.0,
@@ -117,3 +119,71 @@ def test_invalid_header_in_file(tmp_path):
 
     with pytest.raises(FloodModellerAPIError):
         HydrologyPlusExport(invalid_header_file)
+
+
+def test_gereate_ief_files(test_workspace, hydrology_plus_export_object: HydrologyPlusExport):
+    iefs = hydrology_plus_export_object.generate_iefs(node_label="pytest")
+    assert len(iefs) == len(hydrology_plus_export_object.data.columns)
+    generated_files = list(test_workspace.glob("*_generated.ief"))
+    assert len(generated_files) == len(hydrology_plus_export_object.data.columns)
+    for file in generated_files:
+        file.unlink()
+
+def test_generate_ief(
+        test_workspace,
+    hydrology_plus_export_object: HydrologyPlusExport,
+):
+    """Test generating a single IEF file."""
+    node_label = "test_node"
+    event = "2020 Upper - 11 - 1"
+
+    # Generate a single IEF file
+    generated_ief = hydrology_plus_export_object.generate_ief(
+        node_label=node_label,
+        event=event,
+    )
+
+    # Assert the IEF file was created and matches expectations
+    assert isinstance(generated_ief, IEF)
+    assert len(generated_ief.flowtimeprofiles) == 1
+    output_file = test_workspace / "2020Upper-11-1_generated.ief"
+    assert output_file.exists()
+    assert generated_ief._filepath == output_file
+
+    # Cleanup
+    output_file.unlink()
+
+
+def test_get_qtbdy(hydrology_plus_export_object: HydrologyPlusExport, expected_event: pd.Series):
+    """Test generating a QTBDY object."""
+    qtbdy_name = "test_qtbdy"
+    event = "2020 Upper - 11 - 1"
+
+    # Generate a QTBDY object
+    qtbdy = hydrology_plus_export_object.get_qtbdy(
+        qtbdy_name=qtbdy_name,
+        event=event,
+    )
+
+    # Assert the QTBDY object is created and contains expected data
+    assert isinstance(qtbdy, QTBDY)
+    pd.testing.assert_series_equal(qtbdy.data, expected_event)
+    assert qtbdy.name == qtbdy_name
+
+    # assert QTBDY is valid
+    qtbdy._write()
+
+
+def test_get_flowtimeprofile(hydrology_plus_export_object: HydrologyPlusExport):
+    """Test generating a FlowTimeProfile object."""
+    node_label = "test_node"
+    event = "2020 Upper - 11 - 1"
+
+    # Generate a FlowTimeProfile object
+    ftp = hydrology_plus_export_object.get_flowtimeprofile(node_label=node_label, event=event)
+
+    # Assert the FlowTimeProfile object is created and contains expected attributes
+    assert isinstance(ftp, FlowTimeProfile)
+    assert ftp.labels == [node_label]
+    assert ftp.csv_filepath == hydrology_plus_export_object._filepath.name
+    assert ftp.profile == f"{event} - Flow (m3/s)"

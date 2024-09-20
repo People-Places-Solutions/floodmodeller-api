@@ -16,15 +16,14 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 import pandas as pd
 
 from .._base import FMFile
+from ..ief import IEF, FlowTimeProfile
+from ..units import QTBDY
 from ..util import handle_exception
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class HydrologyPlusExport(FMFile):
@@ -68,10 +67,40 @@ class HydrologyPlusExport(FMFile):
 
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
         """Extracts all the events generated in hydrology +"""
-        time_row_index = self._data_file.index[self._data_file.iloc[:, 0] == "Time (hours)"][0]
-        return pd.read_csv(self._filepath, skiprows=time_row_index + 1, index_col=0)
+        self._time_row_index_from_df = (
+            self._data_file.index[self._data_file.iloc[:, 0] == "Time (hours)"][0] + 1
+        )
+        self._time_row_index_from_csv = self._time_row_index_from_df + 2
+        return pd.read_csv(self._filepath, skiprows=self._time_row_index_from_df, index_col=0)
 
-    def get_event(
+    def _get_event(
+        self,
+        event: str | None = None,
+        return_period: float | None = None,
+        storm_duration: float | None = None,
+        scenario: str | None = None,
+    ) -> str:
+        """Get exact column name based on event or individual params"""
+        if event:
+            return next(col for col in self.data.columns if col.lower().startswith(event.lower()))
+
+        if not (return_period and storm_duration and scenario):
+            raise ValueError(
+                "Missing required inputs to find event, if no event string is passed then a "
+                "return_period, storm_duration and scenario are needed. You provided: "
+                f"{return_period=}, {storm_duration=}, {scenario=}",
+            )
+        for column in self.data.columns:
+            s, sd, rp, *_ = column.split(" - ")
+            if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
+                return column
+        else:
+            raise ValueError(
+                "No matching event was found based on "
+                f"{return_period=}, {storm_duration=}, {scenario=}",
+            )
+
+    def get_event_flow(
         self,
         event: str | None = None,
         return_period: float | None = None,
@@ -91,32 +120,17 @@ class HydrologyPlusExport(FMFile):
 
         Raises:
             FloodModellerAPIError: If the csv file is not in the correct format.
-            FloodModellerAPIError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
-            FloodModellerAPIError: If no matching event is found in the dataset.
+            ValueError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
+            ValueError: If no matching event is found in the dataset.
 
         Note:
             - If the `event` parameter is provided, the method returns the data corresponding to that event.
             - If `event` is not provided, the method attempts to locate the event based on the combination of `return_period`, `storm_duration`, and `scenario`.
             - The dataset is assumed to have columns named in the format "scenario - storm_duration - return_period - Flow (m3/s)".
         """
-        if event:
-            column = next(col for col in self.data.columns if col.lower().startswith(event.lower()))
-            return self.data.loc[:, column]
-        if not (return_period and storm_duration and scenario):
-            raise ValueError(
-                "Missing required inputs to find event, if no event string is passed then a "
-                "return_period, storm_duration and scenario are needed. You provided: "
-                f"{return_period=}, {storm_duration=}, {scenario=}",
-            )
-        for column in self.data.columns:
-            s, sd, rp, *_ = column.split(" - ")
-            if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
-                return self.data.loc[:, column]
-        else:
-            raise ValueError(
-                "No matching event was found based on "
-                f"{return_period=}, {storm_duration=}, {scenario=}",
-            )
+
+        column = self._get_event(event, return_period, storm_duration, scenario)
+        return self.data.loc[:, column]
 
     def _get_unique_event_components(self):
         return_periods, storm_durations, scenarios = set(), set(), set()
@@ -128,34 +142,6 @@ class HydrologyPlusExport(FMFile):
         self._return_periods = sorted(return_periods)
         self._storm_durations = sorted(storm_durations)
         self._scenarios = sorted(scenarios)
-
-    def get_flowtimeprofiles(self, node_label: str, csv_path: Path) -> list[dict]:
-
-        self.nodel_label = node_label
-        self.events = list(self._data)
-
-        # to extract the index of the first row with flow data
-        df_row = pd.read_csv(csv_path)
-        index_first_flow = df_row.index[
-            df_row.apply(lambda row: row.str.contains(r"Time \(hours\)")).any(axis=1)
-        ][0]
-
-        list_dict = []
-        for i, item in enumerate(self.events):
-            item_dict = {
-                "label": self.nodel_label,
-                "index": i
-                + 1,  #  doubt on starting by 0, python index, or 1.  ATM, no python index (+1)
-                "Start row index": index_first_flow + 1,  # python index?
-                "CSV filename": str(csv_path),  # in the ouput it is shown as \\, is that correct?
-                "File type": "FM2",  # I doubt if t is FM" or hplus
-                "Profile": item,
-                "comment": "",  # where should we be taking any potential comment?
-            }
-
-            list_dict.append(item_dict)
-
-        return list_dict
 
     @property
     def data(self) -> pd.DataFrame:
@@ -181,3 +167,157 @@ class HydrologyPlusExport(FMFile):
     def scenarios(self) -> list:
         "Distinct scenarios from exported Hydrology+ data"
         return self._scenarios
+
+    def _get_output_ief_path(self, event: str) -> Path:
+        column_output_name = event.replace("- Flow (m3/s)", "").replace(" ", "")
+        return self._filepath.with_name(f"{column_output_name}_generated.ief")
+
+    def generate_iefs(
+        self, node_label: str, template_ief: IEF | Path | str | None = None,
+    ) -> list[IEF]:
+        """Generates a set of IEF files for all available events in the Hydrology+ Export file.
+
+        The IEF files are saved to disk in the same location as the Hydrology+ Export file and are
+        named with the pattern {profile name}_generated.ief. They are also returned as a list of IEF
+        instances for further editing/saving if desired.
+
+        Args:
+            node_label (str): Node label in model network to associate flow data with.
+            template_ief (IEF | Path | str | None, optional): A template IEF instance, a file path, or
+                a string representing the path to an IEF. If not provided, a new blank IEF instance is created.
+
+        Returns:
+            list[IEF]: A list of IEF instances, one for each event.
+        """
+        if template_ief is None:
+            template_ief = IEF()
+
+        elif isinstance(template_ief, Path) or isinstance(template_ief, str):
+            template_ief = IEF(template_ief)
+
+        generated_iefs = []
+        for column in self.data.columns:
+            generated_iefs.append(self.generate_ief(node_label, template_ief, event=column))
+
+        return generated_iefs
+
+    def generate_ief(
+        self,
+        node_label: str,
+        template_ief: IEF | Path | str | None = None,
+        event: str | None = None,
+        return_period: float | None = None,
+        storm_duration: float | None = None,
+        scenario: str | None = None,
+    ) -> IEF:
+        """Generates a single IEF file for the requested event.
+
+        The IEF file is saved to disk in the same location as the Hydrology+ Export file and is
+        named with the pattern {profile name}_generated.ief. The IEF instance is also returned for
+        further editing/saving if desired.
+
+        Args:
+            node_label (str): Node label in model network to associate flow data with.
+            template_ief (IEF | Path | str | None, optional): A template IEF instance, a file path, or
+                a string representing the path to an IEF. If not provided, a new blank IEF instance is created.
+            event (str, optional): Full string identifier for the event in the dataset. If provided, this takes precedence over other parameters.
+            return_period (float, optional): The return period of the event.
+            storm_duration (float, optional): The duration of the storm event in hours.
+            scenario (str, optional): The scenario name, which typically relates to different conditions (e.g., climate change scenario).
+
+        Returns:
+            IEF: An IEF instance.
+        """
+        if template_ief is None:
+            template_ief = IEF()
+
+        elif isinstance(template_ief, Path) or isinstance(template_ief, str):
+            template_ief = IEF(template_ief)
+
+        flowtimeprofile = self.get_flowtimeprofile(
+            node_label, event, return_period, storm_duration, scenario,
+        )
+        template_ief.flowtimeprofiles.append(flowtimeprofile)
+        output_ief_path = self._get_output_ief_path(flowtimeprofile.profile)
+        template_ief.save(output_ief_path)
+        generated_ief = IEF(output_ief_path)
+        template_ief.flowtimeprofiles = template_ief.flowtimeprofiles[:-1]
+
+        return generated_ief
+
+    def get_flowtimeprofile(
+        self,
+        node_label: str,
+        event: str | None = None,
+        return_period: float | None = None,
+        storm_duration: float | None = None,
+        scenario: str | None = None,
+    ) -> FlowTimeProfile:
+        """Generates a FlowTimeProfile object based on the requested event.
+
+        Args:
+            node_label (str): Node label in model network to associate flow data with.
+            event (str, optional): Full string identifier for the event in the dataset. If provided, this takes precedence over other parameters.
+            return_period (float, optional): The return period of the event.
+            storm_duration (float, optional): The duration of the storm event in hours.
+            scenario (str, optional): The scenario name, which typically relates to different conditions (e.g., climate change scenario).
+
+        Returns:
+            FlowTimeProfile: A FlowTimeProfile object containing the attributes required for an IEF.
+
+        Raises:
+            FloodModellerAPIError: If the csv file is not in the correct format.
+            ValueError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
+            ValueError: If no matching event is found in the dataset.
+
+        Note:
+            - If the `event` parameter is provided, the method returns the data corresponding to that event.
+            - If `event` is not provided, the method attempts to locate the event based on the combination of `return_period`, `storm_duration`, and `scenario`.
+            - The dataset is assumed to have columns named in the format "scenario - storm_duration - return_period - Flow (m3/s)".
+        """
+        column = self._get_event(event, return_period, storm_duration, scenario)
+        index = list(self.data.columns).index(column)
+        return FlowTimeProfile(
+            labels=[node_label],
+            columns=[index + 2],
+            start_row=self._time_row_index_from_csv,
+            csv_filepath=self._filepath.name,
+            file_type="hplus",
+            profile=column,
+            comment="Generated by HydrologyPlusExport",
+        )
+
+    def get_qtbdy(
+        self,
+        qtbdy_name: str | None,
+        event: str | None = None,
+        return_period: float | None = None,
+        storm_duration: float | None = None,
+        scenario: str | None = None,
+        **kwargs,
+    ) -> QTBDY:
+        """Generates a QTBDY unit based on the flow time series of the requested event.
+
+        Args:
+            qtbdy_name (str, optional): Name of the new QTBDY unit. If not provided a default name is used.
+            event (str, optional): Full string identifier for the event in the dataset. If provided, this takes precedence over other parameters.
+            return_period (float, optional): The return period of the event.
+            storm_duration (float, optional): The duration of the storm event in hours.
+            scenario (str, optional): The scenario name, which typically relates to different conditions (e.g., climate change scenario).
+            **kwargs: Additional keyword args can be passed to build the QTBDY unit. See :class:`~floodmodeller_api.units.QTBDY` for details.
+
+        Returns:
+            QTBDY: A QTBDY object containing the flow data (m³/s) for the specified event.
+
+        Raises:
+            FloodModellerAPIError: If the csv file is not in the correct format.
+            ValueError: If the `event` arg is not provided and one or more of `return_period`, `storm_duration`, or `scenario` is missing.
+            ValueError: If no matching event is found in the dataset.
+
+        Note:
+            - If the `event` parameter is provided, the method returns the data corresponding to that event.
+            - If `event` is not provided, the method attempts to locate the event based on the combination of `return_period`, `storm_duration`, and `scenario`.
+            - The dataset is assumed to have columns named in the format "scenario - storm_duration - return_period - Flow (m3/s)".
+        """
+        flow_data = self.get_event_flow(event, return_period, storm_duration, scenario)
+        return QTBDY(name=qtbdy_name, data=flow_data, **kwargs)
