@@ -12,7 +12,8 @@ ruff==0.5.7
 lxml-stubs==0.5.1
 pandas-stubs==2.2.1.240316
 tqdm-stubs==0.2.1
-sphinx==8.0.2
+sphinx==8.0.2; python_version != '3.9'
+sphinx==7.4.7; python_version == '3.9'
 sphinx-design==0.6.1
 pydata-sphinx-theme==0.15.2
 ipython==8.24.0; python_version != '3.9'
