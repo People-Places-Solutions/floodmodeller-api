@@ -173,7 +173,9 @@ class HydrologyPlusExport(FMFile):
         return self._filepath.with_name(f"{column_output_name}_generated.ief")
 
     def generate_iefs(
-        self, node_label: str, template_ief: IEF | Path | str | None = None,
+        self,
+        node_label: str,
+        template_ief: IEF | Path | str | None = None,
     ) -> list[IEF]:
         """Generates a set of IEF files for all available events in the Hydrology+ Export file.
 
@@ -192,7 +194,7 @@ class HydrologyPlusExport(FMFile):
         if template_ief is None:
             template_ief = IEF()
 
-        elif isinstance(template_ief, Path) or isinstance(template_ief, str):
+        elif isinstance(template_ief, [Path, str]):
             template_ief = IEF(template_ief)
 
         generated_iefs = []
@@ -201,7 +203,7 @@ class HydrologyPlusExport(FMFile):
 
         return generated_iefs
 
-    def generate_ief(
+    def generate_ief(  # noqa: PLR0913
         self,
         node_label: str,
         template_ief: IEF | Path | str | None = None,
@@ -231,11 +233,15 @@ class HydrologyPlusExport(FMFile):
         if template_ief is None:
             template_ief = IEF()
 
-        elif isinstance(template_ief, Path) or isinstance(template_ief, str):
+        elif isinstance(template_ief, [Path, str]):
             template_ief = IEF(template_ief)
 
         flowtimeprofile = self.get_flowtimeprofile(
-            node_label, event, return_period, storm_duration, scenario,
+            node_label,
+            event,
+            return_period,
+            storm_duration,
+            scenario,
         )
         template_ief.flowtimeprofiles.append(flowtimeprofile)
         output_ief_path = self._get_output_ief_path(flowtimeprofile.profile)

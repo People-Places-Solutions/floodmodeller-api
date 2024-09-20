@@ -129,8 +129,9 @@ def test_gereate_ief_files(test_workspace, hydrology_plus_export_object: Hydrolo
     for file in generated_files:
         file.unlink()
 
+
 def test_generate_ief(
-        test_workspace,
+    test_workspace,
     hydrology_plus_export_object: HydrologyPlusExport,
 ):
     """Test generating a single IEF file."""
