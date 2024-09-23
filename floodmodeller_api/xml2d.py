@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import io
+import requests
 import os
 import time
 from copy import deepcopy
@@ -90,9 +91,10 @@ class XML2D(FMFile):
         else:
             self._xmltree = etree.parse(self._filepath)
         try:
-            self._xsd = etree.parse(self._xsd_loc)
+            xsd_bin = requests.get(self._xsd_loc).content
+            self._xsd = etree.parse(io.BytesIO(xsd_bin))
             self._xsdschema = etree.XMLSchema(self._xsd)
-        except OSError:
+        except Exception:
             self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
             self._xsdschema = etree.XMLSchema(self._xsd)
         self._get_multi_value_keys()

@@ -236,6 +236,7 @@
 			<xs:enumeration value="ied"/>
 			<xs:enumeration value="csv"/>
 			<xs:enumeration value="hydrologyunit"/>
+			<xs:enumeration value="hpcsv"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="hydrology_value_type">
@@ -244,6 +245,7 @@
 			<xs:enumeration value="csv"/>
 			<xs:enumeration value="hydrologyunit"/>
 			<xs:enumeration value="hydrologyunitgross"/>
+			<xs:enumeration value="refh2csv"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="computational_areaType">
@@ -364,6 +366,10 @@
 									<xs:extension base="xs:string">
 										<xs:attribute name="type" type="boundary_value_type" use="required"/>
 										<xs:attribute name="time_units" type="time_units" use="optional"/>
+										<xs:attribute name="return_period" type="xs:integer" use="optional"/>
+										<xs:attribute name="storm_duration" type="xs:double" use="optional"/>
+										<xs:attribute name="scale_factor" type="xs:string" use="optional"/>
+										<xs:attribute name="header_label" type="xs:string" use="optional"/>
 									</xs:extension>
 								</xs:simpleContent>
 							</xs:complexType>
@@ -386,6 +392,9 @@
 										<xs:attribute name="time_units" type="time_units"/>
 										<xs:attribute name="units" type="rainfall_units" use="optional"/>
 										<xs:attribute name="type" type="hydrology_value_type" use="optional"/>
+										<xs:attribute name="return_period" type="xs:integer" use="optional"/>
+										<xs:attribute name="rainfall_type" type="xs:string" use="optional"/>
+										<xs:attribute name="header_label" type="xs:string" use="optional"/>
 									</xs:extension>
 								</xs:simpleContent>
 							</xs:complexType>
