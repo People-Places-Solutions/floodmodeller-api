@@ -188,3 +188,23 @@ def test_get_flowtimeprofile(hydrology_plus_export_object: HydrologyPlusExport):
     assert ftp.labels == [node_label]
     assert ftp.csv_filepath == hydrology_plus_export_object._filepath.name
     assert ftp.profile == f"{event} - Flow (m3/s)"
+
+
+@pytest.mark.parametrize(
+    "export_csv",
+    [
+        "hplus_export_example_1.csv",
+        "hplus_export_example_2.csv",
+        "hplus_export_example_3.csv",
+        "hplus_export_example_4.csv",
+        "hplus_export_example_5.csv",
+        "hplus_export_example_6.csv",
+        "hplus_export_example_7.csv",
+        "hplus_export_example_8.csv",
+        "hplus_export_example_9.csv",
+        "hplus_export_example_10.csv",
+    ],
+)
+def test_load_hydrology_plus_export_doesnt_fail(test_workspace, export_csv):
+    """Ensure loading a hydrology+ export file succeeds without error"""
+    HydrologyPlusExport(test_workspace / export_csv)

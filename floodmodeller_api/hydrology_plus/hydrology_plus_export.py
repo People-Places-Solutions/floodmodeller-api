@@ -63,7 +63,7 @@ class HydrologyPlusExport(FMFile):
         metadata_row_index = self._data_file.index[self._data_file.iloc[:, 0] == "Return Period"][0]
         metadata_df = self._data_file.iloc[:metadata_row_index, 0].tolist()
 
-        return dict([row.split("=") for row in metadata_df])
+        return dict([row.split("=") for row in metadata_df if isinstance(row, str)])
 
     def _get_df_hydrographs_plus(self) -> pd.DataFrame:
         """Extracts all the events generated in hydrology +"""
