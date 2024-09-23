@@ -1,19 +1,28 @@
 **************************************
-What's new in 0.5.0 (TBC 2024)
+What's new in 0.5.0 (September 2024)
 **************************************
 
 This page details the changes for version 0.5.0 of Flood Modeller Python API
 
 New features
 --------------
-- Hydrology+ support - users can now use the API to...
+- :doc:`Hydrology+ support <../user_guide/hydrology_plus>` - users can now use the API to load 
+  exported Hydrology+ data from Flood Modeller to read the data or generate new simulations 
+  programatically.
 
 Updates
 --------------
-- Added ``.active_data`` property to the RIVER class to allow quick access to the activated subset 
-  of the data
+- Added :meth:`~floodmodeller_api.units.RIVER.active_data` property to the RIVER class to allow 
+  quick access to the activated subset of the data
+  (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/120>`__)
+- Added :attr:`~floodmodeller_api.IEF.flowtimeprofiles` attribute to IEF class to allow better 
+  support for flow time profile data. :ref:`See more info here<flowtimeprofile_section>`
+- `Speed improvements to conveyance calculation <https://github.com/People-Places-Solutions/floodmodeller-api/issues/117>`_ 
+  to allow conveyance for even very large sections to be calculated very fast
+- `Support for comments in IEDs <https://github.com/People-Places-Solutions/floodmodeller-api/pull/127>`_ 
+- Increased test coverage and lots of code improvements under the hood!
 
 Bug fixes
 --------------
 - Fix an issue related to HTBDY units in models from legacy versions of Flood Modeller 
-  (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/16>`__)
+  (`issue <https://github.com/People-Places-Solutions/floodmodeller-api/issues/16>`_)

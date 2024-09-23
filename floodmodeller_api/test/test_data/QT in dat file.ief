@@ -1,0 +1,20 @@
+[ISIS Event Header]
+Title=QT in dat file
+Datafile=Event Data Example.dat
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=Event Data Example.zzs
+Start=0
+Finish=12
+InitialTimestep=20
+MinimumTimestep=5
+SaveInterval=300
+AdaptiveTimestep=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=0
+RulesAtTimeZero=0
+RulesOnFirstIteration=1
+ResetTimesAfterPos=0
+UseFPSModularLimit=0
+UseRemoteQ=0
+2DFLOW=1

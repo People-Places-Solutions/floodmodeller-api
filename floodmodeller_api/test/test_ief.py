@@ -4,6 +4,7 @@ from unittest.mock import call, patch
 import pytest
 
 from floodmodeller_api import IEF
+from floodmodeller_api.ief import FlowTimeProfile
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -15,12 +16,6 @@ def ief_fp(test_workspace: str) -> Path:
 @pytest.fixture()
 def ief(ief_fp: Path) -> IEF:
     return IEF(ief_fp)
-
-
-@pytest.fixture()
-def data_before(ief_fp: Path) -> str:
-    with open(ief_fp) as ief_file:
-        return ief_file.read()
 
 
 @pytest.fixture()
@@ -43,9 +38,54 @@ def sleep():
         yield sleep
 
 
-def test_ief_open_does_not_change_data(ief: IEF, data_before: str):
-    """IEF: Test str representation equal to ief file with no changes"""
-    assert ief._write() == data_before
+def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
+    """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
+    for ief_file in Path(test_workspace).glob("*.ief"):
+        ief = IEF(ief_file)
+        first_output = ief._write()
+        new_path = Path(tmpdir) / "tmp.ief"
+        ief.save(new_path)
+        second_ief = IEF(new_path)
+        assert ief == second_ief  # Checks equivalence on the class itself
+        second_output = second_ief._write()
+        assert first_output == second_output
+
+
+def test_update_property(ief):
+    """Check if updating a property is correctly reflected in _write"""
+    ief.title = "updated_property"
+    assert "Title=updated_property" in ief._write()
+
+
+def test_delete_property(ief):
+    del ief.slot
+    assert "Slot=1" not in ief._write()
+
+
+def test_add_new_group_property(ief):
+    ief.FlowScaling1 = "test"
+    assert "FlowScaling1=test" in ief._write()
+    assert "[Boundary Adjustments]" in ief._write()
+
+
+def test_add_flowtimeprofile(ief):
+    prev_output = ief._write()
+    ief.flowtimeprofiles = [FlowTimeProfile("lbl,2,4,../../path.csv,hplus,scoobydoo,where-are-you")]
+    output = ief._write()
+    assert prev_output in output
+    assert ief.noofflowtimeprofiles == 1
+    assert ief.noofflowtimeseries == 1
+    assert "[Flow Time Profiles]" in output
+    assert "FlowTimeProfile0=lbl,2,4,../../path.csv,hplus,scoobydoo,where-are-you" in output
+
+
+def test_delete_all_flowtimeprofiles(test_workspace):
+    ief = IEF(test_workspace / "7082.ief")
+    ief.flowtimeprofiles = []
+    output = ief._write()
+    assert "[Flow Time Profiles]" not in output
+    assert not hasattr(ief, "noofflowtimeprofiles")
+    assert not hasattr(ief, "noofflowtimeseries")
 
 
 @pytest.mark.usefixtures("log_timeout")

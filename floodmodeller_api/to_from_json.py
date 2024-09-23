@@ -77,6 +77,7 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     """
     from ._base import FMFile
     from .backup import File
+    from .ief import FlowTimeProfile
     from .units import IIC
     from .units._base import Unit
     from .urban1d._base import UrbanSubsection, UrbanUnit
@@ -105,7 +106,10 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         return {key: recursive_to_json(value, is_top_level=False) for key, value in obj.items()}
 
     # Either a type of FM API Class
-    if isinstance(obj, (FMFile, Unit, IIC, File, UrbanSubsection, UrbanUnit)):  # noqa: RET503
+    if isinstance(
+        obj,
+        (FMFile, Unit, IIC, File, UrbanSubsection, UrbanUnit, FlowTimeProfile),
+    ):
         # Information from the flood modeller object will be included in the JSON output
         # slicing undertaken to remove quotation marks
         return_dict: dict[str, Any] = {"API Class": str(obj.__class__)[8:-2]}
@@ -117,6 +121,8 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
         }
 
         return return_dict
+
+    return None
 
 
 def from_json(obj: str | dict) -> dict:

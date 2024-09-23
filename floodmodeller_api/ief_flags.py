@@ -230,6 +230,7 @@ flags = {
     "OVERRIDEURBANTIMES": "ISIS Event Details",
     "NOOFFLOWTIMEPROFILES": "Flow Time Profiles",
     "NOOFFLOWTIMESERIES": "Flow Time Profiles",
+    "FLOWTIMEPROFILE0": "Flow Time Profiles",
     "FLOWTIMEPROFILE1": "Flow Time Profiles",
     "FLOWTIMEPROFILE2": "Flow Time Profiles",
     "FLOWTIMEPROFILE3": "Flow Time Profiles",

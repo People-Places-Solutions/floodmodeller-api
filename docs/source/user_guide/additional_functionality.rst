@@ -4,6 +4,7 @@
       
       import os
       os.chdir("floodmodeller_api/test/test_data")
+      import floodmodeller_api
 
 Additional Functionality
 =========================
@@ -103,3 +104,21 @@ To convert a single River Section unit to JSON:
     dat = DAT("EX18.DAT")
     river_unit_json = dat.sections["S3"].to_json()
     print(river_unit_json)
+
+
+Quick methods to reading files
+-------------------------------
+
+In most cases you can load a file using the specific class for that filetype, e.g. loading a DAT
+file with ``dat = DAT("path_to_dat_file.dat")``. It is also possible to use the handy
+:func:`~floodmodeller_api.read_file` function to load any supported Flood Modeller file. You may
+want to do this for example to iterate over many Flood Modeller files and produce a json export or
+save them with a new naming convention etc.
+
+.. ipython:: python
+
+    for file in ["EX18.DAT", "Constant QT.ief", "DefenceBreach.xml", "Baseline_unchecked.csv"]:
+        fm_object = floodmodeller_api.read_file(file)
+        print(fm_object)
+
+.. autofunction:: floodmodeller_api.read_file

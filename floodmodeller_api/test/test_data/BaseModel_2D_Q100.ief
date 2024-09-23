@@ -1,0 +1,28 @@
+[ISIS Event Header]
+
+;WIBUContainer=140-1474647971
+;WIBUContainer=140-1474647971
+Title = BaseModel_2D_Q100
+Datafile = ..\..\networks\1D_Model_002.dat
+Results = Output\BaseModel_2D_Q100
+
+[ISIS Event Details]
+RunType = Unsteady
+Start = 0
+Finish = 150
+Timestep = 5
+SaveInterval = 300
+ICsFrom = 1
+RefineBridgeSecProps = 0
+SolveDHEqualsZeroAtStart = 1
+RulesAtTimeZero = 1
+RulesOnFirstIteration = 0
+ResetTimesAfterPos = 1
+UseFPSModularLimit = 1
+UseRemoteQ = 1
+2DFLOW = 1
+
+[Flow Time Profiles]
+NoOfFlowTimeProfiles = 1
+NoOfFlowTimeSeries = 1
+FlowTimeProfile0 = Inflow1,65,2,..\..\associated_data\Severn_FLow_P01.csv,refh2,Total flow m3/s (100 year)- urbanised model,

@@ -1,0 +1,23 @@
+[ISIS Event Header]
+Title=FEH boundary
+Datafile=Event Data Example.dat
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=Event Data Example.zzs
+Start=0
+Finish=12
+InitialTimestep=20
+MinimumTimestep=5
+SaveInterval=300
+; FEH Event Data
+EventData=FEH Event Data.ied
+; FEH Event Data
+; FEH Event Data
+AdaptiveTimestep=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=0
+RulesAtTimeZero=0
+RulesOnFirstIteration=1
+ResetTimesAfterPos=0
+UseFPSModularLimit=0
+UseRemoteQ=0

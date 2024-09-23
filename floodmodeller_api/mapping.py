@@ -2,6 +2,7 @@ from typing import Any
 
 from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
 from .backup import File
+from .ief import FlowTimeProfile
 from .units import (
     BLOCKAGE,
     BRIDGE,
@@ -40,6 +41,7 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.dat.DAT": DAT,
     "floodmodeller_api.ied.IED": IED,
     "floodmodeller_api.ief.IEF": IEF,
+    "floodmodeller_api.ief.FlowTimeProfile": FlowTimeProfile,
     "floodmodeller_api.inp.INP": INP,
     "floodmodeller_api.lf.LF1": LF1,
     "floodmodeller_api.lf.LF2": LF2,
