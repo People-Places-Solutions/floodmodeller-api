@@ -71,7 +71,8 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
         json_dict_from_obj = json.loads(obj.to_json())["Object Attributes"]
 
         # Second, to handle the json file ..._expected.json which must be the same as the object created above.
-        json_dict_from_file = json.load(open(json_expected))["Object Attributes"]  # noqa: SIM115
+        with open(json_expected) as file:
+            json_dict_from_file = json.load(file)["Object Attributes"]
 
         # keys to ignore when testing for equivalence
         keys_to_remove = ["_filepath", "file", "_log_path"]
