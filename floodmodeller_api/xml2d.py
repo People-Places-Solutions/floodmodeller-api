@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import io
-import requests
 import os
 import time
 from copy import deepcopy
@@ -25,6 +24,7 @@ from pathlib import Path
 from subprocess import DEVNULL, Popen
 from typing import Callable
 
+import requests
 from lxml import etree
 from tqdm import trange
 
