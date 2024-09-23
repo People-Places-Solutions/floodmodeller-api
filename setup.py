@@ -55,6 +55,6 @@ setup(
         "shapely==2.*",
         "scipy==1.*",
         "freezegun==1.*",
-        "requests>2.23"
+        "requests>2.23",
     ],
 )
