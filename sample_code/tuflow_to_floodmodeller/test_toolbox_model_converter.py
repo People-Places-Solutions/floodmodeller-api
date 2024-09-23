@@ -79,13 +79,13 @@ def test_fm_file_wrapper(tmpdir, fm_file_class, file_name):
     fm_file_wrapper = FMFileWrapper(fm_file_class, filepath, {})
     assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
-    change_timestep(fm_file_wrapper, "0.1")
+    change_timestep(fm_file_wrapper, 0.1)
     assert fm_file_wrapper.fm_file != fm_file_class(filepath)
 
     fm_file_wrapper.update()
     assert fm_file_wrapper.fm_file == fm_file_class(filepath)
 
-    change_timestep(fm_file_wrapper, "0.2")
+    change_timestep(fm_file_wrapper, 0.2)
     assert fm_file_wrapper.fm_file != fm_file_class(filepath)
 
     fm_file_wrapper.rollback()

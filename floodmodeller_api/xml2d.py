@@ -24,6 +24,7 @@ from pathlib import Path
 from subprocess import DEVNULL, Popen
 from typing import Callable
 
+import requests
 from lxml import etree
 from tqdm import trange
 
@@ -57,7 +58,7 @@ class XML2D(FMFile):
         xml_filepath (str, optional): Full filepath to xml file.
 
     Output:
-        Initiates 'XML' class object
+        Initiates 'XML2D' class object
 
     Raises:
         TypeError: Raised if xml_filepath does not point to a .xml file
@@ -66,7 +67,8 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    _xsd_loc: str = "http://schema.floodmodeller.com/6.2/2d.xsd"
+    _xsd_loc: str = "https://schema.floodmodeller.com/7.1/2d.xsd"
+    _w3_schema: str = "{http://www.w3.org/2001/XMLSchema}"
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
@@ -88,8 +90,13 @@ class XML2D(FMFile):
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
             self._xmltree = etree.parse(self._filepath)
-        self._xsd = etree.parse(self._xsd_loc)
-        self._xsdschema = etree.XMLSchema(self._xsd)
+        try:
+            xsd_bin = requests.get(self._xsd_loc).content
+            self._xsd = etree.parse(io.BytesIO(xsd_bin))
+            self._xsdschema = etree.XMLSchema(self._xsd)
+        except Exception:
+            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsdschema = etree.XMLSchema(self._xsd)
         self._get_multi_value_keys()
 
         self._create_dict()
@@ -175,18 +182,18 @@ class XML2D(FMFile):
         # find element in schema
         parent_name = parent.tag.replace(self._ns, "")
         schema_elem = self._xsd.find(
-            f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_name}']",
+            f".//{self._w3_schema}*[@name='{parent_name}']",
         )
         if "type" in schema_elem.attrib:
             schema_elem = self._xsd.find(
-                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{schema_elem.attrib['type']}']",
+                f".//{self._w3_schema}*[@name='{schema_elem.attrib['type']}']",
             )
         else:
-            schema_elem = schema_elem.find("{http://www.w3.org/2001/XMLSchema}complexType")
+            schema_elem = schema_elem.find(f"{self._w3_schema}complexType")
         if schema_elem is None:
             return parent.getchildren()
 
-        seq = schema_elem.find("{http://www.w3.org/2001/XMLSchema}sequence")
+        seq = schema_elem.find(f"{self._w3_schema}sequence")
         if seq is None:
             return parent.getchildren()
 
@@ -311,7 +318,7 @@ class XML2D(FMFile):
             # Check schema to see if we should use parent.set for attribute
             # or etree.subelement() and set text
             schema_elem = self._xsd.findall(
-                f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
+                f".//{self._w3_schema}*[@name='{add_key}']",
             )
             if len(schema_elem) == 1:
                 schema_elem = schema_elem[0]
@@ -319,14 +326,14 @@ class XML2D(FMFile):
                 # This is just here for when there's multiple schema elements with same
                 # name, e.g. 'frequency'
                 parent_schema_elem = self._xsd.find(
-                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent.tag.replace(self._ns, '')}']",
+                    f".//{self._w3_schema}*[@name='{parent.tag.replace(self._ns, '')}']",
                 )
                 if "type" in parent_schema_elem.attrib:
                     parent_schema_elem = self._xsd.find(
-                        f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{parent_schema_elem.attrib['type']}']",
+                        f".//{self._w3_schema}*[@name='{parent_schema_elem.attrib['type']}']",
                     )
                 schema_elem = parent_schema_elem.find(
-                    f".//{{http://www.w3.org/2001/XMLSchema}}*[@name='{add_key}']",
+                    f".//{self._w3_schema}*[@name='{add_key}']",
                 )
 
             if schema_elem.tag.endswith("attribute"):
@@ -403,7 +410,7 @@ class XML2D(FMFile):
     def _get_multi_value_keys(self):
         self._multi_value_keys = []
         root = self._xsd.getroot()
-        for elem in root.findall(".//{http://www.w3.org/2001/XMLSchema}element"):
+        for elem in root.findall(f".//{self._w3_schema}element"):
             if elem.attrib.get("maxOccurs") not in (None, "0", "1"):
                 self._multi_value_keys.append(elem.attrib["name"])
         self._multi_value_keys = set(self._multi_value_keys)

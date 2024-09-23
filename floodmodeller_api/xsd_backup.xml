@@ -1,0 +1,738 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- XML schema for ISIS 2D control file, copyright Jacobs 2023 -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://www.floodmodeller.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="https://www.floodmodeller.com" elementFormDefault="qualified">
+	<xs:element name="ISIS2Dproject">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="link1d" type="link1dType" minOccurs="0" maxOccurs="2"/>
+				<xs:element name="logfile" type="xs:string" minOccurs="0"/>
+				<xs:element name="domain" type="domainType" maxOccurs="unbounded"/>
+				<xs:element name="restart_options" type="restart_optionsType" minOccurs="0"/>
+				<xs:element name="advanced_options" type="advanced_optionsType" minOccurs="0"/>
+				<xs:element name="processor" type="processorType" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="unit_system" type="unit_systemType" use="optional"/>
+			<xs:attribute name="description" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="list_string_type">
+		<xs:list itemType="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="fileTypeAttrEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="shp"/>
+			<xs:enumeration value="asc"/>
+			<xs:enumeration value="tif"/>
+			<xs:enumeration value="flt"/>
+			<xs:enumeration value="csv"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="topoTypeAttrEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="standard"/>
+			<xs:enumeration value="zline"/>
+			<xs:enumeration value="zsurface"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name = "fileType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name ="type" type ="fileTypeAttrEnum" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name ="fileTypeListType">
+		<xs:sequence>
+			<xs:element name = "fmfile" type = "fileType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name = "topoType">
+		<xs:sequence>
+			<xs:element name = "filelist" type ="fileTypeListType"/>
+		</xs:sequence>
+		<xs:attribute name="type" type="topoTypeAttrEnum" use="optional"/>
+		<xs:attribute name="description" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="ValueCheckType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="on"/>
+			<xs:enumeration value="off"/>
+			<xs:enumeration value="true"/>
+			<xs:enumeration value="false"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="checkType">
+		<xs:simpleContent>
+			<xs:extension base="ValueCheckType">
+				<xs:attribute name="format" default="ASCII">
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:enumeration value="GEOTIFF"/>
+							<xs:enumeration value="ASCII"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="run_scheme">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADI"/>
+			<xs:enumeration value="TVD"/>
+			<xs:enumeration value="FAST"/>
+			<xs:enumeration value="FAST Dynamic"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="wet_boundaryType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="warning"/>
+			<xs:enumeration value="error"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="double_precisionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="advised"/>
+			<xs:enumeration value="required"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="lossType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CN">
+				<xs:annotation>
+					<xs:documentation>SCS curve number loss </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GA">
+				<xs:annotation>
+					<xs:documentation>Green-Ampt infiltration</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<!-- SCS curve number loss -->
+			<!-- Green-Ampt infiltration loss loss -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="roughness_law">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="manning"/>
+			<xs:enumeration value="chezy"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="unit_systemType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SI"/>
+			<xs:enumeration value="US"/>
+			<xs:enumeration value="American"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="roughness_distribution_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="global"/>
+			<xs:enumeration value="globalmultiplier"/>
+			<xs:enumeration value="file"/>
+			<xs:enumeration value="mastermap"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="adjustz_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="upwards"/>
+			<xs:enumeration value="downwards"/>
+			<xs:enumeration value="both"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="initial_condition_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="globalwaterlevel"/>
+			<xs:enumeration value="globaldepth"/>
+			<xs:enumeration value="elevationfile"/>
+			<xs:enumeration value="depthfile"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="time_units">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="day"/>
+			<xs:enumeration value="hour"/>
+			<xs:enumeration value="minute"/>
+			<xs:enumeration value="second"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sediment_diameter_units">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="m"/>
+			<xs:enumeration value="mm"/>
+			<xs:enumeration value="ft"/>
+			<xs:enumeration value="in"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="sediment_density_units">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="kg/m3"/>
+			<xs:enumeration value="g/cm3"/>
+			<xs:enumeration value="slugs/ft3"/>
+			<xs:enumeration value="lbm/ft3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="rainfall_units">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mm/hr"/>
+			<xs:enumeration value="mm/h"/>
+			<xs:enumeration value="m/s"/>
+			<xs:enumeration value="in/hr"/>
+			<xs:enumeration value="mm"/>
+			<xs:enumeration value="in"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="boundary_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="waterelevation"/>
+			<xs:enumeration value="qhbdy"/>
+			<xs:enumeration value="totalflow"/>
+			<xs:enumeration value="flowperunitwidth"/>
+			<xs:enumeration value="verticalflow"/>
+			<xs:enumeration value="verticalflowperunitwidth"/>
+			<xs:enumeration value="elevation"/>
+			<xs:enumeration value="depth"/>
+			<xs:enumeration value="weir"/>
+			<xs:enumeration value="outflow"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="output_format">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SMS9"/>
+			<xs:enumeration value="CSV"/>
+			<xs:enumeration value="XMDF"/>
+			<xs:enumeration value="NETCDF"/>
+			<xs:enumeration value="ASCII"/>
+			<xs:enumeration value="GEOTIFF"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="output_variable">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Flow"/>
+			<xs:enumeration value="Elevation"/>
+			<xs:enumeration value="Velocity"/>
+			<xs:enumeration value="Depth"/>
+			<xs:enumeration value="Froude"/>
+			<xs:enumeration value="Hazard"/>
+			<xs:enumeration value="Bedelevation"/>
+			<xs:enumeration value="HazardClass"/>
+			<xs:enumeration value="NegativeDepth"/>
+			<xs:enumeration value="BedShearStress"/>
+			<xs:enumeration value="ExcessShearStress"/>
+			<xs:enumeration value="ShieldsParameter"/>
+			<xs:enumeration value="StreamCompetence"/>
+			<xs:enumeration value="InfiltrationLoss"/>
+			<xs:enumeration value="InfiltrationRate"/>
+			<xs:enumeration value="RelativeMassError"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="output_variables">
+		<xs:list itemType="output_variable"/>
+	</xs:simpleType>
+	<xs:simpleType name="boundary_value_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="timevar"/>
+			<xs:enumeration value="fixedvalue"/>
+			<xs:enumeration value="ied"/>
+			<xs:enumeration value="csv"/>
+			<xs:enumeration value="hydrologyunit"/>
+			<xs:enumeration value="hpcsv"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hydrology_value_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="timevar"/>
+			<xs:enumeration value="csv"/>
+			<xs:enumeration value="hydrologyunit"/>
+			<xs:enumeration value="hydrologyunitgross"/>
+			<xs:enumeration value="refh2csv"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="computational_areaType">
+		<xs:sequence>
+			<xs:element name="xll" type="xs:double"/>
+			<xs:element name="yll" type="xs:double"/>
+			<xs:element name="dx" type="xs:double"/>
+			<xs:element name="nrows" type="xs:integer"/>
+			<xs:element name="ncols" type="xs:integer"/>
+			<xs:element name="active_area" type="xs:string" minOccurs="0"/>
+			<xs:element name="deactive_area" type="xs:string" minOccurs="0"/>
+			<xs:element name="rotation" type="xs:double" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="timeType">
+		<xs:sequence>
+			<xs:element name="start_time" type="xs:time" minOccurs="0"/>
+			<xs:element name="start_date" type="xs:string" minOccurs="0"/>
+			<xs:element name="timezero_datetime" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="use_real_dates" type="xs:boolean" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="start_offset" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="unit" type="time_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="total">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="unit" type="time_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="restart_optionsType">
+		<xs:sequence>
+			<xs:element name="read" type="xs:string" minOccurs="0"/>
+			<xs:element name="single" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="unit" type="time_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="series" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="unit" type="time_units"/>
+							<xs:attribute name="start" type="xs:double"/>
+							<xs:attribute name="count" type="xs:integer"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="run_dataType">
+		<xs:sequence>
+			<xs:element name="time_step" type="xs:double"/>
+			<xs:element name="scheme" type="run_scheme"/>
+			<xs:element name="double_precision" type="double_precisionType" minOccurs="0"/>
+			<xs:element name="beta" type="xs:double" minOccurs="0"/>
+			<xs:element name="eddyviscosity" type="xs:double" minOccurs="0"/>
+			<xs:element name="wall" type="xs:string" minOccurs="0"/>
+			<xs:element name="upwind" type="xs:string" minOccurs="0"/>
+			<xs:element name="flddry" type="xs:string" minOccurs="0"/>
+			<xs:element name="nadvit" type="xs:integer" minOccurs="0"/>
+			<xs:element name="drydepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="fricdepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="calcdepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="merge" type="xs:double" minOccurs="0"/>
+			<xs:element name="disc" type="xs:double" minOccurs="0"/>
+			<xs:element name="filter" type="xs:double" minOccurs="0"/>
+			<xs:element name="spilloption" type="xs:string" minOccurs="0"/>
+			<xs:element name="frictionCoef" type="xs:double" minOccurs="0"/>
+			<xs:element name="momentumCoef" type="xs:double" minOccurs="0"/>
+			<xs:element name="maxIteration" type="xs:integer" minOccurs="0"/>
+			<xs:element name="convergenceCrit" type="xs:double" minOccurs="0"/>
+			<xs:element name="glasswall" type="xs:double" minOccurs="0"/>
+			<xs:element name="preprocess_fast" type="xs:string" minOccurs="0"/>
+			<xs:element name="pathMarkup_fast" type="xs:string" minOccurs="0"/>
+			<xs:element name="pathDepth_fast" type="xs:double" minOccurs="0"/>
+			<xs:element name="pathWidth_fast" type="xs:double" minOccurs="0"/>
+			<xs:element name="pulsedepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="negdepththreshold" type="xs:double" minOccurs="0"/>
+			<xs:element name="velocityheadthreshold" type="xs:double" minOccurs="0"/>
+			<xs:element name="frictionincreasedepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="qhbdysmoothing" type="xs:positiveInteger" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="boundary_conditionsType">
+		<xs:sequence>
+			<xs:element name="boundary" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="BC" type="boundary_type"/>
+						<xs:element name="file" type="xs:string" minOccurs="0"/>
+						<xs:element name="xy" type="xs:string" minOccurs="0"/>
+						<xs:element name="value" minOccurs="0">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="type" type="boundary_value_type" use="required"/>
+										<xs:attribute name="time_units" type="time_units" use="optional"/>
+										<xs:attribute name="return_period" type="xs:integer" use="optional"/>
+										<xs:attribute name="storm_duration" type="xs:double" use="optional"/>
+										<xs:attribute name="scale_factor" type="xs:string" use="optional"/>
+										<xs:attribute name="header_label" type="xs:string" use="optional"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="hydrologyType">
+		<xs:sequence>
+			<xs:element name="source" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="file" type="xs:string"/>
+						<xs:element name="value">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="time_units" type="time_units"/>
+										<xs:attribute name="units" type="rainfall_units" use="optional"/>
+										<xs:attribute name="type" type="hydrology_value_type" use="optional"/>
+										<xs:attribute name="return_period" type="xs:integer" use="optional"/>
+										<xs:attribute name="rainfall_type" type="xs:string" use="optional"/>
+										<xs:attribute name="header_label" type="xs:string" use="optional"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="lossfile" type="lossfileType" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="output_resultsType">
+		<xs:sequence>
+			<xs:element name="hazard_debris_factor_method" minOccurs="0">
+				<xs:complexType>
+					<xs:choice>
+						<!-- either one or the other of these -->
+						<xs:element name="static">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="factor" type="xs:float" use="required"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="varying">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute name="land_use" type="land_use_type" use="required"/>
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:choice>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="output" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="variables" type="output_variables"/>
+						<xs:element name="frequency" type="xs:double"/>
+						<xs:element name="xy" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="expand" type="xs:integer"/>
+					<xs:attribute name="output_id" type="xs:string" use="optional"/>
+					<xs:attribute name="format" type="output_format" use="required"/>
+					<xs:attribute name="output_after" type="xs:double" use="optional"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="flowline" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="frequency" type="xs:float" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="massfile" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="frequency" type="xs:float" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="check" type="checkType" minOccurs="0"/>
+			<xs:element name="sediment_properties" type="sediment_properties_type" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="max_intvl" type="xs:integer" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="sediment_properties_type">
+		<xs:sequence>
+			<xs:element name="default_sediment_diameter">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base = "xs:double">
+							<xs:attribute name = "units" type = "sediment_diameter_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="default_sediment_density">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base = "xs:double">
+							<xs:attribute name = "units" type = "sediment_density_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="default_water_density" type="xs:double" minOccurs="0"/>
+			<xs:element name="dimensionless_critical_stress" type="xs:double" minOccurs="1"/>
+			<xs:element name="sediment_property_file" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="link1dType">
+		<xs:sequence>
+			<xs:element name="link" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="domain" type="xs:string" use="optional"/>
+							<xs:attribute name="weircd" type="xs:double" use="optional"/>
+							<xs:attribute name="weirml" type="xs:double" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ief">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="overridetimes" type="xs:boolean" use="optional"/>
+							<xs:attribute name="usePondedVolume" type="xs:boolean" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="adjustz" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="direction" type="adjustz_type" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mb" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="MassBalance1D">
+							<xs:attribute name="frequency" type="xs:double" use="optional"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="link_to_model" type="link_to_modelType"/>
+		<xs:attribute name="weircd" type="xs:double" use="optional"/>
+		<xs:attribute name="weirml" type="xs:double" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="domainType">
+		<xs:sequence>
+			<xs:element name="computational_area" type="computational_areaType" minOccurs="0"/>
+			<xs:element name="topography" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="topography_2" type="topoType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="time" type="timeType"/>
+			<xs:element name="run_data" type="run_dataType"/>
+			<xs:element name="initial_conditions" type="initial_conditionsType" minOccurs="0"/>
+			<xs:element name="roughness" type="roughnessType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="boundary_conditions" type="boundary_conditionsType" minOccurs="0"/>
+			<xs:element name="hydrology" type="hydrologyType" minOccurs="0"/>
+			<xs:element name="output_results" type="output_resultsType"/>
+			<xs:element name="embedded1Dunits" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="network" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="file" type="xs:string" maxOccurs="unbounded"/>
+									<xs:element name="saveInterval" type="xs:double"/>
+									<xs:element name="variables" minOccurs="0">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="variable" type="xs:string" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="start" type="xs:double" minOccurs="0"/>
+									<xs:element name="finish" type="xs:double" minOccurs="0"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="domain_id" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="advanced_optionsType">
+		<xs:sequence>
+			<xs:element name="spatial_diagnostics" type="xs:string" minOccurs="0"/>
+			<xs:element name ="max_courant_diagnostic" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="diagnose_courant_adi" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="diagnose_courant_tvd" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_negativedepth_diagnostic" type= "xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="diagnose_negative_depth" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_froude_diagnostic" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="number_of_threads" type="xs:positiveInteger" minOccurs="0"/>
+			<xs:element name="debug_memory_alignment" type="xs:string" minOccurs="0"/>
+			<xs:element name="benchmarking" type="xs:string" minOccurs="0"/>
+			<xs:element name="wet_boundary" type="wet_boundaryType" minOccurs="0"/>
+			<xs:element name="flag_mass_error" minOccurs="0">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:string">
+							<xs:attribute name="check_after_seconds" type="xs:integer" use="required"/>
+							<xs:attribute name="tolerance_pct" type="xs:float" use="required"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="correct_negative_depths" type="xs:string" minOccurs="0"/>
+			<xs:element name="stop_on_convergence" type="stop_on_convergence_Type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="stop_on_convergence_Type">
+		<xs:sequence>
+			<xs:element name="volume_comparison_percentage" type="volume_comparison_percentageType" minOccurs="0"/>
+			<xs:element name="total_inflow_comparison_percentage" type="total_inflow_comparison_percentageType" minOccurs="0"/>
+			<xs:element name="smallest_inflow_comparison_percentage" type="smallest_inflow_comparison_percentageType" minOccurs="0"/>
+			<xs:element name="minimum_run_time">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:double">
+							<xs:attribute name="unit" type="time_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="window_size">
+				<xs:complexType>
+					<xs:simpleContent>
+						<xs:extension base="xs:integer">
+							<xs:attribute name="unit" type="time_units"/>
+						</xs:extension>
+					</xs:simpleContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="fail_on_non_convergence" type="xs:boolean" use="optional"/>
+		<xs:attribute name="convergence_percentage_tolerance" type="xs:double" use="optional"/>
+	</xs:complexType>
+	<xs:simpleType name="volume_comparison_percentageType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="total_inflow_comparison_percentageType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="smallest_inflow_comparison_percentageType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!--
+    We now define roughnessValue as a string with a minumum length.  
+    This prevents empty tags that have been creeping in.  
+    It's unfortunately a string as both roughness values and filenames
+    are passed here.  
+  -->
+	<xs:simpleType name="roughnessValue">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="roughnessType">
+		<xs:simpleContent>
+			<xs:extension base="roughnessValue">
+				<xs:attribute name="law" type="roughness_law" use="required"/>
+				<xs:attribute name="type" type="roughness_distribution_type" use="required"/>
+				<xs:attribute name="default_roughness" type="xs:double" use="optional"/>
+				<xs:attribute name="lookuptable" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="desingularization_eps_gpuType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="time_integrator_gpuType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="euler"/>
+			<xs:enumeration value="runge-kutta 2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="dt_scale_gpuType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="g_gpuType">
+		<xs:restriction base="xs:double">
+			<xs:minExclusive value="0.0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="initial_conditionsType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="initial_condition_type" use="required"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="land_use_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="pasture"/>
+			<xs:enumeration value="woodland"/>
+			<xs:enumeration value="urban"/>
+			<xs:enumeration value="conservative"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="link_to_modelType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ISIS1D"/>
+			<xs:enumeration value="SWMM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="lossfileType">
+		<xs:simpleContent>
+			<xs:extension base="xs:string">
+				<xs:attribute name="type" type="lossType" use="required"/>
+				<xs:attribute name="lookuptable" type="xs:string"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="MassBalance1D">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="processorType">
+		<xs:sequence>
+			<xs:element name="processorid" type="xs:integer" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="type" default="CPU">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="CPU"/>
+					<xs:enumeration value="GPU"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+</xs:schema>

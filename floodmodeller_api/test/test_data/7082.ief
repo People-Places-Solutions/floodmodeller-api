@@ -1,0 +1,28 @@
+[ISIS Event Header]
+Title = 7082
+Datafile = ..\..\networks\BridgeSpill1.dat
+Results = Output\7082
+
+[ISIS Event Details]
+RunType = Unsteady
+TimeZero = 0000hrs; 23/05/2024
+Start = 0500hrs; 23/05/2024
+Finish = 80
+Timestep = 300
+SaveInterval = 300
+ICsFrom = 1
+RefineBridgeSecProps = 0
+SolveDHEqualsZeroAtStart = 1
+RulesAtTimeZero = 1
+RulesOnFirstIteration = 0
+ResetTimesAfterPos = 1
+UseFPSModularLimit = 1
+OutputUnitSummary = 1
+UseRemoteQ = 1
+2DFLOW = 1
+
+[Flow Time Profiles]
+NoOfFlowTimeProfiles = 2
+NoOfFlowTimeSeries = 2
+FlowTimeProfile0 = SEV19005,19,23,..\..\associated_data\Baseline unchecked.csv,hplus,100 - 11 - 2020 Upper,
+FlowTimeProfile1 = randomInflow,9,23,..\..\associated_data\Baseline unchecked.csv,hplus,100 - 11 - Reconciled Baseline,

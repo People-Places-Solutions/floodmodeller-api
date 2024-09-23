@@ -16,9 +16,11 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import csv
 import os
 import subprocess
 import time
+from io import StringIO
 from pathlib import Path
 from subprocess import Popen
 from typing import Callable
@@ -27,24 +29,38 @@ import pandas as pd
 from tqdm import trange
 
 from ._base import FMFile
+from .diff import check_item_with_dataframe_equal
 from .ief_flags import flags
 from .logs import LF1, create_lf
+from .to_from_json import Jsonable
 from .util import handle_exception
 from .zzn import ZZN
+
+
+def try_numeric(value: str) -> str | int | float:
+    """Attempt to parse value as float or int if valid, else return the original string"""
+    try:
+        return int(value)
+    except ValueError:
+        try:
+            return float(value)
+        except ValueError:
+            return value
 
 
 class IEF(FMFile):
     """Reads and write Flood Modeller event file format '.ief'
 
     Args:
-        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class will be created.. Defaults to None.
+        ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class
+            will be created.. Defaults to None.
 
     Raises:
         TypeError: Raised if ief_filepath not pointing to valide IEF file
         FileNotFoundError: Raised if ief_filepath points to a non-existent location
 
     Output:
-    Initiates 'IEF' class object
+        Initiates 'IEF' class object
     """
 
     _filetype: str = "IEF"
@@ -70,7 +86,9 @@ class IEF(FMFile):
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
         prev_comment = None
-        self._ief_properties = []
+        self._ief_properties: list[str] = []
+        self.EventData: dict[str, str] = {}
+        self.flowtimeprofiles: list[FlowTimeProfile] = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -89,23 +107,35 @@ class IEF(FMFile):
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
-                    if hasattr(self, "EventData"):
-                        # Append event data to list so multiple can be specified
-                        self.EventData[event_data_title] = value
-                    else:
-                        self.EventData = {event_data_title: value}
+                    self.eventdata[event_data_title] = value
                     self._ief_properties.append("EventData")
 
+                elif prop.upper().startswith("FLOWTIMEPROFILE"):
+                    self.flowtimeprofiles.append(
+                        FlowTimeProfile(value, ief_filepath=self._filepath),
+                    )
+                    self._ief_properties.append(prop)
                 else:
                     # Sets the property and value as class properties so they can be edited.
-                    setattr(self, prop, value)
+                    setattr(self, prop, try_numeric(value))
                     self._ief_properties.append(prop)
                 prev_comment = None
             else:
                 # This should add the [] bound headers
                 self._ief_properties.append(line)
                 prev_comment = None
-        del raw_data
+
+        self._check_formatting(raw_data)
+        self._update_ief_properties()  # call this here to ensure ief properties is correct
+
+    def _check_formatting(self, raw_data: list[str]) -> None:
+        """Check to see if ief formatted with line breaks between groups and spaces around '='."""
+        self._format_group_line_breaks = False
+        self._format_equals_spaced = False
+        if "" in raw_data[:-1]:
+            self._format_group_line_breaks = True
+        if any(" = " in line for line in raw_data):
+            self._format_equals_spaced = True
 
     @handle_exception(when="write")
     def _write(self) -> str:
@@ -118,27 +148,41 @@ class IEF(FMFile):
         self._update_ief_properties()
 
         ief_string = ""
-        event = 0  # Used as a counter for multiple eventdata files
+        event_index = 0  # Used as a counter for multiple eventdata files
+        ftp_index = 0  # Counter for flowtimeprofiles
+        eq = " = " if self._format_equals_spaced else "="
+        section_newline = "\n" if self._format_group_line_breaks else ""
         for idx, prop in enumerate(self._ief_properties):
             if prop.startswith("["):
                 # writes the [] bound headers to ief string
-                ief_string += prop + "\n"
+                if idx > 0:
+                    ief_string += section_newline + prop + "\n"
+                else:
+                    ief_string += prop + "\n"
+
             elif prop.lstrip().startswith(";"):
                 if self._ief_properties[idx + 1].lower() != "eventdata":
                     # Only write comment if not preceding event data
                     ief_string += prop + "\n"
+
             elif prop.lower() == "eventdata":
                 event_data = getattr(self, prop)
                 # Add multiple EventData if present
-                for event_idx, key in enumerate(event_data):
-                    if event_idx == event:
-                        ief_string += f";{key}\n{prop}={str(event_data[key])}\n"
+                for idx, key in enumerate(event_data):
+                    if idx == event_index:
+                        ief_string += f";{key}\nEventData{eq}{str(event_data[key])}\n"
                         break
-                event += 1
+                event_index += 1
+
+            elif prop.lower().startswith("flowtimeprofile"):
+                flowtimeprofile = self.flowtimeprofiles[ftp_index]
+                ief_string += f"{prop}{eq}{flowtimeprofile}\n"
+                ftp_index += 1
 
             else:
                 # writes property and value to ief string
-                ief_string += f"{prop}={str(getattr(self, prop))}\n"
+                ief_string += f"{prop}{eq}{str(getattr(self, prop))}\n"
+
         return ief_string
 
     def _create_from_blank(self):
@@ -155,23 +199,32 @@ class IEF(FMFile):
         ]
 
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
+        self._filepath = None
         self._ief_properties = []
+        self._format_group_line_breaks = False
+        self._format_equals_spaced = False
+        self.EventData: dict[str, str] = {}
+        self.flowtimeprofiles: list[FlowTimeProfile] = []
         for line in blank_ief:
             if "=" in line:
                 prop, value = line.split("=")
                 # Sets the property and value as class properties so they can be edited.
-                setattr(self, prop, value)
+                setattr(self, prop, try_numeric(value))
                 self._ief_properties.append(prop)
             else:
                 # This should add the [] bound headers
                 self._ief_properties.append(line)
         del blank_ief
 
-    def _update_ief_properties(self):  # noqa: C901
+    def _update_ief_properties(self):
         """Updates the list of properties included in the IEF file"""
         # Add new properties
         for prop, val in self.__dict__.copy().items():
-            if (prop not in self._ief_properties) and (not prop.startswith("_")) and prop != "file":
+            if (
+                (prop not in self._ief_properties)
+                and (not prop.startswith("_"))
+                and prop not in ["file", "flowtimeprofiles"]
+            ):
                 # Check if valid flag
                 if prop.upper() not in flags:
                     print(
@@ -186,8 +239,8 @@ class IEF(FMFile):
                     # exist, this stops it being deleted
                     # Add new values to EventData flag
                     delattr(self, prop)
-                    self.EventData = val
-                    prop = "EventData"
+                    self.eventdata = val
+                    prop = "eventdata"
 
                 # Check ief group header
                 group = f"[{flags[prop.upper()]}]"
@@ -218,15 +271,13 @@ class IEF(FMFile):
         ]
 
         # Rearrange order of Flow Time Profiles group if present * Currently assuming all relevent flags included
-        if "[Flow Time Profiles]" in self._ief_properties:
-            self._update_flowtimeprofile_info()
+        self._update_flowtimeprofile_info()
 
         # Ensure number of EventData entries is equal to length of EventData attribute
-        if hasattr(self, "EventData"):
-            self._update_eventdata_info()
+        self._update_eventdata_info()
 
     def _update_eventdata_info(self):  # noqa: C901
-        if not isinstance(self.EventData, dict):
+        if not isinstance(self.eventdata, dict):
             # If attribute not a dict, adds the value as a single entry in list
             raise AttributeError(
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
@@ -236,7 +287,7 @@ class IEF(FMFile):
         # Number of 'EventData' flags in ief
         event_properties = self._ief_properties.count("EventData")
         # Number of event data specified in class
-        events = len(self.EventData)
+        events = len(self.eventdata)
         if event_properties < events:
             # Need to add additional event properties to IEF to match number of events specified
             to_add = events - event_properties
@@ -266,35 +317,67 @@ class IEF(FMFile):
                     if removed == to_remove:
                         break
 
-    def _update_flowtimeprofile_info(self):
+    def _update_flowtimeprofile_info(self) -> None:
+        """Update the flowtimeprofile data stored in ief properties"""
+        if not hasattr(self, "flowtimeprofiles") or len(self.flowtimeprofiles) == 0:
+            self._remove_flowtimeprofile_info()
+            return
+
+        # Update properties
+        self.NoOfFlowTimeProfiles = len(self.flowtimeprofiles)
+        try:
+            self.NoOfFlowTimeSeries = sum([ftp.count_series() for ftp in self.flowtimeprofiles])
+        except FileNotFoundError as err:
+            raise UserWarning(
+                "Failed to read csv referenced in flowtimeprofile, file either does not exist or is"
+                "unable to be found due to relative path from IEF file. NoOfFlowTimeSeries has not"
+                "been updated.",
+            ) from err
+
         end_index = None
-        start_index = self._ief_properties.index("[Flow Time Profiles]")
+        start_index = (
+            self._ief_properties.index("[Flow Time Profiles]")
+            if "[Flow Time Profiles]" in self._ief_properties
+            else len(self._ief_properties)
+        )
         for idx, item in enumerate(self._ief_properties[start_index:]):
             if idx != 0 and item.startswith("["):
                 end_index = idx + start_index
                 break
-        flow_time_list = self._ief_properties[start_index:end_index]
-        flow_time_list = [
+
+        flowtimeprofile_list = [
             "[Flow Time Profiles]",
             "NoOfFlowTimeProfiles",
             "NoOfFlowTimeSeries",
-        ] + [i for i in flow_time_list if i.lower().startswith("flowtimeprofile")]
+        ]
+        for idx, _ in enumerate(self.flowtimeprofiles):
+            flowtimeprofile_list.append(f"FlowTimeProfile{idx}")
 
-        # sort list to ensure the flow time profiles are in order
-        def flow_sort(itm):
-            try:
-                num = int(itm.upper().replace("FLOWTIMEPROFILE", ""))
-                return (1, num)
-            except ValueError:
-                return (0, itm)
+        # Replace existing slice of ief properties with new slice
+        self._ief_properties[start_index:end_index] = flowtimeprofile_list
 
-        flow_time_list[3:] = sorted(flow_time_list[3:], key=flow_sort)
+    def _remove_flowtimeprofile_info(self) -> None:
+        """Delete flowtimeprofile data from ief properties and any attributes present"""
+        # Remove flowtimeprofile info from IEF properties
+        self._ief_properties = [
+            line
+            for line in self._ief_properties
+            if (
+                line.lower()
+                not in [
+                    "[flow time profiles]",
+                    "noofflowtimeprofiles",
+                    "noofflowtimeseries",
+                ]
+            )
+            and (not line.lower().startswith("flowtimeprofile"))
+        ]
+        if hasattr(self, "noofflowtimeprofiles"):
+            del self.NoOfFlowTimeProfiles
+        if hasattr(self, "noofflowtimeseries"):
+            del self.NoOfFlowTimeSeries
 
-        # Replace existing slice of ief properties with new reordered slice
-        self._ief_properties[start_index:end_index] = flow_time_list
-
-        # Update NoOfFlowTimeSeries
-        self.NoOfFlowTimeProfiles = str(len(flow_time_list[3:]))
+        self.flowtimeprofiles = []
 
     def __getattr__(self, name):
         for attr in self.__dict__.copy():
@@ -551,3 +634,103 @@ class IEF(FMFile):
             return 1, f"Simulation Failed! - {details}"
 
         return 0, f"Simulation Completed! - {details}"
+
+
+class FlowTimeProfile(Jsonable):
+    """Handles defining and formatting flow time profiles in IEF files
+
+    Args:
+        raw_string (Optional[str]): A raw CSV-formatted string to initialize the profile attributes.
+
+    Keyword Args:
+        labels (list[str]): A list of string labels for the profile headers.
+        columns (list[int]): A list of integers (1-indexed) for the column indices of the profile.
+        start_row (int): The starting row index (1-indexed) for reading data from the CSV.
+        csv_filepath (str): The file path to the CSV file containing flow data.
+        file_type (str): The type of the file format, e.g. fm1, fm2, hplus, refh2.
+        profile (str): A description or identifier for the profile.
+        comment (str): An optional comment or note related to the profile.
+        ief_filepath (str): The base directory path for resolving the CSV file.
+
+    Raises:
+        ValueError: If neither a `raw_string` nor keyword arguments are provided.
+    """
+
+    labels: list[str]
+    columns: list[int]
+    start_row: int
+    csv_filepath: str
+    file_type: str
+    profile: str
+    comment: str
+
+    def __init__(self, raw_string: str | None = None, **kwargs) -> None:
+        """Initializes the FlowTimeProfile instance from either a raw string or keyword arguments."""
+        if raw_string is not None:
+            self._parse_raw_string(raw_string)
+
+        elif kwargs:
+            self.labels = kwargs.get("labels", [])
+            self.columns = kwargs.get("columns", [])
+            self.start_row = kwargs.get("start_row", 0)
+            self.csv_filepath = kwargs.get("csv_filepath", "")
+            self.file_type = kwargs.get("file_type", "")
+            self.profile = kwargs.get("profile", "")
+            self.comment = kwargs.get("comment", "")
+        else:
+            raise ValueError(
+                "You must provide either a single raw string argument or keyword arguments.",
+            )
+
+        base_path = Path(kwargs.get("ief_filepath", ""))
+        self._csvfile = (base_path / self.csv_filepath.strip('"')).resolve()
+
+        for attr in ["csv_filepath", "comment"]:
+            value = getattr(self, attr)
+            if "," in value:
+                # Ensure string wrapped in quotes if containing comma
+                setattr(self, attr, f'"{value}"'.replace('""', '"'))
+
+    def _parse_raw_string(self, raw_string: str) -> None:
+        """Parses a raw string of comma separated values and stores as attributes"""
+        csv_reader = csv.reader(StringIO(raw_string), skipinitialspace=True, quotechar='"')
+        parts = next(csv_reader)  # Read the first (and only) line as a list of fields
+        self.labels = [label for label in parts[0].split(" ") if label != ""]
+        self.columns = [int(col) for col in parts[1].split(" ") if col != ""]
+        self.start_row = int(parts[2])
+        self.csv_filepath = parts[3]
+        self.file_type = parts[4]
+        self.profile, self.comment = (parts[5:] + ["", ""])[:2]
+
+    def __str__(self) -> str:
+        """Converts the flow time profile into a valid comma separated ief string"""
+        return (
+            f"{' '.join(self.labels)},{' '.join(map(str, self.columns))},{self.start_row},"
+            f"{self.csv_filepath},{self.file_type},{self.profile},{self.comment}"
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"<floodmodeller_api FlowTimeProfile(\n\tlabels={self.labels},\n\t"
+            f"columns={self.columns},\n\tstart_row={self.start_row},\n\t"
+            f"csv_filepath={self.csv_filepath},\n\tfile_type={self.file_type},\n\t"
+            f"profile={self.profile},\n\tcomment={self.comment}\n)>"
+        )
+
+    def __eq__(self, other, return_diff=False):
+        result = True
+        diff = []
+        result, diff = check_item_with_dataframe_equal(
+            {key: value for key, value in self.__dict__.items() if key != "_csvfile"},
+            {key: value for key, value in other.__dict__.items() if key != "_csvfile"},
+            name="FlowTimeProfile",
+            diff=diff,
+        )
+        return (result, diff) if return_diff else result
+
+    def count_series(self) -> int:
+        if self.file_type.lower() == "fm1":
+            # read csv and count series
+            return len(pd.read_csv(self._csvfile, skiprows=self.start_row - 1, index_col=0).columns)
+
+        return len(self.columns)

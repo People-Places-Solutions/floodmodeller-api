@@ -2,7 +2,7 @@ DAT Class
 =====================================================
 Summary
 --------
-The ``DAT`` class is used to read, write and update Flood Modeller's dat file format. The class 
+The :class:`~floodmodeller_api.DAT` class is used to read, write and update Flood Modeller's dat file format. The class 
 is initiated with the filepath of a DAT file (full path or a relative path) to load an existing 
 network. Alternatively,a new dat file can be created in memory by simply calling ``DAT()`` without 
 passing in a file path. 
@@ -37,13 +37,13 @@ found in the :doc:`Individual Unit Classes <units>` section.
 Each individual unit class is somewhat unique in how they can be worked with in python, but generally 
 most unit classes will have a ``.name``, ``.comment`` and ``.data`` attribute. 
 
-For example, a ``RIVER`` unit class contains the full section data as a dataframe:
+For example, a :class:`~floodmodeller_api.units.RIVER` unit class contains the full section data as a dataframe:
 
 .. ipython:: python
         
     dat.sections["S3"].data # Accessing the section data for river section 'S3'
 
-All other associated data can be accessed and edited for a ``RIVER`` unit class via class attributes, 
+All other associated data can be accessed and edited for a :class:`~floodmodeller_api.units.RIVER` unit class via class attributes, 
 for example the 'distance to next section' can be accessed using the ``.dist_to_next`` attribute:
 
 .. ipython:: python
@@ -52,15 +52,15 @@ for example the 'distance to next section' can be accessed using the ``.dist_to_
 
     dat.sections["S3"].dist_to_next = 150.0 # Update the distance to next section to 150m
 
-It is possible to call the ``dat.next()`` and ``dat.prev()`` methods on a unit of any class 
-to find the next or previous units in the reach:
+It is possible to call the :meth:`~floodmodeller_api.DAT.next()` and :meth:`~floodmodeller_api.DAT.prev()` 
+methods on a unit of any class to find the next or previous units in the reach:
 
 .. ipython:: python
     
     dat.next(dat.sections["S3"])
 
-You can use ``dat.insert_unit()`` and ``dat.remove_unit()`` to insert or remove one unit at a time 
-from the dat file.
+You can use :meth:`~floodmodeller_api.DAT.insert_unit()` and :meth:`~floodmodeller_api.DAT.remove_unit()` 
+to insert or remove one unit at a time from the dat file.
 
 .. code:: python
     
@@ -71,7 +71,7 @@ from the dat file.
     from floodmodeller_api.units import RIVER
     dat.insert_unit(RIVER(name="new_unit"), add_at=-1) # insert a blank river section at the end
 
-To insert multiple units at once, use the ``dat.insert_units()`` method.
+To insert multiple units at once, use the :meth:`~floodmodeller_api.DAT.insert_units()` method.
 
 .. ipython::
 
@@ -87,7 +87,7 @@ Although it is possible to rename units by passing a new name into the ``.name``
 it is recommended to avoid this as it may cause label issues within the network. 
 
 For units that are not currently supported in the API, limited read-only access can be found
-in the ``dat._unsupported`` attribute, where unit names, types and labels can be accessed.
+in the ``._unsupported`` attribute, where unit names, types and labels can be accessed.
 The DAT representation of an unsupported unit can accessed but cannot be edited.
 
 .. ipython:: python
@@ -113,13 +113,13 @@ Conveyance curves
 
 .. admonition:: *New in version 0.4.4*
 
-   Calculated conveyance curves for river sections can now be accessed with the `.conveyance`
-   attribute.
+   Calculated conveyance curves for river sections can now be accessed with the 
+   :meth:`~floodmodeller_api.units.RIVER.conveyance` property.
 
 Calculating the conveyance curve of a river cross section can be useful when identifying 'spikes' in
 the conveyance curve, or looking where panel markers may need to be added. The conveyance curve for 
-a river unit can be accessed by simply calling ``.conveyance``. For example, to access the 
-conveyance curve and plot it, you could do the following:
+a river unit can be accessed by simply calling :meth:`~floodmodeller_api.units.RIVER.conveyance`. 
+For example, to access the conveyance curve and plot it, you could do the following:
 
 .. code:: python
 
