@@ -208,7 +208,7 @@ class IED(FMFile):
 
         print()
 
-    def _update_ied_struct(self):  # noqa: C901
+    def _update_ied_struct(self):  # noqa: C901, PLR0912
         # Generate IED structure
         ied_struct = []
         in_block = False
