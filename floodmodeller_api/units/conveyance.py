@@ -72,11 +72,12 @@ def calculate_cross_section_conveyance(
             total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
             total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
 
-            conveyance += np.where(
-                total_length >= MINIMUM_PERIMETER_THRESHOLD,
-                total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel),
-                0,
-            )
+            with np.errstate(invalid="ignore"):
+                conveyance += np.where(
+                    total_length >= MINIMUM_PERIMETER_THRESHOLD,
+                    total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel),
+                    0,
+                )
 
     return pd.Series(conveyance, index=water_levels)
 
@@ -116,9 +117,10 @@ def calculate_geometry(
     is_submerged_on_right = (h1 <= 0) & (h2 > 0)
     conditions = [is_submerged, is_submerged_on_left, is_submerged_on_right]
 
-    # needed for partially submerged sections
-    dx_left = dx * h1 / (h1 - h2)
-    dx_right = dx * h2 / (h2 - h1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        # needed for partially submerged sections
+        dx_left = dx * h1 / (h1 - h2)
+        dx_right = dx * h2 / (h2 - h1)
 
     area = np.select(
         conditions,
