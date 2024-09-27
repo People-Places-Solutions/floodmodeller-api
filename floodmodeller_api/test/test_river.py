@@ -167,3 +167,80 @@ def test_create_from_blank_with_params():
         "     1.000     2.000     0.010     0.000               0.000     0.000                    ",
         "     2.000     5.000     0.010     0.000               0.000     0.000                    ",
     ]
+
+
+def test_set_river_dataframe_correct():
+    unit = RIVER(
+        [
+            "RIVER normal case",
+            "SECTION",
+            "SomeUnit",
+            "     0.000            0.000100  1000.000",
+            "        5",
+            "     0.000        10     0.030",
+            "     1.000         9     0.030",
+            "     2.000         5     0.030",
+            "     3.000         6     0.030",
+            "     4.000        10     0.030",
+        ],
+    )
+
+    df = pd.DataFrame(
+        {
+            "X": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "Mannings n": [0.01, 0.01, 0.01],
+            "Panel": ["", "", ""],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Northing": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
+
+    unit.data = df.copy()
+    pd.testing.assert_frame_equal(unit._data, df.copy())
+
+
+def test_set_river_dataframe_incorrect():
+    unit = RIVER()
+
+    df = pd.DataFrame(
+        {
+            "X": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "Mannings n": [0.01, 0.01, 0.01],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
+
+    with pytest.raises(ValueError):
+        unit.data = df.copy()
+
+
+def test_set_river_dataframe_case_sensitivity():
+    unit = RIVER()
+
+    df = pd.DataFrame(
+        {
+            "x": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "mANNINGs n": [0.01, 0.01, 0.01],
+            "Panel": ["", "", ""],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Northing": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
+
+    unit.data = df.copy()
+    pd.testing.assert_frame_equal(unit._data, df.copy())
