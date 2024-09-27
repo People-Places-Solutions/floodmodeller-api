@@ -1,4 +1,3 @@
-import io
 import pandas as pd
 import pytest
 
@@ -169,7 +168,8 @@ def test_create_from_blank_with_params():
         "     2.000     5.000     0.010     0.000               0.000     0.000                    ",
     ]
 
-def test_set_river_dataframe():
+
+def test_set_river_dataframe_correct():
     unit = RIVER(
         [
             "RIVER normal case",
@@ -186,30 +186,61 @@ def test_set_river_dataframe():
     )
 
     df = pd.DataFrame(
-            {
-                "X": [0.0, 1.0, 2.0],
-                "Y": [5.0, 2.0, 5.0],
-                "Mannings n": [0.01, 0.01, 0.01],
-                "Panel": ["", "", ""],
-                "RPL": [0.0, 0.0, 0.0],
-                "Marker": ["", "", ""],
-                "Easting": [0.0, 0.0, 0.0],
-                "Northing": [0.0, 0.0, 0.0],
-                "Deactivation": ["", "", ""],
-                "SP. Marker": ["", "", ""],
-            },
-        )
-    
-    unit.data = df.copy()
-    assert unit._write() == [
-        "RIVER normal case",
-        "SECTION",
-        "SomeUnit                                                                            ",
-        "     0.000            0.000100  1000.000",
-        "         3",
-        "     0.000     5.000     0.010     0.000               0.000     0.000                    ",
-        "     1.000     2.000     0.010     0.000               0.000     0.000                    ",
-        "     2.000     5.000     0.010     0.000               0.000     0.000                    ",
-    ]
-    
+        {
+            "X": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "Mannings n": [0.01, 0.01, 0.01],
+            "Panel": ["", "", ""],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Northing": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
 
+    unit.data = df.copy()
+    pd.testing.assert_frame_equal(unit._data, df.copy())
+
+
+def test_set_river_dataframe_incorrect():
+    unit = RIVER()
+
+    df = pd.DataFrame(
+        {
+            "X": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "Mannings n": [0.01, 0.01, 0.01],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
+
+    with pytest.raises(ValueError):
+        unit.data = df.copy()
+
+
+def test_set_river_dataframe_case_sensitivity():
+    unit = RIVER()
+
+    df = pd.DataFrame(
+        {
+            "x": [0.0, 1.0, 2.0],
+            "Y": [5.0, 2.0, 5.0],
+            "mANNINGs n": [0.01, 0.01, 0.01],
+            "Panel": ["", "", ""],
+            "RPL": [0.0, 0.0, 0.0],
+            "Marker": ["", "", ""],
+            "Easting": [0.0, 0.0, 0.0],
+            "Northing": [0.0, 0.0, 0.0],
+            "Deactivation": ["", "", ""],
+            "SP. Marker": ["", "", ""],
+        },
+    )
+
+    unit.data = df.copy()
+    pd.testing.assert_frame_equal(unit._data, df.copy())
