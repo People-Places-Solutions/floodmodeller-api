@@ -260,7 +260,7 @@ class RIVER(Unit):
             raise ValueError(
                 "The updated data table for a cross section must be a pandas DataFrame.",
             )
-        if new_df.columns != self._required_columns:
+        if list(new_df.columns) != self._required_columns:
             raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
         self._data = new_df
 
