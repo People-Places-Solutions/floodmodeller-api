@@ -25,7 +25,7 @@ import pandas as pd
 
 from ._base import FMFile
 from .to_from_json import to_json
-from .util import get_zzn_reader, handle_exception
+from .util import get_associated_file, get_zzn_reader, handle_exception
 
 
 class ZZN(FMFile):
@@ -42,7 +42,7 @@ class ZZN(FMFile):
     _suffix: str = ".zzn"
 
     @handle_exception(when="read")
-    def __init__(  # noqa: PLR0915
+    def __init__(
         self,
         zzn_filepath: str | Path | None = None,
         from_json: bool = False,
@@ -51,15 +51,10 @@ class ZZN(FMFile):
             return
         FMFile.__init__(self, zzn_filepath)
 
-        zzn_read = get_zzn_reader()
+        zzn_reader = get_zzn_reader()
 
-        # Get zzl path
         zzn = self._filepath
-        zzl = zzn.with_suffix(".zzl")
-        if not zzl.exists():
-            raise FileNotFoundError(
-                "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.",
-            )
+        zzl = get_associated_file(zzn, ".zzl")
 
         self.meta: dict[str, Any] = {}  # Dict object to hold all metadata
         self.data = {}  # Dict object to hold all data
@@ -78,7 +73,7 @@ class ZZN(FMFile):
         self.meta["nvars"] = ct.c_int(0)
         self.meta["tzero"] = (ct.c_int * 5)()
         self.meta["errstat"] = ct.c_int(0)
-        zzn_read.process_zzl(
+        zzn_reader.process_zzl(
             ct.byref(self.meta["zzl_name"]),
             ct.byref(self.meta["model_title"]),
             ct.byref(self.meta["nnodes"]),
@@ -96,14 +91,14 @@ class ZZN(FMFile):
         self.meta["labels"] = (
             ct.c_char * self.meta["label_length"].value * self.meta["nnodes"].value
         )()
-        zzn_read.process_labels(
+        zzn_reader.process_labels(
             ct.byref(self.meta["zzl_name"]),
             ct.byref(self.meta["nnodes"]),
             ct.byref(self.meta["label_length"]),
             ct.byref(self.meta["errstat"]),
         )
         for i in range(self.meta["nnodes"].value):
-            zzn_read.get_zz_label(
+            zzn_reader.get_zz_label(
                 ct.byref(ct.c_int(i + 1)),
                 ct.byref(self.meta["labels"][i]),
                 ct.byref(self.meta["errstat"]),
@@ -120,7 +115,7 @@ class ZZN(FMFile):
             self.meta["ltimestep"].value,
         )
         self.meta["isavint"] = (ct.c_int * 2)()
-        zzn_read.preprocess_zzn(
+        zzn_reader.preprocess_zzn(
             ct.byref(self.meta["output_hrs"]),
             ct.byref(self.meta["aitimestep"]),
             ct.byref(self.meta["dt"]),
@@ -146,7 +141,7 @@ class ZZN(FMFile):
         self.data["min_results"] = (ct.c_float * nx * ny)()
         self.data["max_times"] = (ct.c_int * nx * ny)()
         self.data["min_times"] = (ct.c_int * nx * ny)()
-        zzn_read.process_zzn(
+        zzn_reader.process_zzn(
             ct.byref(self.meta["zzn_name"]),
             ct.byref(self.meta["node_ID"]),
             ct.byref(self.meta["nnodes"]),

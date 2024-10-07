@@ -13,3 +13,4 @@ class ZZX(FMFile):
     def __init__(self, zzn_filepath: str | Path | None = None) -> None:
         FMFile.__init__(self, zzn_filepath)
         zzn_read = get_zzn_reader()
+
