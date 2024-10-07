@@ -68,7 +68,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
-    meta["zzn_name"] = ct.create_string_buffer(bytes(str(filepath), "utf-8"), 255)
+    meta["filepath"] = ct.create_string_buffer(bytes(str(filepath), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
 
     # process zzl
@@ -148,7 +148,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     data["max_times"] = (ct.c_int * nx * ny)()
     data["min_times"] = (ct.c_int * nx * ny)()
     reader.process_zzn(
-        ct.byref(meta["zzn_name"]),
+        ct.byref(meta["filepath"]),
         ct.byref(meta["node_ID"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["is_quality"]),
@@ -172,7 +172,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     meta["nvars"] = meta["nvars"].value
     meta["savint_range"] = meta["savint_range"].value
 
-    meta["zzn_name"] = meta["zzn_name"].value.decode()
+    meta["filepath"] = meta["filepath"].value.decode()
     meta["labels"] = [label.value.decode().strip() for label in list(meta["labels"])]
     meta["model_title"] = meta["model_title"].value.decode()
 
