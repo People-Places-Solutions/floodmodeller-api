@@ -11,6 +11,6 @@ class ZZX(FMFile):
     _suffix: str = ".zzx"
 
     @handle_exception(when="read")
-    def __init__(self, zzn_filepath: str | Path | None = None) -> None:
-        FMFile.__init__(self, zzn_filepath)
-        self.data, self.meta = run_routines(self._filepath, is_quality=False)
+    def __init__(self, zzx_filepath: str | Path | None = None) -> None:
+        FMFile.__init__(self, zzx_filepath)
+        self.data, self.meta = run_routines(self._filepath, is_quality=True)

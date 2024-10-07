@@ -12,7 +12,3 @@ def zzx_fp(test_workspace):
 
 def test_load_zzx_using_dll(zzx_fp):
     ZZX(zzx_fp)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

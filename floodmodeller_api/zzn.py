@@ -56,6 +56,11 @@ def get_associated_file(original_file: Path, new_suffix: str) -> Path:
     return new_file
 
 
+def check_errstat(routine: str, errstat: int) -> None:
+    if errstat != 0:
+        raise RuntimeError(f"Errstat from {routine} routine is {errstat}.")
+
+
 def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
     reader = get_reader()
     zzl = get_associated_file(filepath, ".zzl")
@@ -92,6 +97,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
         ct.byref(meta["tzero"]),
         ct.byref(meta["errstat"]),
     )
+    check_errstat("process_zzl", meta["errstat"].value)
 
     # process labels
     meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
@@ -101,6 +107,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
         ct.byref(meta["label_length"]),
         ct.byref(meta["errstat"]),
     )
+    check_errstat("process_labels", meta["errstat"].value)
 
     # get zz labels
     for i in range(meta["nnodes"].value):
@@ -109,6 +116,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
             ct.byref(meta["labels"][i]),
             ct.byref(meta["errstat"]),
         )
+        check_errstat("get_zz_label", meta["errstat"].value)
 
     # preprocess zzn
     last_hr = (meta["ltimestep"].value - meta["timestep0"].value) * meta["dt"].value / 3600
@@ -155,6 +163,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
         ct.byref(meta["errstat"]),
         ct.byref(meta["isavint"]),
     )
+    check_errstat("process_zzn", meta["errstat"].value)
 
     # Convert useful metadata from C types into python types
     meta["dt"] = meta["dt"].value
