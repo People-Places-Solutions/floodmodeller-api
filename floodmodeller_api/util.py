@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import ctypes as ct
 import sys
 import webbrowser
 from functools import wraps
@@ -82,6 +83,22 @@ def read_file(filepath: str | Path) -> FMFile:
 
 def is_windows() -> bool:
     return sys.platform.startswith("win")
+
+
+def get_zzn_reader() -> ct.CDLL:
+    # Get zzn_dll path
+    lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
+    zzn_dll = Path(__file__).resolve().parent / "libs" / lib
+
+    # Catch LD_LIBRARY_PATH error for linux
+    try:
+        return ct.CDLL(str(zzn_dll))
+    except OSError as e:
+        msg_1 = "libifport.so.5: cannot open shared object file: No such file or directory"
+        if msg_1 in str(e):
+            msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
+            raise OSError(msg_2) from e
+        raise
 
 
 def handle_exception(when: str) -> Callable:
