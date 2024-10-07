@@ -56,17 +56,14 @@ def get_associated_file(original_file: Path, new_suffix: str) -> Path:
     return new_file
 
 
-def run_routines(
-    reader: ct.CDLL,
-    zzn: Path,
-    zzl: Path,
-    *,
-    is_quality: bool,
-) -> tuple[dict[str, Any], dict[str, Any]]:
+def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+    reader = get_reader()
+    zzl = get_associated_file(filepath, ".zzl")
+
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
-    meta["zzn_name"] = ct.create_string_buffer(bytes(str(zzn), "utf-8"), 255)
+    meta["zzn_name"] = ct.create_string_buffer(bytes(str(filepath), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
 
     # process zzl
@@ -116,10 +113,7 @@ def run_routines(
     # preprocess zzn
     last_hr = (meta["ltimestep"].value - meta["timestep0"].value) * meta["dt"].value / 3600
     meta["output_hrs"] = (ct.c_float * 2)(0.0, last_hr)
-    meta["aitimestep"] = (ct.c_int * 2)(
-        meta["timestep0"].value,
-        meta["ltimestep"].value,
-    )
+    meta["aitimestep"] = (ct.c_int * 2)(meta["timestep0"].value, meta["ltimestep"].value)
     meta["isavint"] = (ct.c_int * 2)()
     reader.preprocess_zzn(
         ct.byref(meta["output_hrs"]),
@@ -200,12 +194,7 @@ class ZZN(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self.data, self.meta = run_routines(
-            reader=get_reader(),
-            zzn=self._filepath,
-            zzl=get_associated_file(self._filepath, ".zzl"),
-            is_quality=False,
-        )
+        self.data, self.meta = run_routines(self._filepath, is_quality=False)
 
     def to_dataframe(  # noqa: PLR0911
         self,
