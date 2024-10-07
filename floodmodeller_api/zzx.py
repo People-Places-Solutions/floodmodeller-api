@@ -1,8 +1,10 @@
 import ctypes as ct
 from pathlib import Path
 
+from floodmodeller_api.zzn import get_zz_reader
+
 from ._base import FMFile
-from .util import get_zzn_reader, handle_exception
+from .util import handle_exception
 
 
 class ZZX(FMFile):
@@ -12,5 +14,5 @@ class ZZX(FMFile):
     @handle_exception(when="read")
     def __init__(self, zzn_filepath: str | Path | None = None) -> None:
         FMFile.__init__(self, zzn_filepath)
-        zzn_read = get_zzn_reader()
-
+        reader = get_zz_reader()
+        pass

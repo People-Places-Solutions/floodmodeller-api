@@ -25,7 +25,35 @@ import pandas as pd
 
 from ._base import FMFile
 from .to_from_json import to_json
-from .util import get_associated_file, get_zzn_reader, handle_exception
+from .util import handle_exception, is_windows
+
+
+def get_zz_reader() -> ct.CDLL:
+    # Get zzn_dll path
+    lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
+    zzn_dll = Path(__file__).resolve().parent / "libs" / lib
+
+    # Catch LD_LIBRARY_PATH error for linux
+    try:
+        return ct.CDLL(str(zzn_dll))
+    except OSError as e:
+        msg_1 = "libifport.so.5: cannot open shared object file: No such file or directory"
+        if msg_1 in str(e):
+            msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
+            raise OSError(msg_2) from e
+        raise
+
+
+def get_associated_file(original_file: Path, new_suffix: str) -> Path:
+    new_file = original_file.with_suffix(new_suffix)
+    if not new_file.exists():
+        msg = (
+            f"Error: Could not find associated {new_suffix} file."
+            f" Ensure that the {original_file.suffix} results"
+            f" have an associated {new_suffix} file with matching name."
+        )
+        raise FileNotFoundError(msg)
+    return new_file
 
 
 class ZZN(FMFile):
@@ -51,7 +79,7 @@ class ZZN(FMFile):
             return
         FMFile.__init__(self, zzn_filepath)
 
-        zzn_reader = get_zzn_reader()
+        reader = get_zz_reader()
 
         zzn = self._filepath
         zzl = get_associated_file(zzn, ".zzl")
@@ -73,7 +101,7 @@ class ZZN(FMFile):
         self.meta["nvars"] = ct.c_int(0)
         self.meta["tzero"] = (ct.c_int * 5)()
         self.meta["errstat"] = ct.c_int(0)
-        zzn_reader.process_zzl(
+        reader.process_zzl(
             ct.byref(self.meta["zzl_name"]),
             ct.byref(self.meta["model_title"]),
             ct.byref(self.meta["nnodes"]),
@@ -91,14 +119,14 @@ class ZZN(FMFile):
         self.meta["labels"] = (
             ct.c_char * self.meta["label_length"].value * self.meta["nnodes"].value
         )()
-        zzn_reader.process_labels(
+        reader.process_labels(
             ct.byref(self.meta["zzl_name"]),
             ct.byref(self.meta["nnodes"]),
             ct.byref(self.meta["label_length"]),
             ct.byref(self.meta["errstat"]),
         )
         for i in range(self.meta["nnodes"].value):
-            zzn_reader.get_zz_label(
+            reader.get_zz_label(
                 ct.byref(ct.c_int(i + 1)),
                 ct.byref(self.meta["labels"][i]),
                 ct.byref(self.meta["errstat"]),
@@ -115,7 +143,7 @@ class ZZN(FMFile):
             self.meta["ltimestep"].value,
         )
         self.meta["isavint"] = (ct.c_int * 2)()
-        zzn_reader.preprocess_zzn(
+        reader.preprocess_zzn(
             ct.byref(self.meta["output_hrs"]),
             ct.byref(self.meta["aitimestep"]),
             ct.byref(self.meta["dt"]),
@@ -141,7 +169,7 @@ class ZZN(FMFile):
         self.data["min_results"] = (ct.c_float * nx * ny)()
         self.data["max_times"] = (ct.c_int * nx * ny)()
         self.data["min_times"] = (ct.c_int * nx * ny)()
-        zzn_reader.process_zzn(
+        reader.process_zzn(
             ct.byref(self.meta["zzn_name"]),
             ct.byref(self.meta["node_ID"]),
             ct.byref(self.meta["nnodes"]),
@@ -159,7 +187,6 @@ class ZZN(FMFile):
         )
 
         # Convert useful metadata from C types into python types
-
         self.meta["dt"] = self.meta["dt"].value
         self.meta["nnodes"] = self.meta["nnodes"].value
         self.meta["save_int"] = self.meta["save_int"].value
