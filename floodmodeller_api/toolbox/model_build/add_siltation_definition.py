@@ -1,11 +1,14 @@
 """ This function allows you to raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation) """
+from __future__ import annotations
 
-# Import modules
-from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar
 
 from floodmodeller_api import DAT
 from floodmodeller_api.tool import FMTool, Parameter
 from floodmodeller_api.units import RIVER
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 # Define the function
@@ -70,7 +73,7 @@ class AddSiltation(FMTool):
     description = (
         "Tool to add a set amount of siltation to raise bed levels of river sections in a DAT file"
     )
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         Parameter(
             name="dat_input",
             dtype=str,

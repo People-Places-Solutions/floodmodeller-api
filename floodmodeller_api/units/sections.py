@@ -16,6 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -56,7 +58,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns = [
+    _required_columns: ClassVar[list[str]] = [
         "X",
         "Y",
         "Mannings n",

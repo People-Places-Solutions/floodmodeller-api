@@ -4,6 +4,7 @@ import argparse
 import sys
 import tkinter as tk
 from dataclasses import dataclass
+from typing import ClassVar
 
 
 @dataclass()
@@ -209,7 +210,7 @@ class FMTool:
 
     """
 
-    parameters: list[Parameter] = []
+    parameters: ClassVar[list[Parameter]] = []
 
     @property
     def name(self):

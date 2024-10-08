@@ -25,7 +25,6 @@ ignore = [
     "E402", "E501", "EM",
     "FBT", "FIX", "FURB",
     "PD", "PERF", "PLC", "PLE", "PLW", "PT", "PTH",
-    "RUF012",
     "S", "SLF",
     "T20", "TD", "TID", "TRY",
 ]
