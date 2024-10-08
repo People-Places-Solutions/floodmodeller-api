@@ -7,6 +7,8 @@ class StructureLogBuilder:
     def __init__(self, input_path, output_path) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
+        self.conduit_chains = {}
+        self.already_in_chain = set()
 
     def _add_fields(self):
         field = [
@@ -22,6 +24,7 @@ class StructureLogBuilder:
         self._writer.writerow(field)
 
     def _conduit_data(self, conduit):
+        # original function
         length = 0.0
         inlet = ""
         outlet = ""
@@ -36,6 +39,38 @@ class StructureLogBuilder:
         if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
             outlet = next_conduit.loss_coefficient
         return [length, inlet, outlet]
+    
+    def _conduit_data(self, conduit):
+        # modified conduit crawler script
+        length = conduit.dist_to_next
+        inlet = ""
+        outlet = ""
+        total_length = 0.0
+
+        # check if the previous node is an inlet 
+        previous = self._dat.prev(conduit)
+        if hasattr(previous, "subtype") and previous.subtype == "INLET":
+            inlet = previous.ki
+
+        current_conduit = conduit
+        # check if the 
+        if current_conduit.name not in self.already_in_chain:
+            chain = []
+            while True:
+                self.already_in_chain.add(current_conduit.name)
+                chain.append(current_conduit.name)
+                if current_conduit.dist_to_next == 0:
+                    break
+
+                total_length += current_conduit.dist_to_next
+                current_conduit = self._dat.next(current_conduit)
+            
+            self.conduit_chains[conduit.name] = chain.copy()
+                
+        next_conduit = self._dat.next(current_conduit)
+        if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
+            outlet = next_conduit.loss_coefficient
+        return [length, inlet, outlet, total_length]
 
     def _culvert_loss_data(self, inlet, outlet):
         culvert_loss = ""
@@ -141,9 +176,11 @@ class StructureLogBuilder:
             length = conduit_data[0]
             inlet = conduit_data[1]
             outlet = conduit_data[2]
+            total_length = conduit_data[3]
 
             if length == 0:
-                continue
+                # continue
+                pass # gonna see what happens if leave it to report the last conduit.
 
             culvert_loss = self._culvert_loss_data(inlet, outlet)
             friction = ""
@@ -168,6 +205,10 @@ class StructureLogBuilder:
                 sprung_data = self._sprung_data(conduit, length)
                 friction = sprung_data[0]
                 dimensions = sprung_data[1]
+
+            if total_length > 0:
+                chain = self.conduit_chains[conduit.name]
+                dimensions += f" (Total length between {chain[0]} and {chain[-1]}: {total_length}m)"
 
             self._write(
                 conduit.name,
