@@ -18,12 +18,12 @@ builtins = ["__version__"]
 
 [tool.ruff.lint]
 select = [
-    "A", "AIR",  "ASYNC",
+    "A", "AIR", "ASYNC",
     "B",
-    "C", "COM",
+    "C", "C4", "COM", "CPY",
     "DJ",
     "E", "ERA", "EXE",
-    "F", "FLY",
+    "F", "FA", "FLY",
     "G",
     "I", "INT", "ISC",
     "N", "NPY",
@@ -37,6 +37,7 @@ select = [
     "YTT"
 ]
 ignore = ["E402", "E501"]
+# ignoring: D, ANN, S, BLE, FBT, DTZ, EM
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]

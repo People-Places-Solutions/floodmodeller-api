@@ -1,4 +1,5 @@
 """Tests to check the class HydrographPlus"""
+from __future__ import annotations
 
 import pandas as pd
 import pytest

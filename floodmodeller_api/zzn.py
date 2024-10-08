@@ -60,7 +60,7 @@ def check_errstat(routine: str, errstat: int) -> None:
     if errstat != 0:
         msg = (
             f"Errstat from {routine} routine is {errstat}."
-            f" See zzread_errorlog.txt for more information."
+            " See zzread_errorlog.txt for more information."
         )
         raise RuntimeError(msg)
 

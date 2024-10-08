@@ -1,9 +1,14 @@
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from floodmodeller_api.zzn import run_routines
 
 from ._base import FMFile
 from .util import handle_exception
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class ZZX(FMFile):
