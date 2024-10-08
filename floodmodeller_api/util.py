@@ -77,7 +77,8 @@ def read_file(filepath: str | Path) -> FMFile:
     if api_class:
         return api_class(filepath)
 
-    raise ValueError(f"Unsupported file type: {filepath.suffix}")
+    msg = f"Unsupported file type: {filepath.suffix}"
+    raise ValueError(msg)
 
 
 def is_windows() -> bool:

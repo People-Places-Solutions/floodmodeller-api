@@ -279,10 +279,11 @@ class IEF(FMFile):
     def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.eventdata, dict):
             # If attribute not a dict, adds the value as a single entry in list
-            raise AttributeError(
+            msg = (
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
-                " names and values referencing the IED files",
+                " names and values referencing the IED files"
             )
+            raise AttributeError(msg)
 
         # Number of 'EventData' flags in ief
         event_properties = self._ief_properties.count("EventData")
@@ -328,10 +329,13 @@ class IEF(FMFile):
         try:
             self.NoOfFlowTimeSeries = sum([ftp.count_series() for ftp in self.flowtimeprofiles])
         except FileNotFoundError as err:
-            raise UserWarning(
+            msg = (
                 "Failed to read csv referenced in flowtimeprofile, file either does not exist or is"
                 "unable to be found due to relative path from IEF file. NoOfFlowTimeSeries has not"
-                "been updated.",
+                "been updated."
+            )
+            raise UserWarning(
+                msg,
             ) from err
 
         end_index = None
@@ -471,8 +475,9 @@ class IEF(FMFile):
         self._range_function = range_function
         self._range_settings = range_settings if range_settings else {}
         if self._filepath is None:
+            msg = "IEF must be saved to a specific filepath before simulate() can be called."
             raise UserWarning(
-                "IEF must be saved to a specific filepath before simulate() can be called.",
+                msg,
             )
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # Defaults to single...
@@ -489,8 +494,9 @@ class IEF(FMFile):
         else:
             _enginespath = enginespath
             if not Path(_enginespath).exists():
+                msg = f"Flood Modeller non-default engine path not found! {_enginespath!s}"
                 raise Exception(
-                    f"Flood Modeller non-default engine path not found! {_enginespath!s}",
+                    msg,
                 )
 
         if precision.upper() == "SINGLE":
@@ -499,7 +505,8 @@ class IEF(FMFile):
             isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
         if not Path(isis32_fp).exists():
-            raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
+            msg = f"Flood Modeller engine not found! Expected location: {isis32_fp}"
+            raise Exception(msg)
 
         run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
@@ -553,7 +560,8 @@ class IEF(FMFile):
         result_path = self._get_result_filepath(suffix="zzn")
 
         if not result_path.exists():
-            raise FileNotFoundError("Simulation results file (zzn) not found")
+            msg = "Simulation results file (zzn) not found"
+            raise FileNotFoundError(msg)
 
         return ZZN(result_path)
 
@@ -565,7 +573,8 @@ class IEF(FMFile):
         """
 
         if not self._log_path.exists():
-            raise FileNotFoundError("Log file (LF1) not found")
+            msg = "Log file (LF1) not found"
+            raise FileNotFoundError(msg)
 
         steady = self.RunType == "Steady"
         return LF1(self._log_path, steady)
@@ -616,7 +625,8 @@ class IEF(FMFile):
             exy_path = self._filepath.with_suffix(".exy")
 
         if not exy_path.exists():
-            raise FileNotFoundError("Simulation results error log (.exy) not found")
+            msg = "Simulation results error log (.exy) not found"
+            raise FileNotFoundError(msg)
 
         exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
@@ -678,8 +688,9 @@ class FlowTimeProfile(Jsonable):
             self.profile = kwargs.get("profile", "")
             self.comment = kwargs.get("comment", "")
         else:
+            msg = "You must provide either a single raw string argument or keyword arguments."
             raise ValueError(
-                "You must provide either a single raw string argument or keyword arguments.",
+                msg,
             )
 
         base_path = Path(kwargs.get("ief_filepath", ""))

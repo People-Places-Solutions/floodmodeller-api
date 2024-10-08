@@ -107,7 +107,8 @@ def data_factory(data_type: str, header: str, subheaders: list | None = None):
         return LastData(header, subheaders)
     if data_type == "all":
         return AllData(header, subheaders)
-    raise ValueError(f'Unexpected data "{data_type}"')
+    msg = f'Unexpected data "{data_type}"'
+    raise ValueError(msg)
 
 
 class State(ABC):
@@ -140,7 +141,8 @@ class SteadyState(State):
         pass
 
     def report_progress(self):
-        raise NotImplementedError("No progress reporting for steady simulations")
+        msg = "No progress reporting for steady simulations"
+        raise NotImplementedError(msg)
 
 
 def state_factory(steady: bool, extracted_data: Data) -> State:

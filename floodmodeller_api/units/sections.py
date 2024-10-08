@@ -261,11 +261,11 @@ class RIVER(Unit):
     @data.setter
     def data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
-            raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame.",
-            )
+            msg = "The updated data table for a cross section must be a pandas DataFrame."
+            raise ValueError(msg)
         if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
-            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
         self._data = new_df
 
     @property
@@ -329,11 +329,11 @@ class RIVER(Unit):
     @active_data.setter
     def active_data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
-            raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame.",
-            )
+            msg = "The updated data table for a cross section must be a pandas DataFrame."
+            raise ValueError(msg)
         if new_df.columns.to_list() != self._required_columns:
-            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
 
         # Ensure activation markers are present
         new_df = new_df.copy()

@@ -301,7 +301,8 @@ class ZZN(FMFile):
                 return df[f"{result_type.capitalize()} {variable.capitalize()}"]
             return df
 
-        raise ValueError(f'Result type: "{result_type}" not recognised')
+        msg = f'Result type: "{result_type}" not recognised'
+        raise ValueError(msg)
 
     def export_to_csv(
         self,
@@ -348,9 +349,8 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type.lower() not in ["all", "max", "min"]:
-            raise Exception(
-                f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' ",
-            )
+            msg = f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
+            raise Exception(msg)
 
         df = self.to_dataframe(
             result_type=result_type,
@@ -395,9 +395,8 @@ class ZZN(FMFile):
             for i, var in enumerate(input_vars):
                 input_vars[i] = var.strip().capitalize()
                 if input_vars[i] not in vars_list:
-                    raise Exception(
-                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} ",
-                    )
+                    msg = f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
+                    raise Exception(msg)
 
             for var in vars_list:
                 if var not in input_vars:
@@ -433,4 +432,5 @@ class ZZN(FMFile):
     @classmethod
     def from_json(cls, json_string: str = ""):
         # Not possible
-        raise NotImplementedError("It is not possible to build a ZZN class instance from JSON")
+        msg = "It is not possible to build a ZZN class instance from JSON"
+        raise NotImplementedError(msg)

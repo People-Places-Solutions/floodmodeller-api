@@ -150,7 +150,8 @@ class LF(FMFile):
             except KeyError:
                 pass
 
-        raise Exception("No index variable found")
+        msg = "No index variable found"
+        raise Exception(msg)
 
     def _set_attributes(self):
         """Makes each Parser value an attribute; "last" values in dictionary"""

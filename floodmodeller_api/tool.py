@@ -151,7 +151,8 @@ class Gui:
                 entry = tk.Entry(self.master, validate="key")
                 entry.config(validatecommand=(entry.register(validate_float), "%P"))
             else:
-                raise ValueError("Invalid data type")
+                msg = "Invalid data type"
+                raise ValueError(msg)
             entry.pack()
             self.root_entries[name] = entry
 
@@ -217,21 +218,24 @@ class FMTool:
         """
         A property method to ensure a tool name is provided in child class. Overwritten by child.
         """
-        raise NotImplementedError("Tools need a name")
+        msg = "Tools need a name"
+        raise NotImplementedError(msg)
 
     @property
     def description(self):
         """
         A property method to ensure a tool description is provided in child class. Overwritten by child.
         """
-        raise NotImplementedError("Tools need a description")
+        msg = "Tools need a description"
+        raise NotImplementedError(msg)
 
     @property
     def tool_function(self):
         """
         A property method to ensure an tool_function is provided in child class. Overwritten by child.
         """
-        raise NotImplementedError("You must provide an entry point function")
+        msg = "You must provide an entry point function"
+        raise NotImplementedError(msg)
 
     def __init__(self):
         self.check_parameters()
@@ -249,7 +253,8 @@ class FMTool:
         params = []
         for parameter in self.parameters:
             if parameter.name in params:
-                raise ValueError("Parameter names must be unique")
+                msg = "Parameter names must be unique"
+                raise ValueError(msg)
             params.append(parameter.name)
 
     # This is defined as a class method because of the use of **kwargs

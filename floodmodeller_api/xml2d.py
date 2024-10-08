@@ -221,7 +221,8 @@ class XML2D(FMFile):
 
         for key, item in new_dict.items():
             if key in self._multi_value_keys and not isinstance(item, list):
-                raise Exception(f"Element: '{key}' must be added as list")
+                msg = f"Element: '{key}' must be added as list"
+                raise Exception(msg)
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
@@ -291,7 +292,8 @@ class XML2D(FMFile):
         from_list=False,
     ):
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
-            raise Exception(f"Element: '{add_key}' must be added as list")
+            msg = f"Element: '{add_key}' must be added as list"
+            raise Exception(msg)
         if isinstance(add_item, dict):
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
@@ -506,9 +508,8 @@ class XML2D(FMFile):
         self.range_settings = range_settings if range_settings else {}
 
         if self._filepath is None:
-            raise UserWarning(
-                "xml2D must be saved to a specific filepath before simulate() can be called.",
-            )
+            msg = "xml2D must be saved to a specific filepath before simulate() can be called."
+            raise UserWarning(msg)
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # defaults to single precision
             for _, domain in self.domains.items():
@@ -522,9 +523,8 @@ class XML2D(FMFile):
         else:
             _enginespath = enginespath
             if not Path(_enginespath).exists():
-                raise Exception(
-                    f"Flood Modeller non-default engine path not found! {_enginespath!s}",
-                )
+                msg = f"Flood Modeller non-default engine path not found! {_enginespath!s}"
+                raise Exception(msg)
 
         # checking if all schemes used are fast, if so will use FAST.exe
         # TODO: Add in option to choose to use or not to use if you can
@@ -542,7 +542,8 @@ class XML2D(FMFile):
             isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
         if not Path(isis2d_fp).exists():
-            raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
+            msg = f"Flood Modeller engine not found! Expected location: {isis2d_fp}"
+            raise Exception(msg)
 
         console_output = console_output.lower()
         run_command = (
@@ -581,7 +582,8 @@ class XML2D(FMFile):
             floodmodeller_api.LF2 class object
         """
         if not self._log_path.exists():
-            raise FileNotFoundError("Log file (LF2) not found")
+            msg = "Log file (LF2) not found"
+            raise FileNotFoundError(msg)
 
         return LF2(self._log_path)
 

@@ -195,7 +195,8 @@ class File(BackupControl):
         self.path = Path(path)
         # Check  if the file exists
         if not self.path.exists():
-            raise OSError("File not found!")
+            msg = "File not found!"
+            raise OSError(msg)
         self.ext = self.path.suffix
         self.dttm_str = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         self._generate_file_id()

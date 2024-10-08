@@ -109,7 +109,8 @@ class XSECTION(UrbanUnit):
             params2 = join_n_char_ljust(15, self.shape, self.tsect)
 
         else:
-            raise RuntimeError(f"{self.shape} not supported")
+            msg = f"{self.shape} not supported"
+            raise RuntimeError(msg)
 
         return params1 + params2
 

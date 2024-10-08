@@ -26,18 +26,17 @@ ignore = [
     "DTZ",
     "E402",
     "E501",
-    "EM",
     "FBT",
     "FIX",
-    "FURB",
-    "PD",
-    "PERF",
-    "PLW",
-    "PT",
-    "PTH",
+    "FURB",  # remove
+    "PD",  # remove
+    "PERF",  # remove
+    "PLW",  # remove
+    "PT",  # remove
+    "PTH",  # remove
     "S",
     "SLF",
-    "T20",
+    "T20",  # remove
     "TD",
     "TID",
     "TRY",
