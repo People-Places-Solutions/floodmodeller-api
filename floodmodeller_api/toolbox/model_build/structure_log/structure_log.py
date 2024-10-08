@@ -7,7 +7,7 @@ class StructureLogBuilder:
     def __init__(self, input_path, output_path) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
-        self.conduit_chains = {}
+        self.conduit_chains = {} # pylint flags these for type hinting, but not sure how to specify, to discuss
         self.already_in_chain = set()
 
     def _add_fields(self):
@@ -22,7 +22,7 @@ class StructureLogBuilder:
             "Culvert Inlet/Outlet Loss",
         ]
         self._writer.writerow(field)
-    
+
     def _conduit_data(self, conduit):
         # modified conduit crawler script
         length = conduit.dist_to_next
@@ -30,13 +30,13 @@ class StructureLogBuilder:
         outlet = ""
         total_length = 0.0
 
-        # check if the previous node is an inlet 
+        # check if the previous node is an inlet
         previous = self._dat.prev(conduit)
         if hasattr(previous, "subtype") and previous.subtype == "INLET":
             inlet = previous.ki
 
         current_conduit = conduit
-        # check if the 
+        # check if the
         if current_conduit.name not in self.already_in_chain:
             chain = []
             while True:
@@ -47,9 +47,9 @@ class StructureLogBuilder:
 
                 total_length += current_conduit.dist_to_next
                 current_conduit = self._dat.next(current_conduit)
-            
+
             self.conduit_chains[conduit.name] = chain.copy()
-                
+
         next_conduit = self._dat.next(current_conduit)
         if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
             outlet = next_conduit.loss_coefficient
@@ -160,10 +160,6 @@ class StructureLogBuilder:
             inlet = conduit_data[1]
             outlet = conduit_data[2]
             total_length = conduit_data[3]
-
-            if length == 0:
-                # continue
-                pass # gonna see what happens if leave it to report the last conduit.
 
             culvert_loss = self._culvert_loss_data(inlet, outlet)
             friction = ""
