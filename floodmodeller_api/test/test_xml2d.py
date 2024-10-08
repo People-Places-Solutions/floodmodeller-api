@@ -57,9 +57,7 @@ def test_xml2d_change_revert_elem_topography():
     that it is actually adding it and that it is being reverted."""
     x2d = XML2D()
     domain = next(iter(x2d.domains))
-    orig_topography = []
-    for item in x2d.domains[domain]["topography"]:
-        orig_topography.append(str(item))
+    orig_topography = [str(item) for item in x2d.domains[domain]["topography"]]
     orig_xml = x2d._write()
     x2d.domains[domain]["topography"][0] = "my/new/topography"
 

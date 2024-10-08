@@ -512,7 +512,7 @@ class XML2D(FMFile):
             raise UserWarning(msg)
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # defaults to single precision
-            for _, domain in self.domains.items():
+            for domain in self.domains.values():
                 if domain["run_data"].get("double_precision") == "required":
                     precision = "DOUBLE"
                     break
@@ -529,7 +529,7 @@ class XML2D(FMFile):
         # checking if all schemes used are fast, if so will use FAST.exe
         # TODO: Add in option to choose to use or not to use if you can
         is_fast = True
-        for _, domain in self.domains.items():
+        for domain in self.domains.values():
             if domain["run_data"]["scheme"] != "FAST":
                 is_fast = False
                 break

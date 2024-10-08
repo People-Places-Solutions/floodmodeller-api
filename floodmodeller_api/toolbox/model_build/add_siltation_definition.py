@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float):
     dat = DAT(dat_input)  # Initialise DAT class
 
-    for _, section in dat.sections.items():  # iterate through all river sections
+    for section in dat.sections.values():  # iterate through all river sections
         if not isinstance(section, RIVER):
             # Skip any non river type units (e.g. interpolates)
             continue

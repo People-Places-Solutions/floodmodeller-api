@@ -96,7 +96,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
                 )
                 if not _result:
                     result = False
-            except KeyError as ke:
+            except KeyError as ke:  # noqa: PERF203
                 result = False
                 diff.append((name, f"Key: '{ke.args[0]}' missing in other"))
                 continue

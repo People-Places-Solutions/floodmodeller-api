@@ -199,11 +199,10 @@ class HydrologyPlusExport(FMFile):
         elif isinstance(template_ief, (Path, str)):
             template_ief = IEF(template_ief)
 
-        generated_iefs = []
-        for column in self.data.columns:
-            generated_iefs.append(self.generate_ief(node_label, template_ief, event=column))
-
-        return generated_iefs
+        return [
+            self.generate_ief(node_label, template_ief, event=column)
+            for column in self.data.columns
+        ]
 
     def generate_ief(  # noqa: PLR0913
         self,

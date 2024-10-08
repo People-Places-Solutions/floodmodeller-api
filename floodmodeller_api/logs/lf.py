@@ -140,15 +140,9 @@ class LF(FMFile):
     def _get_index(self):
         """Finds key and dataframe for variable that is the index"""
 
-        for key in self._data_to_extract:
-            try:
-                self._data_to_extract[key]["is_index"]
-                index_key = key
-                index_df = self._extracted_data[key].data.get_value()
-                return index_key, index_df
-
-            except KeyError:
-                pass
+        for k, v in self._data_to_extract.items():
+            if "is_index" in v:
+                return k, self._extracted_data[k].data.get_value()
 
         msg = "No index variable found"
         raise Exception(msg)

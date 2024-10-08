@@ -253,13 +253,11 @@ class DAT(FMFile):
             Union[Unit, list[Unit], None]: Either a singular unit or list of units with ds_label matching, if none exist returns none.
         """
 
-        _ds_list = []
-        for item in self._all_units:
-            try:
-                if item.ds_label == current_unit.name:
-                    _ds_list.append(item)
-            except AttributeError:
-                continue
+        _ds_list = [
+            item
+            for item in self._all_units
+            if hasattr(item, "ds_label") and item.ds_label == current_unit.name
+        ]
 
         if len(_ds_list) == 0:
             return None
