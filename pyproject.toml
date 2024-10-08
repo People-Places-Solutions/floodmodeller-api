@@ -19,14 +19,28 @@ builtins = ["__version__"]
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN", "ARG",
+    "ANN",
+    "ARG",
     "BLE",
-    "D", "DTZ",
-    "E402", "E501", "EM",
-    "FBT", "FIX", "FURB",
-    "PD", "PERF", "PLW", "PT", "PTH",
-    "S", "SLF",
-    "T20", "TD", "TID", "TRY",
+    "D",
+    "DTZ",
+    "E402",
+    "E501",
+    "EM",
+    "FBT",
+    "FIX",
+    "FURB",
+    "PD",
+    "PERF",
+    "PLW",
+    "PT",
+    "PTH",
+    "S",
+    "SLF",
+    "T20",
+    "TD",
+    "TID",
+    "TRY",
 ]
 
 [tool.ruff.lint.per-file-ignores]
