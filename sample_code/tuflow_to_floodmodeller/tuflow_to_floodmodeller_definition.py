@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
 from floodmodeller_api.tool import FMTool, Parameter
 
 from .model_converter import TuflowModelConverter
@@ -6,7 +10,7 @@ from .model_converter import TuflowModelConverter
 class TuflowToFloodModeller(FMTool):
     name = "TUFLOW to Flood Modeller Conversion Tool"
     description = "Convert models from TUFLOW to Flood Modeller"
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         Parameter(
             name="tcf_path",
             dtype=str,

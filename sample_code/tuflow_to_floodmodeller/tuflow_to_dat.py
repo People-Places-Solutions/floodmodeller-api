@@ -1,16 +1,20 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import List
+from typing import TYPE_CHECKING
 
 import geopandas as gpd
 import pandas as pd
 from shapely import wkt
 from shapely.geometry import LineString, Point
 
-from floodmodeller_api import DAT
 from floodmodeller_api.units.comment import COMMENT
 from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.helpers import _to_float
 from floodmodeller_api.units.sections import RIVER
+
+if TYPE_CHECKING:
+    from floodmodeller_api import DAT
 
 
 class TuflowToDat:
@@ -457,8 +461,8 @@ class TuflowToDat:
     def convert(
         self,
         model_path: str,
-        nwk_paths: List[Path],
-        xs_paths: List[Path],
+        nwk_paths: list[Path],
+        xs_paths: list[Path],
         empty_dat: DAT,
     ):
         self._read_in(model_path, nwk_paths, xs_paths)

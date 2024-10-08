@@ -31,6 +31,7 @@ ignore = [
     "FURB",  # remove
     "PD",  # remove
     "PERF",  # remove
+    "PGH003",
     "PLW",  # remove
     "PT",  # remove
     "PTH",  # remove
