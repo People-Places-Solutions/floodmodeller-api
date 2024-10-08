@@ -70,7 +70,7 @@ class LF(FMFile):
     def _read(self, force_reread: bool = False, suppress_final_step: bool = False):
         # Read LF file
         with open(self._filepath) as lf_file:
-            self._raw_data = [line.rstrip("\n") for line in lf_file.readlines()]
+            self._raw_data = [line.rstrip("\n") for line in lf_file]
 
         # Force rereading from start of file
         if force_reread is True:

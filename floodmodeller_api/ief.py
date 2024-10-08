@@ -82,7 +82,7 @@ class IEF(FMFile):
     def _read(self):
         # Read IEF data
         with open(self._filepath) as ief_file:
-            raw_data = [line.rstrip("\n") for line in ief_file.readlines()]
+            raw_data = [line.rstrip("\n") for line in ief_file]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
         prev_comment = None

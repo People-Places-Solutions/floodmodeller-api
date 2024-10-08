@@ -28,7 +28,6 @@ ignore = [
     "E501",
     "FBT",
     "FIX",
-    "FURB",  # remove
     "PD",  # remove
     "PERF",  # remove
     "PGH003",

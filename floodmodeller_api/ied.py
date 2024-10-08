@@ -61,7 +61,7 @@ class IED(FMFile):
     def _read(self):
         # Read IED data
         with open(self._filepath) as ied_file:
-            self._raw_data = [line.rstrip("\n") for line in ied_file.readlines()]
+            self._raw_data = [line.rstrip("\n") for line in ied_file]
 
         # Generate IED structure
         self._update_ied_struct()
