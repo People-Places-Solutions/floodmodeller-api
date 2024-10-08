@@ -94,11 +94,10 @@ class HydrologyPlusExport(FMFile):
             s, sd, rp, *_ = column.split(" - ")
             if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
                 return column
-        else:
-            raise ValueError(
-                "No matching event was found based on "
-                f"{return_period=}, {storm_duration=}, {scenario=}",
-            )
+        raise ValueError(
+            "No matching event was found based on "
+            f"{return_period=}, {storm_duration=}, {scenario=}",
+        )
 
     def get_event_flow(
         self,
