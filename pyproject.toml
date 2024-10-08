@@ -17,29 +17,18 @@ line-length = 100
 builtins = ["__version__"]
 
 [tool.ruff.lint]
-select = [
-    "A", "AIR", "ASYNC",
-    "B",
-    "C", "C4", "COM", "CPY",
-    "DJ", "DOC", 
-    "E", "ERA", "EXE",
-    "F", "FA", "FAST", "FLY",
-    "G",
-    "I", "ICN", "INT", "INP", "ISC",
-    "LOG",
-    "N", "NPY",
-    "PIE", "PGH", "PLR", "PYI",
-    "Q",
-    "RET", "RSE", "RUF100",
-    "SIM", "SLOT",
-    "T10", "TCH",
-    "UP",
-    "W",
-    "YTT"
+select = ["ALL"]
+ignore = [
+    "ANN", "ARG",
+    "BLE",
+    "D", "DTZ",
+    "E402", "E501", "EM",
+    "FBT", "FIX", "FURB",
+    "PD", "PERF", "PLC", "PLE", "PLW", "PT", "PTH",
+    "RUF002", "RUF010", "RUF012", "RUF015",
+    "S", "SLF",
+    "T20", "TD", "TID", "TRY",
 ]
-ignore = ["E402", "E501"]
-# D, ANN, S, BLE, FBT, DTZ, EM, T20, PT, SLF, TID, ARG, PTH, TD, FIX, PD, PLC, PLE, PLW, TRY, PERF,
-# FURB, other RUF
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
