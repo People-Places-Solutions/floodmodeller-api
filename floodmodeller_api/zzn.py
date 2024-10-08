@@ -58,7 +58,11 @@ def get_associated_file(original_file: Path, new_suffix: str) -> Path:
 
 def check_errstat(routine: str, errstat: int) -> None:
     if errstat != 0:
-        raise RuntimeError(f"Errstat from {routine} routine is {errstat}.")
+        msg = (
+            f"Errstat from {routine} routine is {errstat}."
+            f" See zzread_errorlog.txt for more information."
+        )
+        raise RuntimeError(msg)
 
 
 def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
