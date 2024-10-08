@@ -805,7 +805,9 @@ class DAT(FMFile):
                     insert_index += 1 if add_after else 0
                     break
             else:
-                msg = f"{check_unit} not found in dat network, so cannot be used to add before/after"
+                msg = (
+                    f"{check_unit} not found in dat network, so cannot be used to add before/after"
+                )
                 raise Exception(msg)
 
         unit_data = unit._write()
