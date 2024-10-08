@@ -78,11 +78,30 @@ def with_length():
 def structure():
     return ORIFICE()
 
+@pytest.fixture
+def conduit_chain_dat(conduit_filled):
+    dat = DAT()
+    names = ["first","second","third","fourth"]
+    for name in names:
+        cond = copy.deepcopy(conduit_filled)
+        cond.dist_to_next = 10
+        cond.name = name
+        dat.conduits[name] = cond
+        dat._all_units.append(cond)
+
+    cond = copy.deepcopy(conduit_filled)
+    cond.dist_to_next = 0
+    cond.name = "fifth"
+    dat.conduits["fifth"] = cond
+    dat._all_units.append(cond)
+    return dat
+    
+
 
 def test_conduit_data(slb, conduit_empty):
     slb._dat = DAT()
     output = slb._conduit_data(conduit_empty)
-    assert output == [0.0, "", ""]
+    assert output == [0.0, "", "",0.0]
 
 
 def test_culvert_loss_data(slb):
@@ -173,6 +192,7 @@ def test_bridge_data(slb, structure):
 
 
 def test_add_conduits(slb, conduit_filled, tmpdir):
+    # this test doesnt assert anything, and Im not sure what its trying to test.
     slb._dat = DAT()
     prev_c = copy.deepcopy(conduit_filled)
     prev_c.dist_to_next = 0
@@ -192,6 +212,28 @@ def test_add_conduits(slb, conduit_filled, tmpdir):
     with tmp_csv.open("w") as file:
         slb._writer = csv.writer(file)
         slb._add_conduits()
+
+def test_multi_conduits(slb, conduit_chain_dat, tmpdir):
+    expected = """first,CONDUIT,SECTION,,"Colebrook-White: [min: 0.0, max: 4.0]",h: 65.00 x w: 150.00 x l: 10.00 (Total length between first and fifth: 40.0m),,
+second,CONDUIT,SECTION,,"Colebrook-White: [min: 0.0, max: 4.0]",h: 65.00 x w: 150.00 x l: 10.00,,
+third,CONDUIT,SECTION,,"Colebrook-White: [min: 0.0, max: 4.0]",h: 65.00 x w: 150.00 x l: 10.00,,
+fourth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.0, max: 4.0]",h: 65.00 x w: 150.00 x l: 10.00,,
+fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.0, max: 4.0]",h: 65.00 x w: 150.00 x l: 0.00,,
+"""
+
+    slb._dat = conduit_chain_dat
+    tmp_csv = Path(tmpdir) / "temp_structure_data.csv"
+    print(tmp_csv)
+    with tmp_csv.open("w",newline="") as file:
+        slb._writer = csv.writer(file)
+        slb._add_conduits()
+
+    
+    with open(tmp_csv,"r") as read_file:
+        text = read_file.read()
+    
+    assert text == expected
+
 
 
 def test_add_structures(slb, structure, tmpdir):
@@ -232,3 +274,7 @@ def test_add_structures(slb, structure, tmpdir):
     with tmp_csv.open("w") as file:
         slb._writer = csv.writer(file)
         slb._add_structures()
+
+
+if __name__ == "__main__":
+    pytest.main([__file__+"::test_multi_conduits"])
