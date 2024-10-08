@@ -21,13 +21,14 @@ select = [
     "A", "AIR", "ASYNC",
     "B",
     "C", "C4", "COM", "CPY",
-    "DJ",
+    "DJ", "DOC", 
     "E", "ERA", "EXE",
-    "F", "FA", "FLY",
+    "F", "FA", "FAST", "FLY",
     "G",
-    "I", "INT", "ISC",
+    "I", "ICN", "INT", "INP", "ISC",
+    "LOG",
     "N", "NPY",
-    "PIE", "PLR", "PYI",
+    "PIE", "PGH", "PLR", "PYI",
     "Q",
     "RET", "RSE", "RUF100",
     "SIM", "SLOT",
@@ -37,7 +38,8 @@ select = [
     "YTT"
 ]
 ignore = ["E402", "E501"]
-# ignoring: D, ANN, S, BLE, FBT, DTZ, EM
+# D, ANN, S, BLE, FBT, DTZ, EM, T20, PT, SLF, TID, ARG, PTH, TD, FIX, PD, PLC, PLE, PLW, TRY, PERF,
+# FURB, other RUF
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
