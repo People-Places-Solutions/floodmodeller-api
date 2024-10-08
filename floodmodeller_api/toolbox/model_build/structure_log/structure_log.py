@@ -22,23 +22,6 @@ class StructureLogBuilder:
             "Culvert Inlet/Outlet Loss",
         ]
         self._writer.writerow(field)
-
-    def _conduit_data(self, conduit):
-        # original function
-        length = 0.0
-        inlet = ""
-        outlet = ""
-        previous = self._dat.prev(conduit)
-        if hasattr(previous, "subtype") and previous.subtype == "INLET":
-            inlet = previous.ki
-        current_conduit = conduit
-        while current_conduit.dist_to_next != 0:
-            length += current_conduit.dist_to_next
-            current_conduit = self._dat.next(current_conduit)
-        next_conduit = self._dat.next(current_conduit)
-        if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
-            outlet = next_conduit.loss_coefficient
-        return [length, inlet, outlet]
     
     def _conduit_data(self, conduit):
         # modified conduit crawler script
