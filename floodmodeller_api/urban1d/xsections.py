@@ -31,7 +31,7 @@ class XSECTION(UrbanUnit):
         geom3 (float): auxiliary parameter (width, side slopes, etc.) as listed in Table D-1. (required, applicable to shape types)
         geom4 (float):auxiliary parameter (width, side slopes, etc.) as listed in Table D-1. (required, applicable to shape types)
         barrels (float): Barrels type  number of barrels (i.e., number of parallel pipes of equal size, slope, and roughness) associated with a conduit of shape type , or "CUSTOM" type (optional, default is 1).
-        culvert (int): Culvert code number from Table A.10 for the conduit’s inlet geometry if it is a culvert subject to possible inlet flow control.  Only an option for shape type (leave blank otherwise) (optional, default is "").
+        culvert (int): Culvert code number from Table A.10 for the conduit's inlet geometry if it is a culvert subject to possible inlet flow control.  Only an option for shape type (leave blank otherwise) (optional, default is "").
         curve (str): Curve name of a Shape Curve in the [CURVES] section that defines how width varies with depth. (optional, applicable to shape types only)
         tsect (str): Name of an entry in the [TRANSECTS] section that describes the cross-section geometry of an irregular channel. (required, applicable to "IREGUALAR types only)
 

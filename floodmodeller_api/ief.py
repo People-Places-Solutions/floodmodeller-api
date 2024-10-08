@@ -170,7 +170,7 @@ class IEF(FMFile):
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
                     if idx == event_index:
-                        ief_string += f";{key}\nEventData{eq}{str(event_data[key])}\n"
+                        ief_string += f";{key}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
 
@@ -181,7 +181,7 @@ class IEF(FMFile):
 
             else:
                 # writes property and value to ief string
-                ief_string += f"{prop}{eq}{str(getattr(self, prop))}\n"
+                ief_string += f"{prop}{eq}{getattr(self, prop)!s}\n"
 
         return ief_string
 
@@ -490,7 +490,7 @@ class IEF(FMFile):
             _enginespath = enginespath
             if not Path(_enginespath).exists():
                 raise Exception(
-                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
+                    f"Flood Modeller non-default engine path not found! {_enginespath!s}",
                 )
 
         if precision.upper() == "SINGLE":

@@ -207,10 +207,7 @@ class XML2D(FMFile):
         try:
             self._xsdschema.assert_(self._xmltree)
         except AssertionError as err:
-            msg = (
-                f"XML Validation Error for {repr(self)}:\n"
-                f"     {err.args[0].replace(self._ns, '')}"
-            )
+            msg = f"XML Validation Error for {self!r}:\n     {err.args[0].replace(self._ns, '')}"
             raise ValueError(msg) from err
 
     def _recursive_update_xml(  # noqa: C901, PLR0912
@@ -526,7 +523,7 @@ class XML2D(FMFile):
             _enginespath = enginespath
             if not Path(_enginespath).exists():
                 raise Exception(
-                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
+                    f"Flood Modeller non-default engine path not found! {_enginespath!s}",
                 )
 
         # checking if all schemes used are fast, if so will use FAST.exe

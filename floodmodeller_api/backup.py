@@ -232,7 +232,7 @@ class File(BackupControl):
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
         # TODO: Only log file_id and poath, don't log duplicate lines. Needs to be fast so it doesn't slow FMFile down
-        log_str = f"{str(self.path)},{self.file_id},{self.dttm_str}\n"
+        log_str = f"{self.path!s},{self.file_id},{self.dttm_str}\n"
         with open(self.backup_csv_path, "a") as f:
             f.write(log_str)
 

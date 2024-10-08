@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
+
 from __future__ import annotations
 
 import pandas as pd
@@ -205,7 +206,7 @@ class RIVER(Unit):
             # Manual so slope can have more sf
             params = f'{self.dist_to_next:>10.3f}{"":>10}{self.slope:>10.6f}{self.density:>10.3f}'
             self.nrows = len(self._data)
-            riv_block = [header, self.subtype, labels, params, f"{str(self.nrows):>10}"]
+            riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
 
             riv_data = []
             for (

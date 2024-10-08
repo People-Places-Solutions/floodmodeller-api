@@ -239,7 +239,7 @@ class BLOCKAGE(Unit):
         # Custom validation for blockage percentage
         if self.data.max() > 1 or self.data.min() < 0:
             raise ValueError(
-                f"Parameter error with {repr(self)} - blockage percentage must be between 0 and 1",
+                f"Parameter error with {self!r} - blockage percentage must be between 0 and 1",
             )
 
         header = f"BLOCKAGE #revision#{self._revision} {self.comment}"
