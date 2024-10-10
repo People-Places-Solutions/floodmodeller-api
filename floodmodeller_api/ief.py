@@ -334,9 +334,7 @@ class IEF(FMFile):
                 "unable to be found due to relative path from IEF file. NoOfFlowTimeSeries has not"
                 "been updated."
             )
-            raise UserWarning(
-                msg,
-            ) from err
+            raise UserWarning(msg) from err
 
         end_index = None
         start_index = (
@@ -476,9 +474,7 @@ class IEF(FMFile):
         self._range_settings = range_settings if range_settings else {}
         if self._filepath is None:
             msg = "IEF must be saved to a specific filepath before simulate() can be called."
-            raise UserWarning(
-                msg,
-            )
+            raise UserWarning(msg)
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # Defaults to single...
             for attr in dir(self):
@@ -495,9 +491,7 @@ class IEF(FMFile):
             _enginespath = enginespath
             if not Path(_enginespath).exists():
                 msg = f"Flood Modeller non-default engine path not found! {_enginespath!s}"
-                raise Exception(
-                    msg,
-                )
+                raise Exception(msg)
 
         if precision.upper() == "SINGLE":
             isis32_fp = str(Path(_enginespath, "ISISf32.exe"))
@@ -689,9 +683,7 @@ class FlowTimeProfile(Jsonable):
             self.comment = kwargs.get("comment", "")
         else:
             msg = "You must provide either a single raw string argument or keyword arguments."
-            raise ValueError(
-                msg,
-            )
+            raise ValueError(msg)
 
         base_path = Path(kwargs.get("ief_filepath", ""))
         self._csvfile = (base_path / self.csv_filepath.strip('"')).resolve()
