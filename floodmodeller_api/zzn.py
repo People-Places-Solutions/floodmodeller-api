@@ -68,12 +68,14 @@ def check_errstat(routine: str, errstat: int) -> None:
 def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
     reader = get_reader()
     zzl = get_associated_file(filepath, ".zzl")
+    zzx = get_associated_file(filepath, ".zzx")
 
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
     meta["filepath"] = ct.create_string_buffer(bytes(str(filepath), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
+    meta["zzx_name"] = ct.create_string_buffer(bytes(str(zzx), "utf-8"), 255)
 
     # process zzl
     meta["model_title"] = ct.create_string_buffer(b"", 128)
@@ -87,8 +89,14 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     meta["nvars"] = ct.c_int(0)
     meta["tzero"] = (ct.c_int * 5)()
     meta["errstat"] = ct.c_int(0)
+
+    if meta["is_quality"]:
+        temp_filename = ct.byref(meta["zzx_name"])
+    else: # assume we have the typical zzl/zzn combo
+        temp_filename = ct.byref(meta["zzl_name"])
+
     reader.process_zzl(
-        ct.byref(meta["zzl_name"]),
+        temp_filename,
         ct.byref(meta["model_title"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["label_length"]),
@@ -104,6 +112,12 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     check_errstat("process_zzl", meta["errstat"].value)
 
     # process labels
+    if meta["label_length"].value == 0:
+        # means that we are probably running quality data
+        meta["label_length"].value = 12         # Max expected from dll.
+                                                # Ideally, you want the dll to tell you whether it's 8 or 12, 
+                                                # needs fixing from "our" side
+
     meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
     reader.process_labels(
         ct.byref(meta["zzl_name"]),
@@ -136,6 +150,24 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
         ct.byref(meta["save_int"]),
         ct.byref(meta["isavint"]),
     )
+
+    # process vars
+    reader.process_vars(
+        temp_filename,
+        ct.byref(meta["nvars"]),
+        ct.byref(meta["is_quality"]),
+        ct.byref(meta["errstat"]),
+    )
+    check_errstat("process_vars", meta["errstat"].value)
+
+    # # get var names
+    # for i in range(meta["nvars"].value):
+    #     reader.get_ZZ_variable_name(
+    #         ct.byref(ct.c_int(i + 1)),
+    #         ct.byref(meta["labels"][i]),  # equivalent for variables' names??
+    #         ct.byref(meta["errstat"]),
+    #     )
+    #     check_errstat("get_ZZ_variable_name", meta["errstat"].value)
 
     # process zzn
     meta["node_ID"] = ct.c_int(-1)
