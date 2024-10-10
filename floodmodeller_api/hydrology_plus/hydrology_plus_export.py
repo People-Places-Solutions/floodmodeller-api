@@ -51,7 +51,8 @@ class HydrologyPlusExport(FMFile):
         with self._filepath.open("r") as file:
             header = file.readline().strip(" ,\n\r")
             if header != "Flood Modeller Hydrology+ hydrograph file":
-                raise ValueError("Input file is not the correct format for Hydrology+ export data.")
+                msg = "Input file is not the correct format for Hydrology+ export data."
+                raise ValueError(msg)
 
         self._data_file = pd.read_csv(self._filepath)
         self._metadata = self._get_metadata()
@@ -85,20 +86,21 @@ class HydrologyPlusExport(FMFile):
             return next(col for col in self.data.columns if col.lower().startswith(event.lower()))
 
         if not (return_period and storm_duration and scenario):
-            raise ValueError(
+            msg = (
                 "Missing required inputs to find event, if no event string is passed then a "
                 "return_period, storm_duration and scenario are needed. You provided: "
-                f"{return_period=}, {storm_duration=}, {scenario=}",
+                f"{return_period=}, {storm_duration=}, {scenario=}"
             )
+            raise ValueError(msg)
         for column in self.data.columns:
             s, sd, rp, *_ = column.split(" - ")
             if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
                 return column
-        else:
-            raise ValueError(
-                "No matching event was found based on "
-                f"{return_period=}, {storm_duration=}, {scenario=}",
-            )
+        msg = (
+            "No matching event was found based on "
+            f"{return_period=}, {storm_duration=}, {scenario=}"
+        )
+        raise ValueError(msg)
 
     def get_event_flow(
         self,
@@ -197,11 +199,10 @@ class HydrologyPlusExport(FMFile):
         elif isinstance(template_ief, (Path, str)):
             template_ief = IEF(template_ief)
 
-        generated_iefs = []
-        for column in self.data.columns:
-            generated_iefs.append(self.generate_ief(node_label, template_ief, event=column))
-
-        return generated_iefs
+        return [
+            self.generate_ief(node_label, template_ief, event=column)
+            for column in self.data.columns
+        ]
 
     def generate_ief(  # noqa: PLR0913
         self,

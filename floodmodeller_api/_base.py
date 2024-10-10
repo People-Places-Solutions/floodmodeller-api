@@ -42,16 +42,16 @@ class FMFile(Jsonable):
             self._filepath = Path(filepath)
             # * Add check or fix for path lengths greater than DOS standard length of 260 characters
 
-            if not self._filepath.suffix.lower() == self._suffix:
-                raise TypeError(
-                    f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file",
-                )
+            if self._filepath.suffix.lower() != self._suffix:
+                msg = f"Given filepath does not point to a {self._filetype} file. Please point to the full path for a {self._filetype} file"
+                raise TypeError(msg)
             if not self._filepath.exists():
-                raise FileNotFoundError(
+                msg = (
                     f"{self._filetype} file does not exist! If you are wanting to create a new {self._filetype}, initiate the class without a given "
                     f"filepath to create a new blank {self._filetype} or point the filepath of an existing {self._filetype} to use as a template, "
-                    f"then use the .save() method to save to a new filepath",
+                    f"then use the .save() method to save to a new filepath"
                 )
+                raise FileNotFoundError(msg)
             # If the file is not a ZZN file, then perform a backup
             # This performs a conditional back up, only copying the file if an equivalent copy doesn't already exist
             if self._filetype != "ZZN":
@@ -73,9 +73,8 @@ class FMFile(Jsonable):
     def _update(self):
         """Updates the existing self._filetype based on any altered attributes"""
         if self._filepath is None:
-            raise UserWarning(
-                f"{self._filetype} must be saved to a specific filepath before update() can be called.",
-            )
+            msg = f"{self._filetype} must be saved to a specific filepath before update() can be called."
+            raise UserWarning(msg)
 
         string = self._write()
         with open(self._filepath, "w") as _file:
@@ -84,10 +83,9 @@ class FMFile(Jsonable):
 
     def _save(self, filepath):
         filepath = Path(filepath).absolute()
-        if not filepath.suffix.lower() == self._suffix:
-            raise TypeError(
-                f'Given filepath does not point to a filepath suffixed "{self._suffix}". Please point to the full path to save the {self._filetype} file',
-            )
+        if filepath.suffix.lower() != self._suffix:
+            msg = f'Given filepath does not point to a filepath suffixed "{self._suffix}". Please point to the full path to save the {self._filetype} file'
+            raise TypeError(msg)
 
         if not filepath.parent.exists():
             Path.mkdir(filepath.parent)
@@ -102,7 +100,8 @@ class FMFile(Jsonable):
     @handle_exception(when="compare")
     def _diff(self, other, force_print=False):
         if self._filetype != other._filetype:
-            raise TypeError("Cannot compare objects of different filetypes")
+            msg = "Cannot compare objects of different filetypes"
+            raise TypeError(msg)
         diff = self._get_diff(other)
         if diff[0]:
             print("No difference, files are equivalent")

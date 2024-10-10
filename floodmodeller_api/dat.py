@@ -253,13 +253,11 @@ class DAT(FMFile):
             Union[Unit, list[Unit], None]: Either a singular unit or list of units with ds_label matching, if none exist returns none.
         """
 
-        _ds_list = []
-        for item in self._all_units:
-            try:
-                if item.ds_label == current_unit.name:
-                    _ds_list.append(item)
-            except AttributeError:
-                continue
+        _ds_list = [
+            item
+            for item in self._all_units
+            if hasattr(item, "ds_label") and item.ds_label == current_unit.name
+        ]
 
         if len(_ds_list) == 0:
             return None
@@ -295,7 +293,7 @@ class DAT(FMFile):
     def _read(self) -> None:
         # Read DAT data
         with open(self._filepath) as dat_file:
-            self._raw_data: list[str] = [line.rstrip("\n") for line in dat_file.readlines()]
+            self._raw_data: list[str] = [line.rstrip("\n") for line in dat_file]
 
         # Generate DAT structure
         self._update_dat_struct()
@@ -414,9 +412,8 @@ class DAT(FMFile):
                 if name != unit.name:
                     # Check if new name already exists as a label
                     if unit.name in unit_group:
-                        raise Exception(
-                            f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group',
-                        )
+                        msg = f'Error: Cannot update label "{name}" to "{unit.name}" because "{unit.name}" already exists in the Network {unit_group_name} group'
+                        raise Exception(msg)
                     unit_group[unit.name] = unit
                     del unit_group[name]
                     # Update label in ICs
@@ -528,7 +525,8 @@ class DAT(FMFile):
             elif unit_type in units.UNSUPPORTED_UNIT_TYPES:
                 self._process_unsupported_unit(unit_type, unit_data)
             elif unit_type not in ("GENERAL", "GISINFO"):
-                raise Exception(f"Unexpected unit type encountered: {unit_type}")
+                msg = f"Unexpected unit type encountered: {unit_type}"
+                raise Exception(msg)
 
     def _initialize_collections(self):
         # Initialize unit collections
@@ -564,9 +562,8 @@ class DAT(FMFile):
     def _add_unit_to_group(self, unit_group, unit_type, unit_name, unit_data):
         # Raise exception if a duplicate label is encountered
         if unit_name in unit_group:
-            raise Exception(
-                f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}',
-            )
+            msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}'
+            raise Exception(msg)
         # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
         unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
         unit_group[unit_name] = eval(
@@ -720,7 +717,8 @@ class DAT(FMFile):
         """
         # catch if not valid unit
         if not isinstance(unit, Unit):
-            raise TypeError("unit isn't a unit")
+            msg = "unit isn't a unit"
+            raise TypeError(msg)
 
         # remove from all units
         index = self._all_units.index(unit)
@@ -768,17 +766,17 @@ class DAT(FMFile):
         # catch errors
         provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
         if provided_params == 0:
-            raise SyntaxError(
-                "No positional argument given. Please provide either add_before, add_at or add_after",
-            )
+            msg = "No positional argument given. Please provide either add_before, add_at or add_after"
+            raise SyntaxError(msg)
         if provided_params > 1:
-            raise SyntaxError("Only one of add_at, add_before, or add_after required")
+            msg = "Only one of add_at, add_before, or add_after required"
+            raise SyntaxError(msg)
         if not isinstance(unit, Unit):
-            raise TypeError("unit isn't a unit")
+            msg = "unit isn't a unit"
+            raise TypeError(msg)
         if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
-            raise TypeError(
-                "add_before or add_after argument must be a Flood Modeller Unit type",
-            )
+            msg = "add_before or add_after argument must be a Flood Modeller Unit type"
+            raise TypeError(msg)
 
         unit_class = unit._unit
         if unit_class != "COMMENT":
@@ -786,9 +784,8 @@ class DAT(FMFile):
             unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
             unit_group = getattr(self, unit_group_name)
             if unit.name in unit_group:
-                raise NameError(
-                    "Name already appears in unit group. Cannot have two units with same name in same group",
-                )
+                msg = "Name already appears in unit group. Cannot have two units with same name in same group"
+                raise NameError(msg)
 
         # positional argument
         if add_at is not None:
@@ -796,7 +793,8 @@ class DAT(FMFile):
             if insert_index < 0:
                 insert_index += len(self._all_units) + 1
                 if insert_index < 0:
-                    raise Exception(f"invalid add_at index: {add_at}")
+                    msg = f"invalid add_at index: {add_at}"
+                    raise Exception(msg)
         else:
             check_unit = add_before or add_after
             for index, thing in enumerate(self._all_units):
@@ -805,9 +803,10 @@ class DAT(FMFile):
                     insert_index += 1 if add_after else 0
                     break
             else:
-                raise Exception(
-                    f"{check_unit} not found in dat network, so cannot be used to add before/after",
+                msg = (
+                    f"{check_unit} not found in dat network, so cannot be used to add before/after"
                 )
+                raise Exception(msg)
 
         unit_data = unit._write()
         self._all_units.insert(insert_index, unit)

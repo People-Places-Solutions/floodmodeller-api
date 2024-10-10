@@ -1,4 +1,8 @@
 # Import the FMTool and Parameter classes to define the tool and parameters
+from __future__ import annotations
+
+from typing import ClassVar
+
 from floodmodeller_api.tool import FMTool, Parameter
 
 
@@ -19,7 +23,7 @@ class SumTool(FMTool):
     # Add the tool description (required)
     description = "A basic tool to add two numbers together"
     # Add the parameters (one per function argument):
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         # Add parameters using the Parameter class
         Parameter(
             name="a",

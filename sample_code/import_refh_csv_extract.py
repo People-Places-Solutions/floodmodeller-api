@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Dict
 
 import pandas as pd
 
@@ -8,7 +9,7 @@ from floodmodeller_api.units import QTBDY
 
 csv_folder = Path("path/to/data/folder")
 
-ied_files: Dict[int, Dict[str, IED]] = {}
+ied_files: dict[int, dict[str, IED]] = {}
 
 # Iterate through each csv export
 for csv_file in csv_folder.glob("*"):
