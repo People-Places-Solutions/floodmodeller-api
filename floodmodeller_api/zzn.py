@@ -87,7 +87,7 @@ def convert_meta(meta: dict[str, Any]) -> None:
     for key in to_get_list:
         meta[key] = list(meta[key])
 
-    to_get_decoded_value = ("filepath", "model_title", "zzl_name")
+    to_get_decoded_value = ("model_title", "zzl_name", "zzn_or_zzx_name")
     for key in to_get_decoded_value:
         meta[key] = meta[key].value.decode()
 
@@ -99,17 +99,24 @@ def convert_data(data: dict[str, Any]) -> None:
         data[key] = np.array(data[key])
 
 
+def check_if_quality(zzn_or_zzx: Path) -> bool:
+    if zzn_or_zzx.suffix not in {".zzn", ".zzx"}:
+        msg = f"File '{zzn_or_zzx}' does not have suffix '.zzn' or '.zzx.'"
+        raise ValueError(msg)
+    return zzn_or_zzx.suffix == ".zzx"
+
+
 def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     reader = get_reader()
     zzl = get_associated_file(zzn_or_zzx, ".zzl")
 
-    is_quality = zzn_or_zzx.suffix == ".zzx"
-    zzl_or_zzx = "filepath" if is_quality else "zzl_name"
+    is_quality = check_if_quality(zzn_or_zzx)
+    zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
 
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
-    meta["filepath"] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
+    meta["zzn_or_zzx_name"] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
 
     # process zzl
@@ -211,7 +218,7 @@ def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     data["max_times"] = (ct.c_int * nx * ny)()
     data["min_times"] = (ct.c_int * nx * ny)()
     reader.process_zzn(
-        ct.byref(meta["filepath"]),
+        ct.byref(meta["zzn_or_zzx_name"]),
         ct.byref(meta["node_ID"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["is_quality"]),
