@@ -65,7 +65,7 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
-def convert_metadata(meta: dict[str, Any]) -> None:
+def convert_meta(meta: dict[str, Any]) -> None:
     to_get_value = (
         "dt",
         "errstat",
@@ -92,6 +92,11 @@ def convert_metadata(meta: dict[str, Any]) -> None:
         meta[key] = meta[key].value.decode()
 
     meta["labels"] = [label.value.decode().strip() for label in list(meta["labels"])]
+
+
+def convert_data(data: dict[str, Any]) -> None:
+    for key in data:
+        data[key] = np.array(data[key])
 
 
 def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -225,8 +230,6 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     )
     check_errstat("process_zzn", meta["errstat"].value)
 
-    convert_metadata(meta)
-
     return data, meta
 
 
@@ -255,6 +258,8 @@ class ZZN(FMFile):
         FMFile.__init__(self, zzn_filepath)
 
         self.data, self.meta = run_routines(self._filepath, is_quality=False)
+        convert_data(self.data)
+        convert_meta(self.meta)
 
     def to_dataframe(  # noqa: PLR0911
         self,
@@ -285,7 +290,7 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            arr = np.array(self.data["all_results"])
+            arr = self.data["all_results"]
             time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
             vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
             if multilevel_header:
@@ -309,7 +314,7 @@ class ZZN(FMFile):
             return df
 
         if result_type in ("max", "min"):
-            arr = np.array(self.data[f"{result_type}_results"]).transpose()
+            arr = self.data[f"{result_type}_results"].transpose()
             node_index = self.meta["labels"]
             col_names = [
                 result_type.capitalize() + lbl
@@ -326,7 +331,7 @@ class ZZN(FMFile):
             df.index.name = "Node Label"
 
             if include_time:
-                times = np.array(self.data[f"{result_type}_times"]).transpose()
+                times = self.data[f"{result_type}_times"].transpose()
                 # transform timestep into hrs
                 times = ((times - self.meta["timestep0"]) * self.meta["dt"]) / 3600
                 time_col_names = [name + " Time(hrs)" for name in col_names]
@@ -423,7 +428,7 @@ class ZZN(FMFile):
         nz = self.meta["savint_range"] + 1
         output = {}
 
-        arr = np.array(self.data["all_results"])
+        arr = self.data["all_results"]
         time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
 
         vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
