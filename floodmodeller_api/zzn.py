@@ -65,6 +65,35 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
+def convert_metadata(meta: dict[str, Any]) -> None:
+    to_get_value = (
+        "dt",
+        "errstat",
+        "is_quality",
+        "label_length",
+        "ltimestep",
+        "nnodes",
+        "node_ID",
+        "nvars",
+        "save_int",
+        "savint_range",
+        "savint_skip",
+        "timestep0",
+    )
+    for key in to_get_value:
+        meta[key] = meta[key].value
+
+    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero")
+    for key in to_get_list:
+        meta[key] = list(meta[key])
+
+    to_get_decoded_value = ("filepath", "model_title", "zzl_name", "zzx_name")
+    for key in to_get_decoded_value:
+        meta[key] = meta[key].value.decode()
+
+    meta["labels"] = [label.value.decode().strip() for label in list(meta["labels"])]
+
+
 def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
     reader = get_reader()
     zzl = get_associated_file(filepath, ".zzl")
@@ -90,10 +119,8 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     meta["tzero"] = (ct.c_int * 5)()
     meta["errstat"] = ct.c_int(0)
 
-    if meta["is_quality"]:
-        temp_filename = ct.byref(meta["zzx_name"])
-    else: # assume we have the typical zzl/zzn combo
-        temp_filename = ct.byref(meta["zzl_name"])
+    key = "zzx_name" if is_quality else "zzl_name"
+    temp_filename = ct.byref(meta[key])
 
     reader.process_zzl(
         temp_filename,
@@ -112,11 +139,8 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     check_errstat("process_zzl", meta["errstat"].value)
 
     # process labels
-    if meta["label_length"].value == 0:
-        # means that we are probably running quality data
-        meta["label_length"].value = 12         # Max expected from dll.
-                                                # Ideally, you want the dll to tell you whether it's 8 or 12, 
-                                                # needs fixing from "our" side
+    if meta["label_length"].value == 0:  # means that we are probably running quality data
+        meta["label_length"].value = 12  # 12 is the max expected from dll
 
     meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
     reader.process_labels(
@@ -201,16 +225,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     )
     check_errstat("process_zzn", meta["errstat"].value)
 
-    # Convert useful metadata from C types into python types
-    meta["dt"] = meta["dt"].value
-    meta["nnodes"] = meta["nnodes"].value
-    meta["save_int"] = meta["save_int"].value
-    meta["nvars"] = meta["nvars"].value
-    meta["savint_range"] = meta["savint_range"].value
-
-    meta["filepath"] = meta["filepath"].value.decode()
-    meta["labels"] = [label.value.decode().strip() for label in list(meta["labels"])]
-    meta["model_title"] = meta["model_title"].value.decode()
+    convert_metadata(meta)
 
     return data, meta
 
