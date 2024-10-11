@@ -87,7 +87,7 @@ def convert_meta(meta: dict[str, Any]) -> None:
     for key in to_get_list:
         meta[key] = list(meta[key])
 
-    to_get_decoded_value = ("filepath", "model_title", "zzl_name", "zzx_name")
+    to_get_decoded_value = ("filepath", "model_title", "zzl_name")
     for key in to_get_decoded_value:
         meta[key] = meta[key].value.decode()
 
@@ -99,17 +99,18 @@ def convert_data(data: dict[str, Any]) -> None:
         data[key] = np.array(data[key])
 
 
-def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], dict[str, Any]]:
+def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     reader = get_reader()
-    zzl = get_associated_file(filepath, ".zzl")
-    zzx = get_associated_file(filepath, ".zzx")
+    zzl = get_associated_file(zzn_or_zzx, ".zzl")
+
+    is_quality = zzn_or_zzx.suffix == ".zzx"
+    zzl_or_zzx = "filepath" if is_quality else "zzl_name"
 
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
-    meta["filepath"] = ct.create_string_buffer(bytes(str(filepath), "utf-8"), 255)
+    meta["filepath"] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
-    meta["zzx_name"] = ct.create_string_buffer(bytes(str(zzx), "utf-8"), 255)
 
     # process zzl
     meta["model_title"] = ct.create_string_buffer(b"", 128)
@@ -124,11 +125,8 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
     meta["tzero"] = (ct.c_int * 5)()
     meta["errstat"] = ct.c_int(0)
 
-    key = "zzx_name" if is_quality else "zzl_name"
-    temp_filename = ct.byref(meta[key])
-
     reader.process_zzl(
-        temp_filename,
+        ct.byref(meta[zzl_or_zzx]),
         ct.byref(meta["model_title"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["label_length"]),
@@ -182,7 +180,7 @@ def run_routines(filepath: Path, *, is_quality: bool) -> tuple[dict[str, Any], d
 
     # process vars
     reader.process_vars(
-        temp_filename,
+        ct.byref(meta[zzl_or_zzx]),
         ct.byref(meta["nvars"]),
         ct.byref(meta["is_quality"]),
         ct.byref(meta["errstat"]),
@@ -257,7 +255,7 @@ class ZZN(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self.data, self.meta = run_routines(self._filepath, is_quality=False)
+        self.data, self.meta = run_routines(self._filepath)
         convert_data(self.data)
         convert_meta(self.meta)
 

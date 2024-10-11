@@ -18,6 +18,6 @@ class ZZX(FMFile):
     @handle_exception(when="read")
     def __init__(self, zzx_filepath: str | Path | None = None) -> None:
         FMFile.__init__(self, zzx_filepath)
-        self.data, self.meta = run_routines(self._filepath, is_quality=True)
+        self.data, self.meta = run_routines(self._filepath)
         convert_data(self.data)
         convert_meta(self.meta)
