@@ -108,13 +108,14 @@ def check_if_quality(zzn_or_zzx: Path) -> bool:
     return zzn_or_zzx.suffix == ".zzx"
 
 
-def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
-    reader = get_reader()
-    zzl = get_associated_file(zzn_or_zzx, ".zzl")
-
-    is_quality = check_if_quality(zzn_or_zzx)
-    zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
-
+def run_routines(
+    reader: ct.CDLL,
+    zzl: Path,
+    zzn_or_zzx: Path,
+    zzl_or_zzx: str,
+    *,
+    is_quality: bool,
+) -> tuple[dict[str, Any], dict[str, Any]]:
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
@@ -241,6 +242,19 @@ def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     return data, meta
 
 
+def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    reader = get_reader()
+    zzl = get_associated_file(zzn_or_zzx, ".zzl")
+
+    is_quality = check_if_quality(zzn_or_zzx)
+    zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
+
+    data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality=is_quality)
+    convert_data(data)
+    convert_meta(meta)
+    return data, meta
+
+
 class ZZN(FMFile):
     """Reads and processes Flood Modeller 1D binary results format '.zzn'
 
@@ -265,9 +279,7 @@ class ZZN(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self.data, self.meta = run_routines(self._filepath)
-        convert_data(self.data)
-        convert_meta(self.meta)
+        self.data, self.meta = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(  # noqa: PLR0911
         self,
