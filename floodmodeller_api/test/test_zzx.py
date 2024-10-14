@@ -12,4 +12,4 @@ def test_load_zzx_using_dll(test_workspace):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__])
+    pytest.main([__file__, "-s"])

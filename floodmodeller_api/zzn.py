@@ -83,7 +83,7 @@ def convert_meta(meta: dict[str, Any]) -> None:
     for key in to_get_value:
         meta[key] = meta[key].value
 
-    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero")
+    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero", "variables")
     for key in to_get_list:
         meta[key] = list(meta[key])
 
@@ -91,7 +91,9 @@ def convert_meta(meta: dict[str, Any]) -> None:
     for key in to_get_decoded_value:
         meta[key] = meta[key].value.decode()
 
-    meta["labels"] = [label.value.decode().strip() for label in list(meta["labels"])]
+    to_get_decoded_value_list = ("labels", "variables")
+    for key in to_get_decoded_value_list:
+        meta[key] = [x.value.decode().strip() for x in list(meta[key])]
 
 
 def convert_data(data: dict[str, Any]) -> None:
@@ -152,7 +154,6 @@ def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     if meta["label_length"].value == 0:  # means that we are probably running quality data
         meta["label_length"].value = 12  # 12 is the max expected from dll
 
-    meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
     reader.process_labels(
         ct.byref(meta["zzl_name"]),
         ct.byref(meta["nnodes"]),
@@ -162,6 +163,7 @@ def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     check_errstat("process_labels", meta["errstat"].value)
 
     # get zz labels
+    meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
     for i in range(meta["nnodes"].value):
         reader.get_zz_label(
             ct.byref(ct.c_int(i + 1)),
@@ -194,14 +196,15 @@ def run_routines(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
     )
     check_errstat("process_vars", meta["errstat"].value)
 
-    # # get var names
-    # for i in range(meta["nvars"].value):
-    #     reader.get_ZZ_variable_name(
-    #         ct.byref(ct.c_int(i + 1)),
-    #         ct.byref(meta["labels"][i]),  # equivalent for variables' names??
-    #         ct.byref(meta["errstat"]),
-    #     )
-    #     check_errstat("get_ZZ_variable_name", meta["errstat"].value)
+    # get var names
+    meta["variables"] = (ct.c_char * 32 * meta["nvars"].value)()
+    for i in range(meta["nvars"].value):
+        reader.get_zz_variable_name(
+            ct.byref(ct.c_int(i + 1)),
+            ct.byref(meta["variables"][i]),
+            ct.byref(meta["errstat"]),
+        )
+        check_errstat("get_zz_variable_name", meta["errstat"].value)
 
     # process zzn
     meta["node_ID"] = ct.c_int(-1)
