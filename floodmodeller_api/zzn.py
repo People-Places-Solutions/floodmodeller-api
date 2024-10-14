@@ -28,6 +28,233 @@ from .to_from_json import to_json
 from .util import handle_exception, is_windows
 
 
+def get_reader() -> ct.CDLL:
+    # Get zzn_dll path
+    lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
+    zzn_dll = Path(__file__).resolve().parent / "libs" / lib
+
+    # Catch LD_LIBRARY_PATH error for linux
+    try:
+        return ct.CDLL(str(zzn_dll))
+    except OSError as e:
+        msg_1 = "libifport.so.5: cannot open shared object file: No such file or directory"
+        if msg_1 in str(e):
+            msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
+            raise OSError(msg_2) from e
+        raise
+
+
+def get_associated_file(original_file: Path, new_suffix: str) -> Path:
+    new_file = original_file.with_suffix(new_suffix)
+    if not new_file.exists():
+        msg = (
+            f"Error: Could not find associated {new_suffix} file."
+            f" Ensure that the {original_file.suffix} results"
+            f" have an associated {new_suffix} file with matching name."
+        )
+        raise FileNotFoundError(msg)
+    return new_file
+
+
+def check_errstat(routine: str, errstat: int) -> None:
+    if errstat != 0:
+        msg = (
+            f"Errstat from {routine} routine is {errstat}."
+            " See zzread_errorlog.txt for more information."
+        )
+        raise RuntimeError(msg)
+
+
+def convert_meta(meta: dict[str, Any]) -> None:
+    to_get_value = (
+        "dt",
+        "errstat",
+        "is_quality",
+        "label_length",
+        "ltimestep",
+        "nnodes",
+        "node_ID",
+        "nvars",
+        "save_int",
+        "savint_range",
+        "savint_skip",
+        "timestep0",
+    )
+    for key in to_get_value:
+        meta[key] = meta[key].value
+
+    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero", "variables")
+    for key in to_get_list:
+        meta[key] = list(meta[key])
+
+    to_get_decoded_value = ("model_title", "zzl_name", "zzn_or_zzx_name")
+    for key in to_get_decoded_value:
+        meta[key] = meta[key].value.decode()
+
+    to_get_decoded_value_list = ("labels", "variables")
+    for key in to_get_decoded_value_list:
+        meta[key] = [x.value.decode().strip() for x in list(meta[key])]
+
+
+def convert_data(data: dict[str, Any]) -> None:
+    for key in data:
+        data[key] = np.array(data[key])
+
+
+def check_if_quality(zzn_or_zzx: Path) -> bool:
+    if zzn_or_zzx.suffix not in {".zzn", ".zzx"}:
+        msg = f"File '{zzn_or_zzx}' does not have suffix '.zzn' or '.zzx.'"
+        raise ValueError(msg)
+    return zzn_or_zzx.suffix == ".zzx"
+
+
+def run_routines(
+    reader: ct.CDLL,
+    zzl: Path,
+    zzn_or_zzx: Path,
+    zzl_or_zzx: str,
+    *,
+    is_quality: bool,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    data: dict[str, Any] = {}
+    meta: dict[str, Any] = {}
+
+    meta["zzn_or_zzx_name"] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
+    meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
+
+    # process zzl
+    meta["model_title"] = ct.create_string_buffer(b"", 128)
+    meta["nnodes"] = ct.c_int(0)
+    meta["label_length"] = ct.c_int(0)
+    meta["dt"] = ct.c_float(0.0)
+    meta["timestep0"] = ct.c_int(0)
+    meta["ltimestep"] = ct.c_int(0)
+    meta["save_int"] = ct.c_float(0.0)
+    meta["is_quality"] = ct.c_bool(is_quality)
+    meta["nvars"] = ct.c_int(0)
+    meta["tzero"] = (ct.c_int * 5)()
+    meta["errstat"] = ct.c_int(0)
+
+    reader.process_zzl(
+        ct.byref(meta[zzl_or_zzx]),
+        ct.byref(meta["model_title"]),
+        ct.byref(meta["nnodes"]),
+        ct.byref(meta["label_length"]),
+        ct.byref(meta["dt"]),
+        ct.byref(meta["timestep0"]),
+        ct.byref(meta["ltimestep"]),
+        ct.byref(meta["save_int"]),
+        ct.byref(meta["is_quality"]),
+        ct.byref(meta["nvars"]),
+        ct.byref(meta["tzero"]),
+        ct.byref(meta["errstat"]),
+    )
+    check_errstat("process_zzl", meta["errstat"].value)
+
+    # process labels
+    if meta["label_length"].value == 0:  # means that we are probably running quality data
+        meta["label_length"].value = 12  # 12 is the max expected from dll
+
+    reader.process_labels(
+        ct.byref(meta["zzl_name"]),
+        ct.byref(meta["nnodes"]),
+        ct.byref(meta["label_length"]),
+        ct.byref(meta["errstat"]),
+    )
+    check_errstat("process_labels", meta["errstat"].value)
+
+    # get zz labels
+    meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
+    for i in range(meta["nnodes"].value):
+        reader.get_zz_label(
+            ct.byref(ct.c_int(i + 1)),
+            ct.byref(meta["labels"][i]),
+            ct.byref(meta["errstat"]),
+        )
+        check_errstat("get_zz_label", meta["errstat"].value)
+
+    # preprocess zzn
+    last_hr = (meta["ltimestep"].value - meta["timestep0"].value) * meta["dt"].value / 3600
+    meta["output_hrs"] = (ct.c_float * 2)(0.0, last_hr)
+    meta["aitimestep"] = (ct.c_int * 2)(meta["timestep0"].value, meta["ltimestep"].value)
+    meta["isavint"] = (ct.c_int * 2)()
+    reader.preprocess_zzn(
+        ct.byref(meta["output_hrs"]),
+        ct.byref(meta["aitimestep"]),
+        ct.byref(meta["dt"]),
+        ct.byref(meta["timestep0"]),
+        ct.byref(meta["ltimestep"]),
+        ct.byref(meta["save_int"]),
+        ct.byref(meta["isavint"]),
+    )
+
+    # process vars
+    reader.process_vars(
+        ct.byref(meta[zzl_or_zzx]),
+        ct.byref(meta["nvars"]),
+        ct.byref(meta["is_quality"]),
+        ct.byref(meta["errstat"]),
+    )
+    check_errstat("process_vars", meta["errstat"].value)
+
+    # get var names
+    meta["variables"] = (ct.c_char * 32 * meta["nvars"].value)()
+    for i in range(meta["nvars"].value):
+        reader.get_zz_variable_name(
+            ct.byref(ct.c_int(i + 1)),
+            ct.byref(meta["variables"][i]),
+            ct.byref(meta["errstat"]),
+        )
+        check_errstat("get_zz_variable_name", meta["errstat"].value)
+
+    # process zzn
+    meta["node_ID"] = ct.c_int(-1)
+    meta["savint_skip"] = ct.c_int(1)
+    meta["savint_range"] = ct.c_int(
+        int((meta["isavint"][1] - meta["isavint"][0]) / meta["savint_skip"].value),
+    )
+    nx = meta["nnodes"].value
+    ny = meta["nvars"].value
+    nz = meta["savint_range"].value + 1
+    data["all_results"] = (ct.c_float * nx * ny * nz)()
+    data["max_results"] = (ct.c_float * nx * ny)()
+    data["min_results"] = (ct.c_float * nx * ny)()
+    data["max_times"] = (ct.c_int * nx * ny)()
+    data["min_times"] = (ct.c_int * nx * ny)()
+    reader.process_zzn(
+        ct.byref(meta["zzn_or_zzx_name"]),
+        ct.byref(meta["node_ID"]),
+        ct.byref(meta["nnodes"]),
+        ct.byref(meta["is_quality"]),
+        ct.byref(meta["nvars"]),
+        ct.byref(meta["savint_range"]),
+        ct.byref(meta["savint_skip"]),
+        ct.byref(data["all_results"]),
+        ct.byref(data["max_results"]),
+        ct.byref(data["min_results"]),
+        ct.byref(data["max_times"]),
+        ct.byref(data["min_times"]),
+        ct.byref(meta["errstat"]),
+        ct.byref(meta["isavint"]),
+    )
+    check_errstat("process_zzn", meta["errstat"].value)
+
+    return data, meta
+
+
+def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    reader = get_reader()
+    zzl = get_associated_file(zzn_or_zzx, ".zzl")
+
+    is_quality = check_if_quality(zzn_or_zzx)
+    zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
+
+    data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality=is_quality)
+    convert_data(data)
+    convert_meta(meta)
+    return data, meta
+
+
 class ZZN(FMFile):
     """Reads and processes Flood Modeller 1D binary results format '.zzn'
 
@@ -42,150 +269,17 @@ class ZZN(FMFile):
     _suffix: str = ".zzn"
 
     @handle_exception(when="read")
-    def __init__(  # noqa: PLR0915
+    def __init__(
         self,
         zzn_filepath: str | Path | None = None,
         from_json: bool = False,
     ):
         if from_json:
             return
+
         FMFile.__init__(self, zzn_filepath)
 
-        # Get zzn_dll path
-        lib = "zzn_read.dll" if is_windows() else "libzzn_read.so"
-        zzn_dll = Path(__file__).resolve().parent / "libs" / lib
-
-        # Catch LD_LIBRARY_PATH error for linux
-        try:
-            zzn_read = ct.CDLL(str(zzn_dll))
-        except OSError as e:
-            msg_1 = "libifport.so.5: cannot open shared object file: No such file or directory"
-            if msg_1 in str(e):
-                msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
-                raise OSError(msg_2) from e
-            raise
-
-        # Get zzl path
-        zzn = self._filepath
-        zzl = zzn.with_suffix(".zzl")
-        if not zzl.exists():
-            raise FileNotFoundError(
-                "Error: Could not find associated .ZZL file. Ensure that the zzn results have an associated zzl file with matching name.",
-            )
-
-        self.meta: dict[str, Any] = {}  # Dict object to hold all metadata
-        self.data = {}  # Dict object to hold all data
-
-        # PROCESS_ZZL
-        self.meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
-        self.meta["zzn_name"] = ct.create_string_buffer(bytes(str(zzn), "utf-8"), 255)
-        self.meta["model_title"] = ct.create_string_buffer(b"", 128)
-        self.meta["nnodes"] = ct.c_int(0)
-        self.meta["label_length"] = ct.c_int(0)
-        self.meta["dt"] = ct.c_float(0.0)
-        self.meta["timestep0"] = ct.c_int(0)
-        self.meta["ltimestep"] = ct.c_int(0)
-        self.meta["save_int"] = ct.c_float(0.0)
-        self.meta["is_quality"] = ct.c_bool(False)
-        self.meta["nvars"] = ct.c_int(0)
-        self.meta["tzero"] = (ct.c_int * 5)()
-        self.meta["errstat"] = ct.c_int(0)
-        zzn_read.process_zzl(
-            ct.byref(self.meta["zzl_name"]),
-            ct.byref(self.meta["model_title"]),
-            ct.byref(self.meta["nnodes"]),
-            ct.byref(self.meta["label_length"]),
-            ct.byref(self.meta["dt"]),
-            ct.byref(self.meta["timestep0"]),
-            ct.byref(self.meta["ltimestep"]),
-            ct.byref(self.meta["save_int"]),
-            ct.byref(self.meta["is_quality"]),
-            ct.byref(self.meta["nvars"]),
-            ct.byref(self.meta["tzero"]),
-            ct.byref(self.meta["errstat"]),
-        )
-        # PROCESS_LABELS
-        self.meta["labels"] = (
-            ct.c_char * self.meta["label_length"].value * self.meta["nnodes"].value
-        )()
-        zzn_read.process_labels(
-            ct.byref(self.meta["zzl_name"]),
-            ct.byref(self.meta["nnodes"]),
-            ct.byref(self.meta["label_length"]),
-            ct.byref(self.meta["errstat"]),
-        )
-        for i in range(self.meta["nnodes"].value):
-            zzn_read.get_zz_label(
-                ct.byref(ct.c_int(i + 1)),
-                ct.byref(self.meta["labels"][i]),
-                ct.byref(self.meta["errstat"]),
-            )
-        # PREPROCESS_ZZN
-        last_hr = (
-            (self.meta["ltimestep"].value - self.meta["timestep0"].value)
-            * self.meta["dt"].value
-            / 3600
-        )
-        self.meta["output_hrs"] = (ct.c_float * 2)(0.0, last_hr)
-        self.meta["aitimestep"] = (ct.c_int * 2)(
-            self.meta["timestep0"].value,
-            self.meta["ltimestep"].value,
-        )
-        self.meta["isavint"] = (ct.c_int * 2)()
-        zzn_read.preprocess_zzn(
-            ct.byref(self.meta["output_hrs"]),
-            ct.byref(self.meta["aitimestep"]),
-            ct.byref(self.meta["dt"]),
-            ct.byref(self.meta["timestep0"]),
-            ct.byref(self.meta["ltimestep"]),
-            ct.byref(self.meta["save_int"]),
-            ct.byref(self.meta["isavint"]),
-        )
-        # PROCESS_ZZN
-        self.meta["node_ID"] = ct.c_int(-1)
-        self.meta["savint_skip"] = ct.c_int(1)
-        self.meta["savint_range"] = ct.c_int(
-            int(
-                (self.meta["isavint"][1] - self.meta["isavint"][0])
-                / self.meta["savint_skip"].value,
-            ),
-        )
-        nx = self.meta["nnodes"].value
-        ny = self.meta["nvars"].value
-        nz = self.meta["savint_range"].value + 1
-        self.data["all_results"] = (ct.c_float * nx * ny * nz)()
-        self.data["max_results"] = (ct.c_float * nx * ny)()
-        self.data["min_results"] = (ct.c_float * nx * ny)()
-        self.data["max_times"] = (ct.c_int * nx * ny)()
-        self.data["min_times"] = (ct.c_int * nx * ny)()
-        zzn_read.process_zzn(
-            ct.byref(self.meta["zzn_name"]),
-            ct.byref(self.meta["node_ID"]),
-            ct.byref(self.meta["nnodes"]),
-            ct.byref(self.meta["is_quality"]),
-            ct.byref(self.meta["nvars"]),
-            ct.byref(self.meta["savint_range"]),
-            ct.byref(self.meta["savint_skip"]),
-            ct.byref(self.data["all_results"]),
-            ct.byref(self.data["max_results"]),
-            ct.byref(self.data["min_results"]),
-            ct.byref(self.data["max_times"]),
-            ct.byref(self.data["min_times"]),
-            ct.byref(self.meta["errstat"]),
-            ct.byref(self.meta["isavint"]),
-        )
-
-        # Convert useful metadata from C types into python types
-
-        self.meta["dt"] = self.meta["dt"].value
-        self.meta["nnodes"] = self.meta["nnodes"].value
-        self.meta["save_int"] = self.meta["save_int"].value
-        self.meta["nvars"] = self.meta["nvars"].value
-        self.meta["savint_range"] = self.meta["savint_range"].value
-
-        self.meta["zzn_name"] = self.meta["zzn_name"].value.decode()
-        self.meta["labels"] = [label.value.decode().strip() for label in list(self.meta["labels"])]
-        self.meta["model_title"] = self.meta["model_title"].value.decode()
+        self.data, self.meta = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(  # noqa: PLR0911
         self,
@@ -216,7 +310,7 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            arr = np.array(self.data["all_results"])
+            arr = self.data["all_results"]
             time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
             vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
             if multilevel_header:
@@ -240,7 +334,7 @@ class ZZN(FMFile):
             return df
 
         if result_type in ("max", "min"):
-            arr = np.array(self.data[f"{result_type}_results"]).transpose()
+            arr = self.data[f"{result_type}_results"].transpose()
             node_index = self.meta["labels"]
             col_names = [
                 result_type.capitalize() + lbl
@@ -257,7 +351,7 @@ class ZZN(FMFile):
             df.index.name = "Node Label"
 
             if include_time:
-                times = np.array(self.data[f"{result_type}_times"]).transpose()
+                times = self.data[f"{result_type}_times"].transpose()
                 # transform timestep into hrs
                 times = ((times - self.meta["timestep0"]) * self.meta["dt"]) / 3600
                 time_col_names = [name + " Time(hrs)" for name in col_names]
@@ -279,7 +373,8 @@ class ZZN(FMFile):
                 return df[f"{result_type.capitalize()} {variable.capitalize()}"]
             return df
 
-        raise ValueError(f'Result type: "{result_type}" not recognised')
+        msg = f'Result type: "{result_type}" not recognised'
+        raise ValueError(msg)
 
     def export_to_csv(
         self,
@@ -326,9 +421,8 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type.lower() not in ["all", "max", "min"]:
-            raise Exception(
-                f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' ",
-            )
+            msg = f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
+            raise Exception(msg)
 
         df = self.to_dataframe(
             result_type=result_type,
@@ -354,7 +448,7 @@ class ZZN(FMFile):
         nz = self.meta["savint_range"] + 1
         output = {}
 
-        arr = np.array(self.data["all_results"])
+        arr = self.data["all_results"]
         time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
 
         vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
@@ -373,9 +467,8 @@ class ZZN(FMFile):
             for i, var in enumerate(input_vars):
                 input_vars[i] = var.strip().capitalize()
                 if input_vars[i] not in vars_list:
-                    raise Exception(
-                        f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} ",
-                    )
+                    msg = f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
+                    raise Exception(msg)
 
             for var in vars_list:
                 if var not in input_vars:
@@ -411,4 +504,5 @@ class ZZN(FMFile):
     @classmethod
     def from_json(cls, json_string: str = ""):
         # Not possible
-        raise NotImplementedError("It is not possible to build a ZZN class instance from JSON")
+        msg = "It is not possible to build a ZZN class instance from JSON"
+        raise NotImplementedError(msg)

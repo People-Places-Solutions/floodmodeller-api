@@ -1,23 +1,27 @@
+from __future__ import annotations
+
 import math
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from shapely.geometry import LineString
 from shapely.ops import split
-
-from floodmodeller_api import DAT, IEF, XML2D
 
 from .tuflow_to_dat import TuflowToDat
 
+if TYPE_CHECKING:
+    from shapely.geometry import LineString
 
-def concat(gdf_list: List[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+    from floodmodeller_api import DAT, IEF, XML2D
+
+
+def concat(gdf_list: list[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
     return gpd.GeoDataFrame(pd.concat(gdf_list, ignore_index=True))
 
 
-def rename_and_select(df: pd.DataFrame, mapper: Dict[str, str]) -> pd.DataFrame:
+def rename_and_select(df: pd.DataFrame, mapper: dict[str, str]) -> pd.DataFrame:
     mapper_subset = {k: v for k, v in mapper.items() if k in df.columns}
     return df.rename(columns=mapper_subset)[list(mapper_subset.values())]
 
@@ -33,7 +37,8 @@ class ComponentConverter:
         self._folder = folder
 
     def edit_fm_file(self) -> None:
-        raise NotImplementedError("Abstract method not overwritten")
+        msg = "Abstract method not overwritten"
+        raise NotImplementedError(msg)
 
 
 class ComponentConverterIEF(ComponentConverter):
@@ -68,8 +73,8 @@ class NetworkConverterDAT(ComponentConverterDAT):
         dat: DAT,
         folder: Path,
         parent_folder: str,
-        nwk_paths: List[Path],
-        xs_paths: List[Path],
+        nwk_paths: list[Path],
+        xs_paths: list[Path],
     ) -> None:
         super().__init__(dat, folder)
         self.parent_folder = parent_folder
@@ -97,9 +102,9 @@ class ComputationalAreaConverterXML2D(ComponentConverterXML2D):
         xll: float,
         yll: float,
         dx: float,
-        lx_ly: Tuple[float, float],
-        all_areas: List[gpd.GeoDataFrame],
-        rotation: Optional[float] = None,
+        lx_ly: tuple[float, float],
+        all_areas: list[gpd.GeoDataFrame],
+        rotation: float | None = None,
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
@@ -158,8 +163,8 @@ class LocLineConverterXML2D(ComputationalAreaConverterXML2D):
         folder: Path,
         domain_name: str,
         dx: float,
-        lx_ly: Tuple[float, float],
-        all_areas: List[gpd.GeoDataFrame],
+        lx_ly: tuple[float, float],
+        all_areas: list[gpd.GeoDataFrame],
         loc_line: LineString,
     ) -> None:
         x1, y1 = loc_line.coords[0]
@@ -179,8 +184,8 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         xml: XML2D,
         folder: Path,
         domain_name: str,
-        rasters: List[Path],
-        vectors: List[Union[Tuple[gpd.GeoDataFrame], gpd.GeoDataFrame]],
+        rasters: list[Path],
+        vectors: list[tuple[gpd.GeoDataFrame] | gpd.GeoDataFrame],
     ) -> None:
         super().__init__(xml, folder, domain_name)
 
@@ -198,7 +203,7 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
         self._xml.domains[self._domain_name]["topography"] = self._raster_paths + self._vector_paths
 
     @classmethod
-    def combine_layers(cls, layers: Tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
+    def combine_layers(cls, layers: tuple[gpd.GeoDataFrame]) -> gpd.GeoDataFrame:
         all_types = concat([cls.standardise_topography(x) for x in layers])
 
         lines = all_types[all_types.geometry.geometry.type == "LineString"]
@@ -224,7 +229,8 @@ class TopographyConverterXML2D(ComponentConverterXML2D):
             spatial_types.append("polygons")
         spatial_types_display = ", ".join(spatial_types)
 
-        raise RuntimeError(f"Combination not supported: {spatial_types_display}")
+        msg = f"Combination not supported: {spatial_types_display}"
+        raise RuntimeError(msg)
 
     @staticmethod
     def standardise_topography(file: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
@@ -286,7 +292,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
         domain_name: str,
         law: str,
         global_material: int,
-        file_material: List[gpd.GeoDataFrame],
+        file_material: list[gpd.GeoDataFrame],
         mapping: pd.DataFrame,
     ) -> None:
         super().__init__(xml, folder, domain_name)
@@ -377,6 +383,6 @@ class BoundaryConverterXML2D(ComponentConverterXML2D):
         xml: XML2D,
         folder: Path,
         domain_name: str,
-        vectors: List[gpd.GeoDataFrame],
+        vectors: list[gpd.GeoDataFrame],
     ) -> None:
         super().__init__(xml, folder, domain_name)

@@ -7,3 +7,4 @@ from .util import read_file
 from .version import __version__
 from .xml2d import XML2D
 from .zzn import ZZN
+from .zzx import ZZX
