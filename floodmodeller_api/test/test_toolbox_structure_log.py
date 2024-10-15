@@ -125,7 +125,12 @@ S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 def test_conduit_data(slb, conduit_empty):
     slb._dat = DAT()
     output = slb._conduit_data(conduit_empty)
-    assert output == [0.0, "", "", 0.0]
+    assert output == {
+        "length": 0.0,
+        "inlet": "",
+        "outlet": "",
+        "total_length": 0.0,
+    }  # currently this expects the inlet and outlet values to be empty strings, because we're not returning lists this could probably be left out now
 
 
 def test_culvert_loss_data(slb):
