@@ -110,15 +110,25 @@ def ex18_dat_expected():
     # I think this is the correct way to establish the same 'expected' result, but if this is a larger/more structure-rich dat, could read from file?
     # Ideally I'd use a larger dat for this like one of the ones from private sample-dataset, to be discussed
     return """Unit Name,Unit Type,Unit Subtype,Comment,Friction,Dimensions (m),Weir Coefficient,Culvert Inlet/Outlet Loss
-C2,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.02]",dia: 1.00 x l: 100.00 (Total length between C2 and C2m: 500.0m),,Ki: 0.6
-C2m,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.02]",dia: 1.00 x l: 0.00,,
-C2md,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.02]",dia: 1.00 x l: 100.00 (Total length between C2md and C2d: 700.0m),,
-C2d,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.02]",dia: 1.00 x l: 0.00,,
+C2,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.020]",dia: 1.00 x l: 100.00 (Total conduit length: 500.00),,Ki: 0.6
+C2_R1,REPLICATE,,,,,,
+C2_R2,REPLICATE,,,,,,
+C2_R3,REPLICATE,,,,,,
+C2_R4,REPLICATE,,,,,,
+C2m,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.020]",dia: 1.00 x l: 0.00,,
+C2md,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.020]",dia: 1.00 x l: 100.00 (Total conduit length: 700.00),,
+C2_R5,REPLICATE,,,,,,
+C2_R6,REPLICATE,,,,,,
+C2_R7,REPLICATE,,,,,,
+C2_R8,REPLICATE,,,,,,
+C2_R9,REPLICATE,,,,,,
+C2_R10,REPLICATE,,,,,,
+C2d,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.020]",dia: 1.00 x l: 0.00,,
 S0,WEIR,,,,Crest Elevation: 21.00 x w: 1.50,,
 C2d,WEIR,,,,Crest Elevation: 18.00 x w: 0.60,,
 S4,WEIR,,,,Crest Elevation: 17.90 x w: 2.00,,
 S8,WEIR,,,,Crest Elevation: 17.70 x w: 2.00,,
-S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
+S3LS,SPILL,,,,Elevation: 20.00 x w: 80.00,1.7,
 """
 
 

@@ -12,6 +12,18 @@ def extract_attrs(object,keys):
         """
         return {key:getattr(object,key) for key in keys}
 
+def serialise_keys(dict):
+    """
+    dictionary keys must be unique; but in FM the node label isnt always unique
+    however the (label,type) pair will always be unique; so we have to use that as our key.
+    json doesnt like tuples as keys so we have to convert them first if we need to serialise our dictionary output.
+
+    Replaces tuple keys with string versions of themselves, wrapped in ()
+
+    """
+
+    return {f"({",".join(key)})" : value for key,value in dict.items()}
+
 class StructureLogBuilder:
 
     def __init__(self, input_path, output_path) -> None:
@@ -24,7 +36,7 @@ class StructureLogBuilder:
 
         self.unit_store = {}
 
-    def _add_fields(self):
+    def _add_fields(self,writer):
         field = [
             "Unit Name",
             "Unit Type",
@@ -35,24 +47,22 @@ class StructureLogBuilder:
             "Weir Coefficient",
             "Culvert Inlet/Outlet Loss",
         ]
-        self._writer.writerow(field)
+        writer.writerow(field)
 
     def _conduit_data(self, conduit):
+        conduit_data = {"length":conduit.dist_to_next}
         # modified conduit crawler script
-        length = conduit.dist_to_next
-        inlet = ""
-        outlet = ""
-        total_length = 0.0
         add_to_conduit_stack = None
 
         # check if the previous node is an inlet
         previous = self._dat.prev(conduit)
         if hasattr(previous, "subtype") and previous.subtype == "INLET":
-            inlet = previous.ki
+            conduit_data["inlet"] = previous.ki
 
         current_conduit = conduit
         # check if the
         if current_conduit.name not in self.already_in_chain:
+            total_length = 0
             chain = []
             while True:
                 self.already_in_chain.add(current_conduit.name)
@@ -64,11 +74,12 @@ class StructureLogBuilder:
                 current_conduit = self._dat.next(current_conduit)
 
             self.conduit_chains[conduit.name] = chain.copy()
+            conduit_data["total_length"] = total_length
 
         next_conduit = self._dat.next(conduit)
         if next_conduit is not None:
             if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
-                outlet = next_conduit.loss_coefficient
+                conduit_data["outlet"] = next_conduit.loss_coefficient
             
             if next_conduit._unit == "REPLICATE":
                 # for replicates, pass down the label of the unit its copying from.
@@ -78,7 +89,7 @@ class StructureLogBuilder:
                     next_conduit.mimic = current_conduit.name
                 add_to_conduit_stack = copy.deepcopy(next_conduit)
 
-        return {"length":length, "inlet":inlet, "outlet":outlet, "total_length":total_length}, add_to_conduit_stack
+        return conduit_data, add_to_conduit_stack
 
     def _culvert_loss_data(self, inlet, outlet):
         culvert_loss = ""
@@ -164,68 +175,10 @@ class StructureLogBuilder:
         return {"dimensions":dimensions}
 
     def _add_conduits(self):
-        for conduit in self._dat.conduits.values():
-            if conduit.subtype not in [
-                "CIRCULAR",
-                "SPRUNGARCH",
-                "RECTANGULAR",
-                "SECTION",
-                "SPRUNG",
-            ]:
-                print(f"Conduit subtype: {conduit.subtype} not currently supported")
-                self._write(conduit.name, conduit._unit, conduit.subtype)
-                self.unit_store[conduit.name] = {"name":conduit.name, "type":conduit._unit, "subtype":conduit.subtype}
-                continue
-            conduit_data = self._conduit_data(conduit)
-            length = conduit_data["length"]
-            inlet = conduit_data["inlet"]
-            outlet = conduit_data["outlet"]
-            total_length = conduit_data["total_length"]
-
-            culvert_loss = self._culvert_loss_data(inlet, outlet)
-            friction = ""
-            dimensions = ""
-            if conduit.subtype == "CIRCULAR":
-                circular_data = self._circular_data(conduit, length)
-                friction = circular_data[0]
-                dimensions = circular_data[1]
-            elif conduit.subtype == "SPRUNGARCH":
-                sprungarch_data = self._sprungarch_data(conduit, length)
-                friction = sprungarch_data[0]
-                dimensions = sprungarch_data[1]
-            elif conduit.subtype == "RECTANGULAR":
-                rectangular_data = self._rectangular_data(conduit, length)
-                friction = rectangular_data[0]
-                dimensions = rectangular_data[1]
-            elif conduit.subtype == "SECTION":
-                section_data = self._section_data(conduit, length)
-                friction = section_data[0]
-                dimensions = section_data[1]
-            elif conduit.subtype == "SPRUNG":
-                sprung_data = self._sprung_data(conduit, length)
-                friction = sprung_data[0]
-                dimensions = sprung_data[1]
-
-            if total_length > 0:
-                chain = self.conduit_chains[conduit.name]
-                dimensions += f" (Total length between {chain[0]} and {chain[-1]}: {total_length}m)"
-
-            self._write(
-                conduit.name,
-                conduit._unit,
-                conduit.subtype,
-                conduit.comment,
-                friction,
-                dimensions,
-                "",
-                culvert_loss,
-            )
-
-    def _add_conduits(self):
         conduit_stack = copy.deepcopy(list(self._dat.conduits.values()))
-        while len(conduit_stack) > 0: # this is a list because I want to add units to it as we go, to detail inline replicate units
+        while len(conduit_stack) > 0: # this is a stack/while-loop because I want to add units to it as we go, to detail inline replicate units
             conduit = conduit_stack.pop(0)
-            self.unit_store[conduit.name] = {"name":conduit.name, "type":conduit._unit, "subtype":conduit.subtype}
+            self.unit_store[(conduit.name,conduit._unit)] = {"name":conduit.name, "type":conduit._unit, "subtype":conduit.subtype,"comment":conduit.comment}
             if (conduit._unit,conduit.subtype) not in [
                     ("CONDUIT","CIRCULAR"),
                     ("CONDUIT","SPRUNGARCH"),
@@ -237,21 +190,21 @@ class StructureLogBuilder:
                 print(f"Conduit subtype: {conduit.subtype} not currently supported")
                 continue
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
-            self.unit_store[conduit.name]["conduit_data"] = conduit_dict
+            self.unit_store[(conduit.name,conduit._unit)]["conduit_data"] = conduit_dict
             # now use individual functions to get friction and dimensional data in a way that is appropriate for each conduit type
             match (conduit._unit,conduit.subtype):
                 case ("CONDUIT","CIRCULAR"):
-                    self.unit_store[conduit.name] |= self._circular_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._circular_data(conduit)
                 case ("CONDUIT","SPRUNGARCH"):
-                    self.unit_store[conduit.name] |= self._sprungarch_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._sprungarch_data(conduit)
                 case ("CONDUIT","RECTANGULAR"):
-                    self.unit_store[conduit.name] |= self._rectangular_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._rectangular_data(conduit)
                 case ("CONDUIT","SECTION"):
-                    self.unit_store[conduit.name] |= self._section_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._section_data(conduit)
                 case ("CONDUIT","SPRUNG"):
-                    self.unit_store[conduit.name] |= self._sprung_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._sprung_data(conduit)
                 case ("REPLICATE",None):
-                    self.unit_store[conduit.name] |= self._replicate_data(conduit)
+                    self.unit_store[(conduit.name,conduit._unit)] |= self._replicate_data(conduit)
                 case _:
                     pass
             
@@ -326,65 +279,133 @@ class StructureLogBuilder:
 
     def _add_structures(self):
         for structure in self._dat.structures.values():
+            self.unit_store[(structure.name,structure._unit)] = {"name":structure.name, "type":structure._unit, "subtype":structure.subtype,"comment":structure.comment}
             friction = ""
             dimensions = ""
             weir_coefficient = ""
             if structure._unit == "ORIFICE":
-                dimensions = self._orifice_dimensions(structure)
+                self.unit_store[(structure.name,structure._unit)] |= self._orifice_dimensions(structure)
             elif structure._unit == "SPILL":
-                spill_data = self._spill_data(structure)
-                dimensions = spill_data[0]
-                weir_coefficient = spill_data[1]
+                self.unit_store[(structure.name,structure._unit)] |= self._spill_data(structure)
             elif structure._unit == "SLUICE":
-                dimensions = f"Crest Elevation: {structure.crest_elevation:.2f} x w: {structure.weir_breadth:.2f} x l: {structure.weir_length:.2f}"
-            elif structure._unit == "RNWEIR":
-                dimensions = f"Crest Elevation: {structure.weir_elevation:.2f} x w: {structure.weir_breadth:.2f} x l: {structure.weir_length:.2f}"
-            elif structure._unit == "WEIR":
-                dimensions = f"Crest Elevation: {structure.weir_elevation:.2f} x w: {structure.weir_breadth:.2f}"
-                # Need weir coefficient (the velocity attribute??)
-            elif structure._unit == "BRIDGE":
-                bridge_data = self._bridge_data(structure)
-                friction = bridge_data[0]
-                dimensions = bridge_data[1]
-            else:
-                print(f"Structure: {structure._unit} not currently supported in structure log")
-                self._write(structure.name, structure._unit, structure.subtype)
-                continue
-
-            self._write(
-                structure.name,
-                structure._unit,
-                structure.subtype,
-                structure.comment,
-                friction,
-                dimensions,
-                weir_coefficient,
-                "",
-            )
-
-    def _add_structures(self):
-        for structure in self._dat.structures.values():
-            self.unit_store[structure.name] = {"name":structure.name, "type":structure._unit, "subtype":structure.subtype}
-            friction = ""
-            dimensions = ""
-            weir_coefficient = ""
-            if structure._unit == "ORIFICE":
-                self.unit_store[structure.name] |= self._orifice_dimensions(structure)
-            elif structure._unit == "SPILL":
-                self.unit_store[structure.name] |= self._spill_data(structure)
-            elif structure._unit == "SLUICE":
-                self.unit_store[structure.name] |= self._sluice_data(structure)
+                self.unit_store[(structure.name,structure._unit)] |= self._sluice_data(structure)
             elif structure._unit in {"WEIR","RNWEIR"}:
-                self.unit_store[structure.name] |= self._weir_data(structure)
+                self.unit_store[(structure.name,structure._unit)] |= self._weir_data(structure)
                 # Need weir coefficient (the velocity attribute??)
             elif structure._unit == "BRIDGE":
-                self.unit_store[structure.name] |= self._bridge_data(structure)
+                self.unit_store[(structure.name,structure._unit)] |= self._bridge_data(structure)
             else:
                 print(f"Structure: {structure._unit} not currently supported in structure log")
                 continue
+
+    def _format_friction(self,unit_dict):
+        text = ""
+
+        if "friction" not in unit_dict:
+            return ""
+
+        try:
+            match unit_dict["friction"]["friction_eq"]:
+                case "MANNING":
+                    text += "Mannings: "
+                case "COLEBROOK-WHITE":
+                    text += "Colebrook-White: "
+        except KeyError:
+            text += "Mannings: "
+        
+        friction_set = unit_dict["friction"]["friction_set"]
+        if len(friction_set) == 1:
+            text += f"{friction_set[0]:.3f}"
+        else:
+            text += f"[min: {friction_set[0]:.3f}, max: {friction_set[-1]:.3f}]"
+
+        return text
+
+    def _format_bridge_dimensions(self,unit_dict):
+        
+        if len(unit_dict["opening_data"]) == 1:
+            opening = unit_dict["opening_data"][0]
+            height = opening["opening_height"]
+            width = opening["width"]
+            return f"h: {height:.2f} x w: {width:.2f}"
+        
+        text = ""
+
+        for n,opening in enumerate(unit_dict["opening_data"]):
+            height = opening["opening_height"]
+            width = opening["width"]
+            
+            text += f"Opening {n+1}: h: {height:.2f} x w: {width:.2f} "
+
+        text = text.rstrip()
+        return text
+    
+    def _format_orifice_dimensions(self,unit_dict):
+        height = unit_dict["dimensions"]["height"]
+        width = unit_dict["dimensions"]["width"]
+        match unit_dict["dimensions"]["shape"]:
+            case "RECTANGLE":
+                return f"h: {height:.2f} x w: {width:.2f}"
+            case "CIRCULAR":
+                return f"dia: {width:.2f}"
+            
+    def _format_spill_dimensions(self,unit_dict):
+        invert = unit_dict["dimensions"]["invert"]
+        width = unit_dict["dimensions"]["width"]
+
+        return f"Elevation: {invert:.2f} x w: {width:.2f}"
+    
+    def _format_weir_dimensions(self,unit_dict):
+        text = ""
+        elevation = unit_dict["dimensions"]["weir_elevation"]
+        breadth = unit_dict["dimensions"]["weir_breadth"]
+
+        text += f"Crest Elevation: {elevation:.2f} x w: {breadth:.2f}"
+
+        if "weir_length" in unit_dict["dimensions"]:
+            length = unit_dict["dimensions"]["weir_length"]
+            text += f" x l: {length:.2f}"
+        return text
+    
+    def _format_sluice_dimensions(self,unit_dict):
+        elevation = unit_dict["dimensions"]["crest_elevation"]
+        breadth = unit_dict["dimensions"]["weir_breadth"]
+        length = unit_dict["dimensions"]["weir_length"]
+
+        return f"Crest Elevation: {elevation:.2f} x w: {breadth:.2f} x l: {length:.2f}"
+    
+    def _format_conduit_dimensions(self,unit_dict):
+        text = ""
+        culvert_loss = ""
+        match unit_dict["subtype"]:
+            case "CIRCULAR":
+                text += f"dia: {unit_dict["dimensions"]["diameter"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}"
+            case "SPRUNGARCH" | "SPRUNG":
+                text += f"(Springing: {unit_dict["dimensions"]["height_springing"]:.2f}, Crown: {unit_dict["dimensions"]["height_crown"]:.2f}) x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}"
+            case "RECTANGULAR":
+                text += f"h: {unit_dict["dimensions"]["height"]:.2f} x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}"
+            case "SECTION":
+                text += f"h: {unit_dict["dimensions"]["height"]:.2f} x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}"
+            case _:
+                return "",""
+        
+        if "total_length" in unit_dict["conduit_data"]:
+            text += f" (Total conduit length: {unit_dict["conduit_data"]["total_length"]:.2f})"
+
+        if "inlet" in unit_dict["conduit_data"]:
+            culvert_loss += f"Ki: {unit_dict["conduit_data"]["inlet"]}, "
+        
+        if "outlet" in unit_dict["conduit_data"]:
+            culvert_loss += f"Ko: {unit_dict["conduit_data"]["outlet"]}, "
+
+        culvert_loss = culvert_loss.rstrip(", ")
+
+        return text,culvert_loss
+
 
     def _write(  # noqa: PLR0913
         self,
+        writer,
         name,
         unit,
         subtype,
@@ -394,7 +415,7 @@ class StructureLogBuilder:
         weir_coefficient="",
         culvert_loss="",
     ):
-        self._writer.writerow(
+        writer.writerow(
             [
                 name,
                 unit,
@@ -406,32 +427,68 @@ class StructureLogBuilder:
                 culvert_loss,
             ],
         )
+    
+    def _write_csv_output(self,output_path):
+        """
+        Take the current state of the instance (unit_store etc) and write it to the specified output file.
+        """
+        with open(output_path,"w", newline="") as file:
+            writer = csv.writer(file)
+            
+            self._add_fields(writer)
+
+            for _,unit_dict in self.unit_store.items():
+                name = unit_dict["name"]
+                unit_type = unit_dict["type"]
+                subtype = unit_dict["subtype"]
+                comment = unit_dict["comment"]
+                
+                friction = self._format_friction(unit_dict)
+
+                culvert_loss = ""
+                
+                match (unit_type):
+                    case "BRIDGE":
+                        dimensions = self._format_bridge_dimensions(unit_dict)
+                    case "ORIFICE":
+                        dimensions = self._format_orifice_dimensions(unit_dict)
+                    case "WEIR" | "RNWEIR":
+                        dimensions = self._format_weir_dimensions(unit_dict)
+                    case "SLUICE":
+                        dimensions = self._format_sluice_dimensions(unit_dict)
+                    case "SPILL":
+                        dimensions = self._format_spill_dimensions(unit_dict)
+                    case "CONDUIT":
+                        dimensions,culvert_loss = self._format_conduit_dimensions(unit_dict)
+                    case _:
+                        dimensions = ""
+                
+                try:
+                    weir_coefficient = unit_dict["dimensions"]["weir_coefficient"]
+                except KeyError:
+                    weir_coefficient = ""
+
+                self._write(writer,name,unit_type,subtype,comment,friction,dimensions,weir_coefficient,culvert_loss)               
+
+
+        
 
     def create(self):
-        # Read in the .dat file
+        """
+        When using the toolbox wrapper or commandline entry point, this is the entrypoint to the structure logger code
+        """
         self._dat = DAT(self.dat_file_path)
-
-        # Create a new .csv file
-        with open(self.csv_output_path, "w", newline="") as file:
-            self._writer = csv.writer(file)
-
-            self._add_fields()
-
-            self._add_conduits()
-
-            self._add_structures()
+        self._add_conduits()
+        self._add_structures()
+        self._write_csv_output(self.csv_output_path)
 
 
 if __name__ == "__main__":
     dat_path = r"floodmodeller_api/test/test_data/EX18.DAT"
     #dat_path = r"C:\Users\TOLLERJ\OneDrive - Jacobs\Documents\Projects\Bescot\Ford Brook 2023 Review\2023 Ford Brook - Model\2023 Ford Brook - Model\iSIS\DAT files\Design Runs\Ford_Brook_Design_1D_Arboretum_Final_Arup_24.DAT"
-    slb = StructureLogBuilder(dat_path, "../ex18_dev.csv")
-    slb._dat = DAT(slb.dat_file_path)
-    slb._add_conduits()
-    
-
-    slb._add_structures()
-
-    with open("../ex18_dev.json","w") as file:
-        json.dump(slb.unit_store,file,indent=4)
+    #dat_path = r"C:\Users\TOLLERJ\OneDrive - Jacobs\Documents\Projects\Flood Modeller API Dev\floodmodeller-api-sample-dataset\lee2100_stort\DAT\Stort_JACOBS_04.DAT"
+    slb = StructureLogBuilder(dat_path, "../ex18_new_dev.csv")
+    slb.create()
+    with open("../ex18_new_dev.json","w") as file:
+        json.dump(serialise_keys(slb.unit_store),file,indent=4)
 
