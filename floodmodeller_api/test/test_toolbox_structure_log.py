@@ -128,7 +128,7 @@ S0,WEIR,,,,Crest Elevation: 21.00 x w: 1.50,,
 C2d,WEIR,,,,Crest Elevation: 18.00 x w: 0.60,,
 S4,WEIR,,,,Crest Elevation: 17.90 x w: 2.00,,
 S8,WEIR,,,,Crest Elevation: 17.70 x w: 2.00,,
-S3LS,SPILL,,,,Elevation: 20.00 x w: 80.00,1.7,
+S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 """
 
 
