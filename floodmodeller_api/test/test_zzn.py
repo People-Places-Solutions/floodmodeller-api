@@ -19,25 +19,50 @@ def ief(test_workspace: Path) -> IEF:
 
 
 @pytest.fixture
-def tab_csv_output(test_workspace: Path) -> pd.DataFrame:
-    tab_csv_output = pd.read_csv(test_workspace / "network_from_tabularCSV.csv")
-    tab_csv_output["Max State"] = tab_csv_output["Max State"].astype("float64")
-    return tab_csv_output
+def tabular_csv_outputs(test_workspace: Path) -> Path:
+    return test_workspace / "tabular_csv_outputs"
 
 
-def test_load_zzn_using_dll(zzn: ZZN, tab_csv_output: pd.DataFrame, tmp_path: Path):
+def test_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
     """ZZN: Check loading zzn okay using dll"""
     test_output_path = tmp_path / "test_output.csv"
     zzn.export_to_csv(result_type="max", save_location=test_output_path)
-    output = pd.read_csv(test_output_path).round(3)
-    pd.testing.assert_frame_equal(output, tab_csv_output, rtol=0.0001)
+    actual = pd.read_csv(test_output_path).round(3)
+
+    expected = pd.read_csv(tabular_csv_outputs / "network_all_max.csv")
+
+    pd.testing.assert_frame_equal(actual, expected, rtol=0.0001, check_dtype=False)
 
 
-def _test_load_zzn_using_dll():
-    pass
+@pytest.mark.parametrize(
+    ("variable", "expected_csv"),
+    [
+        ("Flow", "network_flow_all.csv"),
+        ("Stage", "network_stage_all.csv"),
+        ("Froude", "network_fr_all.csv"),
+        ("Velocity", "network_velocity_all.csv"),
+        ("Mode", "network_mode_all.csv"),
+        ("State", "network_state_all.csv"),
+    ],
+)
+def test_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expected_csv: str):
+    actual_1 = zzn.to_dataframe(variable=variable)
+    actual_1.index = actual_1.index.round(3)
+
+    actual_2 = zzn.to_dataframe()[variable]
+    actual_2.index = actual_2.index.round(3)
+
+    expected = pd.read_csv(tabular_csv_outputs / expected_csv, index_col=0)
+
+    pd.testing.assert_frame_equal(actual_1, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_2, expected, rtol=0.01, check_dtype=False)
 
 
 def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])
