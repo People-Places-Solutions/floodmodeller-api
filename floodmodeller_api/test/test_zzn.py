@@ -70,18 +70,14 @@ def test_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expec
     pd.testing.assert_frame_equal(actual_4, expected, rtol=0.01, check_dtype=False)
 
 
-def test_include_time(zzn: ZZN, tabular_csv_outputs: Path):
+def test_include_time(zzn: ZZN):
     df = zzn.to_dataframe(result_type="max", variable="flow", include_time=True)
     actual = df.loc["resin", ["Max Flow", "Max Flow Time(hrs)"]].to_numpy()
     assert actual[0] == pytest.approx(7.296, abs=0.001)
-    assert actual[1] == 0.6  # FIXME: should actually be 9 not 9/15
+    assert actual[1] == 0.6  # FIXME: should actually be 9 not 9/15 (=0.6)
 
 
-def _test_load_zzn_using_ief(zzn: ZZN, ief: IEF):  # FIXME: reactivate
+def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])
