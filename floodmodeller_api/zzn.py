@@ -432,49 +432,6 @@ class ZZN(FMFile):
         df.to_csv(save_location)
         print(f"CSV saved to {save_location}")
 
-    def to_dict_of_dataframes(self, variable: str = "all") -> dict:
-        """Loads zzn results to a dictionary of pandas dataframe objects.
-
-        Args:
-            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
-                Specify a single output variable (e.g 'flow' or 'stage') or any combination passed as comma separated
-                variable names. Defaults to 'all'.
-
-        Returns:
-            dict: dictionary of dataframe object of simulation results, keys corresponding to variables.
-        """
-        nx = self.meta["nnodes"]
-        ny = self.meta["nvars"]
-        nz = self.meta["savint_range"] + 1
-        output = {}
-
-        arr = self.data["all_results"]
-        time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
-
-        vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
-
-        col_names = self.meta["labels"]
-        temp_arr = np.reshape(arr, (nz, ny, nx))
-
-        for i, var in enumerate(vars_list):
-            output[var] = pd.DataFrame(temp_arr[:, i, :], index=time_index, columns=col_names)
-            output[var].index.name = "Time (hr)"
-
-        output["Time (hr)"] = time_index
-
-        if variable != "all":
-            input_vars = variable.split(",")
-            for i, var in enumerate(input_vars):
-                input_vars[i] = var.strip().capitalize()
-                if input_vars[i] not in vars_list:
-                    msg = f" '{input_vars[i]}' is not a valid variable name. Valid arguments are: {vars_list} "
-                    raise Exception(msg)
-
-            for var in vars_list:
-                if var not in input_vars:
-                    del output[var]
-        return output
-
     def to_json(
         self,
         result_type: str = "all",
