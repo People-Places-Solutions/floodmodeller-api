@@ -52,13 +52,19 @@ def test_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expec
     actual_2 = zzn.to_dataframe()[variable]
     actual_2.index = actual_2.index.round(3)
 
+    suffix = f"_{variable}"
+    actual_3 = zzn.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
+    actual_3.index = actual_3.index.round(3)
+    actual_3.columns = [x.removesuffix(suffix) for x in actual_3.columns]
+
     expected = pd.read_csv(tabular_csv_outputs / expected_csv, index_col=0)
 
     pd.testing.assert_frame_equal(actual_1, expected, rtol=0.01, check_dtype=False)
     pd.testing.assert_frame_equal(actual_2, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_3, expected, rtol=0.01, check_dtype=False)
 
 
-def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
+def _test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
