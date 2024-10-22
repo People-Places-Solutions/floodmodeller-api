@@ -422,12 +422,6 @@ class _ZZ(FMFile):
         elif not save_location.parent.exists():
             Path.mkdir(save_location.parent)
 
-        result_type = result_type.lower()
-
-        if result_type.lower() not in ["all", "max", "min"]:
-            msg = f" '{result_type}' is not a valid result type. Valid arguments are: 'all', 'max' or 'min' "
-            raise Exception(msg)
-
         df = self.to_dataframe(
             result_type=result_type,
             variable=variable,
