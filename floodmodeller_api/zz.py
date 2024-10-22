@@ -25,7 +25,7 @@ import pandas as pd
 
 from ._base import FMFile
 from .to_from_json import to_json
-from .util import handle_exception, is_windows
+from .util import get_associated_file, handle_exception, is_windows
 
 
 def get_reader() -> ct.CDLL:
@@ -42,18 +42,6 @@ def get_reader() -> ct.CDLL:
             msg_2 = "Set LD_LIBRARY_PATH environment variable to be floodmodeller_api/lib"
             raise OSError(msg_2) from e
         raise
-
-
-def get_associated_file(original_file: Path, new_suffix: str) -> Path:
-    new_file = original_file.with_suffix(new_suffix)
-    if not new_file.exists():
-        msg = (
-            f"Error: Could not find associated {new_suffix} file."
-            f" Ensure that the {original_file.suffix} results"
-            f" have an associated {new_suffix} file with matching name."
-        )
-        raise FileNotFoundError(msg)
-    return new_file
 
 
 def check_errstat(routine: str, errstat: int) -> None:
