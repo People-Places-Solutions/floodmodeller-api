@@ -33,8 +33,8 @@ from .util import FloodModellerAPIError, handle_exception
 class FMFile(Jsonable):
     """Base class for all Flood Modeller File types"""
 
-    _filetype: str | None = None
-    _suffix: str | None = None
+    _filetype: str
+    _suffix: str
     MAX_DIFF = 25
 
     def __init__(self, filepath: str | Path | None = None, **kwargs):

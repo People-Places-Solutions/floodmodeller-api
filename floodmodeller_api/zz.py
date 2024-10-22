@@ -352,18 +352,8 @@ def get_extremes(
     return df
 
 
-class ZZN(FMFile):
-    """Reads and processes Flood Modeller 1D binary results format '.zzn'
-
-    Args:
-        zzn_filepath (str): Full filepath to model zzn file
-
-    Output:
-        Initiates 'ZZN' class object
-    """
-
-    _filetype: str = "ZZN"
-    _suffix: str = ".zzn"
+class _ZZ(FMFile):
+    """Base class for ZZN and ZZX."""
 
     @handle_exception(when="read")
     def __init__(
@@ -376,7 +366,7 @@ class ZZN(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self.data, self.meta, self.variables = process_zzn_or_zzx(self._filepath)
+        self._data, self._meta, self._variables = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(
         self,
@@ -385,7 +375,7 @@ class ZZN(FMFile):
         include_time: bool = False,
         multilevel_header: bool = True,
     ) -> pd.Series | pd.DataFrame:
-        """Loads zzn results to pandas dataframe object.
+        """Loads results to pandas dataframe object.
 
         Args:
             result_type (str, optional): {'all'} | 'max' | 'min'
@@ -404,10 +394,10 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            return get_all(self.data, self.meta, self.variables, variable, multilevel_header)
+            return get_all(self._data, self._meta, self._variables, variable, multilevel_header)
 
         if result_type in ("max", "min"):
-            return get_extremes(self.data, self.meta, result_type, variable, include_time)
+            return get_extremes(self._data, self._meta, result_type, variable, include_time)
 
         msg = f'Result type: "{result_type}" not recognised'
         raise ValueError(msg)
@@ -419,7 +409,7 @@ class ZZN(FMFile):
         variable: str = "all",
         include_time: bool = False,
     ) -> None:
-        """Exports zzn results to CSV file.
+        """Exports results to CSV file.
 
         Args:
             save_location (str, optional): {default} | folder or file path
@@ -435,12 +425,12 @@ class ZZN(FMFile):
             Exception: Raised if result_type set to invalid option
         """
         if save_location == "default":
-            save_location = Path(self.meta["zzn_name"]).with_suffix(".csv")
+            save_location = Path(self._meta["zzn_name"]).with_suffix(".csv")  # FIXME
         else:
             save_location = Path(save_location)
             if not save_location.is_absolute():
                 # for if relative folder path given
-                save_location = Path(Path(self.meta["zzn_name"]).parent, save_location)
+                save_location = Path(Path(self._meta["zzn_name"]).parent, save_location)  # FIXME
 
         if save_location.suffix != ".csv":  # Assumed to be pointing to a folder
             # Check if the folder exists, if not create it
@@ -448,7 +438,7 @@ class ZZN(FMFile):
                 Path.mkdir(save_location)
             save_location = Path(
                 save_location,
-                Path(self.meta["zzn_name"]).with_suffix(".csv").name,
+                Path(self._meta["zzn_name"]).with_suffix(".csv").name,  # FIXME
             )
 
         elif not save_location.parent.exists():
@@ -475,7 +465,7 @@ class ZZN(FMFile):
         include_time: bool = False,
         multilevel_header: bool = True,
     ) -> str:
-        """Loads zzn results to JSON object.
+        """Loads results to JSON object.
 
         Args:
             result_type (str, optional): {'all'} | 'max' | 'min'
@@ -489,7 +479,7 @@ class ZZN(FMFile):
                 names will be formatted "{node label}_{variable}". Defaults to True.
 
         Returns:
-            str: A JSON string representing the ZZN results.
+            str: A JSON string representing the results.
         """
         df = self.to_dataframe(result_type, variable, include_time, multilevel_header)
         return to_json(df)
@@ -497,18 +487,33 @@ class ZZN(FMFile):
     @classmethod
     def from_json(cls, json_string: str = ""):
         # Not possible
-        msg = "It is not possible to build a ZZN class instance from JSON"
+        msg = f"It is not possible to build a {cls._filetype} class instance from JSON"
         raise NotImplementedError(msg)
 
 
-class ZZX(FMFile):
+class ZZN(_ZZ):
+    """Reads and processes Flood Modeller 1D binary results format '.zzn'
+
+    Args:
+        zzn_filepath (str): Full filepath to model zzn file
+
+    Output:
+        Initiates 'ZZN' class object
+    """
+
+    _filetype: str = "ZZN"
+    _suffix: str = ".zzn"
+
+
+class ZZX(_ZZ):
+    """Reads and processes Flood Modeller 1D binary results format '.zzx'
+
+    Args:
+        zzx_filepath (str): Full filepath to model zzx file
+
+    Output:
+        Initiates 'ZZX' class object
+    """
+
     _filetype: str = "ZZX"
     _suffix: str = ".zzx"
-
-    @handle_exception(when="read")
-    def __init__(self, zzx_filepath: str | Path | None = None) -> None:
-        FMFile.__init__(self, zzx_filepath)
-        self.data, self.meta, self.variables = process_zzn_or_zzx(self._filepath)
-
-    def to_dataframe(self) -> pd.DataFrame:
-        return get_all(self.data, self.meta, self.variables, "all", True)
