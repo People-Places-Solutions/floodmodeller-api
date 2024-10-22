@@ -101,7 +101,6 @@ def run_routines(
     zzl: Path,
     zzn_or_zzx: Path,
     zzl_or_zzx: str,
-    *,
     is_quality: bool,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     data: dict[str, Any] = {}
@@ -237,7 +236,7 @@ def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]
     is_quality = check_if_quality(zzn_or_zzx)
     zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
 
-    data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality=is_quality)
+    data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality)
     convert_data(data)
     convert_meta(meta)
 
@@ -297,7 +296,7 @@ def get_extremes(
     result_type: str,
     variable: str,
     include_time: bool,
-) -> pd.DataFrame:
+) -> pd.Series | pd.DataFrame:
     _, _, nz = get_dimensions(meta)
 
     arr = data[f"{result_type}_results"].transpose()
