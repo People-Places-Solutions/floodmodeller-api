@@ -493,3 +493,17 @@ class ZZN(FMFile):
         # Not possible
         msg = "It is not possible to build a ZZN class instance from JSON"
         raise NotImplementedError(msg)
+
+
+class ZZX(FMFile):
+    _filetype: str = "ZZX"
+    _suffix: str = ".zzx"
+
+    @handle_exception(when="read")
+    def __init__(self, zzx_filepath: str | Path | None = None) -> None:
+        FMFile.__init__(self, zzx_filepath)
+        self.data, self.meta = process_zzn_or_zzx(self._filepath)
+        self.variables = self.meta["variables"]
+
+    def to_dataframe(self) -> pd.DataFrame:
+        return get_all(self.data, self.meta, self.variables, "all", True)

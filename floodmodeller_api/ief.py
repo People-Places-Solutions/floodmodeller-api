@@ -34,7 +34,7 @@ from .ief_flags import flags
 from .logs import LF1, create_lf
 from .to_from_json import Jsonable
 from .util import handle_exception
-from .zzn import ZZN
+from .zz import ZZN
 
 
 def try_numeric(value: str) -> str | int | float:
