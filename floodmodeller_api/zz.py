@@ -242,7 +242,7 @@ def run_routines(
     return data, meta
 
 
-def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any], list[str]]:
     reader = get_reader()
     zzl = get_associated_file(zzn_or_zzx, ".zzl")
 
@@ -252,7 +252,14 @@ def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]
     data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality=is_quality)
     convert_data(data)
     convert_meta(meta)
-    return data, meta
+
+    variables = (
+        meta["variables"]
+        if is_quality
+        else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+    )
+
+    return data, meta, variables
 
 
 def get_dimensions(meta: dict[str, Any]) -> tuple[int, int, int]:
@@ -369,8 +376,7 @@ class ZZN(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self.data, self.meta = process_zzn_or_zzx(self._filepath)
-        self.variables = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+        self.data, self.meta, self.variables = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(
         self,
@@ -502,8 +508,7 @@ class ZZX(FMFile):
     @handle_exception(when="read")
     def __init__(self, zzx_filepath: str | Path | None = None) -> None:
         FMFile.__init__(self, zzx_filepath)
-        self.data, self.meta = process_zzn_or_zzx(self._filepath)
-        self.variables = self.meta["variables"]
+        self.data, self.meta, self.variables = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(self) -> pd.DataFrame:
         return get_all(self.data, self.meta, self.variables, "all", True)

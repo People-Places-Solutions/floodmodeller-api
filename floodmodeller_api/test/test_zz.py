@@ -29,8 +29,7 @@ def tabular_csv_outputs(test_workspace: Path) -> Path:
     return test_workspace / "tabular_csv_outputs"
 
 
-def test_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
-    """ZZN: Check loading zzn okay using dll"""
+def test_zzn_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
     test_output_path = tmp_path / "test_output.csv"
     zzn.export_to_csv(result_type="max", save_location=test_output_path)
     actual = pd.read_csv(test_output_path).round(3)
@@ -51,7 +50,7 @@ def test_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
         ("State", "network_state_all.csv"),
     ],
 )
-def test_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expected_csv: str):
+def test_zzn_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expected_csv: str):
     actual_1 = zzn.to_dataframe(variable=variable)
     actual_1.index = actual_1.index.round(3)
 
@@ -76,14 +75,14 @@ def test_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expec
     pd.testing.assert_frame_equal(actual_4, expected, rtol=0.01, check_dtype=False)
 
 
-def test_include_time(zzn: ZZN):
+def test_zzn_include_time(zzn: ZZN):
     df = zzn.to_dataframe(result_type="max", variable="flow", include_time=True)
     actual = df.loc["resin", ["Max Flow", "Max Flow Time(hrs)"]].to_numpy()
     assert actual[0] == pytest.approx(7.296, abs=0.001)
     assert actual[1] == 9
 
 
-def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
+def test_zzn_from_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
