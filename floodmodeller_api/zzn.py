@@ -255,6 +255,96 @@ def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]
     return data, meta
 
 
+def get_dimensions(meta: dict[str, Any]) -> tuple[int, int, int]:
+    nx = meta["nnodes"]
+    ny = meta["nvars"]
+    nz = meta["savint_range"] + 1
+    return nx, ny, nz
+
+
+def get_all(
+    data: dict[str, Any],
+    meta: dict[str, Any],
+    variable: str,
+    multilevel_header: bool,
+) -> pd.DataFrame:
+    nx, ny, nz = get_dimensions(meta)
+
+    arr = data["all_results"]
+    time_index = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)
+    vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+
+    if multilevel_header:
+        col_names = [vars_list, meta["labels"]]
+        df = pd.DataFrame(
+            arr.reshape(nz, nx * ny),
+            index=time_index,
+            columns=pd.MultiIndex.from_product(col_names),
+        )
+        df.index.name = "Time (hr)"
+        if variable != "all":
+            return df[variable.capitalize()]
+
+    else:
+        col_names = [f"{node}_{var}" for var in vars_list for node in meta["labels"]]
+        df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
+        df.index.name = "Time (hr)"
+        if variable != "all":
+            use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
+            return df[use_cols]
+
+    return df
+
+
+def get_extremes(
+    data: dict[str, Any],
+    meta: dict[str, Any],
+    result_type: str,
+    variable: str,
+    include_time: bool,
+) -> pd.DataFrame:
+    _, _, nz = get_dimensions(meta)
+
+    arr = data[f"{result_type}_results"].transpose()
+    node_index = meta["labels"]
+    col_names = [
+        result_type.capitalize() + lbl
+        for lbl in [
+            " Flow",
+            " Stage",
+            " Froude",
+            " Velocity",
+            " Mode",
+            " State",
+        ]
+    ]
+    df = pd.DataFrame(arr, index=node_index, columns=col_names)
+    df.index.name = "Node Label"
+
+    if include_time:
+        times = data[f"{result_type}_times"].transpose()
+        times = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)[times - 1]
+        time_col_names = [name + " Time(hrs)" for name in col_names]
+        time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
+        time_df.index.name = "Node Label"
+        df = pd.concat([df, time_df], axis=1)
+        new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
+        df = df[new_col_order]
+        if variable != "all":
+            return df[
+                [
+                    f"{result_type.capitalize()} {variable.capitalize()}",
+                    f"{result_type.capitalize()} {variable.capitalize()} Time(hrs)",
+                ]
+            ]
+        return df
+
+    if variable != "all":
+        return df[f"{result_type.capitalize()} {variable.capitalize()}"]
+
+    return df
+
+
 class ZZN(FMFile):
     """Reads and processes Flood Modeller 1D binary results format '.zzn'
 
@@ -281,7 +371,7 @@ class ZZN(FMFile):
 
         self.data, self.meta = process_zzn_or_zzx(self._filepath)
 
-    def to_dataframe(  # noqa: PLR0911
+    def to_dataframe(
         self,
         result_type: str = "all",
         variable: str = "all",
@@ -304,74 +394,13 @@ class ZZN(FMFile):
         Returns:
             pandas.DataFrame(): dataframe object of simulation results
         """
-        nx = self.meta["nnodes"]
-        ny = self.meta["nvars"]
-        nz = self.meta["savint_range"] + 1
         result_type = result_type.lower()
 
         if result_type == "all":
-            arr = self.data["all_results"]
-            time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
-            vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
-            if multilevel_header:
-                col_names = [vars_list, self.meta["labels"]]
-                df = pd.DataFrame(
-                    arr.reshape(nz, nx * ny),
-                    index=time_index,
-                    columns=pd.MultiIndex.from_product(col_names),
-                )
-                df.index.name = "Time (hr)"
-                if variable != "all":
-                    return df[variable.capitalize()]
-
-            else:
-                col_names = [f"{node}_{var}" for var in vars_list for node in self.meta["labels"]]
-                df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
-                df.index.name = "Time (hr)"
-                if variable != "all":
-                    use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
-                    return df[use_cols]
-            return df
+            return get_all(self.data, self.meta, variable, multilevel_header)
 
         if result_type in ("max", "min"):
-            arr = self.data[f"{result_type}_results"].transpose()
-            node_index = self.meta["labels"]
-            col_names = [
-                result_type.capitalize() + lbl
-                for lbl in [
-                    " Flow",
-                    " Stage",
-                    " Froude",
-                    " Velocity",
-                    " Mode",
-                    " State",
-                ]
-            ]
-            df = pd.DataFrame(arr, index=node_index, columns=col_names)
-            df.index.name = "Node Label"
-
-            if include_time:
-                times = self.data[f"{result_type}_times"].transpose()
-                # transform timestep into hrs
-                times = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)[times-1]
-                time_col_names = [name + " Time(hrs)" for name in col_names]
-                time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
-                time_df.index.name = "Node Label"
-                df = pd.concat([df, time_df], axis=1)
-                new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
-                df = df[new_col_order]
-                if variable != "all":
-                    return df[
-                        [
-                            f"{result_type.capitalize()} {variable.capitalize()}",
-                            f"{result_type.capitalize()} {variable.capitalize()} Time(hrs)",
-                        ]
-                    ]
-                return df
-
-            if variable != "all":
-                return df[f"{result_type.capitalize()} {variable.capitalize()}"]
-            return df
+            return get_extremes(self.data, self.meta, result_type, variable, include_time)
 
         msg = f'Result type: "{result_type}" not recognised'
         raise ValueError(msg)

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 
-from floodmodeller_api.zzn import process_zzn_or_zzx
+from floodmodeller_api.zzn import get_all, process_zzn_or_zzx
 
 from ._base import FMFile
 from .util import handle_exception
@@ -30,7 +30,7 @@ class ZZX(FMFile):
 
         arr = self.data["all_results"]
         time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)
-        vars_list = self.meta["variables"]
+        vars_list = self.meta["variables"]  # difference from zzn
 
         col_names = [vars_list, self.meta["labels"]]
         df = pd.DataFrame(
