@@ -1,3 +1,6 @@
+# type: ignore
+# ignored because the output from _ZZ.to_dataframe() is only a series in special cases
+
 from pathlib import Path
 
 import pandas as pd

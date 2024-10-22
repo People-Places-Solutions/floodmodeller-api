@@ -276,7 +276,8 @@ def get_all(
             columns=pd.MultiIndex.from_product([variables, meta["labels"]]),
         )
         df.index.name = "Time (hr)"
-        return df if is_all else df[variable.capitalize()]
+        return df if is_all else df[variable.capitalize()]  # type: ignore
+        # ignored because it always returns a dataframe as it's a multilevel header
 
     df = pd.DataFrame(
         arr.reshape(nz, nx * ny),
@@ -315,6 +316,7 @@ def get_extremes(
     df.index.name = "Node Label"
 
     if not include_time:
+        # df[combination] is the only time we get a series in _ZZ.get_dataframe()
         return df if is_all else df[combination]
 
     times = data[f"{result_type}_times"].transpose()
