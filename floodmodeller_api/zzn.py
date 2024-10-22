@@ -353,7 +353,7 @@ class ZZN(FMFile):
             if include_time:
                 times = self.data[f"{result_type}_times"].transpose()
                 # transform timestep into hrs
-                times = ((times - self.meta["timestep0"]) * self.meta["dt"]) / 3600
+                times = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], nz)[times-1]
                 time_col_names = [name + " Time(hrs)" for name in col_names]
                 time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
                 time_df.index.name = "Node Label"

@@ -74,7 +74,7 @@ def test_include_time(zzn: ZZN):
     df = zzn.to_dataframe(result_type="max", variable="flow", include_time=True)
     actual = df.loc["resin", ["Max Flow", "Max Flow Time(hrs)"]].to_numpy()
     assert actual[0] == pytest.approx(7.296, abs=0.001)
-    assert actual[1] == 0.6  # FIXME: should actually be 9 not 9/15 (=0.6)
+    assert actual[1] == 9
 
 
 def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
