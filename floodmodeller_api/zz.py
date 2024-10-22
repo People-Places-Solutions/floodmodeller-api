@@ -264,30 +264,27 @@ def get_all(
     multilevel_header: bool,
 ) -> pd.DataFrame:
     nx, ny, nz = get_dimensions(meta)
+    is_all = variable == "all"
 
     arr = data["all_results"]
     time_index = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)
 
     if multilevel_header:
-        col_names = [variables, meta["labels"]]
         df = pd.DataFrame(
             arr.reshape(nz, nx * ny),
             index=time_index,
-            columns=pd.MultiIndex.from_product(col_names),
+            columns=pd.MultiIndex.from_product([variables, meta["labels"]]),
         )
         df.index.name = "Time (hr)"
-        if variable != "all":
-            return df[variable.capitalize()]
+        return df if is_all else df[variable.capitalize()]
 
-    else:
-        col_names = [f"{node}_{var}" for var in variables for node in meta["labels"]]
-        df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
-        df.index.name = "Time (hr)"
-        if variable != "all":
-            use_cols = [col for col in df.columns if col.endswith(variable.capitalize())]
-            return df[use_cols]
-
-    return df
+    df = pd.DataFrame(
+        arr.reshape(nz, nx * ny),
+        index=time_index,
+        columns=[f"{node}_{var}" for var in variables for node in meta["labels"]],
+    )
+    df.index.name = "Time (hr)"
+    return df if is_all else df[[x for x in df.columns if x.endswith(variable.capitalize())]]
 
 
 def get_extremes(
@@ -298,6 +295,8 @@ def get_extremes(
     include_time: bool,
 ) -> pd.Series | pd.DataFrame:
     _, _, nz = get_dimensions(meta)
+    is_all = variable == "all"
+    combination = f"{result_type.capitalize()} {variable.capitalize()}"
 
     arr = data[f"{result_type}_results"].transpose()
     node_index = meta["labels"]
@@ -315,28 +314,18 @@ def get_extremes(
     df = pd.DataFrame(arr, index=node_index, columns=col_names)
     df.index.name = "Node Label"
 
-    if include_time:
-        times = data[f"{result_type}_times"].transpose()
-        times = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)[times - 1]
-        time_col_names = [name + " Time(hrs)" for name in col_names]
-        time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
-        time_df.index.name = "Node Label"
-        df = pd.concat([df, time_df], axis=1)
-        new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
-        df = df[new_col_order]
-        if variable != "all":
-            return df[
-                [
-                    f"{result_type.capitalize()} {variable.capitalize()}",
-                    f"{result_type.capitalize()} {variable.capitalize()} Time(hrs)",
-                ]
-            ]
-        return df
+    if not include_time:
+        return df if is_all else df[combination]
 
-    if variable != "all":
-        return df[f"{result_type.capitalize()} {variable.capitalize()}"]
-
-    return df
+    times = data[f"{result_type}_times"].transpose()
+    times = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)[times - 1]
+    time_col_names = [name + " Time(hrs)" for name in col_names]
+    time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
+    time_df.index.name = "Node Label"
+    df = pd.concat([df, time_df], axis=1)
+    new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
+    df = df[new_col_order]
+    return df if is_all else df[[combination, f"{combination} Time(hrs)"]]
 
 
 class _ZZ(FMFile):
