@@ -3,13 +3,19 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from floodmodeller_api import IEF, ZZN
+from floodmodeller_api import IEF, ZZN, ZZX
 
 
 @pytest.fixture
 def zzn(test_workspace: Path) -> ZZN:
     path = test_workspace / "network.zzn"
     return ZZN(path)
+
+
+@pytest.fixture
+def zzx(test_workspace: Path) -> ZZX:
+    path = test_workspace / "network.zzx"
+    return ZZX(path)
 
 
 @pytest.fixture
@@ -81,3 +87,12 @@ def test_load_zzn_using_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
+
+
+def test_zzx(zzx: ZZX):
+    df = zzx.to_dataframe()
+    pass
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-s"])
