@@ -265,6 +265,7 @@ def get_dimensions(meta: dict[str, Any]) -> tuple[int, int, int]:
 def get_all(
     data: dict[str, Any],
     meta: dict[str, Any],
+    variables: list,
     variable: str,
     multilevel_header: bool,
 ) -> pd.DataFrame:
@@ -272,10 +273,9 @@ def get_all(
 
     arr = data["all_results"]
     time_index = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)
-    vars_list = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
 
     if multilevel_header:
-        col_names = [vars_list, meta["labels"]]
+        col_names = [variables, meta["labels"]]
         df = pd.DataFrame(
             arr.reshape(nz, nx * ny),
             index=time_index,
@@ -286,7 +286,7 @@ def get_all(
             return df[variable.capitalize()]
 
     else:
-        col_names = [f"{node}_{var}" for var in vars_list for node in meta["labels"]]
+        col_names = [f"{node}_{var}" for var in variables for node in meta["labels"]]
         df = pd.DataFrame(arr.reshape(nz, nx * ny), index=time_index, columns=col_names)
         df.index.name = "Time (hr)"
         if variable != "all":
@@ -370,6 +370,7 @@ class ZZN(FMFile):
         FMFile.__init__(self, zzn_filepath)
 
         self.data, self.meta = process_zzn_or_zzx(self._filepath)
+        self.variables = ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
 
     def to_dataframe(
         self,
@@ -397,7 +398,7 @@ class ZZN(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            return get_all(self.data, self.meta, variable, multilevel_header)
+            return get_all(self.data, self.meta, self.variables, variable, multilevel_header)
 
         if result_type in ("max", "min"):
             return get_extremes(self.data, self.meta, result_type, variable, include_time)
