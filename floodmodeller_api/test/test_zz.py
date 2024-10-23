@@ -37,7 +37,7 @@ def test_zzn_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
     zzn.export_to_csv(result_type="max", save_location=test_output_path)
     actual = pd.read_csv(test_output_path).round(3)
 
-    expected = pd.read_csv(tabular_csv_outputs / "network_all_max.csv")
+    expected = pd.read_csv(tabular_csv_outputs / "network_zzn_all_max.csv")
 
     pd.testing.assert_frame_equal(actual, expected, rtol=0.0001, check_dtype=False)
 
@@ -45,12 +45,12 @@ def test_zzn_max(zzn: ZZN, tabular_csv_outputs: Path, tmp_path: Path):
 @pytest.mark.parametrize(
     ("variable", "expected_csv"),
     [
-        ("Flow", "network_flow_all.csv"),
-        ("Stage", "network_stage_all.csv"),
-        ("Froude", "network_fr_all.csv"),
-        ("Velocity", "network_velocity_all.csv"),
-        ("Mode", "network_mode_all.csv"),
-        ("State", "network_state_all.csv"),
+        ("Flow", "network_zzn_flow_all.csv"),
+        ("Stage", "network_zzn_stage_all.csv"),
+        ("Froude", "network_zzn_fr_all.csv"),
+        ("Velocity", "network_zzn_velocity_all.csv"),
+        ("Mode", "network_zzn_mode_all.csv"),
+        ("State", "network_zzn_state_all.csv"),
     ],
 )
 def test_zzn_all_timesteps(zzn: ZZN, tabular_csv_outputs: Path, variable: str, expected_csv: str):
