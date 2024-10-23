@@ -265,6 +265,7 @@ def get_all(
 ) -> pd.DataFrame:
     nx, ny, nz = get_dimensions(meta)
     is_all = variable == "all"
+    variable_display_name = variable.capitalize().replace("fp", "FP")
 
     arr = data["all_results"]
     time_index = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)
@@ -276,7 +277,7 @@ def get_all(
             columns=pd.MultiIndex.from_product([variables, meta["labels"]]),
         )
         df.index.name = "Time (hr)"
-        return df if is_all else df[variable.capitalize()]  # type: ignore
+        return df if is_all else df[variable_display_name]  # type: ignore
         # ignored because it always returns a dataframe as it's a multilevel header
 
     df = pd.DataFrame(
@@ -285,7 +286,7 @@ def get_all(
         columns=[f"{node}_{var}" for var in variables for node in meta["labels"]],
     )
     df.index.name = "Time (hr)"
-    return df if is_all else df[[x for x in df.columns if x.endswith(variable.capitalize())]]
+    return df if is_all else df[[x for x in df.columns if x.endswith(variable_display_name)]]
 
 
 def get_extremes(
@@ -297,12 +298,15 @@ def get_extremes(
 ) -> pd.Series | pd.DataFrame:
     _, _, nz = get_dimensions(meta)
     is_all = variable == "all"
-    combination = f"{result_type.capitalize()} {variable.capitalize()}"
+    result_type_display_name = result_type.capitalize()
+    variable_display_name = variable.capitalize().replace("fp", "FP")
+
+    combination = f"{result_type_display_name} {variable_display_name}"
 
     arr = data[f"{result_type}_results"].transpose()
     node_index = meta["labels"]
     col_names = [
-        result_type.capitalize() + lbl
+        result_type_display_name + lbl
         for lbl in [
             " Flow",
             " Stage",
