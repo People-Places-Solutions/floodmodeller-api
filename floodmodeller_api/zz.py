@@ -265,6 +265,7 @@ def get_all(
 ) -> pd.DataFrame:
     nx, ny, nz = get_dimensions(meta)
     is_all = variable == "all"
+
     variable_display_name = variable.capitalize().replace("fp", "FP")
 
     arr = data["all_results"]
@@ -292,32 +293,25 @@ def get_all(
 def get_extremes(
     data: dict[str, Any],
     meta: dict[str, Any],
-    result_type: str,
+    variables: list,
     variable: str,
+    result_type: str,
     include_time: bool,
 ) -> pd.Series | pd.DataFrame:
     _, _, nz = get_dimensions(meta)
     is_all = variable == "all"
+
     result_type_display_name = result_type.capitalize()
     variable_display_name = variable.capitalize().replace("fp", "FP")
+    index_name = "Node Label"
 
     combination = f"{result_type_display_name} {variable_display_name}"
 
     arr = data[f"{result_type}_results"].transpose()
     node_index = meta["labels"]
-    col_names = [
-        result_type_display_name + lbl
-        for lbl in [
-            " Flow",
-            " Stage",
-            " Froude",
-            " Velocity",
-            " Mode",
-            " State",
-        ]
-    ]
+    col_names = [f"{result_type_display_name} {x}" for x in variables]
     df = pd.DataFrame(arr, index=node_index, columns=col_names)
-    df.index.name = "Node Label"
+    df.index.name = index_name
 
     if not include_time:
         # df[combination] is the only time we get a series in _ZZ.get_dataframe()
@@ -327,7 +321,7 @@ def get_extremes(
     times = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)[times - 1]
     time_col_names = [name + " Time(hrs)" for name in col_names]
     time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
-    time_df.index.name = "Node Label"
+    time_df.index.name = index_name
     df = pd.concat([df, time_df], axis=1)
     new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
     df = df[new_col_order]
@@ -379,7 +373,7 @@ class _ZZ(FMFile):
             return get_all(self._data, self._meta, self._variables, variable, multilevel_header)
 
         if result_type in ("max", "min"):
-            return get_extremes(self._data, self._meta, result_type, variable, include_time)
+            return get_extremes(self._data, self._meta, self._variables, variable, result_type, include_time)
 
         msg = f'Result type: "{result_type}" not recognised'
         raise ValueError(msg)

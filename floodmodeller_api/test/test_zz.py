@@ -32,12 +32,21 @@ def folder(test_workspace: Path) -> Path:
     return test_workspace / "tabular_csv_outputs"
 
 
-def test_zzn_max(zzn: ZZN, folder: Path, tmp_path: Path):
+@pytest.mark.parametrize(
+    ("csv", "file"),
+    [
+        ("network_zzn_max.csv", "zzn"),
+        ("network_zzx_max.csv", "zzx"),
+    ],
+)
+def test_zzn_max(zzn: ZZN, zzx: ZZX, folder: Path, tmp_path: Path, csv: str, file: str):
+    file_obj = zzn if file == "zzn" else zzx
+
     test_output_path = tmp_path / "test_output.csv"
-    zzn.export_to_csv(result_type="max", save_location=test_output_path)
+    file_obj.export_to_csv(result_type="max", save_location=test_output_path)
     actual = pd.read_csv(test_output_path).round(3)
 
-    expected = pd.read_csv(folder / "network_zzn_max.csv")
+    expected = pd.read_csv(folder / csv)
 
     pd.testing.assert_frame_equal(actual, expected, rtol=0.0001, check_dtype=False)
 
