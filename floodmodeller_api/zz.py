@@ -251,85 +251,6 @@ def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]
     return data, meta, variables, index_name
 
 
-def get_dimensions(meta: dict[str, Any]) -> tuple[int, int, int]:
-    nx = meta["nnodes"]
-    ny = meta["nvars"]
-    nz = meta["savint_range"] + 1
-    return nx, ny, nz
-
-
-def get_all(
-    data: dict[str, Any],
-    meta: dict[str, Any],
-    variables: list,
-    variable: str,
-    multilevel_header: bool,
-) -> pd.DataFrame:
-    nx, ny, nz = get_dimensions(meta)
-    is_all = variable == "all"
-
-    variable_display_name = variable.capitalize().replace("fp", "FP")
-
-    arr = data["all_results"]
-    time_index = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)
-
-    if multilevel_header:
-        df = pd.DataFrame(
-            arr.reshape(nz, nx * ny),
-            index=time_index,
-            columns=pd.MultiIndex.from_product([variables, meta["labels"]]),
-        )
-        df.index.name = "Time (hr)"
-        return df if is_all else df[variable_display_name]  # type: ignore
-        # ignored because it always returns a dataframe as it's a multilevel header
-
-    df = pd.DataFrame(
-        arr.reshape(nz, nx * ny),
-        index=time_index,
-        columns=[f"{node}_{var}" for var in variables for node in meta["labels"]],
-    )
-    df.index.name = "Time (hr)"
-    return df if is_all else df[[x for x in df.columns if x.endswith(variable_display_name)]]
-
-
-def get_extremes(
-    data: dict[str, Any],
-    meta: dict[str, Any],
-    variables: list,
-    variable: str,
-    result_type: str,
-    include_time: bool,
-    index_name: str,
-) -> pd.Series | pd.DataFrame:
-    _, _, nz = get_dimensions(meta)
-    is_all = variable == "all"
-
-    result_type_display_name = result_type.capitalize()
-    variable_display_name = variable.capitalize().replace("fp", "FP")
-
-    combination = f"{result_type_display_name} {variable_display_name}"
-
-    arr = data[f"{result_type}_results"].transpose()
-    node_index = meta["labels"]
-    col_names = [f"{result_type_display_name} {x}" for x in variables]
-    df = pd.DataFrame(arr, index=node_index, columns=col_names)
-    df.index.name = index_name
-
-    if not include_time:
-        # df[combination] is the only time we get a series in _ZZ.get_dataframe()
-        return df if is_all else df[combination]
-
-    times = data[f"{result_type}_times"].transpose()
-    times = np.linspace(meta["output_hrs"][0], meta["output_hrs"][1], nz)[times - 1]
-    time_col_names = [name + " Time(hrs)" for name in col_names]
-    time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
-    time_df.index.name = index_name
-    df = pd.concat([df, time_df], axis=1)
-    new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
-    df = df[new_col_order]
-    return df if is_all else df[[combination, f"{combination} Time(hrs)"]]
-
-
 class _ZZ(FMFile):
     """Base class for ZZN and ZZX."""
 
@@ -344,7 +265,76 @@ class _ZZ(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self._data, self._meta, self._variables, self._index_name, = process_zzn_or_zzx(self._filepath)
+        (
+            self._data,
+            self._meta,
+            self._variables,
+            self._index_name,
+        ) = process_zzn_or_zzx(self._filepath)
+        self._nx = self._meta["nnodes"]
+        self._ny = self._meta["nvars"]
+        self._nz = self._meta["savint_range"] + 1
+
+    def _get_all(self, variable: str, multilevel_header: bool) -> pd.DataFrame:
+        is_all = variable == "all"
+
+        variable_display_name = variable.capitalize().replace("fp", "FP")
+
+        arr = self._data["all_results"]
+        time_index = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)
+
+        if multilevel_header:
+            df = pd.DataFrame(
+                arr.reshape(self._nz, self._nx * self._ny),
+                index=time_index,
+                columns=pd.MultiIndex.from_product([self._variables, self._meta["labels"]]),
+            )
+            df.index.name = "Time (hr)"
+            return df if is_all else df[variable_display_name]  # type: ignore
+            # ignored because it always returns a dataframe as it's a multilevel header
+
+        df = pd.DataFrame(
+            arr.reshape(self._nz, self._nx * self._ny),
+            index=time_index,
+            columns=[f"{node}_{var}" for var in self._variables for node in self._meta["labels"]],
+        )
+        df.index.name = "Time (hr)"
+        return df if is_all else df[[x for x in df.columns if x.endswith(variable_display_name)]]
+
+    def _get_extremes(
+        self,
+        variable: str,
+        result_type: str,
+        include_time: bool,
+    ) -> pd.Series | pd.DataFrame:
+        is_all = variable == "all"
+
+        result_type_display_name = result_type.capitalize()
+        variable_display_name = variable.capitalize().replace("fp", "FP")
+
+        combination = f"{result_type_display_name} {variable_display_name}"
+
+        arr = self._data[f"{result_type}_results"].transpose()
+        node_index = self._meta["labels"]
+        col_names = [f"{result_type_display_name} {x}" for x in self._variables]
+        df = pd.DataFrame(arr, index=node_index, columns=col_names)
+        df.index.name = self._index_name
+
+        if not include_time:
+            # df[combination] is the only time we get a series in _ZZ.get_dataframe()
+            return df if is_all else df[combination]
+
+        times = self._data[f"{result_type}_times"].transpose()
+        times = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)[
+            times - 1
+        ]
+        time_col_names = [name + " Time(hrs)" for name in col_names]
+        time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
+        time_df.index.name = self._index_name
+        df = pd.concat([df, time_df], axis=1)
+        new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
+        df = df[new_col_order]
+        return df if is_all else df[[combination, f"{combination} Time(hrs)"]]
 
     def to_dataframe(
         self,
@@ -372,10 +362,10 @@ class _ZZ(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            return get_all(self._data, self._meta, self._variables, variable, multilevel_header)
+            return self._get_all(variable, multilevel_header)
 
         if result_type in ("max", "min"):
-            return get_extremes(self._data, self._meta, self._variables, variable, result_type, include_time, self._index_name)
+            return self._get_extremes(variable, result_type, include_time)
 
         msg = f'Result type: "{result_type}" not recognised'
         raise ValueError(msg)
