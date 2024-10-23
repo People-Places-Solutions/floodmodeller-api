@@ -62,28 +62,25 @@ def test_zzn_max(zzn: ZZN, folder: Path, tmp_path: Path):
 )
 def test_all_timesteps(zzn: ZZN, zzx: ZZX, folder: Path, variable: str, csv: str, file: str):
     file_obj = zzn if file == "zzn" else zzx
+    suffix = f"_{variable}"
+    expected = pd.read_csv(folder / csv, index_col=0)
 
     actual_1 = file_obj.to_dataframe(variable=variable)
     actual_1.index = actual_1.index.round(3)
+    pd.testing.assert_frame_equal(actual_1, expected, rtol=0.01, check_dtype=False)
 
     actual_2 = file_obj.to_dataframe()[variable]
     actual_2.index = actual_2.index.round(3)
-
-    suffix = f"_{variable}"
+    pd.testing.assert_frame_equal(actual_2, expected, rtol=0.01, check_dtype=False)
 
     actual_3 = file_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
     actual_3.index = actual_3.index.round(3)
     actual_3.columns = [x.removesuffix(suffix) for x in actual_3.columns]
+    pd.testing.assert_frame_equal(actual_3, expected, rtol=0.01, check_dtype=False)
 
     actual_4 = file_obj.to_dataframe(variable=variable, multilevel_header=False)
     actual_4.index = actual_4.index.round(3)
     actual_4.columns = [x.removesuffix(suffix) for x in actual_4.columns]
-
-    expected = pd.read_csv(folder / csv, index_col=0)
-
-    pd.testing.assert_frame_equal(actual_1, expected, rtol=0.01, check_dtype=False)
-    pd.testing.assert_frame_equal(actual_2, expected, rtol=0.01, check_dtype=False)
-    pd.testing.assert_frame_equal(actual_3, expected, rtol=0.01, check_dtype=False)
     pd.testing.assert_frame_equal(actual_4, expected, rtol=0.01, check_dtype=False)
 
 
