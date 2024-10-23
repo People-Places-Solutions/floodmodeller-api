@@ -53,6 +53,11 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
+def convert_data(data: dict[str, Any]) -> None:
+    for key in data:
+        data[key] = np.array(data[key])
+
+
 def convert_meta(meta: dict[str, Any]) -> None:
     to_get_value = (
         "dt",
@@ -82,18 +87,6 @@ def convert_meta(meta: dict[str, Any]) -> None:
     to_get_decoded_value_list = ("labels", "variables")
     for key in to_get_decoded_value_list:
         meta[key] = [x.value.decode().strip() for x in list(meta[key])]
-
-
-def convert_data(data: dict[str, Any]) -> None:
-    for key in data:
-        data[key] = np.array(data[key])
-
-
-def check_if_quality(zzn_or_zzx: Path) -> bool:
-    if zzn_or_zzx.suffix not in {".zzn", ".zzx"}:
-        msg = f"File '{zzn_or_zzx}' does not have suffix '.zzn' or '.zzx.'"
-        raise ValueError(msg)
-    return zzn_or_zzx.suffix == ".zzx"
 
 
 def run_routines(
@@ -226,29 +219,9 @@ def run_routines(
     )
     check_errstat("process_zzn", meta["errstat"].value)
 
-    return data, meta
-
-
-def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any], list[str], str]:
-    reader = get_reader()
-    zzl = get_associated_file(zzn_or_zzx, ".zzl")
-
-    is_quality = check_if_quality(zzn_or_zzx)
-    zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
-
-    data, meta = run_routines(reader, zzl, zzn_or_zzx, zzl_or_zzx, is_quality)
     convert_data(data)
     convert_meta(meta)
-
-    variables = (
-        meta["variables"]
-        if is_quality
-        else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
-    )
-
-    index_name = "Label" if is_quality else "Node Label"
-
-    return data, meta, variables, index_name
+    return data, meta
 
 
 class _ZZ(FMFile):
@@ -265,15 +238,23 @@ class _ZZ(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        (
-            self._data,
-            self._meta,
-            self._variables,
-            self._index_name,
-        ) = process_zzn_or_zzx(self._filepath)
+        reader = get_reader()
+        zzl = get_associated_file(self._filepath, ".zzl")
+
+        is_quality = self._suffix == ".zzx"
+        zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
+
+        self._data, self._meta = run_routines(reader, zzl, self._filepath, zzl_or_zzx, is_quality)
+
         self._nx = self._meta["nnodes"]
         self._ny = self._meta["nvars"]
         self._nz = self._meta["savint_range"] + 1
+        self._variables = (
+            self._meta["variables"]
+            if is_quality
+            else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
+        )
+        self._index_name = "Label" if is_quality else "Node Label"
 
     def _get_all(self, variable: str, multilevel_header: bool) -> pd.DataFrame:
         is_all = variable == "all"
