@@ -39,7 +39,7 @@ def folder(test_workspace: Path) -> Path:
         ("network_zzx_max.csv", "zzx"),
     ],
 )
-def test_zzn_max(zzn: ZZN, zzx: ZZX, folder: Path, tmp_path: Path, csv: str, file: str):
+def test_max(zzn: ZZN, zzx: ZZX, folder: Path, tmp_path: Path, csv: str, file: str):
     file_obj = zzn if file == "zzn" else zzx
 
     test_output_path = tmp_path / "test_output.csv"

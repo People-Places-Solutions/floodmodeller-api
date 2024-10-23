@@ -229,7 +229,7 @@ def run_routines(
     return data, meta
 
 
-def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any], list[str]]:
+def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any], list[str], str]:
     reader = get_reader()
     zzl = get_associated_file(zzn_or_zzx, ".zzl")
 
@@ -246,7 +246,9 @@ def process_zzn_or_zzx(zzn_or_zzx: Path) -> tuple[dict[str, Any], dict[str, Any]
         else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
     )
 
-    return data, meta, variables
+    index_name = "Label" if is_quality else "Node Label"
+
+    return data, meta, variables, index_name
 
 
 def get_dimensions(meta: dict[str, Any]) -> tuple[int, int, int]:
@@ -297,13 +299,13 @@ def get_extremes(
     variable: str,
     result_type: str,
     include_time: bool,
+    index_name: str,
 ) -> pd.Series | pd.DataFrame:
     _, _, nz = get_dimensions(meta)
     is_all = variable == "all"
 
     result_type_display_name = result_type.capitalize()
     variable_display_name = variable.capitalize().replace("fp", "FP")
-    index_name = "Node Label"
 
     combination = f"{result_type_display_name} {variable_display_name}"
 
@@ -342,7 +344,7 @@ class _ZZ(FMFile):
 
         FMFile.__init__(self, zzn_filepath)
 
-        self._data, self._meta, self._variables = process_zzn_or_zzx(self._filepath)
+        self._data, self._meta, self._variables, self._index_name, = process_zzn_or_zzx(self._filepath)
 
     def to_dataframe(
         self,
@@ -373,7 +375,7 @@ class _ZZ(FMFile):
             return get_all(self._data, self._meta, self._variables, variable, multilevel_header)
 
         if result_type in ("max", "min"):
-            return get_extremes(self._data, self._meta, self._variables, variable, result_type, include_time)
+            return get_extremes(self._data, self._meta, self._variables, variable, result_type, include_time, self._index_name)
 
         msg = f'Result type: "{result_type}" not recognised'
         raise ValueError(msg)
