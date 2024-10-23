@@ -102,9 +102,33 @@ def test_zzn_from_ief(zzn: ZZN, ief: IEF):
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
 
 
-def test_zzn_to_csv(zzn: ZZN):
+def test_zzn_to_csv(zzn: ZZN, tmp_path: Path, test_workspace: Path):
+    # default
     zzn.export_to_csv()
+    path = test_workspace / "network.csv"
+    assert path.exists()
+    path.unlink()
 
+    # absolute
+    zzn.export_to_csv(tmp_path / "test.csv")
+    path = tmp_path / "test.csv"
+    assert path.exists()
+    path.unlink()
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-s"])
+    # relative
+    zzn.export_to_csv("test.csv")
+    path = zzn._filepath.parent / "test.csv"
+    assert path.exists()
+    path.unlink()
+
+    # folder
+    zzn.export_to_csv(tmp_path)
+    path = tmp_path / "network.csv"
+    assert path.exists()
+    path.unlink()
+
+    # doesn't exist
+    zzn.export_to_csv("test")
+    path = test_workspace / "test/network.csv"
+    assert path.exists()
+    path.unlink()

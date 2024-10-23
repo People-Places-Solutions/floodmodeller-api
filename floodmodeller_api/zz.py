@@ -374,24 +374,18 @@ class _ZZ(FMFile):
             Exception: Raised if result_type set to invalid option
         """
         if save_location == "default":
-            save_location = Path(self._meta["zzn_or_zzx_name"]).with_suffix(".csv")
+            save_location = self._filepath.with_suffix(".csv")
         else:
-            save_location = Path(save_location)
-            if not save_location.is_absolute():
-                # for if relative folder path given
-                save_location = Path(Path(self._meta["zzn_or_zzx_name"]).parent, save_location)
-
-        if save_location.suffix != ".csv":  # Assumed to be pointing to a folder
-            # Check if the folder exists, if not create it
-            if not save_location.exists():
-                Path.mkdir(save_location)
-            save_location = Path(
-                save_location,
-                Path(self._meta["zzn_or_zzx_name"]).with_suffix(".csv").name,
+            save_location = (
+                Path(save_location)
+                if Path(save_location).is_absolute()
+                else self._filepath.parent / save_location
             )
 
-        elif not save_location.parent.exists():
-            Path.mkdir(save_location.parent)
+        if save_location.suffix != ".csv":  # Assumed to be pointing to a folder
+            save_location = save_location / self._filepath.with_suffix(".csv").name
+
+        save_location.parent.mkdir(parents=True, exist_ok=True)
 
         df = self.to_dataframe(
             result_type=result_type,
