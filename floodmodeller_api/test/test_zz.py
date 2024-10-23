@@ -39,16 +39,12 @@ def folder(test_workspace: Path) -> Path:
         ("network_zzx_max.csv", "zzx"),
     ],
 )
-def test_max(zzn: ZZN, zzx: ZZX, folder: Path, tmp_path: Path, csv: str, file: str):
+def test_max(zzn: ZZN, zzx: ZZX, folder: Path, csv: str, file: str):
     file_obj = zzn if file == "zzn" else zzx
+    expected = pd.read_csv(folder / csv, index_col=0)
 
-    test_output_path = tmp_path / "test_output.csv"
-    file_obj.export_to_csv(result_type="max", save_location=test_output_path)
-    actual = pd.read_csv(test_output_path).round(3)
-
-    expected = pd.read_csv(folder / csv)
-
-    pd.testing.assert_frame_equal(actual, expected, rtol=0.0001, check_dtype=False)
+    actual = file_obj.to_dataframe(result_type="max")
+    pd.testing.assert_frame_equal(actual, expected, atol=1e-3, check_dtype=False)
 
 
 @pytest.mark.parametrize(
@@ -76,21 +72,21 @@ def test_all_timesteps(zzn: ZZN, zzx: ZZX, folder: Path, variable: str, csv: str
 
     actual_1 = file_obj.to_dataframe(variable=variable)
     actual_1.index = actual_1.index.round(3)
-    pd.testing.assert_frame_equal(actual_1, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_1, expected, atol=1e-3, check_dtype=False)
 
     actual_2 = file_obj.to_dataframe()[variable]
     actual_2.index = actual_2.index.round(3)
-    pd.testing.assert_frame_equal(actual_2, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_2, expected, atol=1e-3, check_dtype=False)
 
     actual_3 = file_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
     actual_3.index = actual_3.index.round(3)
     actual_3.columns = [x.removesuffix(suffix) for x in actual_3.columns]
-    pd.testing.assert_frame_equal(actual_3, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_3, expected, atol=1e-3, check_dtype=False)
 
     actual_4 = file_obj.to_dataframe(variable=variable, multilevel_header=False)
     actual_4.index = actual_4.index.round(3)
     actual_4.columns = [x.removesuffix(suffix) for x in actual_4.columns]
-    pd.testing.assert_frame_equal(actual_4, expected, rtol=0.01, check_dtype=False)
+    pd.testing.assert_frame_equal(actual_4, expected, atol=1e-3, check_dtype=False)
 
 
 def test_zzn_include_time(zzn: ZZN):
@@ -104,6 +100,10 @@ def test_zzn_from_ief(zzn: ZZN, ief: IEF):
     zzn_df = zzn.to_dataframe()
     zzn_from_ief = ief.get_results().to_dataframe()
     pd.testing.assert_frame_equal(zzn_df, zzn_from_ief)
+
+
+def test_zzn_to_csv(zzn: ZZN):
+    zzn.export_to_csv()
 
 
 if __name__ == "__main__":
