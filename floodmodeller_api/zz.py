@@ -244,17 +244,21 @@ class _ZZ(FMFile):
         is_quality = self._suffix == ".zzx"
         zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
 
-        self._data, self.meta = run_routines(reader, zzl, self._filepath, zzl_or_zzx, is_quality)
+        self._data, self._meta = run_routines(reader, zzl, self._filepath, zzl_or_zzx, is_quality)
 
-        self._nx = self.meta["nnodes"]
-        self._ny = self.meta["nvars"]
-        self._nz = self.meta["savint_range"] + 1
+        self._nx = self._meta["nnodes"]
+        self._ny = self._meta["nvars"]
+        self._nz = self._meta["savint_range"] + 1
         self._variables = (
-            self.meta["variables"]
+            self._meta["variables"]
             if is_quality
             else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
         )
         self._index_name = "Label" if is_quality else "Node Label"
+
+    @property
+    def meta(self) -> dict[str, Any]:
+        return self._meta
 
     def _get_all(self, variable: str, multilevel_header: bool) -> pd.DataFrame:
         is_all = variable == "all"
@@ -262,13 +266,13 @@ class _ZZ(FMFile):
         variable_display_name = variable.capitalize().replace("fp", "FP")
 
         arr = self._data["all_results"]
-        time_index = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], self._nz)
+        time_index = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)
 
         if multilevel_header:
             df = pd.DataFrame(
                 arr.reshape(self._nz, self._nx * self._ny),
                 index=time_index,
-                columns=pd.MultiIndex.from_product([self._variables, self.meta["labels"]]),
+                columns=pd.MultiIndex.from_product([self._variables, self._meta["labels"]]),
             )
             df.index.name = "Time (hr)"
             return df if is_all else df[variable_display_name]  # type: ignore
@@ -277,7 +281,7 @@ class _ZZ(FMFile):
         df = pd.DataFrame(
             arr.reshape(self._nz, self._nx * self._ny),
             index=time_index,
-            columns=[f"{node}_{var}" for var in self._variables for node in self.meta["labels"]],
+            columns=[f"{node}_{var}" for var in self._variables for node in self._meta["labels"]],
         )
         df.index.name = "Time (hr)"
         return df if is_all else df[[x for x in df.columns if x.endswith(variable_display_name)]]
@@ -296,7 +300,7 @@ class _ZZ(FMFile):
         combination = f"{result_type_display_name} {variable_display_name}"
 
         arr = self._data[f"{result_type}_results"].transpose()
-        node_index = self.meta["labels"]
+        node_index = self._meta["labels"]
         col_names = [f"{result_type_display_name} {x}" for x in self._variables]
         df = pd.DataFrame(arr, index=node_index, columns=col_names)
         df.index.name = self._index_name
@@ -306,7 +310,7 @@ class _ZZ(FMFile):
             return df if is_all else df[combination]
 
         times = self._data[f"{result_type}_times"].transpose()
-        times = np.linspace(self.meta["output_hrs"][0], self.meta["output_hrs"][1], self._nz)[
+        times = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)[
             times - 1
         ]
         time_col_names = [name + " Time(hrs)" for name in col_names]
