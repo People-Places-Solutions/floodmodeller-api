@@ -51,9 +51,8 @@ class UrbanUnit(Jsonable):
         return None
 
     def _create_from_blank(self):
-        raise NotImplementedError(
-            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read",
-        )
+        msg = f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
+        raise NotImplementedError(msg)
 
     def __str__(self):
         return self._write()
@@ -110,9 +109,8 @@ class UrbanSubsection(Jsonable):
         return f"<floodmodeller_api UrbanSubsection Class: {self._attribute}>"
 
     def _create_from_blank(self):
-        raise NotImplementedError(
-            f"Creating new {self._name} subsections is not yet supported by floodmodeller_api, only existing subsections can be read",
-        )
+        msg = f"Creating new {self._name} subsections is not yet supported by floodmodeller_api, only existing subsections can be read"
+        raise NotImplementedError(msg)
 
     def __str__(self):
         return "\n".join(self._write())
@@ -155,9 +153,8 @@ class UrbanSubsection(Jsonable):
                 # Miss-match found
                 # check that it is not an existing label in units
                 if unit.name in units:
-                    raise Exception(
-                        f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the {self._attribute} subsection',
-                    )
+                    msg = f'Error: Cannot update label "{name}" to "{unit.name}" beacuase "{unit.name}" already exists in the {self._attribute} subsection'
+                    raise Exception(msg)
 
                 units[unit.name] = unit
                 del units[name]

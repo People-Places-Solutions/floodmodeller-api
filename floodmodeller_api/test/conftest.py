@@ -6,7 +6,7 @@ import pytest
 
 
 @pytest.fixture(scope="session")
-def test_workspace():
+def test_workspace() -> Path:
     return Path(os.path.dirname(__file__), "test_data")
 
 

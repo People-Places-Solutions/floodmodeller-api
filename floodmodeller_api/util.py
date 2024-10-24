@@ -77,11 +77,24 @@ def read_file(filepath: str | Path) -> FMFile:
     if api_class:
         return api_class(filepath)
 
-    raise ValueError(f"Unsupported file type: {filepath.suffix}")
+    msg = f"Unsupported file type: {filepath.suffix}"
+    raise ValueError(msg)
 
 
 def is_windows() -> bool:
     return sys.platform.startswith("win")
+
+
+def get_associated_file(original_file: Path, new_suffix: str) -> Path:
+    new_file = original_file.with_suffix(new_suffix)
+    if not new_file.exists():
+        msg = (
+            f"Error: Could not find associated {new_suffix} file."
+            f" Ensure that the {original_file.suffix} results"
+            f" have an associated {new_suffix} file with matching name."
+        )
+        raise FileNotFoundError(msg)
+    return new_file
 
 
 def handle_exception(when: str) -> Callable:

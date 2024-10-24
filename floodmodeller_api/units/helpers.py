@@ -116,8 +116,6 @@ def _to_data_list(block: list[str], num_cols: int | None = None, date_col: int |
         else:
             row_split = [_to_float(itm) for itm in row_split]
 
-        row_list = []
-        for var in row_split:
-            row_list.append(var)
+        row_list = list(row_split)
         data_list.append(row_list)
     return data_list

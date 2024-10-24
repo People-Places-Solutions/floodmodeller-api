@@ -72,7 +72,7 @@ def calculate_cross_section_conveyance(
             total_length = np.where(in_panel_and_section, length, 0).sum(axis=1)
             total_mannings = np.where(in_panel_and_section, mannings, 0).sum(axis=1)
 
-            with np.errstate(invalid="ignore"):
+            with np.errstate(divide="ignore", invalid="ignore"):
                 conveyance += np.where(
                     total_length >= MINIMUM_PERIMETER_THRESHOLD,
                     total_area ** (5 / 3) * total_length ** (1 / 3) / (total_mannings * rpl_panel),

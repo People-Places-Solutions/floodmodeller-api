@@ -39,16 +39,15 @@ fig.add_scatter(
 
 # Create a button for each section that updates the chart to show that
 # section's flow data
-buttons = []
-for col in df.columns:
-    buttons.append(
-        {
-            "method": "restyle",
-            "label": col,
-            "visible": True,
-            "args": [{"y": [df[col]]}],
-        },
-    )
+buttons = [
+    {
+        "method": "restyle",
+        "label": col,
+        "visible": True,
+        "args": [{"y": [df[col]]}],
+    }
+    for col in df.columns
+]
 
 # Update the chart layout with labels and add a dropdown menu with all buttons
 fig.update_layout(

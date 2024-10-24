@@ -17,8 +17,6 @@ Reference
     
    .. automethod:: to_dataframe
 
-   .. automethod:: to_dict_of_dataframes
-
    .. automethod:: export_to_csv
 
    .. automethod:: to_json
