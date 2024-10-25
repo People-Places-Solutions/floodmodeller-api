@@ -17,7 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import ctypes as ct
+from collections.abc import Mapping
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import numpy as np
@@ -257,8 +259,8 @@ class _ZZ(FMFile):
         self._index_name = "Label" if is_quality else "Node Label"
 
     @property
-    def meta(self) -> dict[str, Any]:
-        return self._meta
+    def meta(self) -> Mapping[str, Any]:
+        return MappingProxyType(self._meta)  # because dictionaries are mutable
 
     def _get_all(self, variable: str, multilevel_header: bool) -> pd.DataFrame:
         is_all = variable == "all"

@@ -134,5 +134,10 @@ def test_zzn_to_csv(zzn: ZZN, tmp_path: Path, test_workspace: Path):
     path.unlink()
 
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+def test_meta_is_read_only(zzx: ZZN):
+    assert dict(zzx.meta) == zzx._meta
+
+    with pytest.raises(TypeError):
+        zzx.meta["variables"] = "hi"
+
+    zzx._meta["variables"] = "hi"
