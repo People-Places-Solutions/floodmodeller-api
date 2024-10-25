@@ -17,10 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import ctypes as ct
-from collections.abc import Mapping
 from pathlib import Path
 from types import MappingProxyType
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pandas as pd
@@ -28,6 +27,9 @@ import pandas as pd
 from ._base import FMFile
 from .to_from_json import to_json
 from .util import get_associated_file, handle_exception, is_windows
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 def get_reader() -> ct.CDLL:
@@ -330,22 +332,6 @@ class _ZZ(FMFile):
         include_time: bool = False,
         multilevel_header: bool = True,
     ) -> pd.Series | pd.DataFrame:
-        """Loads results to pandas dataframe object.
-
-        Args:
-            result_type (str, optional): {'all'} | 'max' | 'min'
-                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
-            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
-                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
-            include_time (bool, optional):
-                Whether to include the time of max or min results. Defaults to False.
-            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
-                headers with the variable as first level and node label as second header. If False, the column
-                names will be formatted "{node label}_{variable}". Defaults to True.
-
-        Returns:
-            pandas.DataFrame(): dataframe object of simulation results
-        """
         result_type = result_type.lower()
 
         if result_type == "all":
@@ -364,21 +350,6 @@ class _ZZ(FMFile):
         variable: str = "all",
         include_time: bool = False,
     ) -> None:
-        """Exports results to CSV file.
-
-        Args:
-            save_location (str, optional): {default} | folder or file path
-                Full or relative path to folder or csv file to save output csv, if no argument given or if set to 'default' then CSV will be saved in same location as ZZN file. Defaults to 'default'.
-            result_type (str, optional): {all} | max | min
-                Define whether to output all timesteps or just max/min results. Defaults to 'all'.
-            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
-                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
-            include_time (bool, optional):
-                Whether to include the time of max or min results. Defaults to False.
-
-        Raises:
-            Exception: Raised if result_type set to invalid option
-        """
         if save_location == "default":
             save_location = self._filepath.with_suffix(".csv")
         else:
@@ -408,28 +379,11 @@ class _ZZ(FMFile):
         include_time: bool = False,
         multilevel_header: bool = True,
     ) -> str:
-        """Loads results to JSON object.
-
-        Args:
-            result_type (str, optional): {'all'} | 'max' | 'min'
-                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
-            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
-                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
-            include_time (bool, optional):
-                Whether to include the time of max or min results. Defaults to False.
-            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
-                headers with the variable as first level and node label as second header. If False, the column
-                names will be formatted "{node label}_{variable}". Defaults to True.
-
-        Returns:
-            str: A JSON string representing the results.
-        """
         df = self.to_dataframe(result_type, variable, include_time, multilevel_header)
         return to_json(df)
 
     @classmethod
     def from_json(cls, json_string: str = ""):
-        # Not possible
         msg = f"It is not possible to build a {cls._filetype} class instance from JSON"
         raise NotImplementedError(msg)
 
@@ -447,6 +401,64 @@ class ZZN(_ZZ):
     _filetype: str = "ZZN"
     _suffix: str = ".zzn"
 
+    def to_dataframe(self, *args, **kwargs) -> pd.Series | pd.DataFrame:
+        """Loads ZZN results to pandas dataframe object.
+
+        Args:
+            result_type (str, optional): {'all'} | 'max' | 'min'
+                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
+                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
+                headers with the variable as first level and node label as second header. If False, the column
+                names will be formatted "{node label}_{variable}". Defaults to True.
+
+        Returns:
+            pandas.DataFrame(): dataframe object of simulation results
+        """
+        return super().to_dataframe(*args, **kwargs)
+
+    def export_to_csv(self, *args, **kwargs) -> None:
+        """Exports ZZN results to CSV file.
+
+        Args:
+            save_location (str, optional): {default} | folder or file path
+                Full or relative path to folder or csv file to save output csv,
+                if no argument given or if set to 'default' then CSV will be saved in same location as ZZN file.
+                Defaults to 'default'.
+            result_type (str, optional): {all} | max | min
+                Define whether to output all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
+                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+
+        Raises:
+            Exception: Raised if result_type set to invalid option
+        """
+        return super().export_to_csv(*args, **kwargs)
+
+    def to_json(self, *args, **kwargs) -> str:
+        """Loads ZZN results to JSON object.
+
+        Args:
+            result_type (str, optional): {'all'} | 'max' | 'min'
+                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Flow' | 'Stage' | 'Froude' | 'Velocity' | 'Mode' | 'State'
+                Specify a single output variable (e.g 'flow' or 'stage'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
+                headers with the variable as first level and node label as second header. If False, the column
+                names will be formatted "{node label}_{variable}". Defaults to True.
+
+        Returns:
+            str: A JSON string representing the results.
+        """
+        return super().to_json(*args, **kwargs)
+
 
 class ZZX(_ZZ):
     """Reads and processes Flood Modeller 1D binary results format '.zzx'
@@ -460,3 +472,61 @@ class ZZX(_ZZ):
 
     _filetype: str = "ZZX"
     _suffix: str = ".zzx"
+
+    def to_dataframe(self, *args, **kwargs) -> pd.Series | pd.DataFrame:
+        """Loads ZZX results to pandas dataframe object.
+
+        Args:
+            result_type (str, optional): {'all'} | 'max' | 'min'
+                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Left FP h' | 'Link inflow' | 'Right FP h' | 'Right FP mode' | 'Left FP mode'
+                Specify a single output variable (e.g 'link inflow'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
+                headers with the variable as first level and node label as second header. If False, the column
+                names will be formatted "{node label}_{variable}". Defaults to True.
+
+        Returns:
+            pandas.DataFrame(): dataframe object of simulation results
+        """
+        return super().to_dataframe(*args, **kwargs)
+
+    def export_to_csv(self, *args, **kwargs) -> None:
+        """Exports ZZX results to CSV file.
+
+        Args:
+            save_location (str, optional): {default} | folder or file path
+                Full or relative path to folder or csv file to save output csv,
+                if no argument given or if set to 'default' then CSV will be saved in same location as ZZN file.
+                Defaults to 'default'.
+            result_type (str, optional): {all} | max | min
+                Define whether to output all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Left FP h' | 'Link inflow' | 'Right FP h' | 'Right FP mode' | 'Left FP mode'
+                Specify a single output variable (e.g 'link inflow'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+
+        Raises:
+            Exception: Raised if result_type set to invalid option
+        """
+        return super().export_to_csv(*args, **kwargs)
+
+    def to_json(self, *args, **kwargs) -> str:
+        """Loads ZZX results to JSON object.
+
+        Args:
+            result_type (str, optional): {'all'} | 'max' | 'min'
+                Define whether to return all timesteps or just max/min results. Defaults to 'all'.
+            variable (str, optional): {'all'} | 'Left FP h' | 'Link inflow' | 'Right FP h' | 'Right FP mode' | 'Left FP mode'
+                Specify a single output variable (e.g 'link inflow'). Defaults to 'all'.
+            include_time (bool, optional):
+                Whether to include the time of max or min results. Defaults to False.
+            multilevel_header (bool, optional): If True, the returned dataframe will have multi-level column
+                headers with the variable as first level and node label as second header. If False, the column
+                names will be formatted "{node label}_{variable}". Defaults to True.
+
+        Returns:
+            str: A JSON string representing the results.
+        """
+        return super().to_json(*args, **kwargs)
