@@ -6,7 +6,7 @@ import pytest
 from floodmodeller_api.ief import FlowTimeProfile
 
 
-@pytest.fixture
+@pytest.fixture()
 def valid_raw_strings():
     return [
         ',,4,"fmfile.csv",fm1,T=100,"SingleEvent,AllNodes"',
@@ -19,7 +19,7 @@ def valid_raw_strings():
 
 
 @pytest.mark.parametrize(
-    "raw_string, expected",
+    ("raw_string", "expected"),
     [
         (
             ',,4,"fmfile.csv",fm1,T=100,"SingleEvent,AllNodes"',

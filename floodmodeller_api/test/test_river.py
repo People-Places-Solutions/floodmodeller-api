@@ -54,8 +54,8 @@ river_unit_data_cases = [
 ]
 
 
-@pytest.mark.parametrize(("river_unit_data", "_"), river_unit_data_cases)
-def test_read_write(river_unit_data, _):
+@pytest.mark.parametrize("river_unit_data", [x[0] for x in river_unit_data_cases])
+def test_read_write(river_unit_data):
     river_section_1 = RIVER(river_unit_data)
     river_section_2 = RIVER(river_section_1._write())
     assert river_section_1 == river_section_2
@@ -220,7 +220,7 @@ def test_set_river_dataframe_incorrect():
         },
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="The DataFrame must only contain columns"):
         unit.data = df.copy()
 
 

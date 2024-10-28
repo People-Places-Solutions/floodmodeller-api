@@ -205,7 +205,7 @@ class XML2D(FMFile):
 
     def _validate(self):
         try:
-            self._xsdschema.assert_(self._xmltree)
+            self._xsdschema.assert_(self._xmltree)  # noqa: PT009
         except AssertionError as err:
             msg = f"XML Validation Error for {self!r}:\n     {err.args[0].replace(self._ns, '')}"
             raise ValueError(msg) from err

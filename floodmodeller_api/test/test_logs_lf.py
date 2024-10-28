@@ -9,7 +9,7 @@ from floodmodeller_api import IEF, LF1
 from floodmodeller_api.logs import create_lf
 
 
-@pytest.fixture
+@pytest.fixture()
 def lf1_fp(test_workspace):
     return Path(test_workspace, "ex3.lf1")
 

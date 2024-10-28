@@ -28,47 +28,47 @@ from .component_converter import (
 path_to_cc = "sample_code.tuflow_to_floodmodeller.component_converter"
 
 
-@pytest.fixture
+@pytest.fixture()
 def xml():
     return XML2D()
 
 
-@pytest.fixture
+@pytest.fixture()
 def ief():
     return IEF()
 
 
-@pytest.fixture
+@pytest.fixture()
 def point1():
     return Point(0, 1)
 
 
-@pytest.fixture
+@pytest.fixture()
 def point2():
     return Point(1, 0)
 
 
-@pytest.fixture
+@pytest.fixture()
 def polygon1():
     return Polygon([(0, 0), (1, 1), (1, 0)])
 
 
-@pytest.fixture
+@pytest.fixture()
 def polygon2():
     return Polygon([(0, 0), (1, 1), (0, 1)])
 
 
-@pytest.fixture
+@pytest.fixture()
 def gdf1(point1):
     return gpd.GeoDataFrame({"x": [1], "geometry": [point1]})
 
 
-@pytest.fixture
+@pytest.fixture()
 def gdf2(point2):
     return gpd.GeoDataFrame({"x": [0], "geometry": [point2]})
 
 
-@pytest.fixture
+@pytest.fixture()
 def tuflow_p():
     return gpd.GeoDataFrame(
         {
@@ -81,7 +81,7 @@ def tuflow_p():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def tuflow_l():
     return gpd.GeoDataFrame(
         {
@@ -97,7 +97,7 @@ def tuflow_l():
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def tuflow_r():
     return gpd.GeoDataFrame(
         {
@@ -205,7 +205,7 @@ def test_computational_area_converter(tmpdir, xml, gdf1, gdf2, point1, point2):
 
 
 @pytest.mark.parametrize(
-    "start,end,rotation",
+    ("start", "end", "rotation"),
     [
         ((1, 0), (10, 20), 65.772),
         ((1, 0), (-10, 20), 118.811),
@@ -368,7 +368,7 @@ def test_roughness_converter(mocker, tmpdir, xml, gdf1, gdf2, point1, point2):
 
 
 @pytest.mark.parametrize(
-    "in_scheme, in_hardware, fm_scheme, fm_proc",
+    ("in_scheme", "in_hardware", "fm_scheme", "fm_proc"),
     [
         ("HPC", "GPU", "TVD", "GPU"),
         ("HPC", "CPU", "ADI", "CPU"),

@@ -40,7 +40,7 @@ class SumTool(FMTool):
     tool_function = my_sum
 
 
-@pytest.fixture
+@pytest.fixture()
 def tool():
     return SumTool()
 
@@ -67,7 +67,7 @@ def test_check_parameters():
             ),
         ]
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Parameter names must be unique"):
         MyTool()
 
 

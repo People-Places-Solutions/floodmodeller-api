@@ -31,7 +31,6 @@ ignore = [
     "PD",  # remove
     "PGH003",
     "PLW",  # remove
-    "PT",  # remove
     "PTH",  # remove
     "S",
     "SLF",
@@ -44,6 +43,9 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test*" = ["PLR0913", "PLR2004"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = true
 
 [tool.isort]
 profile = "black"

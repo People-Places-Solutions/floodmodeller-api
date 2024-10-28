@@ -5,12 +5,12 @@ import pytest
 from floodmodeller_api import XML2D
 
 
-@pytest.fixture
+@pytest.fixture()
 def xml_fp(test_workspace):
     return Path(test_workspace, "Domain1_Q.xml")
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_before(xml_fp):
     return XML2D(xml_fp)._write()
 

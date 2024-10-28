@@ -9,25 +9,25 @@ import pytest
 from floodmodeller_api import IEF, ZZN, ZZX
 
 
-@pytest.fixture
+@pytest.fixture()
 def zzn(test_workspace: Path) -> ZZN:
     path = test_workspace / "network.zzn"
     return ZZN(path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def zzx(test_workspace: Path) -> ZZX:
     path = test_workspace / "network.zzx"
     return ZZX(path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def ief(test_workspace: Path) -> IEF:
     path = test_workspace / "network.ief"
     return IEF(path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def folder(test_workspace: Path) -> Path:
     return test_workspace / "tabular_csv_outputs"
 
