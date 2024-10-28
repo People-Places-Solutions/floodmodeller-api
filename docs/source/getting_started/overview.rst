@@ -1,7 +1,7 @@
 *************
 API Overview
 *************
-.. image:: api_overview_small.png
+.. image:: api_overview.png
    :width: 800
 
 |
