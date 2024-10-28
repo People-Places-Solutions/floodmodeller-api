@@ -1,4 +1,4 @@
 * linguist-vendored
-*.py linguist-vendored=False
-*.html linguist-vendored=False
-*.ipynb linguist-vendored=False
+*.py linguist-vendored=false
+*.html linguist-vendored=false
+*.ipynb linguist-vendored=false
