@@ -15,7 +15,7 @@
 
 This python package is designed to be used in conjunction with your installation of Flood Modeller to provide users with a set of tools to extend the capabilities of Flood Modeller and build into automated workflows.
 
-![API Overview](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview_small.png)
+![API Overview](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview.png)
 
 ## Installation
 You can install the floodmodeller_api package from PyPI with the following command:
