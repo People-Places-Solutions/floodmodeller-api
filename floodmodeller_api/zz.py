@@ -57,53 +57,18 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
-def convert_data(data: dict[str, Any]) -> None:
-    for key in data:
-        data[key] = np.array(data[key])
-
-
-def convert_meta(meta: dict[str, Any]) -> None:
-    to_get_value = (
-        "dt",
-        "errstat",
-        "is_quality",
-        "label_length",
-        "ltimestep",
-        "nnodes",
-        "node_ID",
-        "nvars",
-        "save_int",
-        "savint_range",
-        "savint_skip",
-        "timestep0",
-    )
-    for key in to_get_value:
-        meta[key] = meta[key].value
-
-    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero", "variables")
-    for key in to_get_list:
-        meta[key] = list(meta[key])
-
-    to_get_decoded_value = ("model_title", "zzl_name", "zzn_or_zzx_name")
-    for key in to_get_decoded_value:
-        meta[key] = meta[key].value.decode()
-
-    to_get_decoded_value_list = ("labels", "variables")
-    for key in to_get_decoded_value_list:
-        meta[key] = [x.value.decode().strip() for x in list(meta[key])]
-
-
 def run_routines(
     reader: ct.CDLL,
     zzl: Path,
     zzn_or_zzx: Path,
-    zzl_or_zzx: str,
     is_quality: bool,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
-    meta["zzn_or_zzx_name"] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
+    zzx_or_zzn_name = "zzx_name" if is_quality else "zzn_name"
+    zzx_or_zzl_name = "zzx_name" if is_quality else "zzl_name"
+    meta[zzx_or_zzn_name] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
 
     # process zzl
@@ -120,7 +85,7 @@ def run_routines(
     meta["errstat"] = ct.c_int(0)
 
     reader.process_zzl(
-        ct.byref(meta[zzl_or_zzx]),
+        ct.byref(meta[zzx_or_zzl_name]),
         ct.byref(meta["model_title"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["label_length"]),
@@ -174,7 +139,7 @@ def run_routines(
 
     # process vars
     reader.process_vars(
-        ct.byref(meta[zzl_or_zzx]),
+        ct.byref(meta[zzx_or_zzl_name]),
         ct.byref(meta["nvars"]),
         ct.byref(meta["is_quality"]),
         ct.byref(meta["errstat"]),
@@ -206,7 +171,7 @@ def run_routines(
     data["max_times"] = (ct.c_int * nx * ny)()
     data["min_times"] = (ct.c_int * nx * ny)()
     reader.process_zzn(
-        ct.byref(meta["zzn_or_zzx_name"]),
+        ct.byref(meta[zzx_or_zzn_name]),
         ct.byref(meta["node_ID"]),
         ct.byref(meta["nnodes"]),
         ct.byref(meta["is_quality"]),
@@ -223,9 +188,45 @@ def run_routines(
     )
     check_errstat("process_zzn", meta["errstat"].value)
 
-    convert_data(data)
-    convert_meta(meta)
     return data, meta
+
+
+def convert_data(data: dict[str, Any]) -> None:
+    for key in data:
+        data[key] = np.array(data[key])
+
+
+def convert_meta(meta: dict[str, Any]) -> None:
+    to_get_value = (
+        "dt",
+        "errstat",
+        "is_quality",
+        "label_length",
+        "ltimestep",
+        "nnodes",
+        "node_ID",
+        "nvars",
+        "save_int",
+        "savint_range",
+        "savint_skip",
+        "timestep0",
+    )
+    for key in to_get_value:
+        meta[key] = meta[key].value
+
+    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero", "variables")
+    for key in to_get_list:
+        meta[key] = list(meta[key])
+
+    to_get_decoded_value = ("model_title", "zzl_name", "zzx_name", "zzn_name")
+    for key in to_get_decoded_value:
+        if key not in meta:
+            continue
+        meta[key] = meta[key].value.decode()
+
+    to_get_decoded_value_list = ("labels", "variables")
+    for key in to_get_decoded_value_list:
+        meta[key] = [x.value.decode().strip() for x in list(meta[key])]
 
 
 class _ZZ(FMFile):
@@ -246,9 +247,10 @@ class _ZZ(FMFile):
         zzl = get_associated_file(self._filepath, ".zzl")
 
         is_quality = self._suffix == ".zzx"
-        zzl_or_zzx = "zzn_or_zzx_name" if is_quality else "zzl_name"
 
-        self._data, self._meta = run_routines(reader, zzl, self._filepath, zzl_or_zzx, is_quality)
+        self._data, self._meta = run_routines(reader, zzl, self._filepath, is_quality)
+        convert_data(self._data)
+        convert_meta(self._meta)
 
         self._nx = self._meta["nnodes"]
         self._ny = self._meta["nvars"]
