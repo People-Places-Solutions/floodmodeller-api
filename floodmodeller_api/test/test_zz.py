@@ -141,7 +141,3 @@ def test_meta_is_read_only(zzx: ZZN):
         zzx.meta["variables"] = "hi"
 
     zzx._meta["variables"] = "hi"
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])
