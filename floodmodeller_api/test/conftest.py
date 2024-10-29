@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -7,7 +6,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def test_workspace() -> Path:
-    return Path(os.path.dirname(__file__), "test_data")
+    return Path(__file__).parent / "test_data"
 
 
 @pytest.fixture()

@@ -125,7 +125,7 @@ def test_simulate(
     exe_path = Path(exe_bin, exe)
     ief.simulate(method=method, precision=precision, enginespath=str(exe_bin))
 
-    p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=str(ief_fp.parent))
+    p_open.assert_called_once_with(f'"{exe_path}" -sd "{ief_fp}"', cwd=ief_fp.parent)
 
     if method == "WAIT":
         assert p_open.return_value.poll.call_count == 3

@@ -1,5 +1,4 @@
 import csv
-import os
 from pathlib import Path
 
 import numpy as np
@@ -194,8 +193,7 @@ class Calibration:
             ],
         ]
 
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+        Path.mkdir(output_folder, parents=True, exist_ok=True)
 
         self._starting_y_coords = None
         node_dropdown = []

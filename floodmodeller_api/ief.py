@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import csv
-import os
 import subprocess
 import time
 from io import StringIO
@@ -507,7 +506,7 @@ class IEF(FMFile):
         if method.upper() == "WAIT":
             print("Executing simulation...")
             # execute simulation
-            process = Popen(run_command, cwd=os.path.dirname(self._filepath))
+            process = Popen(run_command, cwd=Path(self._filepath).parent)
 
             # progress bar based on log files
             steady = self.RunType == "Steady"
@@ -527,7 +526,7 @@ class IEF(FMFile):
         elif method.upper() == "RETURN_PROCESS":
             print("Executing simulation...")
             # execute simulation
-            return Popen(run_command, cwd=os.path.dirname(self._filepath))
+            return Popen(run_command, cwd=Path(self._filepath).parent)
 
         return None
 

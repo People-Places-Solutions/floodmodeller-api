@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import io
-import os
 import time
 from copy import deepcopy
 from pathlib import Path
@@ -554,7 +553,7 @@ class XML2D(FMFile):
         if method.upper() == "WAIT":
             print("Executing simulation ... ")
             # execute simulation
-            process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+            process = Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
             # progress bar based on log files:
             if console_output == "simple":
@@ -571,7 +570,7 @@ class XML2D(FMFile):
         elif method.upper() == "RETURN_PROCESS":
             print("Executing simulation ...")
             # execute simulation
-            return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+            return Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
         return None
 

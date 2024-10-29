@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 import pytest
@@ -13,7 +12,7 @@ def create_expected_json_files():
     """Helper function to recreate all the expected JSON files if needed at any point due to updates
     to the to_json code"""
 
-    test_workspace = Path(os.path.dirname(__file__), "test_data")
+    test_workspace = Path(__file__).parent / "test_data"
     for file in [
         "network.dat",
         "network.ied",
