@@ -64,42 +64,40 @@ class AllData(Data):
         index_key: str | None = None,
         index_df: pd.Series | None = None,
     ) -> pd.DataFrame:
-        df = pd.DataFrame(self._value)
+        value_df = pd.DataFrame(self._value)
 
         # do nothing to empty dataframes
-        if df.empty:
-            return df
+        if value_df.empty:
+            return value_df
 
         # overall header
         if self._subheaders is None:
-            df.rename(columns={df.columns[0]: self.header}, inplace=True)
+            value_df = value_df.rename(columns={value_df.columns[0]: self.header})
 
         elif index_key is not None:
             # subheaders
-            df = df.set_axis(self._subheaders, axis=1)
+            value_df = value_df.set_axis(self._subheaders, axis=1)
 
             # remove duplicate of index
             # sometimes it includes extra values
             # it also has different precision
             index_duplicate = index_key + "_duplicate"
-            if index_duplicate in df.columns:
+            if index_duplicate in value_df.columns:
                 try:
-                    index_df = df[index_duplicate].dt.round("1s")
-                    df.drop(index_duplicate, axis=1, inplace=True)
+                    index_df = value_df[index_duplicate].dt.round("1s")
+                    value_df = value_df.drop(index_duplicate, axis=1)
                 except AttributeError:
-                    df = df.drop(columns=index_duplicate)
+                    value_df = value_df.drop(columns=index_duplicate)
 
         # there is no index because *this* is the index
         if index_key is None:
-            return df
+            return value_df
 
         # made lf index the dataframe index
-        df[index_key] = index_df
-        df.dropna(inplace=True)
-        df.drop_duplicates(subset=index_key, keep="last", inplace=True)
-        df.set_index(index_key, inplace=True)
-
-        return df
+        value_df[index_key] = index_df
+        value_df = value_df.dropna()
+        value_df = value_df.drop_duplicates(subset=index_key, keep="last")
+        return value_df.set_index(index_key)
 
 
 def data_factory(data_type: str, header: str, subheaders: list | None = None):

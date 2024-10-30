@@ -99,9 +99,9 @@ class Calibration:
         for link in self._model_event_links:
             file = link["model results"]
             zzn = ZZN(Path(models_path, file))
-            df = zzn.to_dataframe(variable="Stage")
+            zzn_df = zzn.to_dataframe(variable="Stage")
             self._model_names.append(file[:-4])
-            self._model_dfs.append(df)
+            self._model_dfs.append(zzn_df)
 
     def _model_data(self):
         model_data_list = []

@@ -205,8 +205,8 @@ class StructureLogBuilder:
             friction = f"Mannings: {mannings_set.pop()}"
         else:
             friction = f"Mannings: [min: {mannings_set.pop()}, max: {mannings_set.pop()}]"
-        height = structure.opening_data.values[0][3] - min(structure.section_data.Y.tolist())
-        width = structure.opening_data.values[0][1] - structure.opening_data.values[0][0]
+        height = structure.opening_data.to_numpy()[0][3] - min(structure.section_data.Y.tolist())
+        width = structure.opening_data.to_numpy()[0][1] - structure.opening_data.to_numpy()[0][0]
         dimensions = f"h: {height:.2f} x w: {width:.2f}"
         return [friction, dimensions]
 

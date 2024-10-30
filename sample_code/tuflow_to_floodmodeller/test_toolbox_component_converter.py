@@ -134,13 +134,13 @@ def test_concat(polygon1, polygon2, point1, point2):
 
 
 def test_rename_and_select():
-    df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
+    original_data = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]})
 
-    df1 = rename_and_select(df, {"aa": "A", "b": "B"})
-    assert df1.equals(pd.DataFrame({"B": [4, 5, 6]}))
+    selected_renamed_data_1 = rename_and_select(original_data, {"aa": "A", "b": "B"})
+    assert selected_renamed_data_1.equals(pd.DataFrame({"B": [4, 5, 6]}))
 
-    df2 = rename_and_select(df, {"a": "A", "b": "B"})
-    assert df2.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
+    selected_renamed_data_2 = rename_and_select(original_data, {"a": "A", "b": "B"})
+    assert selected_renamed_data_2.equals(pd.DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]}))
 
 
 def test_filter(polygon1, polygon2):

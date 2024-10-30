@@ -90,8 +90,8 @@ def test_all_timesteps(zzn: ZZN, zzx: ZZX, folder: Path, variable: str, csv: str
 
 
 def test_zzn_include_time(zzn: ZZN):
-    df = zzn.to_dataframe(result_type="max", variable="flow", include_time=True)
-    actual = df.loc["resin", ["Max Flow", "Max Flow Time(hrs)"]].to_numpy()
+    zzn_df = zzn.to_dataframe(result_type="max", variable="flow", include_time=True)
+    actual = zzn_df.loc["resin", ["Max Flow", "Max Flow Time(hrs)"]].to_numpy()
     assert actual[0] == pytest.approx(7.296, abs=0.001)
     assert actual[1] == 9
 

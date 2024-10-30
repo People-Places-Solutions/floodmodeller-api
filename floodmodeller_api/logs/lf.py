@@ -193,12 +193,10 @@ class LF(FMFile):
             if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
         }
 
-        df = pd.concat(data_type_all, axis=1)
-        df.columns = df.columns.droplevel()
+        lf_df = pd.concat(data_type_all, axis=1)
+        lf_df.columns = lf_df.columns.droplevel()
 
-        df.sort_index(inplace=True)
-
-        return df
+        return lf_df.sort_index()
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""

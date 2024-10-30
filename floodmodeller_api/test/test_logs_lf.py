@@ -32,10 +32,10 @@ def test_lf1_report_progress(lf1_fp):
 def test_lf1_to_dataframe(lf1_fp):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
-    df = lf1.to_dataframe()
-    assert df.loc[df.index[0], "iter"] == 6
-    assert df.loc[df.index[-1], "outflow"] == 21.06
-    assert df.loc[df.index[4], "mass_error"] == -0.07
+    lf1_df = lf1.to_dataframe()
+    assert lf1_df.loc[lf1_df.index[0], "iter"] == 6
+    assert lf1_df.loc[lf1_df.index[-1], "outflow"] == 21.06
+    assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
 
 
 def test_lf1_from_ief(lf1_fp, test_workspace):

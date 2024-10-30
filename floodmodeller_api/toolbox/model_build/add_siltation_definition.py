@@ -20,11 +20,11 @@ def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float
         if not isinstance(section, RIVER):
             # Skip any non river type units (e.g. interpolates)
             continue
-        df = section.data  # get section data
-        min_elevation = df["Y"].min()  # get minimum cross section elevation
+        section_data = section.data  # get section data
+        min_elevation = section_data["Y"].min()  # get minimum cross section elevation
         raised_bed = min_elevation + siltation  # define new lowest bed level
-        df.loc[
-            df["Y"] < raised_bed,
+        section_data.loc[
+            section_data["Y"] < raised_bed,
             "Y",
         ] = raised_bed  # Raise any levels lower than this to the new lowest level
 

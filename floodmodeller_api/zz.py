@@ -275,22 +275,26 @@ class _ZZ(FMFile):
         time_index = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)
 
         if multilevel_header:
-            df = pd.DataFrame(
+            result = pd.DataFrame(
                 arr.reshape(self._nz, self._nx * self._ny),
                 index=time_index,
                 columns=pd.MultiIndex.from_product([self._variables, self._meta["labels"]]),
             )
-            df.index.name = "Time (hr)"
-            return df if is_all else df[variable_display_name]  # type: ignore
+            result.index.name = "Time (hr)"
+            return result if is_all else result[variable_display_name]  # type: ignore
             # ignored because it always returns a dataframe as it's a multilevel header
 
-        df = pd.DataFrame(
+        result = pd.DataFrame(
             arr.reshape(self._nz, self._nx * self._ny),
             index=time_index,
             columns=[f"{node}_{var}" for var in self._variables for node in self._meta["labels"]],
         )
-        df.index.name = "Time (hr)"
-        return df if is_all else df[[x for x in df.columns if x.endswith(variable_display_name)]]
+        result.index.name = "Time (hr)"
+        return (
+            result
+            if is_all
+            else result[[x for x in result.columns if x.endswith(variable_display_name)]]
+        )
 
     def _get_extremes(
         self,
@@ -308,12 +312,12 @@ class _ZZ(FMFile):
         arr = self._data[f"{result_type}_results"].transpose()
         node_index = self._meta["labels"]
         col_names = [f"{result_type_display_name} {x}" for x in self._variables]
-        df = pd.DataFrame(arr, index=node_index, columns=col_names)
-        df.index.name = self._index_name
+        result = pd.DataFrame(arr, index=node_index, columns=col_names)
+        result.index.name = self._index_name
 
         if not include_time:
             # df[combination] is the only time we get a series in _ZZ.get_dataframe()
-            return df if is_all else df[combination]
+            return result if is_all else result[combination]
 
         times = self._data[f"{result_type}_times"].transpose()
         times = np.linspace(self._meta["output_hrs"][0], self._meta["output_hrs"][1], self._nz)[
@@ -322,10 +326,10 @@ class _ZZ(FMFile):
         time_col_names = [name + " Time(hrs)" for name in col_names]
         time_df = pd.DataFrame(times, index=node_index, columns=time_col_names)
         time_df.index.name = self._index_name
-        df = pd.concat([df, time_df], axis=1)
+        result = pd.concat([result, time_df], axis=1)
         new_col_order = [x for y in list(zip(col_names, time_col_names)) for x in y]
-        df = df[new_col_order]
-        return df if is_all else df[[combination, f"{combination} Time(hrs)"]]
+        result = result[new_col_order]
+        return result if is_all else result[[combination, f"{combination} Time(hrs)"]]
 
     def to_dataframe(
         self,
@@ -366,12 +370,12 @@ class _ZZ(FMFile):
 
         save_location.parent.mkdir(parents=True, exist_ok=True)
 
-        df = self.to_dataframe(
+        zz_df = self.to_dataframe(
             result_type=result_type,
             variable=variable,
             include_time=include_time,
         )
-        df.to_csv(save_location)
+        zz_df.to_csv(save_location)
         print(f"CSV saved to {save_location}")
 
     def to_json(
@@ -381,8 +385,8 @@ class _ZZ(FMFile):
         include_time: bool = False,
         multilevel_header: bool = True,
     ) -> str:
-        df = self.to_dataframe(result_type, variable, include_time, multilevel_header)
-        return to_json(df)
+        zz_df = self.to_dataframe(result_type, variable, include_time, multilevel_header)
+        return to_json(zz_df)
 
     @classmethod
     def from_json(cls, json_string: str = ""):

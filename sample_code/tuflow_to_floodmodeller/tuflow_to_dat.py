@@ -20,8 +20,7 @@ if TYPE_CHECKING:
 class TuflowToDat:
     def _process_shapefile(self, path):
         attributes = gpd.read_file(path)
-        attributes.dropna(how="all", axis=1, inplace=True)
-        return attributes
+        return attributes.dropna(how="all", axis=1)
 
     def _read_in(self, model_path, nwk_paths, xs_paths):
         #   File paths for model, xs and nwk, read in
@@ -103,7 +102,7 @@ class TuflowToDat:
         #   Put mid intersect in intersect column if nothing there
         for index, row in self._xs_attributes.iterrows():
             if row["mid_intersect"] is not None:
-                self._xs_attributes.at[index, "intersect"] = row["mid_intersect"]
+                self._xs_attributes.loc[index, "intersect"] = row["mid_intersect"]
 
     def _find_ds_intersect(self):
         #   nwk find connected network line ds
@@ -117,7 +116,7 @@ class TuflowToDat:
                 & self._nwk_attributes.geometry.intersects(end_point)
             ]
             next_ids = intersected_rows["ID"].tolist()
-            self._nwk_attributes.at[i, "connected"] = next_ids
+            self._nwk_attributes.loc[i, "connected"] = next_ids
 
     def _find_us_intersect(self):
         #   Find the us connection
@@ -130,7 +129,7 @@ class TuflowToDat:
                 & self._nwk_attributes.geometry.intersects(start_point)
             ]
             previous_ids = intersected_rows["ID"].tolist()
-            self._nwk_attributes.at[i, "before"] = previous_ids
+            self._nwk_attributes.loc[i, "before"] = previous_ids
 
     def _highlight_flag(self):
         #   Highlight flag from nwk and map length/ maning/gxy stuff to xs
@@ -215,7 +214,11 @@ class TuflowToDat:
             self._xs_attributes.loc[mask, "location"] = values["start"].wkt
             self._xs_attributes.loc[mask, "end_point"] = values["end"].wkt
 
-        self._xs_attributes.dist_to_next.replace("", 0, regex=True, inplace=True)
+        self._xs_attributes["dist_to_next"] = self._xs_attributes["dist_to_next"].replace(
+            "",
+            0,
+            regex=True,
+        )
         for key, values in self._end_dict.items():
             mask = self._xs_attributes["end_intersect"] == key
             self._xs_attributes.loc[mask, "mannings"] = values["n_nF_Cd"]
@@ -246,7 +249,7 @@ class TuflowToDat:
             # Check if the row is a start or join_start
             if not ("start" in row["Flag"] or "join_start" in row["Flag"]):
                 continue
-            self._xs_attributes.at[i, "order"] = order_counter
+            self._xs_attributes.loc[i, "order"] = order_counter
             order_counter += 1
             intersect_value = row["intersect"]
             next_row_index = self._xs_attributes[
@@ -255,10 +258,10 @@ class TuflowToDat:
             ].index
             while not next_row_index.empty:
                 next_row_index = next_row_index[0]
-                self._xs_attributes.at[next_row_index, "order"] = order_counter
+                self._xs_attributes.loc[next_row_index, "order"] = order_counter
                 order_counter += 1
 
-                intersect_value = self._xs_attributes.at[next_row_index, "intersect"]
+                intersect_value = self._xs_attributes.loc[next_row_index, "intersect"]
                 next_row_index = self._xs_attributes[
                     (self._xs_attributes["end_intersect"] == intersect_value)
                     & (self._xs_attributes["Flag"] == "")
@@ -269,9 +272,9 @@ class TuflowToDat:
                     self._xs_attributes["end_intersect"] == intersect_value
                 ].index
                 next_row_index = next_row_index[0]
-                self._xs_attributes.at[next_row_index, "order"] = order_counter
+                self._xs_attributes.loc[next_row_index, "order"] = order_counter
                 order_counter += 1
-                self._xs_attributes.at[next_row_index, "order"] = order_counter
+                self._xs_attributes.loc[next_row_index, "order"] = order_counter
                 order_counter += 1
 
         # Sort the dataframe based on the order column
@@ -325,10 +328,10 @@ class TuflowToDat:
             unit_data["X"] = unit_csv["X"]
             unit_data["Y"] = unit_csv["Z"]
             unit_data["Mannings n"] = row["mannings"]
-            unit_data["Panel"].fillna(False, inplace=True)
-            unit_data["RPL"].fillna(1.0, inplace=True)
-            unit_data["Marker"].fillna(False, inplace=True)
-            unit_data["SP. Marker"].fillna(0, inplace=True)
+            unit_data["Panel"] = unit_data["Panel"].fillna(False)
+            unit_data["RPL"] = unit_data["RPL"].fillna(1.0)
+            unit_data["Marker"] = unit_data["Marker"].fillna(False)
+            unit_data["SP. Marker"] = unit_data["SP. Marker"].fillna(0)
 
             unit = RIVER(
                 name=row["Name"],

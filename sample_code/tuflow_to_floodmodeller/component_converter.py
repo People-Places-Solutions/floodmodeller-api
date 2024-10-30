@@ -326,7 +326,7 @@ class RoughnessConverterXML2D(ComponentConverterXML2D):
         material: gpd.GeoDataFrame,
         mapping: pd.DataFrame,
     ) -> gpd.GeoDataFrame:
-        return pd.merge(material, mapping, on="material_id")[["value", "geometry"]]
+        return material.merge(mapping, on="material_id")[["value", "geometry"]]
 
     def edit_fm_file(self) -> None:
         self._xml.domains[self._domain_name]["roughness"] = [

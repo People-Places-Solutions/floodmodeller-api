@@ -59,8 +59,8 @@ def check_item_with_dataframe_equal(  # noqa: C901, PLR0912
                 row_diffs = []
                 for row in rows:
                     for col in df_diff.columns:
-                        if True not in df_diff.loc[row, col].duplicated().values:
-                            vals = df_diff.loc[row, col].values
+                        if True not in df_diff.loc[row, col].duplicated().to_numpy():
+                            vals = df_diff.loc[row, col].to_numpy()
                             row_diffs.append(
                                 f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}",
                             )
