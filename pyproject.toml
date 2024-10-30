@@ -10,7 +10,7 @@ ignore_missing_imports = true
 
 [tool.pylint]
 disable = "all"
-enable = "simplifiable-if-statement, simplifiable-if-expression, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call"
+enable = "used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 
 [tool.ruff]
 line-length = 100
