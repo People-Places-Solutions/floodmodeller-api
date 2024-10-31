@@ -40,7 +40,11 @@ class Unit(Jsonable):
             self._create_from_blank(**kwargs)
 
     @property
-    def name(self):
+    def unit(self) -> str:
+        return self._unit
+
+    @property
+    def name(self) -> str | None:
         return self._name
 
     @name.setter
@@ -56,7 +60,7 @@ class Unit(Jsonable):
             raise Exception(msg) from e
 
     @property
-    def subtype(self):
+    def subtype(self) -> str | None:
         return self._subtype
 
     @subtype.setter

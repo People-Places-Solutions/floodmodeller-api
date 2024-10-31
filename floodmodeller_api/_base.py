@@ -60,6 +60,17 @@ class FMFile(Jsonable):
                 # Add the file object as a property to expose the restore method
                 self.file = file
 
+    @property
+    def filepath(self) -> Path:
+        if not hasattr(self, "_filepath"):
+            msg = "Object has no filepath."
+            raise AttributeError(msg)
+        return self._filepath
+
+    @property
+    def filetype(self) -> str:
+        return self._filetype
+
     def __repr__(self):
         filepath = "<in_memory>" if not hasattr(self, "_filepath") else self._filepath
         return f"<floodmodeller_api Class: {self._filetype}(filepath={filepath})>"

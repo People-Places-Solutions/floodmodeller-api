@@ -162,7 +162,7 @@ def test_simulate_error_without_exe(tmpdir, ief: IEF):
 
 def test_simulate_error_without_save():
     ief = IEF()
-    ief._filepath = None
+    ief.filepath = None
     msg = (
         r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
         r"\nAPI Error: Problem encountered when trying to simulate IEF file .*\."

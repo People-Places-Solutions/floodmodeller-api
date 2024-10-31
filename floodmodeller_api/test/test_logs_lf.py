@@ -46,7 +46,7 @@ def test_lf1_from_ief(lf1_fp, test_workspace):
     ief = IEF(ief_fp)
     lf1_from_ief = ief.get_log()
 
-    assert lf1._filepath == lf1_from_ief._filepath
+    assert lf1.filepath == lf1_from_ief.filepath
     assert lf1.info == lf1_from_ief.info
     pd.testing.assert_frame_equal(lf1.to_dataframe(), lf1_from_ief.to_dataframe())
 

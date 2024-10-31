@@ -151,7 +151,7 @@ def test_generate_ief(
     assert len(generated_ief.flowtimeprofiles) == 1
     output_file = test_workspace / "2020Upper-11-1_generated.ief"
     assert output_file.exists()
-    assert generated_ief._filepath == output_file
+    assert generated_ief.filepath == output_file
 
     # Cleanup
     output_file.unlink()
@@ -188,7 +188,7 @@ def test_get_flowtimeprofile(hydrology_plus_export_object: HydrologyPlusExport):
     # Assert the FlowTimeProfile object is created and contains expected attributes
     assert isinstance(ftp, FlowTimeProfile)
     assert ftp.labels == [node_label]
-    assert ftp.csv_filepath == hydrology_plus_export_object._filepath.name
+    assert ftp.csv_filepath == hydrology_plus_export_object.filepath.name
     assert ftp.profile == f"{event} - Flow (m3/s)"
 
 

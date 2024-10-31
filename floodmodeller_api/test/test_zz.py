@@ -117,7 +117,7 @@ def test_zzn_to_csv(zzn: ZZN, tmp_path: Path, test_workspace: Path):
 
     # relative
     zzn.export_to_csv("test.csv")
-    path = zzn._filepath.parent / "test.csv"
+    path = zzn.filepath.parent / "test.csv"
     assert path.exists()
     path.unlink()
 
