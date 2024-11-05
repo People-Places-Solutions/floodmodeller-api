@@ -15,18 +15,18 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, Path("..\\..").resolve)
+sys.path.insert(0, Path("..\\..").resolve())
 print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
 
 project = "Flood Modeller Python API"
-project_copyright = "2023, Jacobs"
+project_copyright = "2024, Jacobs"
 author = "Joe Pierce"
 
 # The full version, including alpha/beta/rc tags
-release = "0.4.4.post1"
+release = "0.5.0"
 
 
 # -- General configuration ---------------------------------------------------
