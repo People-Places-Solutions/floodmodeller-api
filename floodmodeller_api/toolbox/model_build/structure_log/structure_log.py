@@ -1,6 +1,5 @@
 import copy
 import csv
-import json
 
 from floodmodeller_api import DAT
 
@@ -65,8 +64,9 @@ class StructureLogBuilder:
             conduit_data["inlet"] = previous.ki
 
         current_conduit = conduit
-        # check if the
+
         if current_conduit.name not in self.already_in_chain:
+            # if this conduit isnt part of a chain already, then it must be part of a new chain
             total_length = 0
             chain = []
             while True:
@@ -92,6 +92,8 @@ class StructureLogBuilder:
                     next_conduit.mimic = current_conduit.mimic
                 else:
                     next_conduit.mimic = current_conduit.name
+
+                # Replicates arent in the DAT.structures dict so we need to add them manually.
                 add_to_conduit_stack = copy.deepcopy(next_conduit)
 
         return conduit_data, add_to_conduit_stack
@@ -206,9 +208,9 @@ class StructureLogBuilder:
 
     def _add_conduits(self):
         conduit_stack = copy.deepcopy(list(self._dat.conduits.values()))
-        while (
-            len(conduit_stack) > 0
-        ):  # this is a stack/while-loop because I want to add units to it as we go, to detail inline replicate units
+
+        # this is a stack/while-loop because I want to add units to it as we go, to detail inline replicate units
+        while len(conduit_stack) > 0:
             conduit = conduit_stack.pop(0)
             self.unit_store[(conduit.name, conduit._unit)] = {
                 "name": conduit.name,
@@ -235,9 +237,7 @@ class StructureLogBuilder:
                 case ("CONDUIT", "SPRUNGARCH"):
                     self.unit_store[(conduit.name, conduit._unit)] |= self._sprungarch_data(conduit)
                 case ("CONDUIT", "RECTANGULAR"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._rectangular_data(
-                        conduit,
-                    )
+                    self.unit_store[(conduit.name, conduit._unit)] |= self._rectangular_data(conduit)  # fmt: skip
                 case ("CONDUIT", "SECTION"):
                     self.unit_store[(conduit.name, conduit._unit)] |= self._section_data(conduit)
                 case ("CONDUIT", "SPRUNG"):
@@ -574,11 +574,3 @@ class StructureLogBuilder:
         self._add_structures()
         with open(self.csv_output_path, "w", newline="") as file:
             self._write_csv_output(file)
-
-
-if __name__ == "__main__":
-    dat_path = r"floodmodeller_api/test/test_data/EX18.DAT"
-    slb = StructureLogBuilder(dat_path, "../ex18_new_dev.csv")
-    slb.create()
-    with open("../ex18_dev.json", "w") as file:
-        json.dump(serialise_keys(slb.unit_store), file, indent=4)

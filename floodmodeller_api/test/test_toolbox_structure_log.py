@@ -134,7 +134,7 @@ S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 """
 
 
-def test_conduit_data(slb, conduit_empty):
+def test_empty_conduit(slb, conduit_empty):
     slb._dat = DAT()
     output, _ = slb._conduit_data(conduit_empty)
     assert output == {
@@ -154,7 +154,6 @@ fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w:
 
     slb._dat = conduit_chain_dat
     tmp_csv = Path(tmpdir) / "test_multi_conduits.csv"
-    print(tmp_csv)
     with tmp_csv.open("w", newline="") as file:
         slb._writer = csv.writer(file)
         slb._add_conduits()
@@ -186,7 +185,3 @@ def test_full_dat_from_commandline(slb, tmpdir, ex18_dat_path, ex18_dat_expected
     with open(tmp_csv) as read_file:
         text = read_file.read()
     assert text == ex18_dat_expected
-
-
-if __name__ == "__main__":
-    pytest.main([__file__ + "::test_multi_conduits"])
