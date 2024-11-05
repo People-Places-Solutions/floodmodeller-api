@@ -35,12 +35,11 @@ class StructureLogBuilder:
     def __init__(self, input_path="", output_path="") -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
-        self.conduit_chains = (
+        self.conduit_chains: dict[str, list[str]] = (
             {}
         )  # pylint flags these for type hinting, but not sure how to specify, to discuss
-        self.already_in_chain = set()
-
-        self.unit_store = {}
+        self.already_in_chain: set[str] = set()
+        self.unit_store: dict[(str, str)] = {}
 
     def _add_fields(self, writer):
         field = [
@@ -518,7 +517,7 @@ class StructureLogBuilder:
         """
         Take the current state of the instance (unit_store etc) and write it to the specified output file.
         """
-        
+
         writer = csv.writer(file)
 
         self._add_fields(writer)

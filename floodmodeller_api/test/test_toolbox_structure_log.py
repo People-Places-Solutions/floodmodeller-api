@@ -136,7 +136,7 @@ S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 
 def test_conduit_data(slb, conduit_empty):
     slb._dat = DAT()
-    output,_ = slb._conduit_data(conduit_empty)
+    output, _ = slb._conduit_data(conduit_empty)
     assert output == {
         "length": 0.0,
         "total_length": 0.0,
