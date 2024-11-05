@@ -103,8 +103,8 @@ def conduit_chain_dat(conduit_filled):
 
 
 @pytest.fixture
-def ex18_dat_path():
-    return Path("floodmodeller_api/test/test_data/EX18.DAT")
+def ex18_dat_path(test_workspace):
+    return Path(test_workspace, "EX18.DAT")
 
 
 @pytest.fixture
