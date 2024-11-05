@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import ClassVar
+
 from floodmodeller_api.tool import FMTool, Parameter
 
 from .structure_log import StructureLogBuilder
@@ -50,7 +54,7 @@ class StructureLog(FMTool):
 
     name = "Structure Log"
     description = "Creates a structure log"
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         Parameter(
             name="input_path",
             dtype=str,

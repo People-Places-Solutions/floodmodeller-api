@@ -1,26 +1,30 @@
 """ This function allows you to raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation) """
 
-# Import modules
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, ClassVar
 
 from floodmodeller_api import DAT
 from floodmodeller_api.tool import FMTool, Parameter
 from floodmodeller_api.units import RIVER
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 # Define the function
 def raise_section_bed_levels(dat_input: Path, dat_output: Path, siltation: float):
     dat = DAT(dat_input)  # Initialise DAT class
 
-    for _, section in dat.sections.items():  # iterate through all river sections
+    for section in dat.sections.values():  # iterate through all river sections
         if not isinstance(section, RIVER):
             # Skip any non river type units (e.g. interpolates)
             continue
-        df = section.data  # get section data
-        min_elevation = df["Y"].min()  # get minimum cross section elevation
+        section_data = section.data  # get section data
+        min_elevation = section_data["Y"].min()  # get minimum cross section elevation
         raised_bed = min_elevation + siltation  # define new lowest bed level
-        df.loc[
-            df["Y"] < raised_bed,
+        section_data.loc[
+            section_data["Y"] < raised_bed,
             "Y",
         ] = raised_bed  # Raise any levels lower than this to the new lowest level
 
@@ -70,7 +74,7 @@ class AddSiltation(FMTool):
     description = (
         "Tool to add a set amount of siltation to raise bed levels of river sections in a DAT file"
     )
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         Parameter(
             name="dat_input",
             dtype=str,

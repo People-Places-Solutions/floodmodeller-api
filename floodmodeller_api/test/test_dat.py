@@ -8,12 +8,12 @@ from floodmodeller_api.units import QTBDY
 from floodmodeller_api.util import FloodModellerAPIError
 
 
-@pytest.fixture
+@pytest.fixture()
 def dat_fp(test_workspace):
     return Path(test_workspace, "network.dat")
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_before(dat_fp):
     return DAT(dat_fp)._write()
 

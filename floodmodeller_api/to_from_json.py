@@ -162,15 +162,15 @@ def recursive_from_json(obj: dict | Any) -> Any:
         return api_class_mapping[class_type].from_json(obj)
 
     if "class" in obj and obj["class"] == "pandas.DataFrame":
-        df = pd.DataFrame.from_dict(obj["object"])
-        df.index = convert_dataframe_index(df.index)
-        return df
+        reconstructed_df = pd.DataFrame.from_dict(obj["object"])
+        reconstructed_df.index = convert_dataframe_index(reconstructed_df.index)
+        return reconstructed_df
     if "class" in obj and obj["class"] == "pandas.Series":
-        sr = pd.Series(obj["object"])
-        sr.index = convert_dataframe_index(sr.index)
-        sr.index.name = obj["index_name"]
-        sr.name = obj["variable_name"]
-        return sr
+        reconstructed_sr = pd.Series(obj["object"])
+        reconstructed_sr.index = convert_dataframe_index(reconstructed_sr.index)
+        reconstructed_sr.index.name = obj["index_name"]
+        reconstructed_sr.name = obj["variable_name"]
+        return reconstructed_sr
 
     if "python_set" in obj:
         return set(obj["python_set"])

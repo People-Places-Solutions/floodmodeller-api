@@ -7,7 +7,7 @@ from shapely.geometry import Point
 from .file_parser import TuflowParser
 
 
-@pytest.fixture
+@pytest.fixture()
 def tuflow_parser(tmpdir) -> TuflowParser:
     text = """
     VAR1 == folder1/file1.csv
@@ -28,33 +28,33 @@ def tuflow_parser(tmpdir) -> TuflowParser:
     return TuflowParser(file_path)
 
 
-@pytest.fixture
+@pytest.fixture()
 def path1(tmpdir) -> Path:
     return Path(tmpdir, "folder1", "file1.csv")
 
 
-@pytest.fixture
+@pytest.fixture()
 def path2(tmpdir) -> Path:
     tmpdir_parent = str(Path(tmpdir).parent)
     return Path(tmpdir_parent, "file2.tmf")
 
 
-@pytest.fixture
+@pytest.fixture()
 def path3(tmpdir) -> Path:
     return Path(tmpdir, "file3")
 
 
-@pytest.fixture
+@pytest.fixture()
 def path4(tmpdir) -> Path:
     return Path(tmpdir, "file4")
 
 
-@pytest.fixture
+@pytest.fixture()
 def path5(tmpdir) -> Path:
     return Path(tmpdir, "file5")
 
 
-@pytest.fixture
+@pytest.fixture()
 def path6(tmpdir) -> Path:
     return Path(tmpdir, "file6")
 

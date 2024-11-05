@@ -10,37 +10,41 @@ ignore_missing_imports = true
 
 [tool.pylint]
 disable = "all"
-enable = "simplifiable-if-statement, simplifiable-if-expression, unnecessary-pass, used-before-assignment, superfluous-parens, unnecessary-dunder-call"
+enable = "used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
 
 [tool.ruff.lint]
-select = [
-    "A", "AIR",  "ASYNC",
-    "B",
-    "C", "COM",
-    "DJ",
-    "E", "ERA", "EXE",
-    "F", "FLY",
-    "G",
-    "I", "INT", "ISC",
-    "N", "NPY",
-    "PIE", "PLR", "PYI",
-    "Q",
-    "RET", "RSE", "RUF100",
-    "SIM", "SLOT",
-    "T10", "TCH",
-    "UP",
-    "W",
-    "YTT"
+select = ["ALL"]
+ignore = [
+    "ANN",
+    "ARG",
+    "BLE",
+    "D",
+    "DTZ",
+    "E402",
+    "E501",
+    "FBT",
+    "FIX",
+    "PGH003",
+    "PLW",  # TODO: remove
+    "PTH123",
+    "S",
+    "SLF",
+    "T20",  # TODO: remove
+    "TD",
+    "TID",
+    "TRY",
 ]
-ignore = ["E402", "E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test*" = ["PLR0913", "PLR2004"]
+
+[tool.ruff.lint.flake8-pytest-style]
+fixture-parentheses = true
 
 [tool.isort]
 profile = "black"

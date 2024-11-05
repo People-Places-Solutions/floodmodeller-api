@@ -9,7 +9,7 @@ from floodmodeller_api import IEF, LF1
 from floodmodeller_api.logs import create_lf
 
 
-@pytest.fixture
+@pytest.fixture()
 def lf1_fp(test_workspace):
     return Path(test_workspace, "ex3.lf1")
 
@@ -32,10 +32,10 @@ def test_lf1_report_progress(lf1_fp):
 def test_lf1_to_dataframe(lf1_fp):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
-    df = lf1.to_dataframe()
-    assert df.loc[df.index[0], "iter"] == 6
-    assert df.loc[df.index[-1], "outflow"] == 21.06
-    assert df.loc[df.index[4], "mass_error"] == -0.07
+    lf1_df = lf1.to_dataframe()
+    assert lf1_df.loc[lf1_df.index[0], "iter"] == 6
+    assert lf1_df.loc[lf1_df.index[-1], "outflow"] == 21.06
+    assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
 
 
 def test_lf1_from_ief(lf1_fp, test_workspace):
@@ -46,7 +46,7 @@ def test_lf1_from_ief(lf1_fp, test_workspace):
     ief = IEF(ief_fp)
     lf1_from_ief = ief.get_log()
 
-    assert lf1._filepath == lf1_from_ief._filepath
+    assert lf1.filepath == lf1_from_ief.filepath
     assert lf1.info == lf1_from_ief.info
     pd.testing.assert_frame_equal(lf1.to_dataframe(), lf1_from_ief.to_dataframe())
 

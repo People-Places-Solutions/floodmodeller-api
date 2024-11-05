@@ -14,6 +14,10 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
+from typing import ClassVar
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -54,7 +58,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns = [
+    _required_columns: ClassVar[list[str]] = [
         "X",
         "Y",
         "Mannings n",
@@ -204,7 +208,7 @@ class RIVER(Unit):
             # Manual so slope can have more sf
             params = f'{self.dist_to_next:>10.3f}{"":>10}{self.slope:>10.6f}{self.density:>10.3f}'
             self.nrows = len(self._data)
-            riv_block = [header, self.subtype, labels, params, f"{str(self.nrows):>10}"]
+            riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
 
             riv_data = []
             for (
@@ -257,11 +261,11 @@ class RIVER(Unit):
     @data.setter
     def data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
-            raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame.",
-            )
+            msg = "The updated data table for a cross section must be a pandas DataFrame."
+            raise ValueError(msg)
         if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
-            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
         self._data = new_df
 
     @property
@@ -325,11 +329,11 @@ class RIVER(Unit):
     @active_data.setter
     def active_data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
-            raise ValueError(
-                "The updated data table for a cross section must be a pandas DataFrame.",
-            )
+            msg = "The updated data table for a cross section must be a pandas DataFrame."
+            raise ValueError(msg)
         if new_df.columns.to_list() != self._required_columns:
-            raise ValueError(f"The DataFrame must only contain columns: {self._required_columns}")
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
 
         # Ensure activation markers are present
         new_df = new_df.copy()

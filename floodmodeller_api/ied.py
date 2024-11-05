@@ -61,7 +61,7 @@ class IED(FMFile):
     def _read(self):
         # Read IED data
         with open(self._filepath) as ied_file:
-            self._raw_data = [line.rstrip("\n") for line in ied_file.readlines()]
+            self._raw_data = [line.rstrip("\n") for line in ied_file]
 
         # Generate IED structure
         self._update_ied_struct()
@@ -87,10 +87,11 @@ class IED(FMFile):
                 if name != unit.name:
                     # Check if new name already exists as a label
                     if unit.name in unit_group:
-                        raise Exception(
+                        msg = (
                             f'Error: Cannot update label "{name}" to "{unit.name}" because '
-                            f'"{unit.name}" already exists in the Network {unit_group_name} group',
+                            f'"{unit.name}" already exists in the Network {unit_group_name} group'
                         )
+                        raise Exception(msg)
                     unit_group[unit.name] = unit
                     del unit_group[name]
 
@@ -180,9 +181,8 @@ class IED(FMFile):
                 # Create instance of unit and add to relevant group
                 unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
-                    raise Exception(
-                        f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}',
-                    )
+                    msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                    raise Exception(msg)
                 unit_group[unit_name] = eval(f'units.{block["Type"]}({unit_data})')
 
                 self._all_units.append(unit_group[unit_name])

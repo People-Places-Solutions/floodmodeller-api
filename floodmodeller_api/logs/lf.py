@@ -70,7 +70,7 @@ class LF(FMFile):
     def _read(self, force_reread: bool = False, suppress_final_step: bool = False):
         # Read LF file
         with open(self._filepath) as lf_file:
-            self._raw_data = [line.rstrip("\n") for line in lf_file.readlines()]
+            self._raw_data = [line.rstrip("\n") for line in lf_file]
 
         # Force rereading from start of file
         if force_reread is True:
@@ -140,17 +140,12 @@ class LF(FMFile):
     def _get_index(self):
         """Finds key and dataframe for variable that is the index"""
 
-        for key in self._data_to_extract:
-            try:
-                self._data_to_extract[key]["is_index"]
-                index_key = key
-                index_df = self._extracted_data[key].data.get_value()
-                return index_key, index_df
+        for k, v in self._data_to_extract.items():
+            if "is_index" in v:
+                return k, self._extracted_data[k].data.get_value()
 
-            except KeyError:
-                pass
-
-        raise Exception("No index variable found")
+        msg = "No index variable found"
+        raise Exception(msg)
 
     def _set_attributes(self):
         """Makes each Parser value an attribute; "last" values in dictionary"""
@@ -198,12 +193,10 @@ class LF(FMFile):
             if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
         }
 
-        df = pd.concat(data_type_all, axis=1)
-        df.columns = df.columns.droplevel()
+        lf_df = pd.concat(data_type_all, axis=1)
+        lf_df.columns = lf_df.columns.droplevel()
 
-        df.sort_index(inplace=True)
-
-        return df
+        return lf_df.sort_index()
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""

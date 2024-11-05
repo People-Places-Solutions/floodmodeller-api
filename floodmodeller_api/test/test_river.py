@@ -54,8 +54,8 @@ river_unit_data_cases = [
 ]
 
 
-@pytest.mark.parametrize(("river_unit_data", "_"), river_unit_data_cases)
-def test_read_write(river_unit_data, _):
+@pytest.mark.parametrize("river_unit_data", [x[0] for x in river_unit_data_cases])
+def test_read_write(river_unit_data):
     river_section_1 = RIVER(river_unit_data)
     river_section_2 = RIVER(river_section_1._write())
     assert river_section_1 == river_section_2
@@ -185,7 +185,7 @@ def test_set_river_dataframe_correct():
         ],
     )
 
-    df = pd.DataFrame(
+    inputs = pd.DataFrame(
         {
             "X": [0.0, 1.0, 2.0],
             "Y": [5.0, 2.0, 5.0],
@@ -200,14 +200,14 @@ def test_set_river_dataframe_correct():
         },
     )
 
-    unit.data = df.copy()
-    pd.testing.assert_frame_equal(unit._data, df.copy())
+    unit.data = inputs.copy()
+    pd.testing.assert_frame_equal(unit._data, inputs.copy())
 
 
 def test_set_river_dataframe_incorrect():
     unit = RIVER()
 
-    df = pd.DataFrame(
+    inputs = pd.DataFrame(
         {
             "X": [0.0, 1.0, 2.0],
             "Y": [5.0, 2.0, 5.0],
@@ -220,14 +220,14 @@ def test_set_river_dataframe_incorrect():
         },
     )
 
-    with pytest.raises(ValueError):
-        unit.data = df.copy()
+    with pytest.raises(ValueError, match="The DataFrame must only contain columns"):
+        unit.data = inputs.copy()
 
 
 def test_set_river_dataframe_case_sensitivity():
     unit = RIVER()
 
-    df = pd.DataFrame(
+    inputs = pd.DataFrame(
         {
             "x": [0.0, 1.0, 2.0],
             "Y": [5.0, 2.0, 5.0],
@@ -242,5 +242,5 @@ def test_set_river_dataframe_case_sensitivity():
         },
     )
 
-    unit.data = df.copy()
-    pd.testing.assert_frame_equal(unit._data, df.copy())
+    unit.data = inputs.copy()
+    pd.testing.assert_frame_equal(unit._data, inputs.copy())

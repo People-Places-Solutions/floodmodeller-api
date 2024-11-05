@@ -1,4 +1,4 @@
-import argparse
+import argparse  # noqa: INP001
 import contextlib
 import os
 from pathlib import Path
@@ -31,7 +31,7 @@ elif args.ld:
         print(f"    -> {file.stem}\n")
 
         with contextlib.suppress(Exception):
-            os.system(f'python "{str(file)}" -h')
+            os.system(f'python "{file!s}" -h')
         print("================================================\n")
 
 # TODO: Add functionality to create a bat and py file in scripts, add to setup.py and install to path

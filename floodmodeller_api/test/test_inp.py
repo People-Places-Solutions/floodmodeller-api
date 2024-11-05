@@ -5,12 +5,12 @@ import pytest
 from floodmodeller_api import INP
 
 
-@pytest.fixture
+@pytest.fixture()
 def inp_fp(test_workspace):
     return Path(test_workspace, "network.inp")
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_before(inp_fp):
     return INP(inp_fp)._write()
 

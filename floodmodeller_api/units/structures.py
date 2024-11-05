@@ -376,7 +376,7 @@ class BRIDGE(Unit):
                 self.orifice_discharge_coefficient,
             )
             self.section_nrows = len(self.section_data)
-            br_block.extend(["MANNING", params, f"{str(self.section_nrows):>10}"])
+            br_block.extend(["MANNING", params, f"{self.section_nrows!s:>10}"])
 
             section_data = []
             for _, x, y, n, embankments in self.section_data.itertuples():
@@ -388,7 +388,7 @@ class BRIDGE(Unit):
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{str(self.opening_nrows):>10}")
+            br_block.append(f"{self.opening_nrows!s:>10}")
             opening_data = []
             for _, start, finish, spring, soffit in self.opening_data.itertuples():
                 row = join_10_char(start, finish, spring, soffit)
@@ -424,10 +424,10 @@ class BRIDGE(Unit):
                 [
                     "MANNING",
                     params,
-                    f"{str(self.abutment_type):>10}",
+                    f"{self.abutment_type!s:>10}",
                     pier_params,
                     self.abutment_alignment,
-                    f"{str(self.section_nrows):>10}",
+                    f"{self.section_nrows!s:>10}",
                 ],
             )
 
@@ -440,7 +440,7 @@ class BRIDGE(Unit):
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{str(self.opening_nrows):>10}")
+            br_block.append(f"{self.opening_nrows!s:>10}")
             opening_data = []
             for _, start, finish, spring, soffit in self.opening_data.itertuples():
                 row = join_10_char(start, finish, spring, soffit)
@@ -448,7 +448,7 @@ class BRIDGE(Unit):
             br_block.extend(opening_data)
 
             self.culvert_nrows = len(self.culvert_data)
-            br_block.append(f"{str(self.culvert_nrows):>10}")
+            br_block.append(f"{self.culvert_nrows!s:>10}")
             culvert_data = []
             for (
                 _,
@@ -481,7 +481,7 @@ class BRIDGE(Unit):
                     "YARNELL",
                     params,
                     additional_params,
-                    f"{str(self.us_section_nrows):>10}",
+                    f"{self.us_section_nrows!s:>10}",
                 ],
             )
 
@@ -495,7 +495,7 @@ class BRIDGE(Unit):
             br_block.extend(us_section_data)
 
             self.ds_section_nrows = len(self.ds_section_data)
-            br_block.append(f"{str(self.ds_section_nrows):>10}")
+            br_block.append(f"{self.ds_section_nrows!s:>10}")
             ds_section_data = []
             for _, x, y, n, embankments, top_level in self.ds_section_data.itertuples():
                 # Adding extra 10 spaces before embankment flag
@@ -506,7 +506,7 @@ class BRIDGE(Unit):
             br_block.extend(ds_section_data)
 
             self.pier_locs_nrows = len(self.pier_locs_data)
-            br_block.append(f"{str(self.pier_locs_nrows):>10}")
+            br_block.append(f"{self.pier_locs_nrows!s:>10}")
             pier_locs_data = []
             for (
                 _,

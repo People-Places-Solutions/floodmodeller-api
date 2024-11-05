@@ -5,12 +5,12 @@ import pytest
 from floodmodeller_api import IED
 
 
-@pytest.fixture
+@pytest.fixture()
 def ied_fp(test_workspace):
     return Path(test_workspace, "network.ied")
 
 
-@pytest.fixture
+@pytest.fixture()
 def ied_fp_comments(test_workspace):
     return Path(test_workspace, "network_with_comments.ied")
 
