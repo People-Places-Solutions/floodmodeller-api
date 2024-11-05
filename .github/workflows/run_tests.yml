@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        PYTHON_VERSION: ["3.9", "3.10", "3.11", "3.12"]
+        PYTHON_VERSION: ["3.10", "3.11", "3.12", "3.13"]
         OS: [windows-latest, ubuntu-latest]
   
     runs-on: ${{ matrix.OS }}
