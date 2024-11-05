@@ -58,7 +58,7 @@ def read_file(filepath: str | Path) -> FMFile:
 
 
     """
-    from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN
+    from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN, ZZX
     from .hydrology_plus import HydrologyPlusExport
 
     suffix_to_class = {
@@ -67,6 +67,7 @@ def read_file(filepath: str | Path) -> FMFile:
         ".ied": IED,
         ".xml": XML2D,
         ".zzn": ZZN,
+        ".zzx": ZZX,
         ".inp": INP,
         ".lf1": LF1,
         ".lf2": LF2,
