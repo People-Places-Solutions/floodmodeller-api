@@ -1,4 +1,5 @@
 import csv
+import logging
 
 from floodmodeller_api import DAT
 
@@ -134,7 +135,7 @@ class StructureLogBuilder:
                 "SECTION",
                 "SPRUNG",
             ]:
-                print(f"Conduit subtype: {conduit.subtype} not currently supported")
+                logging.warning("Conduit subtype: %s not currently supported", conduit.subtype)
                 self._write(conduit.name, conduit._unit, conduit.subtype)
                 continue
             conduit_data = self._conduit_data(conduit)
@@ -233,7 +234,10 @@ class StructureLogBuilder:
                 friction = bridge_data[0]
                 dimensions = bridge_data[1]
             else:
-                print(f"Structure: {structure._unit} not currently supported in structure log")
+                logging.warning(
+                    "Structure: %s not currently supported in structure log",
+                    structure._unit,
+                )
                 self._write(structure.name, structure._unit, structure.subtype)
                 continue
 

@@ -18,6 +18,7 @@ from __future__ import annotations
 
 """ Holds the base file class for API file classes """
 
+import logging
 from pathlib import Path
 from typing import NoReturn
 
@@ -90,7 +91,7 @@ class FMFile(Jsonable):
         string = self._write()
         with open(self._filepath, "w") as _file:
             _file.write(string)
-        print(f"{self._filetype} File Updated!")
+        logging.info("%s File Updated!", self._filepath)
 
     def _save(self, filepath):
         filepath = Path(filepath).absolute()
@@ -106,7 +107,7 @@ class FMFile(Jsonable):
             _file.write(string)
         self._filepath = filepath  # Updates the filepath attribute to the given path
 
-        print(f"{self._filetype} File Saved to: {filepath}")
+        logging.info("%s File Saved to: %s", self._filetype, filepath)
 
     @handle_exception(when="compare")
     def _diff(self, other, force_print=False):
@@ -115,19 +116,19 @@ class FMFile(Jsonable):
             raise TypeError(msg)
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, files are equivalent")
+            logging.info("No difference, files are equivalent")
         else:
-            print(f"Files not equivalent, {len(diff[1])} difference(s) found:")
+            logging.info("Files not equivalent, %s difference(s) found:", len(diff[1]))
             if len(diff[1]) > self.MAX_DIFF and not force_print:
-                print(f"[Showing first {self.MAX_DIFF} differences...] ")
-                print(
+                logging.info("[Showing first %s differences...] ", self.MAX_DIFF)
+                logging.info(
                     "\n".join(
                         [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
                     ),
                 )
-                print("\n...To see full list of all differences add force_print=True")
+                logging.info("\n...To see full list of all differences add force_print=True")
             else:
-                print("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
+                logging.info("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call

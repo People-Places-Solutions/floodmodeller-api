@@ -18,6 +18,7 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM Units """
 
+import logging
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal

@@ -206,8 +206,6 @@ class IED(FMFile):
                 )
                 self._all_units.append(self._unsupported[f"{unit_name} ({block['Type']})"])
 
-        print()
-
     def _update_ied_struct(self):  # noqa: C901, PLR0912
         # Generate IED structure
         ied_struct = []

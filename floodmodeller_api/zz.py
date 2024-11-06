@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import ctypes as ct
+import logging
 from pathlib import Path
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
@@ -376,7 +377,7 @@ class _ZZ(FMFile):
             include_time=include_time,
         )
         zz_df.to_csv(save_location)
-        print(f"CSV saved to {save_location}")
+        logging.info("CSV saved to %s", save_location)
 
     def to_json(
         self,

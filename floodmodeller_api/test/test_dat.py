@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from unittest.mock import patch
 
@@ -201,22 +202,23 @@ def test_remove_unit(dat_ex3):
     assert (prev_dat_struct_len - len(dat_ex3._dat_struct)) == 1
 
 
-def test_diff(test_workspace, capsys):
+def test_diff(test_workspace, caplog):
     dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
     dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
     dat_ex4.diff(dat_ex4_changed)
-    assert capsys.readouterr().out == (
-        "Files not equivalent, 12 difference(s) found:\n"
-        "  DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
-        "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
-        "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
-        "  DAT->structures->RAILRDu->RNWEIR..RAILRDu->upstream_crest_height:  1.75 != 2.05\n"
-        "  DAT->structures->CSRD01u->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
-        "  DAT->structures->FOOTa->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
-        "  DAT->_all_units->itm[28]->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
-        "  DAT->_all_units->itm[29]->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
-        "  DAT->_all_units->itm[42]->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
-        "  DAT->_all_units->itm[57]->RNWEIR..RAILRDu->upstream_crest_height:  1.75 != 2.05\n"
-        "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
-        "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
-    )
+    with caplog.at_level(logging.INFO):
+        assert caplog.text == (
+            "INFO     root:_base.py:121 Files not equivalent, 12 difference(s) found:\n"
+            "INFO     root:_base.py:131   DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
+            "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
+            "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
+            "  DAT->structures->RAILRDu->RNWEIR..RAILRDu->upstream_crest_height:  1.75 != 2.05\n"
+            "  DAT->structures->CSRD01u->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
+            "  DAT->structures->FOOTa->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
+            "  DAT->_all_units->itm[28]->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
+            "  DAT->_all_units->itm[29]->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
+            "  DAT->_all_units->itm[42]->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
+            "  DAT->_all_units->itm[57]->RNWEIR..RAILRDu->upstream_crest_height:  1.75 != 2.05\n"
+            "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
+            "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
+        )

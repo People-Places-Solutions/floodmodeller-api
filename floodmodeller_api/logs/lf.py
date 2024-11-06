@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import time
 from typing import TYPE_CHECKING
 
@@ -217,7 +218,7 @@ class LF(FMFile):
     def _print_no_lines(self):
         """Prints number of lines that have been read so far"""
 
-        print("Last line read: " + str(self._no_lines))
+        logging.info("Last line read: %s", self._no_lines)
 
     def report_progress(self) -> float:
         """Returns progress for unsteady simulations
@@ -316,7 +317,7 @@ def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
     """Checks for a new log file, waiting for its creation if necessary"""
 
     def _no_log_file(reason: str) -> None:
-        print(f"No progress bar as {reason}. Simulation will continue as usual.")
+        logging.warning("No progress bar as %s. Simulation will continue as usual.", reason)
 
     # ensure progress bar is supported
     if suffix not in {"lf1", "lf2"}:
