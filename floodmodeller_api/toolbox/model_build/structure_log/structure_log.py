@@ -27,7 +27,7 @@ def serialise_keys(old_dict):
 
 class StructureLogBuilder:
 
-    def __init__(self, input_path="", output_path="") -> None:
+    def __init__(self, input_path: str|None = None, output_path: str|None = None) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
         self.conduit_chains: dict[str, list[str]] = (
