@@ -22,11 +22,7 @@ def serialise_keys(old_dict):
     Replaces tuple keys with string versions of themselves, wrapped in ()
 
     """
-    new_dict = {}
-    for key, value in old_dict.items():
-        new_dict[f'({",".join(key)})'] = value
-
-    return new_dict
+    return {f"({','.join(key)})": value for key, value in old_dict.items()}
 
 
 class StructureLogBuilder:
@@ -174,7 +170,7 @@ class StructureLogBuilder:
             "friction_eq": "COLEBROOK-WHITE",
             "friction_set": friction_set,
             "all_friction": all_friction,
-        }  # friction should be CW here; should test this
+        }
 
         return {"dimensions": dimensions, "friction": friction}
 
@@ -299,22 +295,14 @@ class StructureLogBuilder:
         )
 
         opening_data = []
-        if (
-            structure.opening_nrows > 0
-        ):  # if it has openings, not sure why it wouldnt but worth checking.
+        # if it has openings, not sure why it wouldnt but worth checking.
+        if structure.opening_nrows > 0:
             opening_df = structure.opening_data
-            for (
-                _,
-                row,
-            ) in (
-                opening_df.iterrows()
-            ):  # this isnt 'proper' for a df but there should be few rows and we're doing special stuff
+            # this isnt 'proper' for a df but there should be few rows and we're doing special stuff
+            for _, row in opening_df.iterrows():
                 opening = {}
-                opening["width"] = (
-                    row["Finish"] - row["Start"]
-                )  # round here because fp precision looks uncool
+                opening["width"] = row["Finish"] - row["Start"]
 
-                # this is crude and can be wrong where the min is on the 'edge' of the section instead of at one of the points, but should be correct 99.9% of the time.
                 temp_df = section_df.loc[
                     (row["Start"] <= section_df["X"]) & (section_df["X"] <= row["Finish"])
                 ]
