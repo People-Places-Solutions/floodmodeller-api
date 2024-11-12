@@ -13,12 +13,12 @@ from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.structures import ORIFICE
 
 
-@pytest.fixture
+@pytest.fixture()
 def slb():
     return StructureLogBuilder("", "")
 
 
-@pytest.fixture
+@pytest.fixture()
 def conduit_empty():
     c = CONDUIT()
     c.dist_to_next = 0
@@ -43,7 +43,7 @@ def conduit_empty():
     return c
 
 
-@pytest.fixture
+@pytest.fixture()
 def conduit_filled():
     c = CONDUIT()
     c.dist_to_next = 0
@@ -68,17 +68,17 @@ def conduit_filled():
     return c
 
 
-@pytest.fixture
+@pytest.fixture()
 def no_length():
     return 0
 
 
-@pytest.fixture
+@pytest.fixture()
 def with_length():
     return 4.973
 
 
-@pytest.fixture
+@pytest.fixture()
 def structure():
     return ORIFICE()
 

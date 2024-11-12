@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 from pathlib import Path
-from typing import Callable, Dict, Generic, Type, TypeVar, Union
+from typing import Callable, Generic, TypeVar
 
 from floodmodeller_api import DAT, IEF, XML2D
 
@@ -23,12 +25,12 @@ T = TypeVar("T", XML2D, IEF, DAT)
 class FMFileWrapper(Generic[T]):
     def __init__(
         self,
-        fm_file_class: Type[T],
-        fm_filepath: Union[str, Path],
-        cc_dict: Dict[str, Callable[..., ComponentConverter]],
+        fm_file_class: type[T],
+        fm_filepath: str | Path,
+        cc_dict: dict[str, Callable[..., ComponentConverter]],
         **kwargs,
     ) -> None:
-        self._fm_file_class: Type[T] = fm_file_class
+        self._fm_file_class: type[T] = fm_file_class
         self._fm_filepath = fm_filepath
         self.cc_dict = cc_dict
         self.fm_file: T = self._fm_file_class(**kwargs)
@@ -46,8 +48,8 @@ class TuflowModelConverter:
 
     def __init__(
         self,
-        tcf_path: Union[str, Path],
-        folder: Union[str, Path],
+        tcf_path: str | Path,
+        folder: str | Path,
         name: str,
     ) -> None:
         self._tcf_path = tcf_path
@@ -165,7 +167,8 @@ class TuflowModelConverter:
         all_areas = self._tgc.get_all_geodataframes("read gis code")
 
         if not self._tgc.check_key("read gis location"):
-            raise RuntimeError("Only loc lines supported for computational area conversion")
+            msg = "Only loc lines supported for computational area conversion"
+            raise RuntimeError(msg)
 
         return LocLineConverterXML2D(
             xml=self._xml,

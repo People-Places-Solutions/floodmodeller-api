@@ -6,13 +6,13 @@ import pytest
 from floodmodeller_api.backup import BackupControl, File
 
 
-@pytest.fixture
+@pytest.fixture()
 def backup_control():
     # Use a different directory for testing
     return BackupControl()
 
 
-@pytest.fixture
+@pytest.fixture()
 def file(test_workspace):
     test_file = Path(test_workspace, "EX1.DAT")
     file = File(test_file)

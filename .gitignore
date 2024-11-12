@@ -163,3 +163,5 @@ cython_debug/
 
 # Development folder
 dev/*
+
+zzread_errorlog.txt

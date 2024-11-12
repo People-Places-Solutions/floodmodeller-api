@@ -40,7 +40,11 @@ class Unit(Jsonable):
             self._create_from_blank(**kwargs)
 
     @property
-    def name(self):
+    def unit(self) -> str:
+        return self._unit
+
+    @property
+    def name(self) -> str | None:
         return self._name
 
     @name.setter
@@ -48,20 +52,21 @@ class Unit(Jsonable):
         try:
             new_name = str(new_name)
             if " " in new_name:
-                raise Exception(
-                    f'Cannot set unit name to "{new_name}" as it contains one or more spaces',
-                )
+                msg = f'Cannot set unit name to "{new_name}" as it contains one or more spaces'
+                raise Exception(msg)
             self._name = new_name
         except Exception as e:
-            raise Exception(f'Failed to set unit name to "{new_name}" due to error: {e}') from e
+            msg = f'Failed to set unit name to "{new_name}" due to error: {e}'
+            raise Exception(msg) from e
 
     @property
-    def subtype(self):
+    def subtype(self) -> str | None:
         return self._subtype
 
     @subtype.setter
     def subtype(self, new_value):
-        raise ValueError("You cannot change the subtype of a unit once it has been instantiated")
+        msg = "You cannot change the subtype of a unit once it has been instantiated"
+        raise ValueError(msg)
 
     def __repr__(self):
         if self._subtype is None:
@@ -71,9 +76,8 @@ class Unit(Jsonable):
         )
 
     def _create_from_blank(self):
-        raise NotImplementedError(
-            f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read",
-        )
+        msg = f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
+        raise NotImplementedError(msg)
 
     def __str__(self):
         return "\n".join(self._write())

@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 import pytest
@@ -13,7 +12,7 @@ def create_expected_json_files():
     """Helper function to recreate all the expected JSON files if needed at any point due to updates
     to the to_json code"""
 
-    test_workspace = Path(os.path.dirname(__file__), "test_data")
+    test_workspace = Path(__file__).parent / "test_data"
     for file in [
         "network.dat",
         "network.ied",
@@ -31,13 +30,13 @@ def create_expected_json_files():
             json_file.write(obj.to_json())
 
 
-@pytest.fixture
+@pytest.fixture()
 def dat_obj(test_workspace):
     """JSON:  To create the dat object for the tests"""
     return DAT(Path(test_workspace, "EX18.DAT"))
 
 
-@pytest.fixture
+@pytest.fixture()
 def json_expected(test_workspace):
     """JSON:  expected after passing to_json method"""
     return Path(test_workspace, "EX18_DAT_expected.json")
@@ -48,7 +47,7 @@ def test_dat_json(dat_obj):
     assert dat_obj.to_json()
 
 
-@pytest.fixture
+@pytest.fixture()
 def parameterised_objs_and_expected(test_workspace):
     """JSON:  expected after passing to_json method"""
     return [
@@ -84,7 +83,7 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
 
 
 @pytest.mark.parametrize(
-    "api_class,file_extension_glob",
+    ("api_class", "file_extension_glob"),
     [
         (DAT, "*.dat"),
         (IED, "*.ied"),
@@ -113,7 +112,3 @@ def test_is_jsonable_with_non_jsonable_object():
             pass
 
     assert not is_jsonable(NonJsonable())
-
-
-if __name__ == "__main__":
-    create_expected_json_files()

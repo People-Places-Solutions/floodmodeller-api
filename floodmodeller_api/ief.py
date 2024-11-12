@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import csv
-import os
 import subprocess
 import time
 from io import StringIO
@@ -34,7 +33,7 @@ from .ief_flags import flags
 from .logs import LF1, create_lf
 from .to_from_json import Jsonable
 from .util import handle_exception
-from .zzn import ZZN
+from .zz import ZZN
 
 
 def try_numeric(value: str) -> str | int | float:
@@ -82,7 +81,7 @@ class IEF(FMFile):
     def _read(self):
         # Read IEF data
         with open(self._filepath) as ief_file:
-            raw_data = [line.rstrip("\n") for line in ief_file.readlines()]
+            raw_data = [line.rstrip("\n") for line in ief_file]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
         prev_comment = None
@@ -170,7 +169,7 @@ class IEF(FMFile):
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
                     if idx == event_index:
-                        ief_string += f";{key}\nEventData{eq}{str(event_data[key])}\n"
+                        ief_string += f";{key}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
 
@@ -181,7 +180,7 @@ class IEF(FMFile):
 
             else:
                 # writes property and value to ief string
-                ief_string += f"{prop}{eq}{str(getattr(self, prop))}\n"
+                ief_string += f"{prop}{eq}{getattr(self, prop)!s}\n"
 
         return ief_string
 
@@ -279,10 +278,11 @@ class IEF(FMFile):
     def _update_eventdata_info(self):  # noqa: C901
         if not isinstance(self.eventdata, dict):
             # If attribute not a dict, adds the value as a single entry in list
-            raise AttributeError(
+            msg = (
                 "The 'EventData' attribute should be a dictionary with keys defining the event"
-                " names and values referencing the IED files",
+                " names and values referencing the IED files"
             )
+            raise AttributeError(msg)
 
         # Number of 'EventData' flags in ief
         event_properties = self._ief_properties.count("EventData")
@@ -328,11 +328,12 @@ class IEF(FMFile):
         try:
             self.NoOfFlowTimeSeries = sum([ftp.count_series() for ftp in self.flowtimeprofiles])
         except FileNotFoundError as err:
-            raise UserWarning(
+            msg = (
                 "Failed to read csv referenced in flowtimeprofile, file either does not exist or is"
                 "unable to be found due to relative path from IEF file. NoOfFlowTimeSeries has not"
-                "been updated.",
-            ) from err
+                "been updated."
+            )
+            raise UserWarning(msg) from err
 
         end_index = None
         start_index = (
@@ -471,9 +472,8 @@ class IEF(FMFile):
         self._range_function = range_function
         self._range_settings = range_settings if range_settings else {}
         if self._filepath is None:
-            raise UserWarning(
-                "IEF must be saved to a specific filepath before simulate() can be called.",
-            )
+            msg = "IEF must be saved to a specific filepath before simulate() can be called."
+            raise UserWarning(msg)
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # Defaults to single...
             for attr in dir(self):
@@ -489,9 +489,8 @@ class IEF(FMFile):
         else:
             _enginespath = enginespath
             if not Path(_enginespath).exists():
-                raise Exception(
-                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
-                )
+                msg = f"Flood Modeller non-default engine path not found! {_enginespath!s}"
+                raise Exception(msg)
 
         if precision.upper() == "SINGLE":
             isis32_fp = str(Path(_enginespath, "ISISf32.exe"))
@@ -499,14 +498,15 @@ class IEF(FMFile):
             isis32_fp = str(Path(_enginespath, "ISISf32_DoubleP.exe"))
 
         if not Path(isis32_fp).exists():
-            raise Exception(f"Flood Modeller engine not found! Expected location: {isis32_fp}")
+            msg = f"Flood Modeller engine not found! Expected location: {isis32_fp}"
+            raise Exception(msg)
 
         run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
 
         if method.upper() == "WAIT":
             print("Executing simulation...")
             # execute simulation
-            process = Popen(run_command, cwd=os.path.dirname(self._filepath))
+            process = Popen(run_command, cwd=Path(self._filepath).parent)
 
             # progress bar based on log files
             steady = self.RunType == "Steady"
@@ -526,7 +526,7 @@ class IEF(FMFile):
         elif method.upper() == "RETURN_PROCESS":
             print("Executing simulation...")
             # execute simulation
-            return Popen(run_command, cwd=os.path.dirname(self._filepath))
+            return Popen(run_command, cwd=Path(self._filepath).parent)
 
         return None
 
@@ -553,7 +553,8 @@ class IEF(FMFile):
         result_path = self._get_result_filepath(suffix="zzn")
 
         if not result_path.exists():
-            raise FileNotFoundError("Simulation results file (zzn) not found")
+            msg = "Simulation results file (zzn) not found"
+            raise FileNotFoundError(msg)
 
         return ZZN(result_path)
 
@@ -565,7 +566,8 @@ class IEF(FMFile):
         """
 
         if not self._log_path.exists():
-            raise FileNotFoundError("Log file (LF1) not found")
+            msg = "Log file (LF1) not found"
+            raise FileNotFoundError(msg)
 
         steady = self.RunType == "Steady"
         return LF1(self._log_path, steady)
@@ -616,7 +618,8 @@ class IEF(FMFile):
             exy_path = self._filepath.with_suffix(".exy")
 
         if not exy_path.exists():
-            raise FileNotFoundError("Simulation results error log (.exy) not found")
+            msg = "Simulation results error log (.exy) not found"
+            raise FileNotFoundError(msg)
 
         exy_data = pd.read_csv(exy_path, names=["node", "timestep", "severity", "code", "summary"])
         exy_data["type"] = exy_data["code"].apply(
@@ -678,9 +681,8 @@ class FlowTimeProfile(Jsonable):
             self.profile = kwargs.get("profile", "")
             self.comment = kwargs.get("comment", "")
         else:
-            raise ValueError(
-                "You must provide either a single raw string argument or keyword arguments.",
-            )
+            msg = "You must provide either a single raw string argument or keyword arguments."
+            raise ValueError(msg)
 
         base_path = Path(kwargs.get("ief_filepath", ""))
         self._csvfile = (base_path / self.csv_filepath.strip('"')).resolve()

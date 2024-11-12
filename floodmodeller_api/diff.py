@@ -59,8 +59,8 @@ def check_item_with_dataframe_equal(  # noqa: C901, PLR0912
                 row_diffs = []
                 for row in rows:
                     for col in df_diff.columns:
-                        if True not in df_diff.loc[row, col].duplicated().values:
-                            vals = df_diff.loc[row, col].values
+                        if True not in df_diff.loc[row, col].duplicated().to_numpy():
+                            vals = df_diff.loc[row, col].to_numpy()
                             row_diffs.append(
                                 f"    Row: {row}, Col: '{col}' - left: {vals[0]}, right: {vals[1]}",
                             )
@@ -96,7 +96,7 @@ def check_dict_with_dataframe_equal(dict_a, dict_b, name, diff, special_types):
                 )
                 if not _result:
                     result = False
-            except KeyError as ke:
+            except KeyError as ke:  # noqa: PERF203
                 result = False
                 diff.append((name, f"Key: '{ke.args[0]}' missing in other"))
                 continue

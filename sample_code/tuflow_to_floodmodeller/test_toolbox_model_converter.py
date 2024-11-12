@@ -11,12 +11,12 @@ from .model_converter import FMFileWrapper, TuflowModelConverter
 from .tuflow_to_floodmodeller_definition import TuflowToFloodModeller
 
 
-@pytest.fixture
+@pytest.fixture()
 def model_name() -> str:
     return "test_name"
 
 
-@pytest.fixture
+@pytest.fixture()
 def tcf(tmpdir) -> Path:
     tcf_name = "test_tcf.tcf"
     tgc_name = "test_tgc.tgc"
@@ -58,7 +58,7 @@ def tcf(tmpdir) -> Path:
 
 
 @pytest.mark.parametrize(
-    "fm_file_class,file_name",
+    ("fm_file_class", "file_name"),
     [
         (XML2D, "test.xml"),
         (IEF, "test.ief"),
@@ -167,7 +167,3 @@ def test_model_converter(tmpdir, model_name, tcf, mocker):
 
 def test_model_converter_wrapper(tmpdir, model_name, tcf):
     TuflowToFloodModeller.run(tcf_path=tcf, folder=tmpdir, name=model_name)
-
-
-if __name__ == "__name__":
-    pytest.main()

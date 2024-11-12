@@ -1,5 +1,4 @@
 import csv
-import os
 from pathlib import Path
 
 import numpy as np
@@ -100,9 +99,9 @@ class Calibration:
         for link in self._model_event_links:
             file = link["model results"]
             zzn = ZZN(Path(models_path, file))
-            df = zzn.to_dataframe(variable="Stage")
+            zzn_df = zzn.to_dataframe(variable="Stage")
             self._model_names.append(file[:-4])
-            self._model_dfs.append(df)
+            self._model_dfs.append(zzn_df)
 
     def _model_data(self):
         model_data_list = []
@@ -194,8 +193,7 @@ class Calibration:
             ],
         ]
 
-        if not os.path.exists(output_folder):
-            os.makedirs(output_folder)
+        Path.mkdir(output_folder, parents=True, exist_ok=True)
 
         self._starting_y_coords = None
         node_dropdown = []

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any
 
 from . import DAT, IED, IEF, INP, LF1, LF2, XML2D, ZZN

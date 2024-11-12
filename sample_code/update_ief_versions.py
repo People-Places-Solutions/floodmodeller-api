@@ -3,7 +3,6 @@
 # Import modules
 import os
 import sys
-from glob import glob
 from pathlib import Path
 
 try:
@@ -18,10 +17,10 @@ script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
 # Get list of IEF files using glob function
-ief_files = glob("sample_data/*.ief")
+ief_files = Path("sample_data").glob("*.ief")
 
 for ief_path in ief_files:
-    ief_name = os.path.basename(ief_path)  # get existing filename
+    ief_name = Path(ief_path).name  # get existing filename
     new_ief_name = ief_name.replace(".ief", "_v2.ief")  # update filename with 'v2' appended
     new_ief_path = Path("sample_data", new_ief_name)  # get updated filepath
 
