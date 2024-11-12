@@ -143,7 +143,7 @@ def test_empty_conduit(slb, conduit_empty):
     }
 
 
-def test_multi_conduits(slb, conduit_chain_dat, tmpdir):
+def test_multi_conduits(slb, conduit_chain_dat, tmp_path):
     expected = """Unit Name,Unit Type,Unit Subtype,Comment,Friction,Dimensions (m),Weir Coefficient,Culvert Inlet/Outlet Loss
 first,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w: 156.00 x l: 10.00 (Total conduit length: 40.00),,
 second,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w: 156.00 x l: 10.00,,
@@ -153,7 +153,7 @@ fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w:
 """
 
     slb._dat = conduit_chain_dat
-    tmp_csv = Path(tmpdir) / "test_multi_conduits.csv"
+    tmp_csv = tmp_path / "test_multi_conduits.csv"
     with tmp_csv.open("w", newline="") as file:
         slb._writer = csv.writer(file)
         slb._add_conduits()
@@ -165,11 +165,11 @@ fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w:
     assert text == expected
 
 
-def test_full_dat_from_python(slb, tmpdir, ex18_dat_path, ex18_dat_expected):
+def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
 
     # Im not sure if this is slightly redundant compared to test from commandline
-    tmp_csv = Path(tmpdir) / "test_full_dat_from_python.csv"
+    tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     StructureLog.run(input_path=ex18_dat_path, output_path=tmp_csv)
 
     with open(tmp_csv) as read_file:
@@ -177,9 +177,9 @@ def test_full_dat_from_python(slb, tmpdir, ex18_dat_path, ex18_dat_expected):
     assert text == ex18_dat_expected
 
 
-def test_full_dat_from_commandline(slb, tmpdir, ex18_dat_path, ex18_dat_expected):
+def test_full_dat_from_commandline(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
-    tmp_csv = Path(tmpdir) / "test_full_dat_from_python.csv"
+    tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     subprocess.call(f'fmapi-structure_log --input_path "{ex18_dat_path}" --output_path "{tmp_csv}"')
 
     with open(tmp_csv) as read_file:

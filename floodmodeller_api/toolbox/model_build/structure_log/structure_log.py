@@ -2,13 +2,26 @@ from __future__ import annotations
 
 import copy
 import csv
+from typing import TYPE_CHECKING
 
 from floodmodeller_api import DAT
 
+if TYPE_CHECKING:
+    from floodmodeller_api._base import Unit
+    from floodmodeller_api.units import (
+        BRIDGE,
+        CONDUIT,
+        ORIFICE,
+        REPLICATE,
+        RNWEIR,
+        SLUICE,
+        SPILL,
+        WEIR,
+    )
+
 
 def extract_attrs(object_input, keys):
-    """
-    extract attributes and their values from a given object and return as a dict
+    """Extract attributes and their values from a given object and return as a dict.
 
     No handling for where attributes dont exist but can ignore for when this is an issue, shouldnt be an issue here
     """
@@ -16,8 +29,9 @@ def extract_attrs(object_input, keys):
 
 
 def serialise_keys(old_dict):
-    """
-    dictionary keys must be unique; but in FM the node label isnt always unique
+    """Exchange tuple keys in dict for string keys.
+
+    Dictionary keys must be unique; but in FM the node label isnt always unique
     however the (label,type) pair will always be unique; so we have to use that as our key.
     json doesnt like tuples as keys so we have to convert them first if we need to serialise our dictionary output.
 
@@ -28,17 +42,17 @@ def serialise_keys(old_dict):
 
 
 class StructureLogBuilder:
-
     def __init__(self, input_path: str | None = None, output_path: str | None = None) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
-        self.conduit_chains: dict[str, list[str]] = (
+        self._conduit_chains: dict[str | None, list[str | None]] = (
             {}
         )  # pylint flags these for type hinting, but not sure how to specify, to discuss
-        self.already_in_chain: set[str] = set()
+        self._already_in_chain: set[str | None] = set()
         self.unit_store: dict[(str, str)] = {}
+        self._replicate_mimics: dict[str|None,str|None] = {}
 
-    def _add_fields(self, writer):
+    def _add_fields(self, writer) -> None:
         field = [
             "Unit Name",
             "Unit Type",
@@ -51,7 +65,7 @@ class StructureLogBuilder:
         ]
         writer.writerow(field)
 
-    def _conduit_data(self, conduit):
+    def _conduit_data(self, conduit: CONDUIT | REPLICATE) -> tuple[dict, Unit|None]:
         conduit_data = {"length": conduit.dist_to_next}
         # modified conduit crawler script
         add_to_conduit_stack = None
@@ -63,12 +77,12 @@ class StructureLogBuilder:
 
         current_conduit = conduit
 
-        if current_conduit.name not in self.already_in_chain:
+        if current_conduit.name not in self._already_in_chain:
             # if this conduit isnt part of a chain already, then it must be part of a new chain
             total_length = 0
             chain = []
             while True:
-                self.already_in_chain.add(current_conduit.name)
+                self._already_in_chain.add(current_conduit.name)
                 chain.append(current_conduit.name)
                 if current_conduit.dist_to_next == 0:
                     break
@@ -76,7 +90,7 @@ class StructureLogBuilder:
                 total_length += current_conduit.dist_to_next
                 current_conduit = self._dat.next(current_conduit)
 
-            self.conduit_chains[conduit.name] = chain.copy()
+            self._conduit_chains[conduit.name] = chain.copy()
             conduit_data["total_length"] = total_length
 
         next_conduit = self._dat.next(conduit)
@@ -87,16 +101,18 @@ class StructureLogBuilder:
             if next_conduit._unit == "REPLICATE":
                 # for replicates, pass down the label of the unit its copying from.
                 if current_conduit._unit == "REPLICATE":
-                    next_conduit.mimic = current_conduit.mimic
+                    self._replicate_mimics[next_conduit.name] = self._replicate_mimics[
+                        current_conduit.name
+                    ]
                 else:
-                    next_conduit.mimic = current_conduit.name
+                    self._replicate_mimics[next_conduit.name] = current_conduit.name
 
                 # Replicates arent in the DAT.structures dict so we need to add them manually.
                 add_to_conduit_stack = copy.deepcopy(next_conduit)
 
         return conduit_data, add_to_conduit_stack
 
-    def _circular_data(self, conduit):
+    def _circular_data(self, conduit: CONDUIT) -> dict:
         dimensions = extract_attrs(conduit, {"diameter", "invert"})
         all_friction = [
             conduit.friction_above_axis,
@@ -111,7 +127,7 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions, "friction": friction}
 
-    def _sprungarch_data(self, conduit):
+    def _sprungarch_data(self, conduit: CONDUIT) -> dict:
         dimensions = extract_attrs(
             conduit,
             {"width", "height_springing", "height_crown", "elevation_invert"},
@@ -148,7 +164,7 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions, "friction": friction}
 
-    def _section_data(self, conduit):
+    def _section_data(self, conduit: CONDUIT) -> dict:
         # Symmetrical conduits
         # these have a lot of weirdness in terms of data validity and FM will rearrange data that it thinks is wrong; so its mostly worth just trusting the modeller here
 
@@ -176,7 +192,7 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions, "friction": friction}
 
-    def _sprung_data(self, conduit):
+    def _sprung_data(self, conduit: CONDUIT) -> dict:
         dimensions = extract_attrs(
             conduit,
             {"width", "height_springing", "height_crown", "elevation_invert"},
@@ -198,9 +214,12 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions, "friction": friction}
 
-    def _replicate_data(self, conduit):
+    def _replicate_data(self, replicate: REPLICATE) -> dict:
         # if we get to this point, the replicate unit should have the .mimic attribute that we've tacked on
-        dimensions = {"bed_level_drop": conduit.bed_level_drop, "mimic": conduit.mimic}
+        dimensions = {
+            "bed_level_drop": replicate.bed_level_drop,
+            "mimic": self._replicate_mimics[replicate.name],
+        }
 
         return {"dimensions": dimensions}
 
@@ -248,7 +267,7 @@ class StructureLogBuilder:
             if add_to_conduit_stack is not None:
                 conduit_stack.insert(0, add_to_conduit_stack)
 
-    def _orifice_dimensions(self, structure):
+    def _orifice_dimensions(self, structure: ORIFICE) -> dict:
         dimensions = {
             "shape": structure.shape,
             "invert": structure.invert,
@@ -266,7 +285,7 @@ class StructureLogBuilder:
             )  # calcuate bore area from given diameter
         return {"dimensions": dimensions}
 
-    def _spill_data(self, structure):
+    def _spill_data(self, structure: SPILL) -> dict:
         x_list = structure.data.X.tolist()
         y_list = structure.data.Y.tolist()
         dimensions = {
@@ -277,7 +296,7 @@ class StructureLogBuilder:
         }
         return {"dimensions": dimensions}
 
-    def _bridge_data(self, structure):
+    def _bridge_data(self, structure: BRIDGE) -> dict:
         section_df = structure.section_data
         all_friction = section_df["Mannings n"].tolist()
         friction_set = sorted(set(all_friction))
@@ -334,12 +353,13 @@ class StructureLogBuilder:
             "culvert_data": culvert_data,
         }
 
-    def _sluice_data(self, structure):  # these could do with more attention, given more time
+    def _sluice_data(self, structure: SLUICE) -> dict:
+        # TODO: these could do with more attention, given more time
         dimensions = extract_attrs(structure, {"crest_elevation", "weir_breadth", "weir_length"})
 
         return {"dimensions": dimensions}
 
-    def _weir_data(self, structure):
+    def _weir_data(self, structure: RNWEIR | WEIR) -> dict:
         dimensions = extract_attrs(structure, {"weir_elevation", "weir_breadth"})
 
         if structure._unit == "RNWEIR":
