@@ -38,7 +38,8 @@ def test_insert_intermediate_wls():
     result = insert_intermediate_wls(arr, threshold)
 
     assert isinstance(result, np.ndarray), "Result should be a numpy array"
-    assert result[0] == 1.0 and result[-1] == 3.0, "First and last elements should match the input"
+    assert result[0] == 1.0, "First element should match the input"
+    assert result[-1] == 3.0, "Last element should match the input"
     assert all(np.diff(result) <= threshold), "All gaps should be <= to the threshold"
 
 
@@ -52,7 +53,7 @@ def from_gui(test_workspace: Path):
     return pd.read_csv(test_workspace / "expected_conveyance.csv")
 
 
-@pytest.mark.parametrize("section", ("a", "a2", "b", "b2", "c", "d", "d2", "e", "e2", "e3"))
+@pytest.mark.parametrize("section", ["a", "a2", "b", "b2", "c", "d", "d2", "e", "e2", "e3"])
 def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
     threshold = 6
 
@@ -71,7 +72,7 @@ def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
     assert hausdorff_distance < threshold
 
 
-@pytest.mark.parametrize("section", ("a", "a2", "b", "b2", "c", "d", "d2", "e", "e2", "e3"))
+@pytest.mark.parametrize("section", ["a", "a2", "b", "b2", "c", "d", "d2", "e", "e2", "e3"])
 def test_results_match_gui_at_shared_points(section: str, dat: DAT, from_gui: pd.DataFrame):
     tolerance = 1e-2  # 0.001
     actual = dat.sections[section].conveyance

@@ -14,6 +14,7 @@ def test_read_file(test_workspace):
                 ".ied",
                 ".xml",
                 ".zzn",
+                ".zzx",
                 ".inp",
                 ".lf1",
                 ".lf2",

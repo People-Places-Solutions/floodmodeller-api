@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import tkinter as tk
 from functools import wraps
+from typing import ClassVar
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -18,7 +21,7 @@ class SumTool(FMTool):
     # Define the name
     name = "Sum tool"
     description = "A basic tool to add two numbers together"
-    parameters = [
+    parameters: ClassVar[list[Parameter]] = [
         Parameter(
             name="a",
             dtype=float,
@@ -37,7 +40,7 @@ class SumTool(FMTool):
     tool_function = my_sum
 
 
-@pytest.fixture
+@pytest.fixture()
 def tool():
     return SumTool()
 
@@ -49,7 +52,7 @@ def test_check_parameters():
         name = ""
         description = ""
         tool_function = print
-        parameters = [
+        parameters: ClassVar[list[Parameter]] = [
             Parameter(
                 name="param1",
                 dtype=str,
@@ -64,7 +67,7 @@ def test_check_parameters():
             ),
         ]
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Parameter names must be unique"):
         MyTool()
 
 
@@ -90,7 +93,7 @@ def test_run_from_command_line():
     class MyTool(FMTool):
         name = "My Tool"
         description = "My Tools Description"
-        parameters = [Parameter("param1", str), Parameter("param2", str)]
+        parameters: ClassVar[list[Parameter]] = [Parameter("param1", str), Parameter("param2", str)]
 
         @classmethod
         def tool_function(cls, param1, param2):

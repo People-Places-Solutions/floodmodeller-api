@@ -1,4 +1,7 @@
-![FM Logo](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image-dark.png">
+  <img alt="FM Logo" src="https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/_static/flood-modeller-logo-hero-image.png">
+</picture>
 
 
 [![PyPI Latest Release](https://img.shields.io/pypi/v/floodmodeller-api.svg)](https://pypi.org/project/floodmodeller-api/)
@@ -15,7 +18,10 @@
 
 This python package is designed to be used in conjunction with your installation of Flood Modeller to provide users with a set of tools to extend the capabilities of Flood Modeller and build into automated workflows.
 
-![API Overview](https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview_small.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview_dark.png">
+  <img alt="API Overview" src="https://raw.githubusercontent.com/People-Places-Solutions/floodmodeller-api/main/docs/source/getting_started/api_overview.png">
+</picture>
 
 ## Installation
 You can install the floodmodeller_api package from PyPI with the following command:

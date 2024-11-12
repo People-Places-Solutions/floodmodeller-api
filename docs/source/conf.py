@@ -1,4 +1,4 @@
-# Configuration file for the Sphinx documentation builder.
+# Configuration file for the Sphinx documentation builder.  # noqa: INP001
 #
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
@@ -10,22 +10,23 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-from typing import List
+from __future__ import annotations
 
-sys.path.insert(0, os.path.abspath("..\\.."))
+import sys
+from pathlib import Path
+
+sys.path.insert(0, Path("..\\..").resolve())
 print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
 
 project = "Flood Modeller Python API"
-project_copyright = "2023, Jacobs"
+project_copyright = "2024, Jacobs"
 author = "Joe Pierce"
 
 # The full version, including alpha/beta/rc tags
-release = "0.4.4.post1"
+release = "0.5.0"
 
 
 # -- General configuration ---------------------------------------------------
@@ -49,7 +50,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns: List[str] = []
+exclude_patterns: list[str] = []
 
 
 # -- Options for HTML output -------------------------------------------------

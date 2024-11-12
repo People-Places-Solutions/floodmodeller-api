@@ -97,7 +97,8 @@ class RAINGAUGE(UrbanUnit):
             params2 = join_n_char_ljust(15, self.filename, self.station, self.units)
 
         else:
-            raise RuntimeError(f"{self.data_option} not supported")
+            msg = f"{self.data_option} not supported"
+            raise RuntimeError(msg)
 
         return params1 + params2
 

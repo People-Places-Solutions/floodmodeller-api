@@ -60,7 +60,7 @@ class INP(FMFile):
     def _read(self):
         # Read INP file
         with open(self._filepath) as inp_file:
-            self._raw_data = [line.rstrip("\n") for line in inp_file.readlines()]
+            self._raw_data = [line.rstrip("\n") for line in inp_file]
 
         # Generate INP file structure
         self._update_inp_struct()
@@ -129,9 +129,8 @@ class INP(FMFile):
         return "\n".join(self._raw_data) + "\n"
 
     def _create_from_blank(self):
-        raise NotImplementedError(
-            "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read",
-        )
+        msg = "Creating new 1D urban models (INP files) is not yet supported by floodmodeller_api, only existing models can be read"
+        raise NotImplementedError(msg)
 
     def _get_section_definitions(self):
         """Internal method used to get section definitions for each supported unit type and general parameters."""

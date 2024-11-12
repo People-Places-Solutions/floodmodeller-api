@@ -5,12 +5,12 @@ import pytest
 from floodmodeller_api import XML2D
 
 
-@pytest.fixture
+@pytest.fixture()
 def xml_fp(test_workspace):
     return Path(test_workspace, "Domain1_Q.xml")
 
 
-@pytest.fixture
+@pytest.fixture()
 def data_before(xml_fp):
     return XML2D(xml_fp)._write()
 
@@ -25,7 +25,7 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
     x2d = XML2D(xml_fp)
     prev_link = x2d.link1d[0]["link"]
-    domain = list(x2d.domains)[0]
+    domain = next(iter(x2d.domains))
     prev_dtm = x2d.domains[domain]["topography"]
 
     x2d.link1d[0]["link"] = ["new_link"]
@@ -56,10 +56,8 @@ def test_xml2d_change_revert_elem_topography():
     """XML2D: Check that when we change an existing element
     that it is actually adding it and that it is being reverted."""
     x2d = XML2D()
-    domain = list(x2d.domains)[0]
-    orig_topography = []
-    for item in x2d.domains[domain]["topography"]:
-        orig_topography.append(str(item))
+    domain = next(iter(x2d.domains))
+    orig_topography = [str(item) for item in x2d.domains[domain]["topography"]]
     orig_xml = x2d._write()
     x2d.domains[domain]["topography"][0] = "my/new/topography"
 
@@ -74,7 +72,7 @@ def test_xml2d_add_remove_branch_roughness():
     """XML2D: Check that we can actually add a branch and that
     it is being added and passes validation (i.e write)"""
     x2d = XML2D()
-    domain = list(x2d.domains)[0]
+    domain = next(iter(x2d.domains))
     orig_xml = x2d._write()
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
@@ -91,7 +89,7 @@ def test_xml2d_append_remove_branch_roughness():
     """XML2D: Check that we can append an extra branch to preexisting branch
     so that it passes validation"""
     x2d = XML2D()
-    domain = list(x2d.domains)[0]
+    domain = next(iter(x2d.domains))
     x2d.domains[domain]["roughness"] = []
     x2d.domains[domain]["roughness"].append(
         {"type": "file", "law": "manning", "value": "my/roughness/file.shp"},
@@ -115,7 +113,7 @@ def test_xml2d_append_remove_branch_roughness():
 def test_xml2d_reorder_elem_computational_area_wrong_position():
     """XML2D: Check that if we add ??? in the wrong position does it reorder"""
     x2d = XML2D()
-    domain = list(x2d.domains)[0]
+    domain = next(iter(x2d.domains))
     x2d.domains[domain]["computational_area"] = {
         "yll": ...,
         "xll": ...,
@@ -145,7 +143,7 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
 def test_xml2d_update_value(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
     x2d = XML2D(xml_fp)
-    domain = list(x2d.domains)[0]
+    domain = next(iter(x2d.domains))
     x2d.domains[domain]["run_data"]["scheme"] = "TVD"
 
     assert x2d._write()

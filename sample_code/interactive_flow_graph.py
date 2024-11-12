@@ -26,29 +26,28 @@ zzn_file = Path("sample_data\\EX3.zzn")
 
 # Read ZZN file
 zzn = ZZN(zzn_file)
-df = zzn.to_dataframe(variable="Flow")  # Output dataframe of flows
+zzn_df = zzn.to_dataframe(variable="Flow")  # Output dataframe of flows
 
 fig = go.Figure()  # Create new plotly figure
 
 # Add line scatter to chart based on first section
 fig.add_scatter(
-    x=df.index,
-    y=df[df.columns[0]],
+    x=zzn_df.index,
+    y=zzn_df[zzn_df.columns[0]],
     mode="lines",
 )
 
 # Create a button for each section that updates the chart to show that
 # section's flow data
-buttons = []
-for col in df.columns:
-    buttons.append(
-        {
-            "method": "restyle",
-            "label": col,
-            "visible": True,
-            "args": [{"y": [df[col]]}],
-        },
-    )
+buttons = [
+    {
+        "method": "restyle",
+        "label": col,
+        "visible": True,
+        "args": [{"y": [zzn_df[col]]}],
+    }
+    for col in zzn_df.columns
+]
 
 # Update the chart layout with labels and add a dropdown menu with all buttons
 fig.update_layout(

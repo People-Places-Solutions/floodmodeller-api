@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import io
-import os
 import time
 from copy import deepcopy
 from pathlib import Path
@@ -205,12 +204,9 @@ class XML2D(FMFile):
 
     def _validate(self):
         try:
-            self._xsdschema.assert_(self._xmltree)
+            self._xsdschema.assert_(self._xmltree)  # noqa: PT009
         except AssertionError as err:
-            msg = (
-                f"XML Validation Error for {repr(self)}:\n"
-                f"     {err.args[0].replace(self._ns, '')}"
-            )
+            msg = f"XML Validation Error for {self!r}:\n     {err.args[0].replace(self._ns, '')}"
             raise ValueError(msg) from err
 
     def _recursive_update_xml(  # noqa: C901, PLR0912
@@ -224,7 +220,8 @@ class XML2D(FMFile):
 
         for key, item in new_dict.items():
             if key in self._multi_value_keys and not isinstance(item, list):
-                raise Exception(f"Element: '{key}' must be added as list")
+                msg = f"Element: '{key}' must be added as list"
+                raise Exception(msg)
             if parent_key == "ROOT":
                 parent = self._xmltree.getroot()
             else:
@@ -294,7 +291,8 @@ class XML2D(FMFile):
         from_list=False,
     ):
         if add_key in self._multi_value_keys and not isinstance(add_item, list) and not from_list:
-            raise Exception(f"Element: '{add_key}' must be added as list")
+            msg = f"Element: '{add_key}' must be added as list"
+            raise Exception(msg)
         if isinstance(add_item, dict):
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
@@ -509,12 +507,11 @@ class XML2D(FMFile):
         self.range_settings = range_settings if range_settings else {}
 
         if self._filepath is None:
-            raise UserWarning(
-                "xml2D must be saved to a specific filepath before simulate() can be called.",
-            )
+            msg = "xml2D must be saved to a specific filepath before simulate() can be called."
+            raise UserWarning(msg)
         if precision.upper() == "DEFAULT":
             precision = "SINGLE"  # defaults to single precision
-            for _, domain in self.domains.items():
+            for domain in self.domains.values():
                 if domain["run_data"].get("double_precision") == "required":
                     precision = "DOUBLE"
                     break
@@ -525,14 +522,13 @@ class XML2D(FMFile):
         else:
             _enginespath = enginespath
             if not Path(_enginespath).exists():
-                raise Exception(
-                    f"Flood Modeller non-default engine path not found! {str(_enginespath)}",
-                )
+                msg = f"Flood Modeller non-default engine path not found! {_enginespath!s}"
+                raise Exception(msg)
 
         # checking if all schemes used are fast, if so will use FAST.exe
         # TODO: Add in option to choose to use or not to use if you can
         is_fast = True
-        for _, domain in self.domains.items():
+        for domain in self.domains.values():
             if domain["run_data"]["scheme"] != "FAST":
                 is_fast = False
                 break
@@ -545,7 +541,8 @@ class XML2D(FMFile):
             isis2d_fp = str(Path(_enginespath, "ISIS2d_DP.exe"))
 
         if not Path(isis2d_fp).exists():
-            raise Exception(f"Flood Modeller engine not found! Expected location: {isis2d_fp}")
+            msg = f"Flood Modeller engine not found! Expected location: {isis2d_fp}"
+            raise Exception(msg)
 
         console_output = console_output.lower()
         run_command = (
@@ -556,7 +553,7 @@ class XML2D(FMFile):
         if method.upper() == "WAIT":
             print("Executing simulation ... ")
             # execute simulation
-            process = Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+            process = Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
             # progress bar based on log files:
             if console_output == "simple":
@@ -573,7 +570,7 @@ class XML2D(FMFile):
         elif method.upper() == "RETURN_PROCESS":
             print("Executing simulation ...")
             # execute simulation
-            return Popen(run_command, cwd=os.path.dirname(self._filepath), stdout=stdout)
+            return Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
         return None
 
@@ -584,7 +581,8 @@ class XML2D(FMFile):
             floodmodeller_api.LF2 class object
         """
         if not self._log_path.exists():
-            raise FileNotFoundError("Log file (LF2) not found")
+            msg = "Log file (LF2) not found"
+            raise FileNotFoundError(msg)
 
         return LF2(self._log_path)
 
