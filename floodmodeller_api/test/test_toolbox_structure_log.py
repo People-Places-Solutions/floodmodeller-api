@@ -83,7 +83,7 @@ def structure():
     return ORIFICE()
 
 
-@pytest.fixture
+@pytest.fixture()
 def conduit_chain_dat(conduit_filled):
     dat = DAT()
     names = ["first", "second", "third", "fourth"]
@@ -102,12 +102,12 @@ def conduit_chain_dat(conduit_filled):
     return dat
 
 
-@pytest.fixture
+@pytest.fixture()
 def ex18_dat_path(test_workspace):
     return Path(test_workspace, "EX18.DAT")
 
 
-@pytest.fixture
+@pytest.fixture()
 def ex18_dat_expected():
     # I think this is the correct way to establish the same 'expected' result, but if this is a larger/more structure-rich dat, could read from file?
     # Ideally I'd use a larger dat for this like one of the ones from private sample-dataset, to be discussed

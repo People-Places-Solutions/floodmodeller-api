@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import csv
 
@@ -510,7 +512,7 @@ class StructureLogBuilder:
 
         self._add_fields(writer)
 
-        for _, unit_dict in self.unit_store.items():
+        for unit_dict in self.unit_store.values():
             name = unit_dict["name"]
             unit_type = unit_dict["type"]
             subtype = unit_dict["subtype"]
