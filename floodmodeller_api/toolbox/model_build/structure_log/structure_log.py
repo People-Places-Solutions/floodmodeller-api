@@ -45,9 +45,7 @@ class StructureLogBuilder:
     def __init__(self, input_path: str | None = None, output_path: str | None = None) -> None:
         self.dat_file_path = input_path
         self.csv_output_path = output_path
-        self._conduit_chains: dict[str | None, list[str | None]] = (
-            {}
-        )  # pylint flags these for type hinting, but not sure how to specify, to discuss
+        self._conduit_chains: dict[str | None, list[str | None]] = {}
         self._already_in_chain: set[str | None] = set()
         self.unit_store: dict[(str, str)] = {}
         self._replicate_mimics: dict[str | None, str | None] = {}
@@ -215,7 +213,6 @@ class StructureLogBuilder:
         return {"dimensions": dimensions, "friction": friction}
 
     def _replicate_data(self, replicate: REPLICATE) -> dict:
-        # if we get to this point, the replicate unit should have the .mimic attribute that we've tacked on
         dimensions = {
             "bed_level_drop": replicate.bed_level_drop,
             "mimic": self._replicate_mimics[replicate.name],
@@ -223,6 +220,7 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
+    # TODO: a refactor to combine the _add_conduits and _add_structures together would be nice for clarity
     def _add_conduits(self):
         conduit_stack = copy.deepcopy(list(self._dat.conduits.values()))
 
@@ -280,9 +278,8 @@ class StructureLogBuilder:
             dimensions["bore_area"] = structure.bore_area
         elif structure.shape == "CIRCULAR":
             dimensions["width"] = dimensions["height"]
-            dimensions["bore_area"] = (dimensions["height"] ** 2) * (
-                3.1415 * 0.25
-            )  # calcuate bore area from given diameter
+            # calcuate bore area from given diameter
+            dimensions["bore_area"] = (dimensions["height"] ** 2) * (3.1415 * 0.25)
         return {"dimensions": dimensions}
 
     def _spill_data(self, structure: SPILL) -> dict:

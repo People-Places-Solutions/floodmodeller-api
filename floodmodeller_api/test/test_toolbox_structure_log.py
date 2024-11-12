@@ -104,13 +104,13 @@ def conduit_chain_dat(conduit_filled):
 
 @pytest.fixture()
 def ex18_dat_path(test_workspace):
+    # TODO: Source a better test case that can be opened to public repo.
     return Path(test_workspace, "EX18.DAT")
 
 
 @pytest.fixture()
 def ex18_dat_expected():
-    # I think this is the correct way to establish the same 'expected' result, but if this is a larger/more structure-rich dat, could read from file?
-    # Ideally I'd use a larger dat for this like one of the ones from private sample-dataset, to be discussed
+    # This is about the limit of what can be pasted in code, if any larger test material is found then read from csv.
     return """Unit Name,Unit Type,Unit Subtype,Comment,Friction,Dimensions (m),Weir Coefficient,Culvert Inlet/Outlet Loss
 C2,CONDUIT,CIRCULAR,,"Mannings: [min: 0.015, max: 0.020]",dia: 1.00 x l: 100.00 (Total conduit length: 500.00),,Ki: 0.6
 C2_R1,REPLICATE,,,,,,
@@ -181,7 +181,7 @@ def test_full_dat_from_commandline(slb, tmp_path, ex18_dat_path, ex18_dat_expect
     # these two tests should be as described in the toolbox documentation
     tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     subprocess.call(
-        ["fmapi-structure_log", "--input_path", str(ex18_dat_path), "--output_path", str(tmp_csv)]
+        ["fmapi-structure_log", "--input_path", str(ex18_dat_path), "--output_path", str(tmp_csv)],
     )
 
     with open(tmp_csv) as read_file:
