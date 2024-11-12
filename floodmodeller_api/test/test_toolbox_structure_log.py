@@ -15,7 +15,7 @@ from floodmodeller_api.units.structures import ORIFICE
 
 @pytest.fixture()
 def slb():
-    return StructureLogBuilder("", "")
+    return StructureLogBuilder()
 
 
 @pytest.fixture()
@@ -165,10 +165,8 @@ fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w:
     assert text == expected
 
 
-def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
+def test_full_dat_from_python(tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
-
-    # Im not sure if this is slightly redundant compared to test from commandline
     tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     StructureLog.run(input_path=ex18_dat_path, output_path=tmp_csv)
 
@@ -177,7 +175,7 @@ def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
     assert text == ex18_dat_expected
 
 
-def test_full_dat_from_commandline(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
+def test_full_dat_from_commandline(tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
     tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     subprocess.call(
