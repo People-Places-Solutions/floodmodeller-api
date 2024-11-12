@@ -240,7 +240,9 @@ class StructureLogBuilder:
                 ("CONDUIT", "SPRUNG"),
                 ("REPLICATE", None),
             ]:
-                print(f'Conduit sub-type "{conduit.subtype}" is currently unsupported in structure log')
+                print(
+                    f'Conduit sub-type "{conduit.subtype}" is currently unsupported in structure log'
+                )
                 continue
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
             self.unit_store[(conduit.name, conduit._unit)]["conduit_data"] = conduit_dict
