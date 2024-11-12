@@ -50,7 +50,7 @@ class StructureLogBuilder:
         )  # pylint flags these for type hinting, but not sure how to specify, to discuss
         self._already_in_chain: set[str | None] = set()
         self.unit_store: dict[(str, str)] = {}
-        self._replicate_mimics: dict[str|None,str|None] = {}
+        self._replicate_mimics: dict[str | None, str | None] = {}
 
     def _add_fields(self, writer) -> None:
         field = [
@@ -65,7 +65,7 @@ class StructureLogBuilder:
         ]
         writer.writerow(field)
 
-    def _conduit_data(self, conduit: CONDUIT | REPLICATE) -> tuple[dict, Unit|None]:
+    def _conduit_data(self, conduit: CONDUIT | REPLICATE) -> tuple[dict, Unit | None]:
         conduit_data = {"length": conduit.dist_to_next}
         # modified conduit crawler script
         add_to_conduit_stack = None
