@@ -180,7 +180,9 @@ def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
 def test_full_dat_from_commandline(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
     tmp_csv = tmp_path / "test_full_dat_from_python.csv"
-    subprocess.call(f'fmapi-structure_log --input_path "{ex18_dat_path}" --output_path "{tmp_csv}"')
+    subprocess.call(
+        ["fmapi-structure_log", "--input_path", str(ex18_dat_path), "--output_path", str(tmp_csv)]
+    )
 
     with open(tmp_csv) as read_file:
         text = read_file.read()
