@@ -1,0 +1,292 @@
+{
+    "(C2,CONDUIT)": {
+        "name": "C2",
+        "type": "CONDUIT",
+        "subtype": "CIRCULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0,
+            "inlet": 0.6,
+            "total_length": 500.0
+        },
+        "dimensions": {
+            "invert": 20.0,
+            "diameter": 1.0
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.015,
+                0.02
+            ]
+        }
+    },
+    "(C2_R1,REPLICATE)": {
+        "name": "C2_R1",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2m"
+        }
+    },
+    "(C2_R2,REPLICATE)": {
+        "name": "C2_R2",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2m"
+        }
+    },
+    "(C2_R3,REPLICATE)": {
+        "name": "C2_R3",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2m"
+        }
+    },
+    "(C2_R4,REPLICATE)": {
+        "name": "C2_R4",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2m"
+        }
+    },
+    "(C2m,CONDUIT)": {
+        "name": "C2m",
+        "type": "CONDUIT",
+        "subtype": "CIRCULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 0.0
+        },
+        "dimensions": {
+            "invert": 19.2,
+            "diameter": 1.0
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.015,
+                0.02
+            ]
+        }
+    },
+    "(C2md,CONDUIT)": {
+        "name": "C2md",
+        "type": "CONDUIT",
+        "subtype": "CIRCULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0,
+            "total_length": 700.0
+        },
+        "dimensions": {
+            "invert": 19.2,
+            "diameter": 1.0
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.015,
+                0.02
+            ]
+        }
+    },
+    "(C2_R5,REPLICATE)": {
+        "name": "C2_R5",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2_R6,REPLICATE)": {
+        "name": "C2_R6",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2_R7,REPLICATE)": {
+        "name": "C2_R7",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2_R8,REPLICATE)": {
+        "name": "C2_R8",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2_R9,REPLICATE)": {
+        "name": "C2_R9",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2_R10,REPLICATE)": {
+        "name": "C2_R10",
+        "type": "REPLICATE",
+        "subtype": null,
+        "comment": "",
+        "conduit_data": {
+            "length": 100.0
+        },
+        "dimensions": {
+            "bed_level_drop": 0.2,
+            "mimic": "C2d"
+        }
+    },
+    "(C2d,CONDUIT)": {
+        "name": "C2d",
+        "type": "CONDUIT",
+        "subtype": "CIRCULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 0.0
+        },
+        "dimensions": {
+            "invert": 18.0,
+            "diameter": 1.0
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.015,
+                0.02
+            ]
+        }
+    },
+    "(S0,WEIR)": {
+        "name": "S0",
+        "type": "WEIR",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "weir_elevation": 21.0,
+            "weir_breadth": 1.5
+        }
+    },
+    "(C2d,WEIR)": {
+        "name": "C2d",
+        "type": "WEIR",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "weir_elevation": 18.0,
+            "weir_breadth": 0.6
+        }
+    },
+    "(S4,WEIR)": {
+        "name": "S4",
+        "type": "WEIR",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "weir_elevation": 17.9,
+            "weir_breadth": 2.0
+        }
+    },
+    "(S8,WEIR)": {
+        "name": "S8",
+        "type": "WEIR",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "weir_elevation": 17.7,
+            "weir_breadth": 2.0
+        }
+    },
+    "(S3LS,SPILL)": {
+        "name": "S3LS",
+        "type": "SPILL",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "invert": 20.0,
+            "width": 100.0,
+            "weir_coefficient": 1.7,
+            "section_data": {
+                "x": [
+                    0.0,
+                    100.0
+                ],
+                "y": [
+                    20.0,
+                    20.0
+                ]
+            }
+        }
+    }
+}

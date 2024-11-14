@@ -1,5 +1,6 @@
 import copy
 import csv
+import json
 import subprocess
 from pathlib import Path
 
@@ -8,7 +9,10 @@ import pytest
 
 from floodmodeller_api import DAT
 from floodmodeller_api.toolbox import StructureLog
-from floodmodeller_api.toolbox.model_build.structure_log import StructureLogBuilder
+from floodmodeller_api.toolbox.model_build.structure_log.structure_log import (
+    StructureLogBuilder,
+    serialise_keys,
+)
 from floodmodeller_api.units.conduits import CONDUIT
 from floodmodeller_api.units.structures import ORIFICE
 
@@ -163,6 +167,40 @@ fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w:
         text = read_file.read()
 
     assert text == expected
+
+
+@pytest.mark.parametrize(
+    ("filename"),
+    [
+        ("EX18"),
+        ("EX6"),
+        ("EX17"),
+    ],
+)
+def test_multiple_dats(filename, test_workspace, tmp_path):
+    dat_path = Path(test_workspace, f"{filename}.DAT")
+    expected_csv_path = Path(test_workspace / "structure_logs", f"{filename}_expected.csv")
+    expected_json_path = Path(test_workspace / "structure_logs", f"{filename}_expected.json")
+    test_csv_path = tmp_path / f"test_multiple_dats_{filename}.csv"
+    slb = StructureLogBuilder(dat_path, test_csv_path)
+    slb._dat = DAT(slb.dat_file_path)
+    slb._add_conduits()
+    slb._add_structures()
+
+    with expected_json_path.open("r") as file:
+        expected_json_data = json.load(file)
+
+    assert serialise_keys(slb.unit_store) == expected_json_data
+
+    with open(slb.csv_output_path, "w", newline="") as file:
+        slb._write_csv_output(file)
+
+    with expected_csv_path.open("r") as file:
+        expected_csv_data = file.read()
+    with test_csv_path.open("r") as file:
+        test_csv_data = file.read()
+
+    assert test_csv_data == expected_csv_data
 
 
 def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):

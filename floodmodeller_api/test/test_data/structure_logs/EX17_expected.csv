@@ -1,0 +1,4 @@
+Unit Name,Unit Type,Unit Subtype,Comment,Friction,Dimensions (m),Weir Coefficient,Culvert Inlet/Outlet Loss
+T2,CONDUIT,RECTANGULAR,,"Mannings: [min: 0.010, max: 0.020]",h: 1.50 x w: 2.50 x l: 30.00 (Total conduit length: 30.00),,Ki: 0.6
+T2d,CONDUIT,RECTANGULAR,,"Mannings: [min: 0.010, max: 0.020]",h: 1.50 x w: 2.50 x l: 0.00,,Ko: 1.0
+S4_W,WEIR,,,,Crest Elevation: 49.45 x w: 4.00,,

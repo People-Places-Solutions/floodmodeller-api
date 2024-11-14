@@ -82,6 +82,11 @@ class StructureLogBuilder:
             while True:
                 self._already_in_chain.add(current_conduit.name)
                 chain.append(current_conduit.name)
+
+                if current_conduit._unit not in ("CONDUIT", "REPLICATE"):
+                    # This occurs in cases where a conduit chain doesnt 'legally' end.
+                    break
+
                 if current_conduit.dist_to_next == 0:
                     break
 

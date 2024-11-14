@@ -1,0 +1,69 @@
+{
+    "(T2,CONDUIT)": {
+        "name": "T2",
+        "type": "CONDUIT",
+        "subtype": "RECTANGULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 30.0,
+            "inlet": 0.6,
+            "total_length": 30.0
+        },
+        "dimensions": {
+            "invert": 47.5,
+            "height": 1.5,
+            "width": 2.5
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.01,
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.01,
+                0.02,
+                0.015
+            ]
+        }
+    },
+    "(T2d,CONDUIT)": {
+        "name": "T2d",
+        "type": "CONDUIT",
+        "subtype": "RECTANGULAR",
+        "comment": "",
+        "conduit_data": {
+            "length": 0.0,
+            "outlet": 1.0
+        },
+        "dimensions": {
+            "invert": 47.47,
+            "height": 1.5,
+            "width": 2.5
+        },
+        "friction": {
+            "friction_eq": "MANNING",
+            "friction_set": [
+                0.01,
+                0.015,
+                0.02
+            ],
+            "all_friction": [
+                0.01,
+                0.02,
+                0.015
+            ]
+        }
+    },
+    "(S4_W,WEIR)": {
+        "name": "S4_W",
+        "type": "WEIR",
+        "subtype": null,
+        "comment": "",
+        "dimensions": {
+            "weir_elevation": 49.45,
+            "weir_breadth": 4.0
+        }
+    }
+}
