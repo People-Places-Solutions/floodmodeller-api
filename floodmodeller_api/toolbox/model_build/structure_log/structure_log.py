@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 def extract_attrs(object_input, keys):
     """Extract attributes and their values from a given object and return as a dict.
 
-    No handling for where attributes dont exist but can ignore for when this is an issue, shouldnt be an issue here
+    No handling for where attributes don't exist but can ignore for when this is an issue, shouldn't be an issue here
     """
     return {key: getattr(object_input, key) for key in keys}
 
@@ -31,9 +31,9 @@ def extract_attrs(object_input, keys):
 def serialise_keys(old_dict):
     """Exchange tuple keys in dict for string keys.
 
-    Dictionary keys must be unique; but in FM the node label isnt always unique
+    Dictionary keys must be unique; but in FM the node label isn't always unique
     however the (label,type) pair will always be unique; so we have to use that as our key.
-    json doesnt like tuples as keys so we have to convert them first if we need to serialise our dictionary output.
+    json doesn't like tuples as keys so we have to convert them first if we need to serialise our dictionary output.
 
     Replaces tuple keys with string versions of themselves, wrapped in ()
 
@@ -76,7 +76,7 @@ class StructureLogBuilder:
         current_conduit = conduit
 
         if current_conduit.name not in self._already_in_chain:
-            # if this conduit isnt part of a chain already, then it must be part of a new chain
+            # if this conduit isn't part of a chain already, then it must be part of a new chain
             total_length = 0
             chain = []
             while True:
@@ -102,7 +102,7 @@ class StructureLogBuilder:
                 conduit_data["outlet"] = next_conduit.loss_coefficient
 
             if next_conduit._unit == "REPLICATE":
-                # for replicates, pass down the label of the unit its copying from.
+                # for replicates, pass down the label of the unit it's copying from.
                 if current_conduit._unit == "REPLICATE":
                     self._replicate_mimics[next_conduit.name] = self._replicate_mimics[
                         current_conduit.name
@@ -110,7 +110,7 @@ class StructureLogBuilder:
                 else:
                     self._replicate_mimics[next_conduit.name] = current_conduit.name
 
-                # Replicates arent in the DAT.structures dict so we need to add them manually.
+                # Replicates aren't in the DAT.structures dict so we need to add them manually.
                 add_to_conduit_stack = copy.deepcopy(next_conduit)
 
         return conduit_data, add_to_conduit_stack
@@ -135,9 +135,8 @@ class StructureLogBuilder:
             conduit,
             {"width", "height_springing", "height_crown", "elevation_invert"},
         )
-        dimensions["invert"] = dimensions.pop(
-            "elevation_invert",
-        )  # invert attribute is different for these, making homogenous
+        # invert attribute is different for these, making homogenous
+        dimensions["invert"] = dimensions.pop("elevation_invert")
         all_friction = [
             conduit.friction_on_invert,
             conduit.friction_on_soffit,
@@ -169,7 +168,8 @@ class StructureLogBuilder:
 
     def _section_data(self, conduit: CONDUIT) -> dict:
         # Symmetrical conduits
-        # these have a lot of weirdness in terms of data validity and FM will rearrange data that it thinks is wrong; so its mostly worth just trusting the modeller here
+        # these have a lot of weirdness in terms of data validity and FM will rearrange data that it thinks is wrong
+        # so it's mostly worth just trusting the modeller here
 
         x_list = conduit.coords.x.tolist()
         y_list = conduit.coords.y.tolist()
@@ -200,9 +200,8 @@ class StructureLogBuilder:
             conduit,
             {"width", "height_springing", "height_crown", "elevation_invert"},
         )
-        dimensions["invert"] = dimensions.pop(
-            "elevation_invert",
-        )  # invert attribute is different for these, making homogenous
+        # invert attribute is different for these, making homogenous
+        dimensions["invert"] = dimensions.pop("elevation_invert")
         all_friction = [
             conduit.friction_on_invert,
             conduit.friction_on_soffit,
@@ -246,7 +245,9 @@ class StructureLogBuilder:
                 ("CONDUIT", "SPRUNG"),
                 ("REPLICATE", None),
             ]:
-                print(f"Conduit subtype: {conduit.subtype} not currently supported")
+                print(
+                    f'Conduit sub-type "{conduit.subtype}" is currently unsupported in structure log',
+                )
                 continue
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
             self.unit_store[(conduit.name, conduit._unit)]["conduit_data"] = conduit_dict
@@ -318,10 +319,10 @@ class StructureLogBuilder:
         )
 
         opening_data = []
-        # if it has openings, not sure why it wouldnt but worth checking.
+        # if it has openings, not sure why it wouldn't but worth checking.
         if structure.opening_nrows > 0:
             opening_df = structure.opening_data
-            # this isnt 'proper' for a df but there should be few rows and we're doing special stuff
+            # this isn't 'proper' for a df but there should be few rows and we're doing special stuff
             for _, row in opening_df.iterrows():
                 opening = {}
                 opening["width"] = row["Finish"] - row["Start"]
@@ -394,7 +395,7 @@ class StructureLogBuilder:
             elif structure._unit == "BRIDGE":
                 self.unit_store[(structure.name, structure._unit)] |= self._bridge_data(structure)
             else:
-                print(f"Structure: {structure._unit} not currently supported in structure log")
+                print(f'Structure "{structure._unit}" is currently unsupported in structure log')
                 continue
 
     def _format_friction(self, unit_dict):

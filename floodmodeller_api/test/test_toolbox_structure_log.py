@@ -205,8 +205,6 @@ def test_multiple_dats(filename, test_workspace, tmp_path):
 
 def test_full_dat_from_python(slb, tmp_path, ex18_dat_path, ex18_dat_expected):
     # these two tests should be as described in the toolbox documentation
-
-    # Im not sure if this is slightly redundant compared to test from commandline
     tmp_csv = tmp_path / "test_full_dat_from_python.csv"
     StructureLog.run(input_path=ex18_dat_path, output_path=tmp_csv)
 
