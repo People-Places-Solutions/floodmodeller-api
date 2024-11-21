@@ -139,7 +139,7 @@ S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 
 
 def test_empty_conduit(slb, conduit_empty):
-    slb._dat = DAT()
+    slb.dat = DAT()
     output, _ = slb._conduit_data(conduit_empty)
     assert output == {
         "length": 0.0,
@@ -156,12 +156,12 @@ fourth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w
 fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w: 156.00 x l: 0.00,,
 """
 
-    slb._dat = conduit_chain_dat
+    slb.dat = conduit_chain_dat
     tmp_csv = tmp_path / "test_multi_conduits.csv"
     with tmp_csv.open("w", newline="") as file:
         slb._writer = csv.writer(file)
-        slb._add_conduits()
-        slb._write_csv_output(file)
+        slb.add_conduits()
+        slb.write_csv_output(file)
 
     with open(tmp_csv) as read_file:
         text = read_file.read()
