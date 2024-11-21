@@ -69,7 +69,7 @@ class StructureLogBuilder:
         add_to_conduit_stack = None
 
         # check if the previous node is an inlet
-        previous = self._dat.prev(conduit)
+        previous = self.dat.prev(conduit)
         if hasattr(previous, "subtype") and previous.subtype == "INLET":
             conduit_data["inlet"] = previous.ki
 
@@ -91,12 +91,12 @@ class StructureLogBuilder:
                     break
 
                 total_length += current_conduit.dist_to_next
-                current_conduit = self._dat.next(current_conduit)
+                current_conduit = self.dat.next(current_conduit)
 
             self._conduit_chains[conduit.name] = chain.copy()
             conduit_data["total_length"] = total_length
 
-        next_conduit = self._dat.next(conduit)
+        next_conduit = self.dat.next(conduit)
         if next_conduit is not None:
             if hasattr(next_conduit, "subtype") and next_conduit.subtype == "OUTLET":
                 conduit_data["outlet"] = next_conduit.loss_coefficient
@@ -225,8 +225,8 @@ class StructureLogBuilder:
         return {"dimensions": dimensions}
 
     # TODO: a refactor to combine the _add_conduits and _add_structures together would be nice for clarity
-    def _add_conduits(self):
-        conduit_stack = copy.deepcopy(list(self._dat.conduits.values()))
+    def add_conduits(self):
+        conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
 
         # this is a stack/while-loop because I want to add units to it as we go, to detail inline replicate units
         while len(conduit_stack) > 0:
@@ -373,8 +373,8 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
-    def _add_structures(self):
-        for structure in self._dat.structures.values():
+    def add_structures(self):
+        for structure in self.dat.structures.values():
             self.unit_store[(structure.name, structure._unit)] = {
                 "name": structure.name,
                 "type": structure._unit,
@@ -526,7 +526,7 @@ class StructureLogBuilder:
             ],
         )
 
-    def _write_csv_output(self, file):
+    def write_csv_output(self, file):
         """
         Take the current state of the instance (unit_store etc) and write it to the specified output file.
         """
@@ -582,8 +582,8 @@ class StructureLogBuilder:
         """
         When using the toolbox wrapper or commandline entry point, this is the entrypoint to the structure logger code
         """
-        self._dat = DAT(self.dat_file_path)
-        self._add_conduits()
-        self._add_structures()
+        self.dat = DAT(self.dat_file_path)
+        self.add_conduits()
+        self.add_structures()
         with open(self.csv_output_path, "w", newline="") as file:
-            self._write_csv_output(file)
+            self.write_csv_output(file)

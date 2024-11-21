@@ -183,9 +183,9 @@ def test_multiple_dats(filename, test_workspace, tmp_path):
     expected_json_path = Path(test_workspace / "structure_logs", f"{filename}_expected.json")
     test_csv_path = tmp_path / f"test_multiple_dats_{filename}.csv"
     slb = StructureLogBuilder(dat_path, test_csv_path)
-    slb._dat = DAT(slb.dat_file_path)
-    slb._add_conduits()
-    slb._add_structures()
+    slb.dat = DAT(slb.dat_file_path)
+    slb.add_conduits()
+    slb.add_structures()
 
     with expected_json_path.open("r") as file:
         expected_json_data = json.load(file)
@@ -193,7 +193,7 @@ def test_multiple_dats(filename, test_workspace, tmp_path):
     assert serialise_keys(slb.unit_store) == expected_json_data
 
     with open(slb.csv_output_path, "w", newline="") as file:
-        slb._write_csv_output(file)
+        slb.write_csv_output(file)
 
     with expected_csv_path.open("r") as file:
         expected_csv_data = file.read()
