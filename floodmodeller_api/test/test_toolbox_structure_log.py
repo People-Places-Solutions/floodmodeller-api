@@ -139,7 +139,7 @@ S3LS,SPILL,,,,Elevation: 20.00 x w: 100.00,1.7,
 
 
 def test_empty_conduit(slb, conduit_empty):
-    slb._dat = DAT()
+    slb.dat = DAT()
     output, _ = slb._conduit_data(conduit_empty)
     assert output == {
         "length": 0.0,
@@ -156,12 +156,12 @@ fourth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w
 fifth,CONDUIT,SECTION,,"Colebrook-White: [min: 0.000, max: 4.000]",h: 65.00 x w: 156.00 x l: 0.00,,
 """
 
-    slb._dat = conduit_chain_dat
+    slb.dat = conduit_chain_dat
     tmp_csv = tmp_path / "test_multi_conduits.csv"
     with tmp_csv.open("w", newline="") as file:
         slb._writer = csv.writer(file)
-        slb._add_conduits()
-        slb._write_csv_output(file)
+        slb.add_conduits()
+        slb.write_csv_output(file)
 
     with open(tmp_csv) as read_file:
         text = read_file.read()
@@ -183,9 +183,9 @@ def test_multiple_dats(filename, test_workspace, tmp_path):
     expected_json_path = Path(test_workspace / "structure_logs", f"{filename}_expected.json")
     test_csv_path = tmp_path / f"test_multiple_dats_{filename}.csv"
     slb = StructureLogBuilder(dat_path, test_csv_path)
-    slb._dat = DAT(slb.dat_file_path)
-    slb._add_conduits()
-    slb._add_structures()
+    slb.dat = DAT(slb.dat_file_path)
+    slb.add_conduits()
+    slb.add_structures()
 
     with expected_json_path.open("r") as file:
         expected_json_data = json.load(file)
@@ -193,7 +193,7 @@ def test_multiple_dats(filename, test_workspace, tmp_path):
     assert serialise_keys(slb.unit_store) == expected_json_data
 
     with open(slb.csv_output_path, "w", newline="") as file:
-        slb._write_csv_output(file)
+        slb.write_csv_output(file)
 
     with expected_csv_path.open("r") as file:
         expected_csv_data = file.read()
