@@ -1,0 +1,4 @@
+Unit Name,Unit Type,Unit Subtype,Comment,Friction,Dimensions (m),Weir Coefficient,Culvert Inlet/Outlet Loss
+P0000a,SLUICE,VERTICAL,,,Crest Elevation: 73.20 x w: 20.00 x l: 1.00,,
+P11951U,SLUICE,VERTICAL,,,Crest Elevation: 73.00 x w: 3.36 x l: 1.00,,
+P44865U,SLUICE,VERTICAL,,,Crest Elevation: 70.81 x w: 3.36 x l: 3.00,,

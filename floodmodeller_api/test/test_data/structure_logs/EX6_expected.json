@@ -1,0 +1,35 @@
+{
+    "(P0000a,SLUICE)": {
+        "name": "P0000a",
+        "type": "SLUICE",
+        "subtype": "VERTICAL",
+        "comment": "",
+        "dimensions": {
+            "weir_length": 1.0,
+            "crest_elevation": 73.2,
+            "weir_breadth": 20.0
+        }
+    },
+    "(P11951U,SLUICE)": {
+        "name": "P11951U",
+        "type": "SLUICE",
+        "subtype": "VERTICAL",
+        "comment": "",
+        "dimensions": {
+            "weir_length": 1.0,
+            "crest_elevation": 73.0,
+            "weir_breadth": 3.36
+        }
+    },
+    "(P44865U,SLUICE)": {
+        "name": "P44865U",
+        "type": "SLUICE",
+        "subtype": "VERTICAL",
+        "comment": "",
+        "dimensions": {
+            "weir_length": 3.0,
+            "crest_elevation": 70.81,
+            "weir_breadth": 3.36
+        }
+    }
+}
