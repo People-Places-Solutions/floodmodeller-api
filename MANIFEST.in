@@ -2,8 +2,8 @@ include license.txt
 include code-of-conduct.md
 include requirements.txt
 include floodmodeller_api/xsd_backup.xml
-include floodmodeller_api/test/test_data/*
 include floodmodeller_api/toolbox/gui/*
+recursive-include floodmodeller_api/test/test_data *
 recursive-include floodmodeller_api *.dll
 recursive-include floodmodeller_api *.so
 recursive-include floodmodeller_api *.so.5
