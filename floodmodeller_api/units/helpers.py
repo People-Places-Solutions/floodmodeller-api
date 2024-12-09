@@ -16,7 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-# Helper Functions
+import pandas as pd
+
 NOTATION_THRESHOLD = 10
 
 
@@ -134,3 +135,15 @@ def read_bridge_params(line: str) -> dict[str, str | bool]:
         "orifice_upper_transition_dist": _to_float(params[7]),
         "orifice_discharge_coefficient": _to_float(params[8], 1.0),
     }
+
+
+def read_bridge_cross_sections(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<50}")
+        chainage = _to_float(line_split[0])
+        elevation = _to_float(line_split[1])
+        mannings = _to_float(line_split[2])
+        embankment = line_split[4]
+        data_list.append([chainage, elevation, mannings, embankment])
+    return pd.DataFrame(data_list, columns=["X", "Y", "Mannings n", "Embankments"])

@@ -26,6 +26,7 @@ from .helpers import (
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
+    read_bridge_cross_sections,
     read_bridge_params,
     split_10_char,
     split_n_char,
@@ -143,20 +144,8 @@ class BRIDGE(Unit):
             for key, val in params.items():
                 setattr(self, key, val)
 
-            # Read cross section data
             self.section_nrows = int(split_10_char(br_block[5])[0])
-            data_list = []
-            for row in br_block[6 : 6 + self.section_nrows]:
-                row_split = split_10_char(f"{row:<50}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                data_list.append([x, y, n, embankment])
-            self.section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments"],
-            )
+            self.section_data = read_bridge_cross_sections(br_block[6 : 6 + self.section_nrows])
 
             # Read bridge opening data
             self.opening_nrows = int(split_10_char(br_block[6 + self.section_nrows])[0])
@@ -197,20 +186,8 @@ class BRIDGE(Unit):
                 self.specify_piers = False
                 self.soffit_shape = pier_info[1]
 
-            # Read cross section data
             self.section_nrows = int(split_10_char(br_block[8])[0])
-            data_list = []
-            for row in br_block[9 : 9 + self.section_nrows]:
-                row_split = split_10_char(f"{row:<50}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                data_list.append([x, y, n, embankment])
-            self.section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments"],
-            )
+            self.section_data = read_bridge_cross_sections(br_block[9 : 9 + self.section_nrows])
 
             # Read bridge opening data
             self.opening_nrows = int(split_10_char(br_block[9 + self.section_nrows])[0])
