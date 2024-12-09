@@ -248,37 +248,17 @@ class BRIDGE(Unit):
             self.pier_coefficient = _to_float(additional_params[0], 0.9)
             self.bridge_width = _to_float(additional_params[1])
 
-            # Read US cross section data
             self.us_section_nrows = int(split_10_char(br_block[6])[0])
-            data_list = []
-            for row in br_block[7 : 7 + self.us_section_nrows]:
-                row_split = split_10_char(f"{row:<60}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                top_level = row_split[5]  # Top Level (m)
-                data_list.append([x, y, n, embankment, top_level])
-            self.us_section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
+            self.us_section_data = read_bridge_cross_sections(
+                br_block[7 : 7 + self.us_section_nrows],
+                include_top_level=True,
             )
 
-            # Read DS cross section data
-            new_idx = 6 + 1 + self.us_section_nrows
+            new_idx = 7 + self.us_section_nrows
             self.ds_section_nrows = int(split_10_char(br_block[new_idx])[0])
-            data_list = []
-            for row in br_block[new_idx + 1 : new_idx + 1 + self.ds_section_nrows]:
-                row_split = split_10_char(f"{row:<60}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                top_level = row_split[5]  # Top Level (m)
-                data_list.append([x, y, n, embankment, top_level])
-            self.ds_section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
+            self.ds_section_data = read_bridge_cross_sections(
+                br_block[new_idx + 1 : new_idx + 1 + self.ds_section_nrows],
+                include_top_level=True,
             )
 
             # Read pier locations
@@ -1481,7 +1461,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
             # Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area)
-                for _, elevation, plan_area, in self.data.itertuples()
+                for _, elevation, plan_area in self.data.itertuples()
             ]
             block.extend(section_data)
 
@@ -1495,7 +1475,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
             # Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area)
-                for _, elevation, plan_area, in self.data.itertuples()
+                for _, elevation, plan_area in self.data.itertuples()
             ]
             block.extend(section_data)
 

@@ -137,13 +137,24 @@ def read_bridge_params(line: str) -> dict[str, str | bool]:
     }
 
 
-def read_bridge_cross_sections(lines: list[str]) -> pd.DataFrame:
+def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False) -> pd.DataFrame:
     data_list = []
     for line in lines:
+
         line_split = split_10_char(f"{line:<50}")
-        chainage = _to_float(line_split[0])
-        elevation = _to_float(line_split[1])
-        mannings = _to_float(line_split[2])
-        embankment = line_split[4]
-        data_list.append([chainage, elevation, mannings, embankment])
-    return pd.DataFrame(data_list, columns=["X", "Y", "Mannings n", "Embankments"])
+        df_row = [
+            _to_float(line_split[0]),
+            _to_float(line_split[1]),
+            _to_float(line_split[2]),
+            line_split[4],
+        ]
+
+        if include_top_level:
+            df_row.append(line_split[5])
+
+        data_list.append(df_row)
+
+    columns = ["X", "Y", "Mannings n", "Embankments"]
+    if include_top_level:
+        columns.append("Top Level")
+    return pd.DataFrame(data_list, columns=columns)
