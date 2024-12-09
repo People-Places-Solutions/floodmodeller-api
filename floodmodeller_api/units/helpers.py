@@ -119,3 +119,18 @@ def _to_data_list(block: list[str], num_cols: int | None = None, date_col: int |
         row_list = list(row_split)
         data_list.append(row_list)
     return data_list
+
+
+def read_bridge_params(line: str) -> dict[str, str | bool]:
+    params = split_10_char(f"{line:<90}")
+    return {
+        "calibration_coefficient": _to_float(params[0], 1.0),
+        "skew": _to_float(params[1]),
+        "bridge_width_dual": _to_float(params[2]),
+        "bridge_dist_dual": _to_float(params[3]),
+        "total_pier_width": _to_float(params[4]),
+        "orifice_flow": params[5] == "ORIFICE",
+        "orifice_lower_transition_dist": _to_float(params[6]),
+        "orifice_upper_transition_dist": _to_float(params[7]),
+        "orifice_discharge_coefficient": _to_float(params[8], 1.0),
+    }

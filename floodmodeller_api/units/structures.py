@@ -26,6 +26,7 @@ from .helpers import (
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
+    read_bridge_params,
     split_10_char,
     split_n_char,
 )
@@ -137,16 +138,10 @@ class BRIDGE(Unit):
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
-            # Read Params
-            params = split_10_char(f"{br_block[4]:<90}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            self.skew = _to_float(params[1])
-            self.bridge_width_dual = _to_float(params[2])
-            self.bridge_dist_dual = _to_float(params[3])
-            self.orifice_flow = params[5] == "ORIFICE"
-            self.orifice_lower_transition_dist = _to_float(params[6])
-            self.orifice_upper_transition_dist = _to_float(params[7])
-            self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
+            params = read_bridge_params(br_block[4])
+            params.pop("total_pier_width")
+            for key, val in params.items():
+                setattr(self, key, val)
 
             # Read cross section data
             self.section_nrows = int(split_10_char(br_block[5])[0])
@@ -180,17 +175,9 @@ class BRIDGE(Unit):
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
-            # Read Params
-            params = split_10_char(f"{br_block[4]:<90}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            self.skew = _to_float(params[1])
-            self.bridge_width_dual = _to_float(params[2])
-            self.bridge_dist_dual = _to_float(params[3])
-            self.total_pier_width = _to_float(params[4])
-            self.orifice_flow = params[5] == "ORIFICE"
-            self.orifice_lower_transition_dist = _to_float(params[6])
-            self.orifice_upper_transition_dist = _to_float(params[7])
-            self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
+            params = read_bridge_params(br_block[4])
+            for key, val in params.items():
+                setattr(self, key, val)
 
             self.abutment_type = split_10_char(br_block[5])[0]
             self.abutment_alignment = split_10_char(br_block[7])[0]
