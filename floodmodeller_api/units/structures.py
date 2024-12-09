@@ -124,8 +124,9 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block):  # noqa: C901, PLR0912, PLR0915
+    def _read(self, br_block: list[str]):  # noqa: C901, PLR0912, PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
+        self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
@@ -133,7 +134,6 @@ class BRIDGE(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = br_block[0].replace("BRIDGE", "").strip()
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
@@ -143,10 +143,7 @@ class BRIDGE(Unit):
             self.skew = _to_float(params[1])
             self.bridge_width_dual = _to_float(params[2])
             self.bridge_dist_dual = _to_float(params[3])
-            if params[5] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
+            self.orifice_flow = params[5] == "ORIFICE"
             self.orifice_lower_transition_dist = _to_float(params[6])
             self.orifice_upper_transition_dist = _to_float(params[7])
             self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
@@ -190,10 +187,7 @@ class BRIDGE(Unit):
             self.bridge_width_dual = _to_float(params[2])
             self.bridge_dist_dual = _to_float(params[3])
             self.total_pier_width = _to_float(params[4])
-            if params[5] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
+            self.orifice_flow = params[5] == "ORIFICE"
             self.orifice_lower_transition_dist = _to_float(params[6])
             self.orifice_upper_transition_dist = _to_float(params[7])
             self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
@@ -281,13 +275,11 @@ class BRIDGE(Unit):
             # Read Params
             params = split_10_char(f"{br_block[4]:<50}")
             self.calibration_coefficient = _to_float(params[0], 1.0)
-            if params[1] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
+            self.orifice_flow = params[1] == "ORIFICE"
+            self.orifice_discharge_coefficient = _to_float(params[2], 1.0)
             self.orifice_lower_transition_dist = _to_float(params[3])
             self.orifice_upper_transition_dist = _to_float(params[4])
-            self.orifice_discharge_coefficient = _to_float(params[2], 1.0)
+
             additional_params = split_10_char(f"{br_block[5]:<20}")
             self.pier_coefficient = _to_float(additional_params[0], 0.9)
             self.bridge_width = _to_float(additional_params[1])
@@ -342,7 +334,8 @@ class BRIDGE(Unit):
             )
 
         else:
-            # This else block is triggered for bridge subtypes which aren't yet supported, and just keeps the 'br_block' in it's raw state to write back.
+            # This else block is triggered for bridge subtypes which aren't yet supported
+            # and just keeps the 'br_block' in its raw state to write back.
             print(
                 f'This Bridge sub-type: "{self.subtype}" is currently unsupported for reading/editing',
             )
