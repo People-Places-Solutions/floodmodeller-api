@@ -173,3 +173,27 @@ def read_bridge_opening_data(lines: list[str]) -> pd.DataFrame:
         data_list,
         columns=["Start", "Finish", "Springing Level", "Soffit Level"],
     )
+
+
+def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<60}")
+        invert = _to_float(line_split[0])
+        soffit = _to_float(line_split[1])
+        area = _to_float(line_split[2])
+        cd_part = _to_float(line_split[3])
+        cd_full = _to_float(line_split[4])
+        dlinen = _to_float(line_split[5])
+        data_list.append([invert, soffit, area, cd_part, cd_full, dlinen])
+    return pd.DataFrame(
+        data_list,
+        columns=[
+            "Invert",
+            "Soffit",
+            "Section Area",
+            "Cd Part Full",
+            "Cd Full",
+            "Drowning Coefficient",
+        ],
+    )

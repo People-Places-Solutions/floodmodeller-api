@@ -27,6 +27,7 @@ from .helpers import (
     join_12_char_ljust,
     join_n_char_ljust,
     read_bridge_cross_sections,
+    read_bridge_culvert_data,
     read_bridge_opening_data,
     read_bridge_params,
     split_10_char,
@@ -183,33 +184,12 @@ class BRIDGE(Unit):
             end_row = start_row + self.opening_nrows
             self.opening_data = read_bridge_opening_data(br_block[start_row:end_row])
 
-            # Read flood relief culvert data
             self.culvert_nrows = int(
-                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0],
+                split_10_char(br_block[10 + self.section_nrows + self.opening_nrows])[0],
             )
-            data_list = []
-            start_row = 9 + self.section_nrows + self.opening_nrows + 2
+            start_row = 11 + self.section_nrows + self.opening_nrows
             end_row = start_row + self.culvert_nrows
-            for row in br_block[start_row:end_row]:
-                row_split = split_10_char(f"{row:<60}")
-                invert = _to_float(row_split[0])  # Invert
-                soffit = _to_float(row_split[1])  # Soffit
-                area = _to_float(row_split[2])  # Section Area
-                cd_part = _to_float(row_split[3])  # Cd Part Full
-                cd_full = _to_float(row_split[4])  # Cd Full
-                drown = _to_float(row_split[5])  # Drowning Coefficient
-                data_list.append([invert, soffit, area, cd_part, cd_full, drown])
-            self.culvert_data = pd.DataFrame(
-                data_list,
-                columns=[
-                    "Invert",
-                    "Soffit",
-                    "Section Area",
-                    "Cd Part Full",
-                    "Cd Full",
-                    "Drowning Coefficient",
-                ],
-            )
+            self.culvert_data = read_bridge_culvert_data(br_block[start_row:end_row])
 
         # Read Pierloss type bridge
         elif self.subtype == "PIERLOSS":
