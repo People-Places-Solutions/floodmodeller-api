@@ -23,6 +23,7 @@ from .helpers import (
     _to_float,
     _to_int,
     _to_str,
+    get_int,
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
@@ -147,12 +148,12 @@ class BRIDGE(Unit):
             for key, val in params.items():
                 setattr(self, key, val)
 
-            self.section_nrows = int(split_10_char(br_block[5])[0])
+            self.section_nrows = get_int(br_block[5])
             start_idx = 6
             end_idx = start_idx + self.section_nrows
             self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
 
-            self.opening_nrows = int(split_10_char(br_block[end_idx])[0])
+            self.opening_nrows = get_int(br_block[end_idx])
             start_idx = end_idx + 1
             self.opening_data = read_bridge_opening_data(br_block[start_idx:])
 
@@ -180,17 +181,17 @@ class BRIDGE(Unit):
                 self.specify_piers = False
                 self.soffit_shape = pier_info[1]
 
-            self.section_nrows = int(split_10_char(br_block[8])[0])
+            self.section_nrows = get_int(br_block[8])
             start_idx = 9
             end_idx = start_idx + self.section_nrows
             self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
 
-            self.opening_nrows = int(split_10_char(br_block[end_idx])[0])
+            self.opening_nrows = get_int(br_block[end_idx])
             start_idx = end_idx + 1
             end_idx = start_idx + self.opening_nrows
             self.opening_data = read_bridge_opening_data(br_block[start_idx:end_idx])
 
-            self.culvert_nrows = int(split_10_char(br_block[end_idx])[0])
+            self.culvert_nrows = get_int(br_block[end_idx])
             start_idx = end_idx + 1
             end_idx = start_idx + self.culvert_nrows
             self.culvert_data = read_bridge_culvert_data(br_block[start_idx:end_idx])
@@ -209,7 +210,7 @@ class BRIDGE(Unit):
             self.pier_coefficient = _to_float(additional_params[0], 0.9)
             self.bridge_width = _to_float(additional_params[1])
 
-            self.us_section_nrows = int(split_10_char(br_block[6])[0])
+            self.us_section_nrows = get_int(br_block[6])
             start_idx = 7
             end_idx = start_idx + self.us_section_nrows
             self.us_section_data = read_bridge_cross_sections(
@@ -217,7 +218,7 @@ class BRIDGE(Unit):
                 include_top_level=True,
             )
 
-            self.ds_section_nrows = int(split_10_char(br_block[end_idx])[0])
+            self.ds_section_nrows = get_int(br_block[end_idx])
             start_idx = end_idx + 1
             end_idx = start_idx + self.ds_section_nrows
             self.ds_section_data = read_bridge_cross_sections(
@@ -225,7 +226,7 @@ class BRIDGE(Unit):
                 include_top_level=True,
             )
 
-            self.pier_locs_nrows = int(split_10_char(br_block[end_idx])[0])
+            self.pier_locs_nrows = get_int(br_block[end_idx])
             self.pier_locs_data = read_bridge_pier_locations(br_block[start_idx:end_idx])
 
         else:

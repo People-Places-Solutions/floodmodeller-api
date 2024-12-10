@@ -212,3 +212,7 @@ def read_bridge_pier_locations(lines: list[str]) -> pd.DataFrame:
         data_list,
         columns=["Left X", "Left Top Level", "Right X", "Right Top Level"],
     )
+
+
+def get_int(line: str) -> int:
+    return int(split_10_char(line)[0])
