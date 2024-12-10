@@ -197,3 +197,18 @@ def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
             "Drowning Coefficient",
         ],
     )
+
+
+def read_bridge_pier_locations(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<40}")
+        l_x = _to_float(line_split[0])
+        l_top_level = _to_float(line_split[1])
+        r_x = _to_float(line_split[2])
+        r_top_level = _to_float(line_split[3])
+        data_list.append([l_x, l_top_level, r_x, r_top_level])
+    return pd.DataFrame(
+        data_list,
+        columns=["Left X", "Left Top Level", "Right X", "Right Top Level"],
+    )

@@ -30,6 +30,7 @@ from .helpers import (
     read_bridge_culvert_data,
     read_bridge_opening_data,
     read_bridge_params,
+    read_bridge_pier_locations,
     split_10_char,
     split_n_char,
 )
@@ -224,22 +225,8 @@ class BRIDGE(Unit):
                 include_top_level=True,
             )
 
-            # Read pier locations
             self.pier_locs_nrows = int(split_10_char(br_block[end_idx])[0])
-            start_idx = end_idx + 1
-            end_idx = start_idx + self.pier_locs_nrows
-            data_list = []
-            for row in br_block[start_idx:end_idx]:
-                row_split = split_10_char(f"{row:<40}")
-                l_x = _to_float(row_split[0])  # chainage
-                l_top_level = _to_float(row_split[1])  # Top Level (m)
-                r_x = _to_float(row_split[2])  # chainage
-                r_top_level = _to_float(row_split[3])  # Top Level (m)
-                data_list.append([l_x, l_top_level, r_x, r_top_level])
-            self.pier_locs_data = pd.DataFrame(
-                data_list,
-                columns=["Left X", "Left Top Level", "Right X", "Right Top Level"],
-            )
+            self.pier_locs_data = read_bridge_pier_locations(br_block[start_idx:end_idx])
 
         else:
             # This else block is triggered for bridge subtypes which aren't yet supported
