@@ -27,6 +27,7 @@ from .helpers import (
     join_12_char_ljust,
     join_n_char_ljust,
     read_bridge_cross_sections,
+    read_bridge_opening_data,
     read_bridge_params,
     split_10_char,
     split_n_char,
@@ -126,7 +127,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block: list[str]):  # noqa: C901, PLR0912, PLR0915
+    def _read(self, br_block: list[str]):  # noqa: PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
@@ -147,20 +148,8 @@ class BRIDGE(Unit):
             self.section_nrows = int(split_10_char(br_block[5])[0])
             self.section_data = read_bridge_cross_sections(br_block[6 : 6 + self.section_nrows])
 
-            # Read bridge opening data
             self.opening_nrows = int(split_10_char(br_block[6 + self.section_nrows])[0])
-            data_list = []
-            for row in br_block[6 + self.section_nrows + 1 :]:
-                row_split = split_10_char(f"{row:<40}")
-                start = _to_float(row_split[0])  # Start (m)
-                finish = _to_float(row_split[1])  # Finish (m)
-                spring = _to_float(row_split[2])  # Springing Level
-                soffit = _to_float(row_split[3])  # Soffit Level
-                data_list.append([start, finish, spring, soffit])
-            self.opening_data = pd.DataFrame(
-                data_list,
-                columns=["Start", "Finish", "Springing Level", "Soffit Level"],
-            )
+            self.opening_data = read_bridge_opening_data(br_block[6 + self.section_nrows + 1 :])
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
@@ -189,22 +178,10 @@ class BRIDGE(Unit):
             self.section_nrows = int(split_10_char(br_block[8])[0])
             self.section_data = read_bridge_cross_sections(br_block[9 : 9 + self.section_nrows])
 
-            # Read bridge opening data
             self.opening_nrows = int(split_10_char(br_block[9 + self.section_nrows])[0])
-            data_list = []
-            start_row = 9 + self.section_nrows + 1
+            start_row = 10 + self.section_nrows
             end_row = start_row + self.opening_nrows
-            for row in br_block[start_row:end_row]:
-                row_split = split_10_char(f"{row:<40}")
-                start = _to_float(row_split[0])  # Start (m)
-                finish = _to_float(row_split[1])  # Finish (m)
-                spring = _to_float(row_split[2])  # Springing Level
-                soffit = _to_float(row_split[3])  # Soffit Level
-                data_list.append([start, finish, spring, soffit])
-            self.opening_data = pd.DataFrame(
-                data_list,
-                columns=["Start", "Finish", "Springing Level", "Soffit Level"],
-            )
+            self.opening_data = read_bridge_opening_data(br_block[start_row:end_row])
 
             # Read flood relief culvert data
             self.culvert_nrows = int(

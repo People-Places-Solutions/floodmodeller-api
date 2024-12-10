@@ -158,3 +158,18 @@ def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False
     if include_top_level:
         columns.append("Top Level")
     return pd.DataFrame(data_list, columns=columns)
+
+
+def read_bridge_opening_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<40}")
+        start = _to_float(line_split[0])
+        finish = _to_float(line_split[1])
+        spring = _to_float(line_split[2])
+        soffit = _to_float(line_split[3])
+        data_list.append([start, finish, spring, soffit])
+    return pd.DataFrame(
+        data_list,
+        columns=["Start", "Finish", "Springing Level", "Soffit Level"],
+    )
