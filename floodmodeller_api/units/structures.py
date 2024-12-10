@@ -147,10 +147,13 @@ class BRIDGE(Unit):
                 setattr(self, key, val)
 
             self.section_nrows = int(split_10_char(br_block[5])[0])
-            self.section_data = read_bridge_cross_sections(br_block[6 : 6 + self.section_nrows])
+            start_idx = 6
+            end_idx = start_idx + self.section_nrows
+            self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
 
-            self.opening_nrows = int(split_10_char(br_block[6 + self.section_nrows])[0])
-            self.opening_data = read_bridge_opening_data(br_block[6 + self.section_nrows + 1 :])
+            self.opening_nrows = int(split_10_char(br_block[end_idx])[0])
+            start_idx = end_idx + 1
+            self.opening_data = read_bridge_opening_data(br_block[start_idx:])
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
@@ -177,19 +180,19 @@ class BRIDGE(Unit):
                 self.soffit_shape = pier_info[1]
 
             self.section_nrows = int(split_10_char(br_block[8])[0])
-            self.section_data = read_bridge_cross_sections(br_block[9 : 9 + self.section_nrows])
+            start_idx = 9
+            end_idx = start_idx + self.section_nrows
+            self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
 
-            self.opening_nrows = int(split_10_char(br_block[9 + self.section_nrows])[0])
-            start_row = 10 + self.section_nrows
-            end_row = start_row + self.opening_nrows
-            self.opening_data = read_bridge_opening_data(br_block[start_row:end_row])
+            self.opening_nrows = int(split_10_char(br_block[end_idx])[0])
+            start_idx = end_idx + 1
+            end_idx = start_idx + self.opening_nrows
+            self.opening_data = read_bridge_opening_data(br_block[start_idx:end_idx])
 
-            self.culvert_nrows = int(
-                split_10_char(br_block[10 + self.section_nrows + self.opening_nrows])[0],
-            )
-            start_row = 11 + self.section_nrows + self.opening_nrows
-            end_row = start_row + self.culvert_nrows
-            self.culvert_data = read_bridge_culvert_data(br_block[start_row:end_row])
+            self.culvert_nrows = int(split_10_char(br_block[end_idx])[0])
+            start_idx = end_idx + 1
+            end_idx = start_idx + self.culvert_nrows
+            self.culvert_data = read_bridge_culvert_data(br_block[start_idx:end_idx])
 
         # Read Pierloss type bridge
         elif self.subtype == "PIERLOSS":
@@ -206,23 +209,27 @@ class BRIDGE(Unit):
             self.bridge_width = _to_float(additional_params[1])
 
             self.us_section_nrows = int(split_10_char(br_block[6])[0])
+            start_idx = 7
+            end_idx = start_idx + self.us_section_nrows
             self.us_section_data = read_bridge_cross_sections(
-                br_block[7 : 7 + self.us_section_nrows],
+                br_block[start_idx:end_idx],
                 include_top_level=True,
             )
 
-            new_idx = 7 + self.us_section_nrows
-            self.ds_section_nrows = int(split_10_char(br_block[new_idx])[0])
+            self.ds_section_nrows = int(split_10_char(br_block[end_idx])[0])
+            start_idx = end_idx + 1
+            end_idx = start_idx + self.ds_section_nrows
             self.ds_section_data = read_bridge_cross_sections(
-                br_block[new_idx + 1 : new_idx + 1 + self.ds_section_nrows],
+                br_block[start_idx:end_idx],
                 include_top_level=True,
             )
 
             # Read pier locations
-            new_idx += 1 + self.ds_section_nrows
-            self.pier_locs_nrows = int(split_10_char(br_block[new_idx])[0])
+            self.pier_locs_nrows = int(split_10_char(br_block[end_idx])[0])
+            start_idx = end_idx + 1
+            end_idx = start_idx + self.pier_locs_nrows
             data_list = []
-            for row in br_block[new_idx + 1 : new_idx + 1 + self.pier_locs_nrows]:
+            for row in br_block[start_idx:end_idx]:
                 row_split = split_10_char(f"{row:<40}")
                 l_x = _to_float(row_split[0])  # chainage
                 l_top_level = _to_float(row_split[1])  # Top Level (m)
