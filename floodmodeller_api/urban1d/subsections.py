@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import Type, TypedDict
+from typing import TypedDict
 
 from ._base import UrbanSubsection
 from .conduits import CONDUITS
@@ -28,7 +28,7 @@ from .xsections import XSECTIONS
 
 SupportedSubsections = TypedDict(
     "SupportedSubsections",
-    {"group": str, "attribute": str, "class": Type[UrbanSubsection]},
+    {"group": str, "attribute": str, "class": type[UrbanSubsection]},
 )
 
 # Unit types and support
