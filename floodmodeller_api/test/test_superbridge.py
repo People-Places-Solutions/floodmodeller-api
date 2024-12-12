@@ -1,11 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pandas as pd
 import pytest
 
 from floodmodeller_api.units.superbridge import SUPERBRIDGE
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def test_superbridge():
-    path = "C:/Users/LEAKEYSC/Downloads/superbridge/US_vSP_NoBl_2O_Para.ied"
+
+def test_superbridge(test_workspace: Path):
+    path = test_workspace / "superbridge/US_vSP_NoBl_2O_Para.ied"
     with open(path) as file:
         lines = [line.rstrip("\n") for line in file]
     unit = SUPERBRIDGE(lines)

@@ -22,7 +22,7 @@ from typing import Any
 from . import units
 from ._base import FMFile
 from .units._base import Unit
-from .units._helpers import to_float, to_int
+from .units._helpers import join_10_char, split_10_char, to_float, to_int
 from .util import handle_exception
 from .validation.validation import _validate_unit
 
@@ -352,12 +352,12 @@ class DAT(FMFile):
         self.title = self._raw_data[0]
         self.general_parameters = {}
         line = f"{self._raw_data[2]:<70}"
-        params = units.helpers.split_10_char(line)
+        params = split_10_char(line)
         if params[6] == "":
             # Adds the measurements unit as DEFAULT if not specified
             params[6] = "DEFAULT"
         line = f"{self._raw_data[3]:<70}"
-        params.extend(units.helpers.split_10_char(line))
+        params.extend(split_10_char(line))
 
         self.general_parameters["Node Count"] = to_int(params[0], 0)
         self.general_parameters["Lower Froude"] = to_float(params[1], 0.75)
@@ -378,7 +378,7 @@ class DAT(FMFile):
     def _update_general_parameters(self) -> None:
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters["RAD File"]
-        general_params_1 = units.helpers.join_10_char(
+        general_params_1 = join_10_char(
             self.general_parameters["Node Count"],
             self.general_parameters["Lower Froude"],
             self.general_parameters["Upper Froude"],
@@ -389,7 +389,7 @@ class DAT(FMFile):
         general_params_1 += self.general_parameters["Units"]
         self._raw_data[2] = general_params_1
 
-        general_params_2 = units.helpers.join_10_char(
+        general_params_2 = join_10_char(
             self.general_parameters["Water Temperature"],
             self.general_parameters["Convergence Flow"],
             self.general_parameters["Convergence Head"],
