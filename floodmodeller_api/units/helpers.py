@@ -223,5 +223,26 @@ def read_spill_section_data(lines: list[str]) -> pd.DataFrame:
     return pd.DataFrame(data_list, columns=["X", "Y", "Easting", "Northing"])
 
 
+def read_superbridge_opening_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<20}")
+        x = _to_float(line_split[0])
+        z = _to_float(line_split[1])
+        data_list.append([x, z])
+    return pd.DataFrame(data_list, columns=["X", "Z"])
+
+
+def read_superbridge_block_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<30}")
+        percentage = _to_int(line_split[0])
+        time = _to_float(line_split[1])
+        datetime = _to_float(line_split[2])
+        data_list.append([percentage, time, datetime])
+    return pd.DataFrame(data_list, columns=["percentage", "time", "datetime"])
+
+
 def get_int(line: str) -> int:
     return int(split_10_char(line)[0])
