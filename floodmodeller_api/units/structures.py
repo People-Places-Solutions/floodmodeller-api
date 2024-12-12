@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import logging
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -342,9 +344,10 @@ class BRIDGE(Unit):
             )
 
         else:
-            # This else block is triggered for bridge subtypes which aren't yet supported, and just keeps the 'br_block' in it's raw state to write back.
-            print(
-                f'This Bridge sub-type: "{self.subtype}" is currently unsupported for reading/editing',
+            # This else block is triggered for bridge subtypes which aren't yet supported, and just keeps the 'br_block' in its raw state to write back.
+            logging.warning(
+                "This Bridge sub-type: '%s' is currently unsupported for reading/editing",
+                self.subtype,
             )
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
@@ -661,8 +664,9 @@ class SLUICE(Unit):
 
         else:
             self._raw_extra_lines = block[6:]
-            print(
-                f"Note: Sluice control using method: {self.control_method} is not currently supported.",
+            logging.warning(
+                "Note: Sluice control using method: '%s' is not currently supported.",
+                self.control_method,
             )
 
     def _write(self):

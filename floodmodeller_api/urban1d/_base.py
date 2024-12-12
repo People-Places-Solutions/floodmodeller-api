@@ -18,6 +18,8 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM 1D units Units """
 
+import logging
+
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
 
@@ -66,9 +68,9 @@ class UrbanUnit(Jsonable):
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
@@ -166,9 +168,9 @@ class UrbanSubsection(Jsonable):
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
