@@ -200,12 +200,12 @@ class BRIDGE(Unit):
         # Read Pierloss type bridge
         elif self.subtype == "PIERLOSS":
             # Read Params
-            params = split_10_char(f"{br_block[4]:<50}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            self.orifice_flow = params[1] == "ORIFICE"
-            self.orifice_discharge_coefficient = _to_float(params[2], 1.0)
-            self.orifice_lower_transition_dist = _to_float(params[3])
-            self.orifice_upper_transition_dist = _to_float(params[4])
+            pierloss_params = split_10_char(f"{br_block[4]:<50}")
+            self.calibration_coefficient = _to_float(pierloss_params[0], 1.0)
+            self.orifice_flow = pierloss_params[1] == "ORIFICE"
+            self.orifice_discharge_coefficient = _to_float(pierloss_params[2], 1.0)
+            self.orifice_lower_transition_dist = _to_float(pierloss_params[3])
+            self.orifice_upper_transition_dist = _to_float(pierloss_params[4])
 
             additional_params = split_10_char(f"{br_block[5]:<20}")
             self.pier_coefficient = _to_float(additional_params[0], 0.9)
