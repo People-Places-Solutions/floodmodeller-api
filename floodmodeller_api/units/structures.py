@@ -32,6 +32,7 @@ from .helpers import (
     read_bridge_opening_data,
     read_bridge_params,
     read_bridge_pier_locations,
+    read_spill_section_data,
     split_10_char,
     split_n_char,
 )
@@ -835,18 +836,7 @@ class SPILL(Unit):
         self.modular_limit = _to_float(params[1], 0.9)
 
         # Spill section data
-        data_list = []
-        for row in block[4:]:
-            row_split = split_10_char(f"{row:<40}")
-            x = _to_float(row_split[0])  # chainage
-            y = _to_float(row_split[1])  # elevation
-            e = _to_float(row_split[2])  # easting
-            n = _to_float(row_split[3])  # northing
-
-            data_list.append([x, y, e, n])
-
-        spill_data = pd.DataFrame(data_list, columns=["X", "Y", "Easting", "Northing"])
-        self.data = spill_data
+        self.data = read_spill_section_data(block[4:])
 
     def _write(self):
         """Function to write a valid SPILL block"""

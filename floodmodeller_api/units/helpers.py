@@ -169,10 +169,7 @@ def read_bridge_opening_data(lines: list[str]) -> pd.DataFrame:
         spring = _to_float(line_split[2])
         soffit = _to_float(line_split[3])
         data_list.append([start, finish, spring, soffit])
-    return pd.DataFrame(
-        data_list,
-        columns=["Start", "Finish", "Springing Level", "Soffit Level"],
-    )
+    return pd.DataFrame(data_list, columns=["Start", "Finish", "Springing Level", "Soffit Level"])
 
 
 def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
@@ -212,6 +209,18 @@ def read_bridge_pier_locations(lines: list[str]) -> pd.DataFrame:
         data_list,
         columns=["Left X", "Left Top Level", "Right X", "Right Top Level"],
     )
+
+
+def read_spill_section_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<40}")
+        chainage = _to_float(line_split[0])
+        elevation = _to_float(line_split[1])
+        easting = _to_float(line_split[2])
+        northing = _to_float(line_split[3])
+        data_list.append([chainage, elevation, easting, northing])
+    return pd.DataFrame(data_list, columns=["X", "Y", "Easting", "Northing"])
 
 
 def get_int(line: str) -> int:
