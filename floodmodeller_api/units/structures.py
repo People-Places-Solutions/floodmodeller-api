@@ -19,10 +19,7 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .helpers import (
-    _to_float,
-    _to_int,
-    _to_str,
+from ._helpers import (
     get_int,
     join_10_char,
     join_12_char_ljust,
@@ -35,6 +32,9 @@ from .helpers import (
     read_spill_section_data,
     split_10_char,
     split_n_char,
+    to_float,
+    to_int,
+    to_str,
 )
 
 
@@ -173,7 +173,7 @@ class BRIDGE(Unit):
                 self.npiers = int(pier_info[0])
                 if pier_info[1] == "COEF":
                     self.pier_use_calibration_coeff = True
-                    self.pier_calibration_coeff = _to_float(pier_info[3])
+                    self.pier_calibration_coeff = to_float(pier_info[3])
                 else:
                     self.pier_use_calibration_coeff = False
                     self.pier_shape = pier_info[1]
@@ -201,15 +201,15 @@ class BRIDGE(Unit):
         elif self.subtype == "PIERLOSS":
             # Read Params
             pierloss_params = split_10_char(f"{br_block[4]:<50}")
-            self.calibration_coefficient = _to_float(pierloss_params[0], 1.0)
+            self.calibration_coefficient = to_float(pierloss_params[0], 1.0)
             self.orifice_flow = pierloss_params[1] == "ORIFICE"
-            self.orifice_discharge_coefficient = _to_float(pierloss_params[2], 1.0)
-            self.orifice_lower_transition_dist = _to_float(pierloss_params[3])
-            self.orifice_upper_transition_dist = _to_float(pierloss_params[4])
+            self.orifice_discharge_coefficient = to_float(pierloss_params[2], 1.0)
+            self.orifice_lower_transition_dist = to_float(pierloss_params[3])
+            self.orifice_upper_transition_dist = to_float(pierloss_params[4])
 
             additional_params = split_10_char(f"{br_block[5]:<20}")
-            self.pier_coefficient = _to_float(additional_params[0], 0.9)
-            self.bridge_width = _to_float(additional_params[1])
+            self.pier_coefficient = to_float(additional_params[0], 0.9)
+            self.bridge_width = to_float(additional_params[1])
 
             self.us_section_nrows = get_int(br_block[6])
             start_idx = 7
@@ -495,30 +495,30 @@ class SLUICE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<80}")
-        self.weir_flow_coefficient = _to_float(params1[0], 1.0)
-        self.under_gate_flow = _to_float(params1[1], 1.0)
-        self.weir_breadth = _to_float(params1[2])
-        self.crest_elevation = _to_float(params1[3])
-        self.gate_height_or_chord = _to_float(params1[4])
-        self.weir_length = _to_float(params1[5])
+        self.weir_flow_coefficient = to_float(params1[0], 1.0)
+        self.under_gate_flow = to_float(params1[1], 1.0)
+        self.weir_breadth = to_float(params1[2])
+        self.crest_elevation = to_float(params1[3])
+        self.gate_height_or_chord = to_float(params1[4])
+        self.weir_length = to_float(params1[5])
         if self.subtype == "RADIAL":
             self.use_degrees = params1[6] == "DEGREES"
             self.allow_free_flow_under = params1[7] == "FREESLUICE"
 
         # Second parameter line
         params2 = split_10_char(f"{block[4]:<70}")
-        self.us_weir_height = _to_float(params2[0])
-        self.ds_weir_height = _to_float(params2[1])
-        self.bias_factor = _to_float(params2[2], 1.0)
-        self.over_gate_flow = _to_float(params2[3], 1.0)
+        self.us_weir_height = to_float(params2[0])
+        self.ds_weir_height = to_float(params2[1])
+        self.bias_factor = to_float(params2[2], 1.0)
+        self.over_gate_flow = to_float(params2[3], 1.0)
         if self.subtype == "RADIAL":
-            self.pivot_height = _to_float(params2[4], 0.7)
-            self.gate_radius = _to_float(params2[5], 0.7)
+            self.pivot_height = to_float(params2[4], 0.7)
+            self.gate_radius = to_float(params2[5], 0.7)
         else:
             self.modular_limits = {
-                "weir_flow": _to_float(params2[4]),
-                "under_gate_flow": _to_float(params2[5], 1.0),
-                "over_gate_flow": _to_float(params2[6], 1.0),
+                "weir_flow": to_float(params2[4]),
+                "under_gate_flow": to_float(params2[5], 1.0),
+                "over_gate_flow": to_float(params2[6], 1.0),
             }
 
         # Third parameter line
@@ -526,15 +526,15 @@ class SLUICE(Unit):
         self.ngates = int(params3[0])  # number of gates
         if self.subtype == "RADIAL":
             self.modular_limits = {
-                "weir_flow": _to_float(params3[1]),
-                "under_gate_flow": _to_float(params3[2], 1.0),
-                "over_gate_flow": _to_float(params3[3], 1.0),
+                "weir_flow": to_float(params3[1]),
+                "under_gate_flow": to_float(params3[2], 1.0),
+                "over_gate_flow": to_float(params3[3], 1.0),
             }
-            self.timeunit = _to_str(params3[4], "SECONDS", check_float=True)
-            self.extendmethod = _to_str(params3[5], "EXTEND")
+            self.timeunit = to_str(params3[4], "SECONDS", check_float=True)
+            self.extendmethod = to_str(params3[5], "EXTEND")
         else:
-            self.timeunit = _to_str(params3[1], "SECONDS", check_float=True)
-            self.extendmethod = _to_str(params3[2], "EXTEND")
+            self.timeunit = to_str(params3[1], "SECONDS", check_float=True)
+            self.extendmethod = to_str(params3[2], "EXTEND")
 
         # Control lines
         self.control_method = block[6].split()[0].upper()
@@ -653,8 +653,8 @@ class SLUICE(Unit):
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
                     row_split = split_10_char(f"{row:<20}")
-                    x = _to_float(row_split[0])  # time
-                    y = _to_float(row_split[1])  # opening
+                    x = to_float(row_split[0])  # time
+                    y = to_float(row_split[1])  # opening
                     data_list.append([x, y])
 
                 gate_data = pd.DataFrame(data_list, columns=["Time", "Opening"])
@@ -675,9 +675,9 @@ class SLUICE(Unit):
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
                     row_split = split_10_char(f"{row:<30}")
-                    x = _to_float(row_split[0])  # time
+                    x = to_float(row_split[0])  # time
                     y = row_split[1]  # mode
-                    z = _to_float(row_split[2])  # opening
+                    z = to_float(row_split[2])  # opening
                     data_list.append([x, y, z])
 
                 gate_data = pd.DataFrame(data_list, columns=["Time", "Mode", "Opening"])
@@ -731,18 +731,18 @@ class ORIFICE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
-        self.invert = _to_float(params1[0])
-        self.soffit = _to_float(params1[1])
-        self.bore_area = _to_float(params1[2])
-        self.upstream_sill = _to_float(params1[3])
-        self.downstream_sill = _to_float(params1[4])
-        self.shape = _to_str(params1[5], "RECTANGLE")
+        self.invert = to_float(params1[0])
+        self.soffit = to_float(params1[1])
+        self.bore_area = to_float(params1[2])
+        self.upstream_sill = to_float(params1[3])
+        self.downstream_sill = to_float(params1[4])
+        self.shape = to_str(params1[5], "RECTANGLE")
 
         # Second parameter line
         params2 = split_10_char(block[4])
-        self.weir_flow = _to_float(params2[0], 1.0)
-        self.surcharged_flow = _to_float(params2[1], 1.0)
-        self.modular_limit = _to_float(params2[2], 0.7)
+        self.weir_flow = to_float(params2[0], 1.0)
+        self.surcharged_flow = to_float(params2[1], 1.0)
+        self.modular_limit = to_float(params2[2], 0.7)
 
     def _write(self):
         """Function to write a valid ORIFICE block"""
@@ -832,8 +832,8 @@ class SPILL(Unit):
 
         # First parameter line
         params = split_10_char(block[2])
-        self.weir_coefficient = _to_float(params[0], 1.2)
-        self.modular_limit = _to_float(params[1], 0.9)
+        self.weir_coefficient = to_float(params[0], 1.2)
+        self.modular_limit = to_float(params[1], 0.9)
 
         # Spill section data
         self.data = read_spill_section_data(block[4:])
@@ -913,16 +913,16 @@ class RNWEIR(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<50}")
-        self.velocity_coefficient = _to_float(params1[0])
-        self.weir_length = _to_float(params1[1])
-        self.weir_breadth = _to_float(params1[2])
-        self.weir_elevation = _to_float(params1[3])
-        self.modular_limit = _to_float(params1[4])
+        self.velocity_coefficient = to_float(params1[0])
+        self.weir_length = to_float(params1[1])
+        self.weir_breadth = to_float(params1[2])
+        self.weir_elevation = to_float(params1[3])
+        self.modular_limit = to_float(params1[4])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid RNWEIR block"""
@@ -1013,15 +1013,15 @@ class WEIR(Unit):
         self.comment = block[0].replace("WEIR", "").strip()
 
         # Exponent
-        self.exponent = _to_float(block[2].strip())
+        self.exponent = to_float(block[2].strip())
 
         # Parameters line
         params = split_10_char(f"{block[3]:<50}")
-        self.discharge_coefficient = _to_float(params[0])
-        self.velocity_coefficient = _to_float(params[1])
-        self.weir_breadth = _to_float(params[2])
-        self.weir_elevation = _to_float(params[3])
-        self.modular_limit = _to_float(params[4])
+        self.discharge_coefficient = to_float(params[0])
+        self.velocity_coefficient = to_float(params[1])
+        self.weir_breadth = to_float(params[2])
+        self.weir_elevation = to_float(params[3])
+        self.modular_limit = to_float(params[4])
 
     def _write(self):
         """Function to write a valid WEIR block"""
@@ -1108,15 +1108,15 @@ class CRUMP(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
-        self.calibration_coefficient = _to_float(params1[0])
-        self.weir_breadth = _to_float(params1[1])
-        self.weir_elevation = _to_float(params1[2])
-        self.modular_limit = _to_float(params1[3])
+        self.calibration_coefficient = to_float(params1[0])
+        self.weir_breadth = to_float(params1[1])
+        self.weir_elevation = to_float(params1[2])
+        self.modular_limit = to_float(params1[3])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid CRUMP block"""
@@ -1217,20 +1217,20 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<90}")
-        self.calibration_coefficient = _to_float(params1[0])
-        self.weir_breadth = _to_float(params1[1])
-        self.weir_elevation = _to_float(params1[2])
-        self.modular_limit = _to_float(params1[3])
-        self.v_slope = _to_float(params1[4])
-        self.side_slope = _to_float(params1[5])
-        self.ds_face_slope = _to_float(params1[6])
-        self.coriolis_coefficient = _to_float(params1[7])
-        self.bank_top_elevation = _to_float(params1[8])
+        self.calibration_coefficient = to_float(params1[0])
+        self.weir_breadth = to_float(params1[1])
+        self.weir_elevation = to_float(params1[2])
+        self.modular_limit = to_float(params1[3])
+        self.v_slope = to_float(params1[4])
+        self.side_slope = to_float(params1[5])
+        self.ds_face_slope = to_float(params1[6])
+        self.coriolis_coefficient = to_float(params1[7])
+        self.bank_top_elevation = to_float(params1[8])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid FLAT-V WEIR block"""
@@ -1349,14 +1349,14 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
             self.lat4 = lateral_labels[3]
 
             # Number of pairs of data
-            self.num_pairs = _to_int(block[3])
+            self.num_pairs = to_int(block[3])
 
             # Reservoir section data
             data_list = []
             for row in block[4 : len(block) - 1]:
                 row_split = split_10_char(f"{row:<20}")
-                elevation = _to_float(row_split[0])  # elevation
-                plan_area = _to_float(row_split[1])  # plan area
+                elevation = to_float(row_split[0])  # elevation
+                plan_area = to_float(row_split[1])  # plan area
                 data_list.append([elevation, plan_area])
             reservoir_data = pd.DataFrame(data_list, columns=["Elevation", "Plan Area"])
             self.data = reservoir_data
@@ -1366,19 +1366,19 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
                 f"{block[len(block)-1]:<{3*self._label_len}}",
                 self._label_len,
             )
-            self.easting = _to_float(coordinate_data[0])
-            self.northing = _to_float(coordinate_data[1])
-            self.runoff_factor = _to_float(coordinate_data[2])
+            self.easting = to_float(coordinate_data[0])
+            self.northing = to_float(coordinate_data[1])
+            self.runoff_factor = to_float(coordinate_data[2])
         else:  # Option 2 (runs if comment != "#revision#1")
             # Number of pairs of data
-            self.num_pairs = _to_int(block[2])
+            self.num_pairs = to_int(block[2])
 
             # Reservoir section data
             data_list = []
             for row in block[3:]:
                 row_split = split_10_char(f"{row:<20}")
-                elevation = _to_float(row_split[0])  # elevation
-                plan_area = _to_float(row_split[1])  # plan area
+                elevation = to_float(row_split[0])  # elevation
+                plan_area = to_float(row_split[1])  # plan area
                 data_list.append([elevation, plan_area])
             reservoir_data = pd.DataFrame(data_list, columns=["Elevation", "Plan Area"])
             self.data = reservoir_data
@@ -1496,18 +1496,18 @@ class OUTFALL(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
-        self.invert = _to_float(params1[0])
-        self.soffit = _to_float(params1[1])
-        self.bore_area = _to_float(params1[2])
-        self.upstream_sill = _to_float(params1[3])
-        self.downstream_sill = _to_float(params1[4])
-        self.shape = _to_str(params1[5], "RECTANGLE")
+        self.invert = to_float(params1[0])
+        self.soffit = to_float(params1[1])
+        self.bore_area = to_float(params1[2])
+        self.upstream_sill = to_float(params1[3])
+        self.downstream_sill = to_float(params1[4])
+        self.shape = to_str(params1[5], "RECTANGLE")
 
         # Second parameter line
         params2 = split_10_char(block[4])
-        self.weir_flow = _to_float(params2[0], 1.0)
-        self.surcharged_flow = _to_float(params2[1], 1.0)
-        self.modular_limit = _to_float(params2[2], 0.7)
+        self.weir_flow = to_float(params2[0], 1.0)
+        self.surcharged_flow = to_float(params2[1], 1.0)
+        self.modular_limit = to_float(params2[2], 0.7)
 
     def _write(self):
         """Function to write a valid OUTFALL block"""

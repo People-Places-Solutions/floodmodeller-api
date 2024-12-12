@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, _to_str, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float, to_str
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -48,7 +48,7 @@ class OUTFALL(UrbanUnit):
         # TODO: considering raising an exception if any of the required parameters are missing
 
         self.name = str(unit_data[0])
-        self.elevation = _to_float(unit_data[1], 0.0)
+        self.elevation = to_float(unit_data[1], 0.0)
         self.type = str(unit_data[2])
 
         if self.type in ("FREE", "NORMAL"):
@@ -56,8 +56,8 @@ class OUTFALL(UrbanUnit):
             while len(unit_data) < self.MIN_LENGTH_FREE_NORMAL:
                 unit_data.append("")
 
-            self.gated = _to_str(unit_data[3], "NO")
-            self.routeto = _to_str(unit_data[4], "")
+            self.gated = to_str(unit_data[3], "NO")
+            self.routeto = to_str(unit_data[4], "")
 
         elif self.type in ("FIXED", "NORMAL", "TIMESERIES"):
             # Extend length of unit_data to account for missing optional arguments.
@@ -65,16 +65,16 @@ class OUTFALL(UrbanUnit):
                 unit_data.append("")
 
             if self.type == "FIXED":
-                self.stage = _to_float(unit_data[3], 0.0)
+                self.stage = to_float(unit_data[3], 0.0)
 
             elif self.type == "NORMAL":
-                self.tcurve = _to_str(unit_data[3], "")
+                self.tcurve = to_str(unit_data[3], "")
 
             elif self.type == "TIMESERIES":
-                self.tseries = _to_str(unit_data[3], "")
+                self.tseries = to_str(unit_data[3], "")
 
-            self.gated = _to_str(unit_data[4], "NO")
-            self.routeto = _to_str(unit_data[5], "")
+            self.gated = to_str(unit_data[4], "NO")
+            self.routeto = to_str(unit_data[5], "")
 
     def _write(self):
         """Function to write a valid OUTFALL line"""

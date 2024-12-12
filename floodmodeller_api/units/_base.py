@@ -22,7 +22,7 @@ import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
+from ._helpers import join_10_char, join_n_char_ljust, split_10_char, to_float, to_str
 
 
 class Unit(Jsonable):
@@ -114,16 +114,16 @@ class Unit(Jsonable):
     def _read_rules(self, block):
         rule_params = split_10_char(block[self._last_gate_row + 1])
         self.nrules = int(rule_params[0])
-        self.rule_sample_time = _to_float(rule_params[1])
-        self.timeunit = _to_str(rule_params[2], "SECONDS", check_float=False)
-        self.extendmethod = _to_str(rule_params[3], "EXTEND")
+        self.rule_sample_time = to_float(rule_params[1])
+        self.timeunit = to_str(rule_params[2], "SECONDS", check_float=False)
+        self.extendmethod = to_str(rule_params[3], "EXTEND")
         self.rules = self._get_logical_rules(self.nrules, block, self._last_gate_row + 2)
         # Get time rule data set
         nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
         data_list = []
         for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + nrows]:
             row_split = split_10_char(f"{row:<20}")
-            x = _to_float(row_split[0])  # time
+            x = to_float(row_split[0])  # time
             y = row[10:].strip()  # operating rules
             data_list.append([x, y])
         self._last_time_row = self._last_rule_row + nrows + 1
@@ -139,14 +139,14 @@ class Unit(Jsonable):
             self.has_varrules = True
             varrule_params = split_10_char(block[self._last_time_row + 2])
             self.nvarrules = int(varrule_params[0])
-            self.varrule_sample_time = _to_float(rule_params[1])
+            self.varrule_sample_time = to_float(rule_params[1])
             self.varrules = self._get_logical_rules(self.nvarrules, block, self._last_time_row + 3)
             # Get time rule data set
             var_nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
             data_list = []
             for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows]:
                 row_split = split_10_char(f"{row:<20}")
-                x = _to_float(row_split[0])  # time
+                x = to_float(row_split[0])  # time
                 y = row[10:].strip()  # operating rules
                 data_list.append([x, y])
 

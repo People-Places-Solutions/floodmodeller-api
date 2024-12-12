@@ -75,21 +75,21 @@ def join_n_char_ljust(n, *itms, dp=3):
     return string
 
 
-def _to_float(itm, default=0.0):
+def to_float(itm, default=0.0):
     try:
         return float(itm)
     except ValueError:
         return default
 
 
-def _to_int(itm, default=0):
+def to_int(itm, default=0):
     try:
         return int(itm)
     except ValueError:
         return default
 
 
-def _to_str(itm, default, check_float=False):
+def to_str(itm, default, check_float=False):
     if check_float:
         try:
             return float(itm)
@@ -100,7 +100,7 @@ def _to_str(itm, default, check_float=False):
     return itm
 
 
-def _to_data_list(block: list[str], num_cols: int | None = None, date_col: int | None = None):
+def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | None = None):
     if num_cols is not None:
         num_cols += 1 if date_col is not None else 0
     data_list = []
@@ -109,13 +109,13 @@ def _to_data_list(block: list[str], num_cols: int | None = None, date_col: int |
         if date_col is not None:
             date_time = " ".join(row_split[date_col : date_col + 2])
             row_split = [
-                _to_float(itm)
+                to_float(itm)
                 for idx, itm in enumerate(row_split)
                 if idx not in (date_col, date_col + 1)
             ]
             row_split.insert(date_col, date_time)
         else:
-            row_split = [_to_float(itm) for itm in row_split]
+            row_split = [to_float(itm) for itm in row_split]
 
         row_list = list(row_split)
         data_list.append(row_list)
@@ -125,15 +125,15 @@ def _to_data_list(block: list[str], num_cols: int | None = None, date_col: int |
 def read_bridge_params(line: str) -> dict[str, str | bool]:
     params = split_10_char(f"{line:<90}")
     return {
-        "calibration_coefficient": _to_float(params[0], 1.0),
-        "skew": _to_float(params[1]),
-        "bridge_width_dual": _to_float(params[2]),
-        "bridge_dist_dual": _to_float(params[3]),
-        "total_pier_width": _to_float(params[4]),
+        "calibration_coefficient": to_float(params[0], 1.0),
+        "skew": to_float(params[1]),
+        "bridge_width_dual": to_float(params[2]),
+        "bridge_dist_dual": to_float(params[3]),
+        "total_pier_width": to_float(params[4]),
         "orifice_flow": params[5] == "ORIFICE",
-        "orifice_lower_transition_dist": _to_float(params[6]),
-        "orifice_upper_transition_dist": _to_float(params[7]),
-        "orifice_discharge_coefficient": _to_float(params[8], 1.0),
+        "orifice_lower_transition_dist": to_float(params[6]),
+        "orifice_upper_transition_dist": to_float(params[7]),
+        "orifice_discharge_coefficient": to_float(params[8], 1.0),
     }
 
 
@@ -143,9 +143,9 @@ def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False
 
         line_split = split_10_char(f"{line:<50}")
         df_row = [
-            _to_float(line_split[0]),
-            _to_float(line_split[1]),
-            _to_float(line_split[2]),
+            to_float(line_split[0]),
+            to_float(line_split[1]),
+            to_float(line_split[2]),
             line_split[4],
         ]
 
@@ -164,10 +164,10 @@ def read_bridge_opening_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<40}")
-        start = _to_float(line_split[0])
-        finish = _to_float(line_split[1])
-        spring = _to_float(line_split[2])
-        soffit = _to_float(line_split[3])
+        start = to_float(line_split[0])
+        finish = to_float(line_split[1])
+        spring = to_float(line_split[2])
+        soffit = to_float(line_split[3])
         data_list.append([start, finish, spring, soffit])
     return pd.DataFrame(data_list, columns=["Start", "Finish", "Springing Level", "Soffit Level"])
 
@@ -176,12 +176,12 @@ def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<60}")
-        invert = _to_float(line_split[0])
-        soffit = _to_float(line_split[1])
-        area = _to_float(line_split[2])
-        cd_part = _to_float(line_split[3])
-        cd_full = _to_float(line_split[4])
-        dlinen = _to_float(line_split[5])
+        invert = to_float(line_split[0])
+        soffit = to_float(line_split[1])
+        area = to_float(line_split[2])
+        cd_part = to_float(line_split[3])
+        cd_full = to_float(line_split[4])
+        dlinen = to_float(line_split[5])
         data_list.append([invert, soffit, area, cd_part, cd_full, dlinen])
     return pd.DataFrame(
         data_list,
@@ -200,10 +200,10 @@ def read_bridge_pier_locations(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<40}")
-        l_x = _to_float(line_split[0])
-        l_top_level = _to_float(line_split[1])
-        r_x = _to_float(line_split[2])
-        r_top_level = _to_float(line_split[3])
+        l_x = to_float(line_split[0])
+        l_top_level = to_float(line_split[1])
+        r_x = to_float(line_split[2])
+        r_top_level = to_float(line_split[3])
         data_list.append([l_x, l_top_level, r_x, r_top_level])
     return pd.DataFrame(
         data_list,
@@ -215,10 +215,10 @@ def read_spill_section_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<40}")
-        chainage = _to_float(line_split[0])
-        elevation = _to_float(line_split[1])
-        easting = _to_float(line_split[2])
-        northing = _to_float(line_split[3])
+        chainage = to_float(line_split[0])
+        elevation = to_float(line_split[1])
+        easting = to_float(line_split[2])
+        northing = to_float(line_split[3])
         data_list.append([chainage, elevation, easting, northing])
     return pd.DataFrame(data_list, columns=["X", "Y", "Easting", "Northing"])
 
@@ -227,8 +227,8 @@ def read_superbridge_opening_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<20}")
-        x = _to_float(line_split[0])
-        z = _to_float(line_split[1])
+        x = to_float(line_split[0])
+        z = to_float(line_split[1])
         data_list.append([x, z])
     return pd.DataFrame(data_list, columns=["X", "Z"])
 
@@ -237,9 +237,9 @@ def read_superbridge_block_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<30}")
-        percentage = _to_int(line_split[0])
-        time = _to_float(line_split[1])
-        datetime = _to_float(line_split[2])
+        percentage = to_int(line_split[0])
+        time = to_float(line_split[1])
+        datetime = to_float(line_split[2])
         data_list.append([percentage, time, datetime])
     return pd.DataFrame(data_list, columns=["percentage", "time", "datetime"])
 

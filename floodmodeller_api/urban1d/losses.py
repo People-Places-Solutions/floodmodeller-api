@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, _to_str, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float, to_str
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -50,12 +50,12 @@ class LOSS(UrbanUnit):
         while len(unit_data) < self.MIN_LENGTH:
             unit_data.append("")
 
-        self.name = _to_str(unit_data[0], "")
-        self.kentry = _to_float(unit_data[1], 0)
-        self.kexit = _to_float(unit_data[2], 0)
-        self.kavg = _to_float(unit_data[3], 0)
-        self.flap = _to_str(unit_data[4], "NO")
-        self.seepage = _to_float(unit_data[5], 0)
+        self.name = to_str(unit_data[0], "")
+        self.kentry = to_float(unit_data[1], 0)
+        self.kexit = to_float(unit_data[2], 0)
+        self.kavg = to_float(unit_data[3], 0)
+        self.flap = to_str(unit_data[4], "NO")
+        self.seepage = to_float(unit_data[5], 0)
 
     def _write(self):
         """Function to write a valid LOSS line"""
