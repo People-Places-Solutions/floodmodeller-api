@@ -24,15 +24,15 @@ import pandas as pd
 NOTATION_THRESHOLD = 10
 
 
-def split_10_char(line):
-    return [line[i : i + 10].strip() for i in range(0, len(line), 10)]
+def split_10_char(line: str) -> list[str]:
+    return split_n_char(line, 10)
 
 
-def split_12_char(line):
-    return [line[i : i + 12].strip() for i in range(0, len(line), 12)]
+def split_12_char(line: str) -> list[str]:
+    return split_n_char(line, 12)
 
 
-def split_n_char(line, n):
+def split_n_char(line: str, n: int) -> list[str]:
     return [line[i : i + n].strip() for i in range(0, len(line), n)]
 
 
@@ -52,16 +52,7 @@ def join_10_char(*itms, dp=3):
 
 def join_12_char_ljust(*itms, dp=3):
     """Joins a set of values with a 12 character buffer and left-justified"""
-    string = ""
-    for itm in itms:
-        if isinstance(itm, float):
-            # save to 3 dp
-            # Use scientific notation if number greater than 10 characters
-            itm = f"{itm:.{dp}e}" if len(f"{itm:.{dp}f}") > NOTATION_THRESHOLD else f"{itm:.{dp}f}"
-        itm = str(itm)
-        itm = itm[:12]
-        string += f"{itm:<12}"
-    return string
+    return join_n_char_ljust(12, *itms, dp)
 
 
 def join_n_char_ljust(n, *itms, dp=3):
