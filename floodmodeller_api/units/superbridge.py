@@ -23,7 +23,7 @@ class SUPERBRIDGE(Unit):
     orifice_upper_transition_dist: float
     orifice_discharge_coefficient: float
 
-    def _read(self, br_block: list[str]):
+    def _read(self, br_block: list[str]) -> None:
         self.comment = br_block[0].replace(self._unit, "").strip()
 
         labels = h.split_n_char(f"{br_block[1]:<{4*self._label_len}}", self._label_len)

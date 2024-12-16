@@ -20,7 +20,6 @@ from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
 from ._helpers import (
-    get_int,
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
@@ -28,6 +27,7 @@ from ._helpers import (
     read_bridge_culvert_data,
     read_bridge_opening_data,
     read_bridge_pier_locations,
+    read_dataframe_from_lines,
     read_spill_section_data,
     set_bridge_params,
     split_10_char,
@@ -131,7 +131,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block: list[str]):  # noqa: PLR0915
+    def _read(self, br_block: list[str]):
         """Function to read a given BRIDGE block and store data as class attributes"""
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
@@ -146,14 +146,17 @@ class BRIDGE(Unit):
         if self.subtype == "ARCH":
             set_bridge_params(self, br_block[4], include_pier=False)
 
-            self.section_nrows = get_int(br_block[5])
-            start_idx = 6
-            end_idx = start_idx + self.section_nrows
-            self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
+            self.section_nrows, end_idx, self.section_data = read_dataframe_from_lines(
+                br_block,
+                5,
+                read_bridge_cross_sections,
+            )
 
-            self.opening_nrows = get_int(br_block[end_idx])
-            start_idx = end_idx + 1
-            self.opening_data = read_bridge_opening_data(br_block[start_idx:])
+            self.opening_nrows, end_idx, self.opening_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_opening_data,
+            )
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
@@ -177,20 +180,23 @@ class BRIDGE(Unit):
                 self.specify_piers = False
                 self.soffit_shape = pier_info[1]
 
-            self.section_nrows = get_int(br_block[8])
-            start_idx = 9
-            end_idx = start_idx + self.section_nrows
-            self.section_data = read_bridge_cross_sections(br_block[start_idx:end_idx])
+            self.section_nrows, end_idx, self.section_data = read_dataframe_from_lines(
+                br_block,
+                8,
+                read_bridge_cross_sections,
+            )
 
-            self.opening_nrows = get_int(br_block[end_idx])
-            start_idx = end_idx + 1
-            end_idx = start_idx + self.opening_nrows
-            self.opening_data = read_bridge_opening_data(br_block[start_idx:end_idx])
+            self.opening_nrows, end_idx, self.opening_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_opening_data,
+            )
 
-            self.culvert_nrows = get_int(br_block[end_idx])
-            start_idx = end_idx + 1
-            end_idx = start_idx + self.culvert_nrows
-            self.culvert_data = read_bridge_culvert_data(br_block[start_idx:end_idx])
+            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_culvert_data,
+            )
 
         # Read Pierloss type bridge
         elif self.subtype == "PIERLOSS":
@@ -206,24 +212,25 @@ class BRIDGE(Unit):
             self.pier_coefficient = to_float(additional_params[0], 0.9)
             self.bridge_width = to_float(additional_params[1])
 
-            self.us_section_nrows = get_int(br_block[6])
-            start_idx = 7
-            end_idx = start_idx + self.us_section_nrows
-            self.us_section_data = read_bridge_cross_sections(
-                br_block[start_idx:end_idx],
+            self.us_section_nrows, end_idx, self.us_section_data = read_dataframe_from_lines(
+                br_block,
+                6,
+                read_bridge_cross_sections,
                 include_top_level=True,
             )
 
-            self.ds_section_nrows = get_int(br_block[end_idx])
-            start_idx = end_idx + 1
-            end_idx = start_idx + self.ds_section_nrows
-            self.ds_section_data = read_bridge_cross_sections(
-                br_block[start_idx:end_idx],
+            self.ds_section_nrows, end_idx, self.ds_section_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_cross_sections,
                 include_top_level=True,
             )
 
-            self.pier_locs_nrows = get_int(br_block[end_idx])
-            self.pier_locs_data = read_bridge_pier_locations(br_block[start_idx:end_idx])
+            self.pier_locs_nrows, end_idx, self.pier_locs_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_pier_locations,
+            )
 
         else:
             # This else block is triggered for bridge subtypes which aren't yet supported

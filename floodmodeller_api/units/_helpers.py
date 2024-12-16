@@ -142,11 +142,13 @@ def read_dataframe_from_lines(
     all_lines: list[str],
     end_idx: int,
     read_lines: Callable[[list[str]], pd.DataFrame],
+    *args,
+    **kwargs,
 ) -> tuple[int, int, pd.DataFrame]:
     nrows = get_int(all_lines[end_idx])
     start_idx = end_idx + 1
     end_idx = start_idx + nrows
-    data = read_lines(all_lines[start_idx:end_idx])
+    data = read_lines(all_lines[start_idx:end_idx], *args, **kwargs)
     return nrows, end_idx, data
 
 
