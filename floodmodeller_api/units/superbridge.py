@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from floodmodeller_api.validation import _validate_unit
+
 from . import _helpers as h
 from ._base import Unit
 
@@ -51,6 +53,7 @@ class SUPERBRIDGE(Unit):
         end_idx += 1
         self.opening_nrows = h.get_int(br_block[end_idx])
         end_idx += 1
+        self.opening_nsubrows: list[int] = []
         self.opening_data: list[pd.DataFrame] = []
         for _ in range(self.opening_nrows):
             nrows, end_idx, data = h.read_dataframe_from_lines(
@@ -58,6 +61,7 @@ class SUPERBRIDGE(Unit):
                 end_idx,
                 h.read_superbridge_opening_data,
             )
+            self.opening_nsubrows.append(nrows)
             self.opening_data.append(data)
 
         self.culvert_nrows, end_idx, self.culvert_data = h.read_dataframe_from_lines(
@@ -80,10 +84,69 @@ class SUPERBRIDGE(Unit):
         block_params = h.split_10_char(f"{br_block[end_idx]:<50}")
         self.inlet_loss = h.to_float(block_params[1])
         self.outlet_loss = h.to_float(block_params[2])
-        self.block_method = block_params[3]
+        self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
         self.override = block_params[4] == "OVERRIDE"
         self.block_nrows, end_idx, self.block_data = h.read_dataframe_from_lines(
             br_block,
             end_idx,
             h.read_superbridge_block_data,
         )
+
+    def _write(self) -> list[str]:
+        _validate_unit(self)
+
+        line_1 = self._unit + " " + self.comment
+        line_2 = h.join_12_char_ljust(
+            self.name,
+            self.ds_label,
+            self.us_remote_label,
+            self.ds_remote_label,
+        )
+        line_5 = self.subtype
+        line_6 = h.join_10_char(
+            self.calibration_coefficient,
+            self.skew,
+            self.bridge_width_dual,
+            self.bridge_dist_dual,
+            self.total_pier_width,
+            "ORIFICE" if self.orifice_flow else "",
+            self.orifice_lower_transition_dist,
+            self.orifice_upper_transition_dist,
+            self.orifice_discharge_coefficient,
+        )
+        line_10 = h.write_dataframe(self.section_nrows[0], self.section_data[0])
+        line_11 = h.write_dataframe(self.section_nrows[1], self.section_data[1])
+        line_12 = h.write_dataframe(self.section_nrows[2], self.section_data[2])
+        line_13 = h.write_dataframe(self.section_nrows[3], self.section_data[3])
+        line_15 = h.write_dataframes(self.opening_nrows, self.opening_nsubrows, self.opening_data)
+        line_16 = h.write_dataframe(self.culvert_nrows, self.culvert_data)
+        line_17 = h.write_dataframe(
+            h.join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
+            self.spill_data,
+        )
+        line_18 = h.write_dataframe(
+            h.join_10_char(
+                self.block_nrows,
+                self.inlet_loss,
+                self.outlet_loss,
+                self.block_method,
+                "OVERRIDE" if self.override else "NOOVERRIDE",
+            ),
+            self.block_data,
+        )
+
+        lines = [
+            line_1,
+            line_2,
+            line_5,
+            line_6,
+            *line_10,
+            *line_11,
+            *line_12,
+            *line_13,
+            *line_15,
+            *line_16,
+            *line_17,
+            *line_18,
+        ]
+        return [str(x) for x in lines]
