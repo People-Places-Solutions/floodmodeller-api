@@ -23,9 +23,7 @@ class SUPERBRIDGE(Unit):
 
         self._subtype = br_block[4].strip()
 
-        params = h.read_bridge_params(br_block[5])
-        for key, val in params.items():
-            setattr(self, key, val)
+        h.set_bridge_params(self, br_block[5])
 
         end_idx = 9
         self.section_nrows: list[int] = []

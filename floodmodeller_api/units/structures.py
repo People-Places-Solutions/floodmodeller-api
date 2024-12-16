@@ -27,9 +27,9 @@ from ._helpers import (
     read_bridge_cross_sections,
     read_bridge_culvert_data,
     read_bridge_opening_data,
-    read_bridge_params,
     read_bridge_pier_locations,
     read_spill_section_data,
+    set_bridge_params,
     split_10_char,
     split_n_char,
     to_float,
@@ -144,10 +144,7 @@ class BRIDGE(Unit):
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
-            params = read_bridge_params(br_block[4])
-            params.pop("total_pier_width")
-            for key, val in params.items():
-                setattr(self, key, val)
+            set_bridge_params(self, br_block[4], include_pier=False)
 
             self.section_nrows = get_int(br_block[5])
             start_idx = 6
@@ -160,9 +157,7 @@ class BRIDGE(Unit):
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
-            params = read_bridge_params(br_block[4])
-            for key, val in params.items():
-                setattr(self, key, val)
+            set_bridge_params(self, br_block[4])
 
             self.abutment_type = split_10_char(br_block[5])[0]
             self.abutment_alignment = split_10_char(br_block[7])[0]

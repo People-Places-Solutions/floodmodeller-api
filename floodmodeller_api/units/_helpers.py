@@ -16,6 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+from typing import Any
+
 import pandas as pd
 
 NOTATION_THRESHOLD = 10
@@ -122,19 +124,18 @@ def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | 
     return data_list
 
 
-def read_bridge_params(line: str) -> dict[str, str | bool]:
+def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None:
     params = split_10_char(f"{line:<90}")
-    return {
-        "calibration_coefficient": to_float(params[0], 1.0),
-        "skew": to_float(params[1]),
-        "bridge_width_dual": to_float(params[2]),
-        "bridge_dist_dual": to_float(params[3]),
-        "total_pier_width": to_float(params[4]),
-        "orifice_flow": params[5] == "ORIFICE",
-        "orifice_lower_transition_dist": to_float(params[6]),
-        "orifice_upper_transition_dist": to_float(params[7]),
-        "orifice_discharge_coefficient": to_float(params[8], 1.0),
-    }
+    obj.calibration_coefficient = to_float(params[0], 1.0)
+    obj.skew = to_float(params[1])
+    obj.bridge_width_dual = to_float(params[2])
+    obj.bridge_dist_dual = to_float(params[3])
+    if include_pier:
+        obj.total_pier_width = to_float(params[4])
+    obj.orifice_flow = params[5] == "ORIFICE"
+    obj.orifice_lower_transition_dist = to_float(params[6])
+    obj.orifice_upper_transition_dist = to_float(params[7])
+    obj.orifice_discharge_coefficient = to_float(params[8], 1.0)
 
 
 def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False) -> pd.DataFrame:
