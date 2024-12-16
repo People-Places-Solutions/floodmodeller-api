@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Callable
 
 import pandas as pd
 
@@ -138,10 +138,21 @@ def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None
     obj.orifice_discharge_coefficient = to_float(params[8], 1.0)
 
 
+def read_dataframe_from_lines(
+    all_lines: list[str],
+    end_idx: int,
+    read_lines: Callable[[list[str]], pd.DataFrame],
+) -> tuple[int, int, pd.DataFrame]:
+    nrows = get_int(all_lines[end_idx])
+    start_idx = end_idx + 1
+    end_idx = start_idx + nrows
+    data = read_lines(all_lines[start_idx:end_idx])
+    return nrows, end_idx, data
+
+
 def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False) -> pd.DataFrame:
     data_list = []
     for line in lines:
-
         line_split = split_10_char(f"{line:<50}")
         df_row = [
             to_float(line_split[0]),
