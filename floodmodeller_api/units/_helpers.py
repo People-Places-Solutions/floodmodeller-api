@@ -258,11 +258,11 @@ def get_int(line: str) -> int:
 def write_dataframe(
     header: int | str | None,
     df: pd.DataFrame,
-    empty_col: int | None = None,
+    empty: int | None = None,
 ) -> list[str]:
     df_to_use = copy.deepcopy(df)
-    if empty_col is not None:
-        df_to_use.insert(empty_col, "_", [None] * len(df_to_use))
+    if empty is not None:
+        df_to_use.insert(empty, "_", [None] * len(df_to_use))
     lines = [join_10_char(*x) for x in df_to_use.itertuples(index=False)]
     if header is not None:
         lines = [str(header), *lines]

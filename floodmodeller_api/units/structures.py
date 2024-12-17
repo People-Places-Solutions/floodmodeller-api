@@ -132,7 +132,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block: list[str]):
+    def _read(self, br_block: list[str]) -> None:
         """Function to read a given BRIDGE block and store data as class attributes"""
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
@@ -242,7 +242,7 @@ class BRIDGE(Unit):
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self):  # noqa: C901, PLR0912, PLR0915
+    def _write(self) -> list[str]:
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = "BRIDGE " + self.comment
@@ -268,20 +268,14 @@ class BRIDGE(Unit):
                 self.orifice_upper_transition_dist,
                 self.orifice_discharge_coefficient,
             )
+            br_block.extend(["MANNING", params])
+
             self.section_nrows = len(self.section_data)
-            br_block.extend(["MANNING", params, f"{self.section_nrows!s:>10}"])
-
-            section_data = write_dataframe(None, self.section_data, empty_col=3)
-
+            section_data = write_dataframe(self.section_nrows, self.section_data, empty=3)
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{self.opening_nrows!s:>10}")
-            opening_data = []
-            for _, start, finish, spring, soffit in self.opening_data.itertuples():
-                row = join_10_char(start, finish, spring, soffit)
-                opening_data.append(row)
-
+            opening_data = write_dataframe(self.opening_nrows, self.opening_data)
             br_block.extend(opening_data)
 
             return br_block
@@ -315,40 +309,19 @@ class BRIDGE(Unit):
                     f"{self.abutment_type!s:>10}",
                     pier_params,
                     self.abutment_alignment,
-                    f"{self.section_nrows!s:>10}",
                 ],
             )
 
-            section_data = []
-            for _, x, y, n, embankments in self.section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += embankments
-                section_data.append(row)
+            self.section_nrows = len(self.section_data)
+            section_data = write_dataframe(self.section_nrows, self.section_data, empty=3)
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{self.opening_nrows!s:>10}")
-            opening_data = []
-            for _, start, finish, spring, soffit in self.opening_data.itertuples():
-                row = join_10_char(start, finish, spring, soffit)
-                opening_data.append(row)
+            opening_data = write_dataframe(self.opening_nrows, self.opening_data)
             br_block.extend(opening_data)
 
             self.culvert_nrows = len(self.culvert_data)
-            br_block.append(f"{self.culvert_nrows!s:>10}")
-            culvert_data = []
-            for (
-                _,
-                invert,
-                soffit,
-                area,
-                cd_part,
-                cd_full,
-                drown,
-            ) in self.culvert_data.itertuples():
-                row = join_10_char(invert, soffit, area, cd_part, cd_full, drown)
-                culvert_data.append(row)
+            culvert_data = write_dataframe(self.culvert_nrows, self.culvert_data)
             br_block.extend(culvert_data)
 
             return br_block
@@ -363,48 +336,18 @@ class BRIDGE(Unit):
                 self.orifice_upper_transition_dist,
             )
             additional_params = join_10_char(self.pier_coefficient, self.bridge_width)
-            self.us_section_nrows = len(self.us_section_data)
-            br_block.extend(
-                [
-                    "YARNELL",
-                    params,
-                    additional_params,
-                    f"{self.us_section_nrows!s:>10}",
-                ],
-            )
+            br_block.extend(["YARNELL", params, additional_params])
 
-            us_section_data = []
-            for _, x, y, n, embankments, top_level in self.us_section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += f"{embankments:<10}"
-                row += join_10_char(top_level)
-                us_section_data.append(row)
+            self.us_section_nrows = len(self.us_section_data)
+            us_section_data = write_dataframe(self.us_section_nrows, self.us_section_data, empty=3)
             br_block.extend(us_section_data)
 
             self.ds_section_nrows = len(self.ds_section_data)
-            br_block.append(f"{self.ds_section_nrows!s:>10}")
-            ds_section_data = []
-            for _, x, y, n, embankments, top_level in self.ds_section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += f"{embankments:<10}"
-                row += join_10_char(top_level)
-                ds_section_data.append(row)
+            ds_section_data = write_dataframe(self.ds_section_nrows, self.ds_section_data, empty=3)
             br_block.extend(ds_section_data)
 
             self.pier_locs_nrows = len(self.pier_locs_data)
-            br_block.append(f"{self.pier_locs_nrows!s:>10}")
-            pier_locs_data = []
-            for (
-                _,
-                l_x,
-                l_top_level,
-                r_x,
-                r_top_level,
-            ) in self.pier_locs_data.itertuples():
-                row = join_10_char(l_x, l_top_level, r_x, r_top_level)
-                pier_locs_data.append(row)
+            pier_locs_data = write_dataframe(self.pier_locs_nrows, self.pier_locs_data)
             br_block.extend(pier_locs_data)
 
             return br_block
