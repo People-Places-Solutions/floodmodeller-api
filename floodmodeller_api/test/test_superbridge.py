@@ -68,11 +68,12 @@ def test_read_superbridge(unit: SUPERBRIDGE):
         "X": [-10.0, -10.0, 10.0, 10.0],
         "Y": [5.0, 0.0, 0.0, 5.0],
         "Mannings n": [0.035, 0.035, 0.035, 0.035],
+        "Panel": ["*", "", "", "*"],
         "Embankments": ["LEFT", "", "", "RIGHT"],
     }
     pd.testing.assert_frame_equal(unit.section_data[0], pd.DataFrame(expected))
 
-    expected = {"X": [], "Y": [], "Mannings n": [], "Embankments": []}
+    expected = {"X": [], "Y": [], "Mannings n": [], "Panel": [], "Embankments": []}
     pd.testing.assert_frame_equal(unit.section_data[1], pd.DataFrame(expected), check_dtype=False)
     pd.testing.assert_frame_equal(unit.section_data[2], pd.DataFrame(expected), check_dtype=False)
     pd.testing.assert_frame_equal(unit.section_data[3], pd.DataFrame(expected), check_dtype=False)

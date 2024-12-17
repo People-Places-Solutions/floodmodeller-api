@@ -301,7 +301,6 @@ class BRIDGE(Unit):
             else:
                 pier_params = f"{0:>10}{self.soffit_shape}"
 
-            self.section_nrows = len(self.section_data)
             br_block.extend(
                 [
                     "MANNING",

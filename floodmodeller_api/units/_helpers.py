@@ -145,7 +145,12 @@ def read_dataframe_from_lines(
     return nrows, end_idx, data
 
 
-def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False) -> pd.DataFrame:
+def read_bridge_cross_sections(
+    lines: list[str],
+    *,
+    include_panel_marker: bool = False,
+    include_top_level: bool = False,
+) -> pd.DataFrame:
     data_list = []
     for line in lines:
         line_split = split_10_char(f"{line:<50}")
@@ -153,15 +158,25 @@ def read_bridge_cross_sections(lines: list[str], include_top_level: bool = False
             to_float(line_split[0]),
             to_float(line_split[1]),
             to_float(line_split[2]),
-            line_split[4],
         ]
+
+        if include_panel_marker:
+            df_row.append(line_split[3])
+
+        df_row.append(line_split[4])
 
         if include_top_level:
             df_row.append(line_split[5])
 
         data_list.append(df_row)
 
-    columns = ["X", "Y", "Mannings n", "Embankments"]
+    columns = ["X", "Y", "Mannings n"]
+
+    if include_panel_marker:
+        columns.append("Panel")
+
+    columns.append("Embankments")
+
     if include_top_level:
         columns.append("Top Level")
     return pd.DataFrame(data_list, columns=columns)

@@ -50,6 +50,7 @@ class SUPERBRIDGE(Unit):
                 br_block,
                 end_idx,
                 h.read_bridge_cross_sections,
+                include_panel_marker=True,
             )
             self.section_nrows.append(nrows)
             self.section_data.append(data)
