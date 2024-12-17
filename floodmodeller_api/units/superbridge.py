@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class SUPERBRIDGE(Unit):
     _unit = "SUPERBRIDGE"
 
-    # attributes set in set_bridge_params
+    # attributes set in set_bridge_params (for mypy)
     calibration_coefficient: float
     skew: float
     bridge_width_dual: float
@@ -131,7 +131,7 @@ class SUPERBRIDGE(Unit):
             h.join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
             self.spill_data,
         )
-        line_18 = h.write_dataframe(
+        line_19 = h.write_dataframe(
             h.join_10_char(
                 self.block_nrows,
                 self.inlet_loss,
@@ -147,13 +147,16 @@ class SUPERBRIDGE(Unit):
             line_2,
             line_3,
             line_4,
-            line_5,
+            line_5,  # type: ignore
             line_6,
+            # 7
+            # 8
             line_9,
             *line_10_11_12_13,
             line_14,
             *line_15,
             *line_16,
             *line_17,
-            *line_18,
+            # 18
+            *line_19,
         ]

@@ -132,6 +132,17 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
+    # attributes set in set_bridge_params (for mypy)
+    calibration_coefficient: float
+    skew: float
+    bridge_width_dual: float
+    bridge_dist_dual: float
+    total_pier_width: float
+    orifice_flow: bool
+    orifice_lower_transition_dist: float
+    orifice_upper_transition_dist: float
+    orifice_discharge_coefficient: float
+
     def _read(self, br_block: list[str]) -> None:
         """Function to read a given BRIDGE block and store data as class attributes"""
         self.comment = br_block[0].replace(self._unit, "").strip()
