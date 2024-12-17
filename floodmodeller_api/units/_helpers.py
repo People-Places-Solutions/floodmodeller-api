@@ -285,9 +285,12 @@ def write_dataframe(
 
 
 def write_dataframes(
-    header: int | str,
+    header: int | str | None,
     subheaders: list[int],
     df_list: list[pd.DataFrame],
 ) -> list[str]:
     list_of_lists = [write_dataframe(x, y) for x, y in zip(subheaders, df_list)]
-    return [str(header), *chain.from_iterable(list_of_lists)]
+    lines = chain.from_iterable(list_of_lists)
+    if header is not None:
+        lines = [str(header), *lines]
+    return lines

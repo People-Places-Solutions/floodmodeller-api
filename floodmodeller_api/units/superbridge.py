@@ -123,10 +123,7 @@ class SUPERBRIDGE(Unit):
             self.orifice_discharge_coefficient,
         )
         line_9 = "ALIGNED" if self.aligned else ""
-        line_10 = h.write_dataframe(self.section_nrows[0], self.section_data[0])
-        line_11 = h.write_dataframe(self.section_nrows[1], self.section_data[1])
-        line_12 = h.write_dataframe(self.section_nrows[2], self.section_data[2])
-        line_13 = h.write_dataframe(self.section_nrows[3], self.section_data[3])
+        line_10_11_12_13 = h.write_dataframes(None, self.section_nrows, self.section_data)
         line_14 = self.opening_type
         line_15 = h.write_dataframes(self.opening_nrows, self.opening_nsubrows, self.opening_data)
         line_16 = h.write_dataframe(self.culvert_nrows, self.culvert_data)
@@ -153,10 +150,7 @@ class SUPERBRIDGE(Unit):
             line_5,
             line_6,
             line_9,
-            *line_10,
-            *line_11,
-            *line_12,
-            *line_13,
+            *line_10_11_12_13,
             line_14,
             *line_15,
             *line_16,
