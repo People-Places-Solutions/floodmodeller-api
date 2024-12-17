@@ -220,3 +220,8 @@ def test_diff(test_workspace, capsys):
         "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
         "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
     )
+
+
+if __name__ == "__main__":
+    import pytest
+    pytest.main([__file__])

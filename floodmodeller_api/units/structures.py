@@ -271,7 +271,7 @@ class BRIDGE(Unit):
             self.section_nrows = len(self.section_data)
             br_block.extend(["MANNING", params, f"{self.section_nrows!s:>10}"])
 
-            section_data = write_dataframe(self.section_nrows, self.section_data)
+            section_data = write_dataframe(None, self.section_data, empty_col=3)
 
             br_block.extend(section_data)
 

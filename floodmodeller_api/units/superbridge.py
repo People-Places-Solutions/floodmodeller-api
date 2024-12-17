@@ -107,7 +107,7 @@ class SUPERBRIDGE(Unit):
             self.us_remote_label,
             self.ds_remote_label,
         )
-        line_3 = self.revision
+        line_3 = str(self.revision)
         line_4 = self.bridge_name
         line_5 = self.subtype
         line_6 = h.join_10_char(
@@ -144,7 +144,7 @@ class SUPERBRIDGE(Unit):
             self.block_data,
         )
 
-        lines = [
+        return [
             line_1,
             line_2,
             line_3,
@@ -162,4 +162,3 @@ class SUPERBRIDGE(Unit):
             *line_17,
             *line_18,
         ]
-        return [str(x) for x in lines]

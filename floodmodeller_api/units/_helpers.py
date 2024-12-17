@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import copy
 from itertools import chain
 from typing import Any, Callable
 
@@ -251,11 +252,21 @@ def read_superbridge_block_data(lines: list[str]) -> pd.DataFrame:
 
 
 def get_int(line: str) -> int:
-    return int(split_10_char(line)[0])
+    return int(float(split_10_char(line)[0]))
 
 
-def write_dataframe(header: int | str, df: pd.DataFrame) -> list[str]:
-    return [str(header), *[join_10_char(*x) for x in df.itertuples(index=False)]]
+def write_dataframe(
+    header: int | str | None,
+    df: pd.DataFrame,
+    empty_col: int | None = None,
+) -> list[str]:
+    df_to_use = copy.deepcopy(df)
+    if empty_col is not None:
+        df_to_use.insert(empty_col, "_", [None] * len(df_to_use))
+    lines = [join_10_char(*x) for x in df_to_use.itertuples(index=False)]
+    if header is not None:
+        lines = [str(header), *lines]
+    return lines
 
 
 def write_dataframes(
