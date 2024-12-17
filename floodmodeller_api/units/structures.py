@@ -35,6 +35,7 @@ from ._helpers import (
     to_float,
     to_int,
     to_str,
+    write_dataframe,
 )
 
 
@@ -270,12 +271,7 @@ class BRIDGE(Unit):
             self.section_nrows = len(self.section_data)
             br_block.extend(["MANNING", params, f"{self.section_nrows!s:>10}"])
 
-            section_data = []
-            for _, x, y, n, embankments in self.section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += embankments
-                section_data.append(row)
+            section_data = write_dataframe(self.section_nrows, self.section_data)
 
             br_block.extend(section_data)
 

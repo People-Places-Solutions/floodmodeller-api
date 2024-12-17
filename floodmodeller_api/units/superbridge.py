@@ -34,9 +34,13 @@ class SUPERBRIDGE(Unit):
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
 
+        self.revision = h.to_int(br_block[2])
+        self.bridge_name = br_block[3]
         self._subtype = br_block[4].strip()
 
         h.set_bridge_params(self, br_block[5])
+
+        self.aligned = br_block[8].strip() == "ALIGNED"
 
         end_idx = 9
         self.section_nrows: list[int] = []
@@ -50,6 +54,7 @@ class SUPERBRIDGE(Unit):
             self.section_nrows.append(nrows)
             self.section_data.append(data)
 
+        self.opening_type = br_block[end_idx]
         end_idx += 1
         self.opening_nrows = h.get_int(br_block[end_idx])
         end_idx += 1
@@ -102,6 +107,8 @@ class SUPERBRIDGE(Unit):
             self.us_remote_label,
             self.ds_remote_label,
         )
+        line_3 = self.revision
+        line_4 = self.bridge_name
         line_5 = self.subtype
         line_6 = h.join_10_char(
             self.calibration_coefficient,
@@ -114,10 +121,12 @@ class SUPERBRIDGE(Unit):
             self.orifice_upper_transition_dist,
             self.orifice_discharge_coefficient,
         )
+        line_9 = "ALIGNED" if self.aligned else ""
         line_10 = h.write_dataframe(self.section_nrows[0], self.section_data[0])
         line_11 = h.write_dataframe(self.section_nrows[1], self.section_data[1])
         line_12 = h.write_dataframe(self.section_nrows[2], self.section_data[2])
         line_13 = h.write_dataframe(self.section_nrows[3], self.section_data[3])
+        line_14 = self.opening_type
         line_15 = h.write_dataframes(self.opening_nrows, self.opening_nsubrows, self.opening_data)
         line_16 = h.write_dataframe(self.culvert_nrows, self.culvert_data)
         line_17 = h.write_dataframe(
@@ -138,12 +147,16 @@ class SUPERBRIDGE(Unit):
         lines = [
             line_1,
             line_2,
+            line_3,
+            line_4,
             line_5,
             line_6,
+            line_9,
             *line_10,
             *line_11,
             *line_12,
             *line_13,
+            line_14,
             *line_15,
             *line_16,
             *line_17,

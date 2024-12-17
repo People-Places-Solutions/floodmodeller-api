@@ -52,7 +52,7 @@ def join_10_char(*itms, dp=3):
 
 def join_12_char_ljust(*itms, dp=3):
     """Joins a set of values with a 12 character buffer and left-justified"""
-    return join_n_char_ljust(12, *itms, dp)
+    return join_n_char_ljust(12, *itms, dp=dp)
 
 
 def join_n_char_ljust(n, *itms, dp=3):
