@@ -192,8 +192,8 @@ def run_routines(
 
 
 def convert_data(data: dict[str, Any]) -> None:
-    for key in data:
-        data[key] = np.array(data[key])
+    for key, value in data.items():
+        data[key] = np.array(value)
 
 
 def convert_meta(meta: dict[str, Any]) -> None:

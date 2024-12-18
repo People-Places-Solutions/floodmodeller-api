@@ -18,7 +18,7 @@ import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from .helpers import join_10_char
+from ._helpers import join_10_char
 
 
 class Variables(Jsonable):

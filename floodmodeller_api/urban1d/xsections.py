@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, _to_int, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float, to_int
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -59,20 +59,20 @@ class XSECTION(UrbanUnit):
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], 0.0)
-            self.geom2 = _to_float(unit_data[3], 0.0)
-            self.geom3 = _to_float(unit_data[4], 0.0)
-            self.geom4 = _to_float(unit_data[5], 0.0)
-            self.barrels = _to_int(unit_data[6], 1)
-            self.culvert = _to_int(unit_data[7], "")
+            self.geom1 = to_float(unit_data[2], 0.0)
+            self.geom2 = to_float(unit_data[3], 0.0)
+            self.geom3 = to_float(unit_data[4], 0.0)
+            self.geom4 = to_float(unit_data[5], 0.0)
+            self.barrels = to_int(unit_data[6], 1)
+            self.culvert = to_int(unit_data[7], "")
 
         elif unit_data[1] == "CUSTOM":
             while len(unit_data) < self.MIN_LENGTH_CUSTOM:
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], "")
-            self.barrels = _to_int(unit_data[6], 1)
+            self.geom1 = to_float(unit_data[2], "")
+            self.barrels = to_int(unit_data[6], 1)
 
         elif unit_data[1] == "IRREGULAR":
             while len(unit_data) < self.MIN_LENGTH_IRREGULAR:

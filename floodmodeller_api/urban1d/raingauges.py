@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -55,7 +55,7 @@ class RAINGAUGE(UrbanUnit):
         except ValueError:
             self.interval = str(unit_data[2])  # HH:MM format
 
-        self.snow_catch_factor = _to_float(unit_data[3], 0.0)
+        self.snow_catch_factor = to_float(unit_data[3], 0.0)
         self.data_option = str(unit_data[4])
 
         # Check is raingauge data is provided as a TIMESERIES or as a FILE
