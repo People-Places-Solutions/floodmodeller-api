@@ -30,6 +30,7 @@ from ._helpers import (
     read_dataframe_from_lines,
     read_spill_section_data,
     set_bridge_params,
+    set_pier_params,
     split_10_char,
     split_n_char,
     to_float,
@@ -177,20 +178,7 @@ class BRIDGE(Unit):
             self.abutment_type = split_10_char(br_block[5])[0]
             self.abutment_alignment = split_10_char(br_block[7])[0]
 
-            pier_info = split_10_char(f"{br_block[6]:<40}")
-            if int(pier_info[0]) > 0:
-                self.specify_piers = True
-                self.npiers = int(pier_info[0])
-                if pier_info[1] == "COEF":
-                    self.pier_use_calibration_coeff = True
-                    self.pier_calibration_coeff = to_float(pier_info[3])
-                else:
-                    self.pier_use_calibration_coeff = False
-                    self.pier_shape = pier_info[1]
-                    self.pier_faces = pier_info[2]
-            else:
-                self.specify_piers = False
-                self.soffit_shape = pier_info[1]
+            set_pier_params(self, br_block[6])
 
             self.section_nrows, end_idx, self.section_data = read_dataframe_from_lines(
                 br_block,
@@ -306,7 +294,7 @@ class BRIDGE(Unit):
             )
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
-                    pier_params = f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.calibration_coefficient:>10.3f}'
+                    pier_params = f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:

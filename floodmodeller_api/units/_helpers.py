@@ -131,6 +131,23 @@ def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None
     obj.orifice_discharge_coefficient = to_float(params[8], 1.0)
 
 
+def set_pier_params(obj: Any, line: str) -> None:
+    pier_info = split_10_char(line)
+    if int(pier_info[0]) > 0:
+        obj.specify_piers = True
+        obj.npiers = int(pier_info[0])
+        if pier_info[1] == "COEF":
+            obj.pier_use_calibration_coeff = True
+            obj.pier_calibration_coeff = to_float(pier_info[3])
+        else:
+            obj.pier_use_calibration_coeff = False
+            obj.pier_shape = pier_info[1]
+            obj.pier_faces = pier_info[2]
+    else:
+        obj.specify_piers = False
+        obj.soffit_shape = pier_info[1]
+
+
 def read_dataframe_from_lines(
     all_lines: list[str],
     end_idx: int,

@@ -37,9 +37,9 @@ class SUPERBRIDGE(Unit):
         self.revision = h.to_int(br_block[2])
         self.bridge_name = br_block[3]
         self._subtype = br_block[4].strip()
-
         h.set_bridge_params(self, br_block[5])
-
+        self.abutment_type = h.to_int(br_block[6])
+        h.set_pier_params(self, br_block[7])
         self.aligned = br_block[8].strip() == "ALIGNED"
 
         end_idx = 9
@@ -122,6 +122,26 @@ class SUPERBRIDGE(Unit):
             self.orifice_upper_transition_dist,
             self.orifice_discharge_coefficient,
         )
+        line_7 = self.abutment_type
+        if self.specify_piers:
+            if self.pier_use_calibration_coeff:
+                line_8 = h.join_10_char(
+                    self.npiers,
+                    "COEF",
+                    "",
+                    self.pier_calibration_coeff,
+                )
+            else:
+                line_8 = h.join_10_char(
+                    self.npiers,
+                    self.pier_shape,
+                    self.pier_faces,
+                )
+        else:
+            line_8 = h.join_10_char(
+                0,
+                self.soffit_shape,
+            )
         line_9 = "ALIGNED" if self.aligned else ""
         line_10_11_12_13 = h.write_dataframes(None, self.section_nrows, self.section_data)
         line_14 = self.opening_type
@@ -131,6 +151,7 @@ class SUPERBRIDGE(Unit):
             h.join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
             self.spill_data,
         )
+        line_18 = self.block_comment
         line_19 = h.write_dataframe(
             h.join_10_char(
                 self.block_nrows,
@@ -149,14 +170,14 @@ class SUPERBRIDGE(Unit):
             line_4,
             line_5,  # type: ignore
             line_6,
-            # 7
-            # 8
+            line_7,
+            line_8,
             line_9,
             *line_10_11_12_13,
             line_14,
             *line_15,
             *line_16,
             *line_17,
-            # 18
+            line_18,
             *line_19,
         ]

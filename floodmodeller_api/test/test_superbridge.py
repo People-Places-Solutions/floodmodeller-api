@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -12,14 +13,10 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def lines(test_workspace: Path) -> list[str]:
+def unit(test_workspace: Path) -> SUPERBRIDGE:
     path = test_workspace / "superbridge/US_vSP_NoBl_2O_Para.ied"
     with open(path) as file:
-        return [line.rstrip("\n") for line in file]
-
-
-@pytest.fixture()
-def unit(lines: list[str]) -> SUPERBRIDGE:
+        lines = [line.rstrip("\n") for line in file]
     return SUPERBRIDGE(lines)
 
 
@@ -106,7 +103,11 @@ def test_read_superbridge(unit: SUPERBRIDGE):
     pd.testing.assert_frame_equal(unit.block_data, pd.DataFrame(expected), check_dtype=False)
 
 
-def test_write_superbridge(lines: list[str], unit: SUPERBRIDGE):
-    raw_block = unit._write()
-    print("\n", "\n".join(raw_block), "\n")
-    # assert raw_block == lines
+def test_write_superbridge(unit: SUPERBRIDGE):
+    output = unit._write()
+
+    new_unit = SUPERBRIDGE(output)
+    new_output = new_unit._write()
+
+    assert unit == new_unit
+    assert output == new_output
