@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class SUPERBRIDGE(Unit):
     _unit = "SUPERBRIDGE"
 
-    # attributes set in set_bridge_params (for mypy)
+    # attributes set in a function (for mypy)
     calibration_coefficient: float
     skew: float
     bridge_width_dual: float
