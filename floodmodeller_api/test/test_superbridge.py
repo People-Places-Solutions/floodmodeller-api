@@ -41,6 +41,11 @@ def test_read_superbridge(unit: SUPERBRIDGE):
     assert unit.orifice_lower_transition_dist == 0.3
     assert unit.orifice_upper_transition_dist == 0.1
     assert unit.orifice_discharge_coefficient == 1
+
+    assert unit.abutment_type == 3
+    assert unit.specify_piers is False
+    assert unit.soffit_shape == "FLAT"
+
     assert unit.aligned is True
 
     assert unit.section_nrows == [4, 0, 0, 0]

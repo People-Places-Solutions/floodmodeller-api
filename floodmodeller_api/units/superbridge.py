@@ -24,6 +24,13 @@ class SUPERBRIDGE(Unit):
     orifice_lower_transition_dist: float
     orifice_upper_transition_dist: float
     orifice_discharge_coefficient: float
+    specify_piers: bool
+    npiers: int
+    pier_use_calibration_coeff: bool
+    pier_calibration_coeff: float
+    pier_shape: str
+    soffit_shape: str
+    pier_faces: str
 
     def _read(self, br_block: list[str]) -> None:
         self.comment = br_block[0].replace(self._unit, "").strip()

@@ -133,7 +133,7 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    # attributes set in set_bridge_params (for mypy)
+    # attributes set in a function (for mypy)
     calibration_coefficient: float
     skew: float
     bridge_width_dual: float
@@ -143,6 +143,13 @@ class BRIDGE(Unit):
     orifice_lower_transition_dist: float
     orifice_upper_transition_dist: float
     orifice_discharge_coefficient: float
+    specify_piers: bool
+    npiers: int
+    pier_use_calibration_coeff: bool
+    pier_calibration_coeff: float
+    pier_shape: str
+    soffit_shape: str
+    pier_faces: str
 
     def _read(self, br_block: list[str]) -> None:
         """Function to read a given BRIDGE block and store data as class attributes"""
