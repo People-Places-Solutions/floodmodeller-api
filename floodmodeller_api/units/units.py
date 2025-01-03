@@ -48,6 +48,7 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "REPLICATE": {"group": "sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
     "COMMENT": {"group": "comments", "has_subtype": False},
+    "SUPERBRIDGE": {"group": "structures", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {

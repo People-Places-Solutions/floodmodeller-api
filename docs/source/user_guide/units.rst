@@ -94,7 +94,6 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.SPILL
 
-
 ``CRUMP()``
 ~~~~~~~~~~~~~
 
@@ -109,6 +108,11 @@ Structure units
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.OUTFALL
+
+``SUPERBRIDGE()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.SUPERBRIDGE
 
 .. _loss_units:
 
