@@ -110,7 +110,7 @@ Structure units
 .. autoclass:: floodmodeller_api.units.OUTFALL
 
 ``SUPERBRIDGE()``
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.SUPERBRIDGE
 
