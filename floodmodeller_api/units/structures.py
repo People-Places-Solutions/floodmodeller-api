@@ -302,7 +302,7 @@ class BRIDGE(Unit):
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
                     pier_params = (
-                        f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
+                        f'{self.npiers:>10}{"COEFF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
                     )
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"

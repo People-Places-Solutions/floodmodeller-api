@@ -12,15 +12,20 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.fixture()
-def unit(test_workspace: Path) -> SUPERBRIDGE:
-    path = test_workspace / "superbridge/US_vSP_NoBl_2O_Para.ied"
+def create_superbridge(path: Path) -> SUPERBRIDGE:
     with open(path) as file:
         lines = [line.rstrip("\n") for line in file]
     return SUPERBRIDGE(lines)
 
 
-def test_read_superbridge(unit: SUPERBRIDGE):
+@pytest.fixture()
+def folder(test_workspace: Path) -> Path:
+    return test_workspace / "superbridge"
+
+
+def test_read_superbridge(folder: Path):  # noqa: PLR0915 (all needed)
+    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+
     assert unit.comment == "prototype for rev 3 / No Spill data, no blockage"
 
     assert unit.name == "Label11"
@@ -108,11 +113,12 @@ def test_read_superbridge(unit: SUPERBRIDGE):
     pd.testing.assert_frame_equal(unit.block_data, pd.DataFrame(expected), check_dtype=False)
 
 
-def test_write_superbridge(unit: SUPERBRIDGE):
-    output = unit._write()
+def test_write_superbridge(folder: Path):
+    for file in folder.glob("*.ied"):
+        unit = create_superbridge(folder / file)
+        output = unit._write()
 
-    new_unit = SUPERBRIDGE(output)
-    new_output = new_unit._write()
-
-    assert unit == new_unit
-    assert output == new_output
+        new_unit = SUPERBRIDGE(output)
+        new_output = new_unit._write()
+        assert unit == new_unit, f"unit objects not equal for {file=}"
+        assert output == new_output, f"unit outputs not equal for {file=}"

@@ -136,7 +136,7 @@ def set_pier_params(obj: Any, line: str) -> None:
     if int(pier_info[0]) > 0:
         obj.specify_piers = True
         obj.npiers = int(pier_info[0])
-        if pier_info[1] == "COEF":
+        if pier_info[1] == "COEFF":
             obj.pier_use_calibration_coeff = True
             obj.pier_calibration_coeff = to_float(pier_info[3])
         else:

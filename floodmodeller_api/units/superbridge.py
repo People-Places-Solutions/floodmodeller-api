@@ -134,7 +134,7 @@ class SUPERBRIDGE(Unit):
             if self.pier_use_calibration_coeff:
                 line_8 = h.join_10_char(
                     self.npiers,
-                    "COEF",
+                    "COEFF",
                     "",
                     self.pier_calibration_coeff,
                 )

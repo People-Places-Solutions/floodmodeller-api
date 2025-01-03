@@ -23,9 +23,8 @@ def _validate_unit(unit, urban=False):
     param_validation_dict = {}
     all_valid = True
     for param in dir(unit):
-        options = (
-            parameter_options if not urban else urban_parameter_options
-        )  # define which dictionary to use
+        # define which dictionary to use
+        options = (parameter_options if not urban else urban_parameter_options)
 
         if param in options:
             value = getattr(unit, param)
