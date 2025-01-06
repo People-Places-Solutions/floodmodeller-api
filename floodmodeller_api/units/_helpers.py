@@ -50,7 +50,7 @@ def join_10_char(*itms, dp=3):
         itm = str(itm)
         itm = itm[:10]
         string += f"{itm:>10}"
-    return string.rstrip()
+    return string
 
 
 def join_12_char_ljust(*itms, dp=3):
@@ -62,6 +62,8 @@ def join_n_char_ljust(n, *itms, dp=3):
     """Joins a set of values with a n character buffer and left-justified"""
     string = ""
     for itm in itms:
+        if itm is None:
+            itm = ""
         if isinstance(itm, float):
             # save to 3 dp
             # Use scientific notation if number greater than 10 characters
