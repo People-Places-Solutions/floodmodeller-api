@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class SUPERBRIDGE(Unit):
     """Class to hold and process SUPERBRIDGE type (from Flood Modeller v7.4).
 
-    **Common Attributes""
+    **Common Attributes**
 
     Args:
         name (str): Superbridge section name
