@@ -13,6 +13,7 @@ from floodmodeller_api.util import read_file
 if TYPE_CHECKING:
     from floodmodeller_api._base import FMFile
 
+
 def create_expected_json_files():
     """Helper function to recreate all the expected JSON files if needed at any point due to updates
     to the to_json code"""
