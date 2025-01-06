@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -7,6 +10,8 @@ from floodmodeller_api import DAT, IED, IEF, INP, XML2D
 from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.util import read_file
 
+if TYPE_CHECKING:
+    from floodmodeller_api._base import FMFile
 
 def create_expected_json_files():
     """Helper function to recreate all the expected JSON files if needed at any point due to updates
@@ -48,7 +53,7 @@ def test_dat_json(dat_obj):
 
 
 @pytest.fixture()
-def parameterised_objs_and_expected(test_workspace):
+def parameterised_objs_and_expected(test_workspace) -> list[tuple[FMFile, Path]]:
     """JSON:  expected after passing to_json method"""
     return [
         (DAT(test_workspace / "EX18.DAT"), test_workspace / "EX18_DAT_expected.json"),
@@ -62,7 +67,7 @@ def parameterised_objs_and_expected(test_workspace):
     ]
 
 
-def test_to_json_matches_expected(parameterised_objs_and_expected):
+def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FMFile, Path]]):
     """JSON:  To test if the json object produced in to_json is identical to the expected json file"""
     for obj, json_expected in parameterised_objs_and_expected:
         # First, to create and handle the json (str) object
@@ -79,7 +84,7 @@ def test_to_json_matches_expected(parameterised_objs_and_expected):
             json_dict_from_obj.pop(key, None)
             json_dict_from_file.pop(key, None)
 
-        assert json_dict_from_obj == json_dict_from_file
+        assert json_dict_from_obj == json_dict_from_file, f"object not equal for {obj.filepath!s}"
 
 
 @pytest.mark.parametrize(

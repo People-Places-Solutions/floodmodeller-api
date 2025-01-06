@@ -98,6 +98,7 @@ def test_read_superbridge(folder: Path):  # noqa: PLR0915 (all needed)
         "Cd Part Full": [],
         "Cd Full": [],
         "Drowning Coefficient": [],
+        "X": [],
     }
     pd.testing.assert_frame_equal(unit.culvert_data, pd.DataFrame(expected), check_dtype=False)
 

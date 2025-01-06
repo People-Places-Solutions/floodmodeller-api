@@ -41,6 +41,8 @@ def join_10_char(*itms, dp=3):
     """Joins a set of values with a 10 character buffer and right-justified"""
     string = ""
     for itm in itms:
+        if itm is None:
+            itm = ""
         if isinstance(itm, float):
             # save to 3 dp
             # Use scientific notation if number greater than NOTATION_THRESHOLD characters
@@ -48,7 +50,7 @@ def join_10_char(*itms, dp=3):
         itm = str(itm)
         itm = itm[:10]
         string += f"{itm:>10}"
-    return string
+    return string.rstrip()
 
 
 def join_12_char_ljust(*itms, dp=3):
@@ -214,14 +216,15 @@ def read_bridge_opening_data(lines: list[str]) -> pd.DataFrame:
 def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
     data_list = []
     for line in lines:
-        line_split = split_10_char(f"{line:<60}")
+        line_split = split_10_char(f"{line:<70}")
         invert = to_float(line_split[0])
         soffit = to_float(line_split[1])
         area = to_float(line_split[2])
         cd_part = to_float(line_split[3])
         cd_full = to_float(line_split[4])
         dlinen = to_float(line_split[5])
-        data_list.append([invert, soffit, area, cd_part, cd_full, dlinen])
+        x = to_float(line_split[6])
+        data_list.append([invert, soffit, area, cd_part, cd_full, dlinen, x])
     return pd.DataFrame(
         data_list,
         columns=[
@@ -231,6 +234,7 @@ def read_bridge_culvert_data(lines: list[str]) -> pd.DataFrame:
             "Cd Part Full",
             "Cd Full",
             "Drowning Coefficient",
+            "X",
         ],
     )
 
