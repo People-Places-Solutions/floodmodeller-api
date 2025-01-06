@@ -12,6 +12,98 @@ if TYPE_CHECKING:
 
 
 class SUPERBRIDGE(Unit):
+    """Class to hold and process SUPERBRIDGE type (from Flood Modeller v7.4).
+
+    **Common Attributes""
+
+    Args:
+        name (str): Superbridge section name
+        comment (str): Comment included in unit
+        ds_label (str): Downstream label
+        us_remote_label, ds_remote_label (str): Remote labels
+        subtype (str): Defines the type of bridge unit (*Should not be changed*)
+        spill data (pandas.DataFrame): Dataframe object representing the spill data. Columns are ``'X'``, ``'Y'``,
+            ``'Easting'`` and ``'Northing'``
+        block data (pandas.DataFrame): Dataframe object representing the block data. Columns are ``'percentage'``,
+            ``'time'`` and ``'datetime'``
+
+    **ARCH Type (``SUPERBRIDGE.subtype == 'ARCH'``)**
+
+    Args:
+        calibration_coefficient (float): Calibration coefficient
+        skew (float): Bridge skew
+        bridge_width_dual (float): If modelled as dual bridge, the distance between upstream and downstream face of
+            bridge (0.00 if not modelling as dual bridge):
+        bridge_dist_dual (float): If modelled as dual bridge, the total distance between upstream and downstream
+            faces of both bridges (0.00 if not modelling as dual bridge):
+        orifice_flow (bool): Whether or not to model surcharged bridge as orifice flow
+        orifice_lower_transition_dist, orifice_upper_transition_dist (float): Upper and lower transition distances
+            for when using orifice flow
+        orifice_discharge_coefficient (float): Orifice discharge coefficient for when using orifice flow
+        section_data (pandas.DataFrame): Dataframe object representing the cross section. Columns are ``'X'``, ``'Y'``,
+            ``'Mannings n'`` and ``'Embankments'``
+        opening_data (pandas.DataFrame): Dataframe object representing the openings in the bridge. Columns are
+            ``'Start'``, ``'Finish'``, ``'Springing Level'`` and ``'Soffit Level'``
+
+    **USBPR Type (``SUPERBRIDGE.subtype == 'USBPR1978'``)**
+
+    Args:
+        calibration_coefficient (float): Calibration coefficient
+        skew (float): Bridge skew
+        bridge_width_dual (float): If modelled as dual bridge, the distance between upstream and downstream face of bridge
+            (0.00 if not modelling as dual bridge)
+        bridge_dist_dual (float): If modelled as dual bridge, the total distance between upstream and downstream faces of
+            both bridges (0.00 if not modelling as dual bridge)
+        orifice_flow (bool): Whether or not to model surcharged bridge as orifice flow
+        orifice_lower_transition_dist, orifice_upper_transition_dist (float): Transition distances for when using orifice flow
+        orifice_discharge_coefficient (float): Orifice discharge coefficient for when using orifice flow
+        abutment_type (str): Type of abutment: ``'3'`` (default), ``'2'`` (30-degree wing wall abutment), ``'1'`` (span between
+            abutments < 60 metres and either 90-degree wing or vertical wall abutment)
+        abutment_alignment (str): Abutment alignment to normal direction of flow: ``'ALIGNED'`` or ``'SKEW'``
+        specify_piers (bool): Whether or not to explicity model piers
+        total_pier_width (float): Total width of all piers at right ange to flow direction, only used if ``specify_piers == True``
+        npiers (int): Total number of piers in direction of flow, only used if ``specify_piers == True``
+        pier_use_calibration_coeff (bool): Whether to use a calibration coefficient to model piers. If set to False it would use
+            the pier shape.
+        pier_calibration_coeff (float): Calibration coefficient for modelling piers, only used if
+            ``specify_piers == True AND pier_use_calibration_coeff == True``
+        pier_shape (str): Cross-sectional pier shape with options: ``'RECTANGLE'``, ``'CYLINDER'``, ``'SQUARE'``, ``'I-BEAM'``.
+            Only used if ``specify_piers == True AND pier_use_calibration_coeff == False``
+        pier_faces (str): Shape of pier faces with options: ``'STREAMLINE'``, ``'SEMICIRCLE'``, ``'TRIANGLE'``, ``'DIAPHRAGM'``.
+            Only used if ``specify_piers == True AND pier_use_calibration_coeff == False``
+        soffit_shape (str): Shape of soffit (``'FLAT'`` or ``'ARCH'``), only used if ``specify_piers == False``
+        section_data (pandas.Dataframe): Dataframe object representing the cross section. Columns are ``'X'``, ``'Y'``, ``'Mannings n'``
+            and ``'Embankments'``
+        opening_data (pandas.Dataframe): Dataframe object representing the openings in the bridge. Columns are ``'Start'``, ``'Finish'``,
+            ``'Springing Level'`` and ``'Soffit Level'``
+        culvert_data (pandas.Dataframe): Dataframe object representing any flood relief culverts in the bridge. Columns are ``'Invert'``,
+            ``'Soffit'``, ``'Section Area'``, ``'Cd Part Full'``, ``'Cd Full'``, ``'Drowning Coefficient'`` and ``'X'``
+
+    **PIERLOSS Type (``SUPERBRIDGE.subtype == 'PIERLOSS'``)**
+
+    Args:
+        calibration_coefficient (float): Calibration coefficient
+        orifice_flow (bool): Whether or not to model surcharged bridge as orifice flow
+        orifice_lower_transition_dist, orifice_upper_transition_dist (float): Transition distances for when using orifice flow
+        orifice_discharge_coefficient (float): Orifice discharge coefficient for when using orifice flow
+        pier_coefficient (float): Pier coefficient
+        bridge_width (float): Distance in direction of flow from U/S to D/S cross section of bridge (for reference only)
+        us_section_data (pandas.Dataframe): Dataframe object representing the upstream cross section. Columns are ``'X'``, ``'Y'``,
+            ``'Mannings n'``, ``'Embankments'`` and ``'Top Level'``
+        ds_section_data (pandas.Dataframe): Dataframe object representing the downstream cross section, if no downstream section is
+            specified this will be an empty dataframe. Columns are ``'X'``, ``'Y'``, ``'Mannings n'``, ``'Embankments'`` and ``'Top Level'``
+        pier_locs_data (pandas.Dataframe): Dataframe object representing the pier locations. Columns are ``'Left X'``, ``'Left Top Level'``,
+            ``'Right X'``, ``'Right Top Level'``
+
+
+    Raises:
+        NotImplementedError: Raised if class is initialised without existing Superbridge block (i.e. if attempting to create new Superbridge unit).
+            This will be an option for future releases
+
+    Returns:
+        SUPERBRIDGE: Flood Modeller SUPERBRIDGE Unit class object
+    """
+
     _unit = "SUPERBRIDGE"
 
     # attributes set in a function (for mypy)
