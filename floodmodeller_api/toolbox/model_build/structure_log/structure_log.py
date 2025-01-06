@@ -246,7 +246,10 @@ class StructureLogBuilder:
                 ("CONDUIT", "SPRUNG"),
                 ("REPLICATE", None),
             ]:
-                logging.warning("Conduit subtype: %s not currently supported", conduit.subtype)
+                logging.warning(
+                    "Conduit subtype: %s not currently supported in structure log",
+                    conduit.subtype,
+                )
                 self._write(conduit.name, conduit._unit, conduit.subtype)
                 continue
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
