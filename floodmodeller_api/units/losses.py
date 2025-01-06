@@ -117,7 +117,7 @@ class CULVERT(Unit):
             self.headloss_type = _to_str(params[2], "TOTAL")
 
         else:
-            # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
+            # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in its raw state to write back.
             logging.warning(
                 "This Culvert sub-type: '%s' is currently unsupported for reading/editing",
                 self.subtype,

@@ -44,6 +44,7 @@ ignore = [
 "sample*" = ["T201"]
 "test_tool.py" = ["T201"]
 "example_tool.py" = ["T201"]
+"scripts*" = ["T201"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = true
