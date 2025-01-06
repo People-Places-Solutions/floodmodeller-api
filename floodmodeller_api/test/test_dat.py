@@ -203,10 +203,10 @@ def test_remove_unit(dat_ex3):
 
 
 def test_diff(test_workspace, caplog):
-    dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
-    dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
-    dat_ex4.diff(dat_ex4_changed)
     with caplog.at_level(logging.INFO):
+        dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
+        dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
+        dat_ex4.diff(dat_ex4_changed)
         assert caplog.text == (
             "INFO     root:_base.py:121 Files not equivalent, 12 difference(s) found:\n"
             "INFO     root:_base.py:131   DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
