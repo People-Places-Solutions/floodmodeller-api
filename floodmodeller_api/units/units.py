@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -48,6 +48,7 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "REPLICATE": {"group": "sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
     "COMMENT": {"group": "comments", "has_subtype": False},
+    "SUPERBRIDGE": {"group": "structures", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {

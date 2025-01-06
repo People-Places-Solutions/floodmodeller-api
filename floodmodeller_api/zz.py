@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -192,8 +192,8 @@ def run_routines(
 
 
 def convert_data(data: dict[str, Any]) -> None:
-    for key in data:
-        data[key] = np.array(data[key])
+    for key, value in data.items():
+        data[key] = np.array(value)
 
 
 def convert_meta(meta: dict[str, Any]) -> None:

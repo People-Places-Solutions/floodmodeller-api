@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,7 +18,7 @@ import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from .helpers import join_10_char
+from ._helpers import join_10_char
 
 
 class Variables(Jsonable):

@@ -15,6 +15,7 @@ from .structures import (
     SPILL,
     WEIR,
 )
+from .superbridge import SUPERBRIDGE
 from .units import ALL_UNIT_TYPES, SUPPORTED_UNIT_TYPES, UNSUPPORTED_UNIT_TYPES
 from .unsupported import UNSUPPORTED
 from .variables import Variables

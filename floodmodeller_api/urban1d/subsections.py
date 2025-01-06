@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import Type, TypedDict
+from typing import TypedDict
 
 from ._base import UrbanSubsection
 from .conduits import CONDUITS
@@ -28,7 +28,7 @@ from .xsections import XSECTIONS
 
 SupportedSubsections = TypedDict(
     "SupportedSubsections",
-    {"group": str, "attribute": str, "class": Type[UrbanSubsection]},
+    {"group": str, "attribute": str, "class": type[UrbanSubsection]},
 )
 
 # Unit types and support
