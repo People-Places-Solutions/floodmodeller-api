@@ -56,11 +56,11 @@ def test_log_file_unsupported(caplog):
     with caplog.at_level(logging.WARNING):
         lf = create_lf(None, "lf3")
 
-        assert lf is None
-        assert (
-            caplog.text
-            == "WARNING  root:lf.py:320 No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
-        )
+    assert lf is None
+    assert (
+        caplog.text
+        == "WARNING  root:lf.py:320 No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
+    )
 
 
 @pytest.mark.usefixtures("log_timeout")
@@ -70,11 +70,11 @@ def test_log_file_timeout(caplog):
         lf_filepath.is_file.return_value = False
         lf = create_lf(lf_filepath, "lf1")
 
-        assert lf is None
-        assert (
-            caplog.text
-            == "WARNING  root:lf.py:320 No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
-        )
+    assert lf is None
+    assert (
+        caplog.text
+        == "WARNING  root:lf.py:320 No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
+    )
 
 
 @pytest.mark.usefixtures("log_timeout")
@@ -86,11 +86,11 @@ def test_log_file_from_old_run(caplog):
         lf_filepath.stat.return_value.st_mtime = -10
         lf = create_lf(lf_filepath, "lf1")
 
-        assert lf is None
-        assert (
-            caplog.text
-            == "WARNING  root:lf.py:320 No progress bar as log file is from previous run. Simulation will continue as usual.\n"
-        )
+    assert lf is None
+    assert (
+        caplog.text
+        == "WARNING  root:lf.py:320 No progress bar as log file is from previous run. Simulation will continue as usual.\n"
+    )
 
 
 @pytest.mark.usefixtures("log_timeout")
