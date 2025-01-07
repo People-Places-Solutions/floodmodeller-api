@@ -37,7 +37,7 @@ class XSECTION(UrbanUnit):
 
 
     Returns:
-        XSECTION: Flood Modeller XSECTION Unit class object TODO: add urban 1d in to all instances within urban 1d API
+        XSECTION: Flood Modeller XSECTION Unit class object
     """
 
     _unit = "XSECTION"
