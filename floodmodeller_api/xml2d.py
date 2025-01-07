@@ -334,6 +334,10 @@ class XML2D(FMFile):
                     f".//{self._w3_schema}*[@name='{add_key}']",
                 )
 
+            if schema_elem is None:
+                msg = f"Schema element for key '{add_key}' not found in XSD."
+                raise ValueError(msg)
+
             if schema_elem.tag.endswith("attribute"):
                 parent.set(add_key, str(add_item))
 
