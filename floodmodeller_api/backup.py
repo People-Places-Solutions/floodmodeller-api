@@ -191,9 +191,8 @@ class File(BackupControl):
     """
 
     def __init__(self, path: str | Path = "", from_json: bool = False, **args):
-        # TODO: Make protected properties so they can't be manipulated
         self.path = Path(path)
-        # Check  if the file exists
+        # Check if the file exists
         if not self.path.exists():
             msg = "File not found!"
             raise OSError(msg)
@@ -212,7 +211,6 @@ class File(BackupControl):
         Generate the file's unique identifier as using a hash of the absolute file path
         """
         # hash the absolute path becuase the same file name / directroy structure may be mirrored across projects
-        # TODO: Use a function that produces a shorter has to make interpretation of the directory easier
         fp_bytes = str(self.path.absolute()).encode()
         self.file_id = sha1(fp_bytes).hexdigest()
 
@@ -232,7 +230,6 @@ class File(BackupControl):
         backup_filepath = Path(self.backup_dir, self.backup_filename)
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
-        # TODO: Only log file_id and poath, don't log duplicate lines. Needs to be fast so it doesn't slow FMFile down
         log_str = f"{self.path!s},{self.file_id},{self.dttm_str}\n"
         with open(self.backup_csv_path, "a") as f:
             f.write(log_str)
@@ -259,8 +256,6 @@ class File(BackupControl):
         if len(backups) == 0 or not filecmp.cmp(self.path, backups[0].path):
             self._make_backup()
         # If the file doesn't match the last backup then do a back up
-        # TODO: Use FloodModeller API implemented equivalence testing. This is implemented at a higher level than FMFile where this method is called.
-        # TODO: Return the file path?
 
     def clear_backup(self):
         """
