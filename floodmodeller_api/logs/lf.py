@@ -185,8 +185,6 @@ class LF(FMFile):
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
 
-        # TODO: make more like ZZN.to_dataframe
-
         data_type_all = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
