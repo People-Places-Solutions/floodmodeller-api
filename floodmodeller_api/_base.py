@@ -110,25 +110,28 @@ class FMFile(Jsonable):
         logging.info("%s File Saved to: %s", self._filetype, filepath)
 
     @handle_exception(when="compare")
-    def _diff(self, other, force_print=False):
+    def _diff(self, other, force_print=False) -> None:
+        def _format_diff(diff_list, max_items=None) -> str:
+            return "\n".join(
+                f"  {name}:  {reason}"
+                for name, reason in (diff_list[:max_items] if max_items else diff_list)
+            )
+
         if self._filetype != other._filetype:
             msg = "Cannot compare objects of different filetypes"
             raise TypeError(msg)
         diff = self._get_diff(other)
         if diff[0]:
             logging.info("No difference, files are equivalent")
-        else:
-            logging.info("Files not equivalent, %s difference(s) found:", len(diff[1]))
-            if len(diff[1]) > self.MAX_DIFF and not force_print:
-                logging.info("[Showing first %s differences...] ", self.MAX_DIFF)
-                logging.info(
-                    "\n".join(
-                        [f"  {name}:  {reason}" for name, reason in diff[1][: self.MAX_DIFF]],
-                    ),
-                )
-                logging.info("\n...To see full list of all differences add force_print=True")
-            else:
-                logging.info("\n".join([f"  {name}:  {reason}" for name, reason in diff[1]]))
+            return
+        differences = (
+            f"[Showing first {self.MAX_DIFF} differences...]\n"
+            f"{_format_diff(diff[1], self.MAX_DIFF)}\n"
+            "...To see full list of all differences add force_print=True"
+            if len(diff[1]) > self.MAX_DIFF and not force_print
+            else _format_diff(diff[1])
+        )
+        logging.info("Files not equivalent, %s difference(s) found:\n%s", len(diff[1]), differences)
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
