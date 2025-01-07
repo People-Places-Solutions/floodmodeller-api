@@ -355,8 +355,7 @@ class REFHBDY(Unit):
 
         # line 3
         refhbdy_params1 = split_10_char(refhbdy_block[2])
-        # TODO: work out what this is
-        self._something = _to_float(refhbdy_params1[0])
+        self._unknown_param_1 = _to_float(refhbdy_params1[0])
         self.easting = int(float(refhbdy_params1[1]))
         self.northing = int(float(refhbdy_params1[2]))
 
@@ -401,14 +400,13 @@ class REFHBDY(Unit):
         rainfall_params1 = split_10_char(rainfall_params1)
         self.storm_area = _to_float(rainfall_params1[0])
         self.storm_duration = _to_float(rainfall_params1[1])
-        # TODO: work out what this is
-        self._something2 = _to_float(rainfall_params1[2])
+        self._unknown_param_2 = _to_float(rainfall_params1[2])
 
         # line 7
         self.rainfall_comment = rainfall_params2[20:]
         rainfall_params2 = split_10_char(rainfall_params2[:20])
         self.arf_method = rainfall_params2[1]
-        self._something3 = rainfall_params2[0]  # TODO: work out what this is
+        self._unknown_param_3 = rainfall_params2[0]
 
         # line 8
         rainfall_params3 = split_10_char(rainfall_params3)
@@ -429,7 +427,7 @@ class REFHBDY(Unit):
         name = self.name[: self._label_len]
 
         refhbdy_block = [header, name]
-        line3 = join_10_char(self._something, self.easting, self.northing)
+        line3 = join_10_char(self._unknown_param_1, self.easting, self.northing)
         self.sim_type = (
             "" if self.sim_type.upper() == "FULL" else self.sim_type
         )  # Allow 'full' as an option
@@ -454,8 +452,8 @@ class REFHBDY(Unit):
         if self.use_urban_subdivisions:
             refhbdy_block.extend(self._urban_refh_data)
 
-        line6 = join_10_char(self.storm_area, self.storm_duration, self._something2)
-        line7 = join_10_char(self._something3, self.arf_method) + self.rainfall_comment
+        line6 = join_10_char(self.storm_area, self.storm_duration, self._unknown_param_2)
+        line7 = join_10_char(self._unknown_param_3, self.arf_method) + self.rainfall_comment
         line8 = join_10_char(
             self.observed_rainfall_depth,
             self.return_period,
