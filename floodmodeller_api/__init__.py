@@ -11,4 +11,9 @@ from .version import __version__
 from .xml2d import XML2D
 from .zz import ZZN, ZZX
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%H:%M:%S",
+)
