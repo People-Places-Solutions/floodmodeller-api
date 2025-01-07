@@ -264,7 +264,7 @@ class TimeDeltaSParser(Parser):
     def _process_line(self, raw: str) -> dt.timedelta:
         """Converts string S (with decimal place and "s") to timedelta"""
 
-        s = raw.split("s")[0]  # TODO: not necessary for simulation time
+        s = raw.split("s")[0]  # not necessary for simulation time
         return dt.timedelta(seconds=float(s))
 
 
