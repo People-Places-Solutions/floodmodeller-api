@@ -62,7 +62,7 @@ class JUNCTION(UrbanUnit):
 
         _validate_unit(self, urban=True)
 
-        # TODO:Improve indentation format when writing and include header for completeness
+        # TODO: Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,
