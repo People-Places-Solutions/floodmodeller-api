@@ -27,14 +27,12 @@ ignore = [
     "E402",
     "E501",
     "FBT",
-    "FIX",
     "PGH003",
     "PLW",  # TODO: remove
     "PTH123",
     "S",
     "SLF",
     "T20",  # TODO: remove
-    "TD",
     "TID",
     "TRY",
 ]
