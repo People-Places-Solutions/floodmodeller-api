@@ -224,7 +224,6 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
-    # TODO: a refactor to combine the _add_conduits and _add_structures together would be nice for clarity
     def add_conduits(self):
         conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
 
