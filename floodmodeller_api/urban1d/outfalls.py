@@ -44,9 +44,6 @@ class OUTFALL(UrbanUnit):
     def _read(self, line):
         unit_data = line.split()
 
-        # TODO: add functionality to read comments
-        # TODO: considering raising an exception if any of the required parameters are missing
-
         self.name = str(unit_data[0])
         self.elevation = _to_float(unit_data[1], 0.0)
         self.type = str(unit_data[2])
@@ -80,8 +77,6 @@ class OUTFALL(UrbanUnit):
         """Function to write a valid OUTFALL line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO: Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,

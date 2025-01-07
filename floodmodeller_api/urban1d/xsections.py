@@ -48,8 +48,6 @@ class XSECTION(UrbanUnit):
     def _read(self, line):
         unit_data = line.split()
 
-        # TODO: add functionality to read comments
-        # TODO: consider appropriate defaults
         self.name = str(unit_data[0])
 
         if unit_data[1] in _shape_options:
@@ -85,8 +83,6 @@ class XSECTION(UrbanUnit):
         """Function to write a valid OUTFALL line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO: Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name)
 

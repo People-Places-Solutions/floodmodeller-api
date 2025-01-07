@@ -44,17 +44,11 @@ class CONDUIT(UrbanUnit):
     def _read(self, line):
         """Function to read a given CONDUIT line and store data as class attributes"""
 
-        # TODO: add functionality to read comments
-        # TODO: considering raising an exception if any of the required parameters are missing
-
         unit_data = line.split()  # Get unit parameters
 
         # Extend length of unit_data if options variables not provided.
         while len(unit_data) < self.MIN_LENGTH:
             unit_data.append("")
-
-        # TODO: Update defaults.  Presently atrbitary defaults added to allow API to work.
-        # TODO: Consider re-naming variables to more intuitive names.  Currently as as per SWMM manual
 
         self.name = _to_str(unit_data[0], "")
         self.node1 = _to_str(unit_data[1], "")
@@ -66,14 +60,10 @@ class CONDUIT(UrbanUnit):
         self.q0 = _to_float(unit_data[7], 0.0)  # Default as per FM
         self.qmax = _to_float(unit_data[8], 999999)  # No limit
 
-        # TODO: Consider linkage with other associated subsections i.e. [XSECTIONS] and [LOSSES]
-
     def _write(self):
         """Function to write a valid CONDUIT line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO: Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name, self.node1, self.node2) + join_n_char_ljust(
             15,
