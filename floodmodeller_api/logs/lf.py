@@ -196,19 +196,22 @@ class LF(FMFile):
             msg = f'Variable "{variable}" not recognised'
             raise ValueError(msg)
 
-        data_type_all = {
+        lf_df_data = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all"
-            and (include_tuflow or "tuflow" not in k)
-            and (variable in (k, "all"))
+            if v["data_type"] == "all"  # data with entries every iteration
+            and (include_tuflow or "tuflow" not in k)  # tuflow-related data only if requested
+            and (variable in (k, "all"))  # data if it or all data are requested
         }
-        lf_df = pd.concat(data_type_all, axis=1)
+        lf_df = pd.concat(lf_df_data, axis=1)
         lf_df.columns = lf_df.columns.droplevel()
         lf_df = lf_df.sort_index()
 
         if result_type == "all":
             return lf_df
+
+        lf_df.columns = [f"{result_type} {x}" for x in lf_df.columns]
+
         if result_type == "max":
             return lf_df.max()
         if result_type == "min":

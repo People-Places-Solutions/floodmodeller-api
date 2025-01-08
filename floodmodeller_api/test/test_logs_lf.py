@@ -39,7 +39,7 @@ def test_lf1_to_dataframe(lf1_fp: Path):
 
 
 def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
-    """LF1: Check IEF.get_lf1()"""
+    """LF1: Check IEF.get_log()"""
     lf1 = LF1(lf1_fp)
 
     ief_fp = Path(test_workspace, "ex3.ief")
