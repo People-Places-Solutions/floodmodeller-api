@@ -526,7 +526,6 @@ class XML2D(FMFile):
                 raise Exception(msg)
 
         # checking if all schemes used are fast, if so will use FAST.exe
-        # TODO: Add in option to choose to use or not to use if you can
         is_fast = True
         for domain in self.domains.values():
             if domain["run_data"]["scheme"] != "FAST":
