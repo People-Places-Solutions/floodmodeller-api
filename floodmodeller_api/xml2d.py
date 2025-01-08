@@ -216,8 +216,6 @@ class XML2D(FMFile):
         parent_key,
         list_idx=None,
     ):
-        # TODO: Handle removing params
-
         for key, item in new_dict.items():
             if key in self._multi_value_keys and not isinstance(item, list):
                 msg = f"Element: '{key}' must be added as list"
