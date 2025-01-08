@@ -175,7 +175,14 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self, *, include_tuflow: bool = False) -> pd.DataFrame:
+    def to_dataframe(
+        self,
+        result_type: str = "all",
+        variable: str = "all",
+        *,
+        include_time: bool = False,
+        include_tuflow: bool = False,
+    ) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
@@ -185,18 +192,30 @@ class LF(FMFile):
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
 
-        # TODO: make more like ZZN.to_dataframe
+        if (variable != "all") and (variable not in self._data_to_extract):
+            msg = f'Variable "{variable}" not recognised'
+            raise ValueError(msg)
 
         data_type_all = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
+            if v["data_type"] == "all"
+            and (include_tuflow or "tuflow" not in k)
+            and (variable in (k, "all"))
         }
-
         lf_df = pd.concat(data_type_all, axis=1)
         lf_df.columns = lf_df.columns.droplevel()
+        lf_df = lf_df.sort_index()
 
-        return lf_df.sort_index()
+        if result_type == "all":
+            return lf_df
+        if result_type == "max":
+            return lf_df.max()
+        if result_type == "min":
+            return lf_df.min()
+
+        msg = f'Result type "{result_type}" not recognised'
+        raise ValueError(msg)
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""
