@@ -200,7 +200,7 @@ class LF(FMFile):
             for k, v in self._data_to_extract.items()
             if v["data_type"] == "all"  # with entries every iteration
             and (include_tuflow or "tuflow" not in k)  # tuflow-related only if requested
-            and (variable in (k, *v.get("subheaders", []), "all"))  # if it or all are requested
+            and (variable in ("all", k, *v.get("subheaders", [])))  # if it or all are requested
         }
 
         if lf_df_data == {}:
@@ -209,6 +209,8 @@ class LF(FMFile):
 
         lf_df = pd.concat(lf_df_data, axis=1)
         lf_df.columns = lf_df.columns.droplevel()
+        if variable != "all":
+            lf_df = lf_df[variable]  # otherwise subheaders result in extra columns
         lf_df = lf_df.sort_index()
 
         if result_type == "all":

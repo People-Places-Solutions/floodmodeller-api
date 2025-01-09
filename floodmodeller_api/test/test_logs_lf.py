@@ -32,10 +32,16 @@ def test_lf1_report_progress(lf1_fp: Path):
 def test_lf1_to_dataframe(lf1_fp: Path):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
-    lf1_df = lf1.to_dataframe()
+    lf1_df = lf1.to_dataframe(variable="all", result_type="all")
+
     assert lf1_df.loc[lf1_df.index[0], "iter"] == 6
+    assert lf1.to_dataframe(variable="iter", result_type="all").iloc[0] == 6
+
     assert lf1_df.loc[lf1_df.index[-1], "outflow"] == 21.06
+    assert lf1.to_dataframe(variable="outflow", result_type="all").iloc[-1] == 21.06
+
     assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
+    assert lf1.to_dataframe(variable="mass_error", result_type="all").iloc[4] == -0.07
 
 
 def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
