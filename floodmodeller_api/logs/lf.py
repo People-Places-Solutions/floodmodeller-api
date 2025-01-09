@@ -55,7 +55,7 @@ class LF(FMFile):
     def __init__(
         self,
         lf_filepath: str | Path | None,
-        data_to_extract: dict,
+        data_to_extract: dict[str, dict],
         steady: bool = False,
     ):
         FMFile.__init__(self, lf_filepath)
@@ -196,20 +196,16 @@ class LF(FMFile):
             msg = f"Result type '{result_type}' not recognised."
             raise ValueError(msg)
 
-        if (variable != "all") and (variable not in self._data_to_extract):
-            msg = f"Variable '{variable}' not recognised"
-            raise ValueError(msg)
-
         lf_df_data = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all"  # data with entries every iteration
-            and (include_tuflow or "tuflow" not in k)  # tuflow-related data only if requested
-            and (variable in (k, "all"))  # data if it or all data are requested
+            if v["data_type"] == "all"  # with entries every iteration
+            and (include_tuflow or "tuflow" not in k)  # tuflow-related only if requested
+            and (variable in (k, *v.get("subheaders", []), "all"))  # if it or all are requested
         }
 
         if lf_df_data == {}:
-            msg = "No data extracted. Check 'variable' and 'data_to_extract' configurations."
+            msg = f"No data extracted for variable '{variable}'."
             raise ValueError(msg)
 
         lf_df = pd.concat(lf_df_data, axis=1)
@@ -217,12 +213,20 @@ class LF(FMFile):
         lf_df = lf_df.sort_index()
 
         if result_type == "all":
+            if include_time is True:
+                msg = "include_time cannot be 'True' when result_type is 'all'."
+                raise ValueError(msg)
             return lf_df
 
         lf_df.columns = [f"{result_type} {x}" for x in lf_df.columns]
         extreme = lf_df.max() if result_type == "max" else lf_df.min()
-        extreme_idx = lf_df.idxmax() if result_type == "max" else lf_df.idxmin()
-        return pd.concat([extreme.to_frame().T, extreme_idx.to_frame().T])
+
+        if include_time:
+            extreme_times = lf_df.idxmax() if result_type == "max" else lf_df.idxmin()
+            extreme_times.index = [f"{x} time" for x in extreme_times.index]
+            extreme = pd.concat([extreme, extreme_times])
+
+        return extreme
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""
