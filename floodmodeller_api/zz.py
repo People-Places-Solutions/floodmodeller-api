@@ -341,9 +341,6 @@ class _ZZ(FMFile):
         result_type = result_type.lower()
 
         if result_type == "all":
-            if include_time is True:
-                msg = "'include_time' cannot be 'True' when 'result_type' is 'all'."
-                raise ValueError(msg)
             return self._get_all(variable, multilevel_header)
 
         if result_type in {"max", "min"}:

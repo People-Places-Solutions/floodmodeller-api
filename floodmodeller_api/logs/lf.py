@@ -181,7 +181,6 @@ class LF(FMFile):
         variable: str = "all",
         *,
         include_time: bool = False,
-        multilevel_header: bool = True,
         include_tuflow: bool = False,
     ) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
@@ -193,7 +192,7 @@ class LF(FMFile):
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
         if result_type not in {"all", "max", "min"}:
-            msg = f"Result type '{result_type}' not recognised."
+            msg = f"Result type '{result_type}' not recognised"
             raise ValueError(msg)
 
         lf_df_data = {
@@ -205,7 +204,7 @@ class LF(FMFile):
         }
 
         if lf_df_data == {}:
-            msg = f"No data extracted for variable '{variable}'."
+            msg = f"No data extracted for variable '{variable}'"
             raise ValueError(msg)
 
         lf_df = pd.concat(lf_df_data, axis=1)
@@ -213,9 +212,6 @@ class LF(FMFile):
         lf_df = lf_df.sort_index()
 
         if result_type == "all":
-            if include_time is True:
-                msg = "include_time cannot be 'True' when result_type is 'all'."
-                raise ValueError(msg)
             return lf_df
 
         lf_df.columns = [f"{result_type} {x}" for x in lf_df.columns]
