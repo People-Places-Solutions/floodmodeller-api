@@ -1,4 +1,4 @@
-""" This sample script shows how to extract max results from a zzn file into a pandas dataframe """
+"""This sample script shows how to extract max results from a zzn file into a pandas dataframe"""
 
 # Import modules
 import os

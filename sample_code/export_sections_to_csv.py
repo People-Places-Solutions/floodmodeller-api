@@ -1,4 +1,4 @@
-""" This sample script shows how all the river cross sections in a DAT file can be exported into csv format """
+"""This sample script shows how all the river cross sections in a DAT file can be exported into csv format"""
 
 # Import modules
 import os
