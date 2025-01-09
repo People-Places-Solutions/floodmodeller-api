@@ -181,6 +181,7 @@ class LF(FMFile):
         variable: str = "all",
         *,
         include_time: bool = False,
+        multilevel_header: bool = True,
         include_tuflow: bool = False,
     ) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
@@ -191,9 +192,12 @@ class LF(FMFile):
         Returns:
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
+        if result_type not in {"all", "max", "min"}:
+            msg = f"Result type '{result_type}' not recognised."
+            raise ValueError(msg)
 
         if (variable != "all") and (variable not in self._data_to_extract):
-            msg = f'Variable "{variable}" not recognised'
+            msg = f"Variable '{variable}' not recognised"
             raise ValueError(msg)
 
         lf_df_data = {
@@ -203,6 +207,11 @@ class LF(FMFile):
             and (include_tuflow or "tuflow" not in k)  # tuflow-related data only if requested
             and (variable in (k, "all"))  # data if it or all data are requested
         }
+
+        if lf_df_data == {}:
+            msg = "No data extracted. Check 'variable' and 'data_to_extract' configurations."
+            raise ValueError(msg)
+
         lf_df = pd.concat(lf_df_data, axis=1)
         lf_df.columns = lf_df.columns.droplevel()
         lf_df = lf_df.sort_index()
@@ -211,14 +220,9 @@ class LF(FMFile):
             return lf_df
 
         lf_df.columns = [f"{result_type} {x}" for x in lf_df.columns]
-
-        if result_type == "max":
-            return lf_df.max()
-        if result_type == "min":
-            return lf_df.min()
-
-        msg = f'Result type "{result_type}" not recognised'
-        raise ValueError(msg)
+        extreme = lf_df.max() if result_type == "max" else lf_df.min()
+        extreme_idx = lf_df.idxmax() if result_type == "max" else lf_df.idxmin()
+        return pd.concat([extreme.to_frame().T, extreme_idx.to_frame().T])
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""
