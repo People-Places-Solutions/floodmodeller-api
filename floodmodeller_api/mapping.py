@@ -16,6 +16,7 @@ from .units import (
     HTBDY,
     IIC,
     INTERPOLATE,
+    JUNCTION,
     ORIFICE,
     OUTFALL,
     QHBDY,
@@ -32,7 +33,8 @@ from .units import (
 )
 from .urban1d.conduits import CONDUIT as CONDUIT_URBAN
 from .urban1d.conduits import CONDUITS as CONDUITS_URBAN
-from .urban1d.junctions import JUNCTION, JUNCTIONS
+from .urban1d.junctions import JUNCTION as JUNCTION_URBAN
+from .urban1d.junctions import JUNCTIONS
 from .urban1d.losses import LOSS, LOSSES
 from .urban1d.outfalls import OUTFALL as OUTFALL_URBAN
 from .urban1d.outfalls import OUTFALLS as OUTFALLS_URBAN
@@ -51,7 +53,7 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.zzn.ZZN": ZZN,
     "floodmodeller_api.backup.File": File,
     "floodmodeller_api.urban1d.junctions.JUNCTIONS": JUNCTIONS,
-    "floodmodeller_api.urban1d.junctions.JUNCTION": JUNCTION,
+    "floodmodeller_api.urban1d.junctions.JUNCTION": JUNCTION_URBAN,
     "floodmodeller_api.urban1d.outfalls.OUTFALLS": OUTFALLS_URBAN,
     "floodmodeller_api.urban1d.outfalls.OUTFALL": OUTFALL_URBAN,
     "floodmodeller_api.urban1d.raingauges.RAINGAUGES": RAINGAUGES,
@@ -68,6 +70,7 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.units.boundaries.REFHBDY": REFHBDY,
     "floodmodeller_api.units.comment.COMMENT": COMMENT,
     "floodmodeller_api.units.conduits.CONDUIT": CONDUIT,
+    "floodmodeller_api.units.connectors.JUNCTION": JUNCTION,
     "floodmodeller_api.units.iic.IIC": IIC,
     "floodmodeller_api.units.losses.BLOCKAGE": BLOCKAGE,
     "floodmodeller_api.units.losses.CULVERT": CULVERT,
