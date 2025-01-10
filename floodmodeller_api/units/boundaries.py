@@ -82,13 +82,6 @@ class QTBDY(Unit):
         }.items():
             setattr(self, param, val)
 
-        # AL Since this is most likely used when building a model,
-        # AL it would be nice to have a "name generator" to create
-        # AL a unique name with each call (ie new_qtbdy_12345 then new_qtbdy_02508)
-        # JP Yes this is a good idea, although I'm not sure how it would be best implemented
-        #   since any two instances of the class being initialised would be unaware of each other?
-        #   There is always the option to pass a name when constrcuting the class which may be better
-
         self.data = (
             data
             if isinstance(data, pd.Series)

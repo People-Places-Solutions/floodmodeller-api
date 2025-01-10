@@ -65,15 +65,8 @@ class IIC(Jsonable):
                     float(z),
                 ],
             )
-        # AL is this storing the values as strings?
         self.data = pd.DataFrame(data_list, columns=header)
-        # JP Yes
-        # AL If it does, would it worth making it store the values instead?
-        # JP Yes I'll do that, only downside is that the updated values may not match notation
-        #   of original even if no changes. (i.e 2.0 -> 2.00 or 2. -> 2.00)
 
-    # AL Is this only to transform the table of data into a string-like array?
-    # JP Yes it just transforms the dataframe back into valid DAT format
     def _write(self):
         ic_block = [
             "INITIAL CONDITIONS",
