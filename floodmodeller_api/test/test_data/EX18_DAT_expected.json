@@ -1720,6 +1720,46 @@
         }
       }
     },
+    "connectors": {
+      "S1u": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1u",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S1u         S1          S1d"
+          ],
+          "comment": "",
+          "labels": [
+            "S1u",
+            "S1",
+            "S1d"
+          ]
+        }
+      },
+      "S4_drop": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4_drop",
+          "_subtype": "OPEN",
+          "_raw_block": [
+            "JUNCTION",
+            "OPEN",
+            "S4_drop     P_suc       S5"
+          ],
+          "comment": "",
+          "labels": [
+            "S4_drop",
+            "P_suc",
+            "S5"
+          ]
+        }
+      }
+    },
     "structures": {
       "S0": {
         "API Class": "floodmodeller_api.units.structures.WEIR",
@@ -1960,26 +2000,6 @@
           "ds_label": "QT1"
         }
       },
-      "S1u (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S1u",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S1u         S1          S1d"
-          ],
-          "comment": "",
-          "labels": [
-            "S1u",
-            "S1",
-            "S1d"
-          ]
-        }
-      },
       "C2m (MANHOLE)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -2001,26 +2021,7 @@
           "ds_label": "C2md"
         }
       },
-      "S4_drop (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S4_drop",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S4_drop     P_suc       S5"
-          ],
-          "comment": "",
-          "labels": [
-            "S4_drop",
-            "P_suc",
-            "S5"
-          ]
-        }
-      },
+
       "P_suc (OCPUMP)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -2223,11 +2224,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S1u",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -2988,11 +2988,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S4_drop",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",

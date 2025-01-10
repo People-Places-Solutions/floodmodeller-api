@@ -16,7 +16,7 @@ class JUNCTION(Unit):
 
     def _write(self) -> list[str]:
         return [
-            self._unit,
+            self._create_header(),
             self.subtype,
             join_12_char_ljust(*self.labels).rstrip(),
         ]
@@ -35,7 +35,7 @@ class LATERAL(Unit):
 
     def _write(self) -> list[str]:
         return [
-            f"{self._unit} {self.comment}",
+            self._create_header(),
             self.name,
             self.weight_factor,
             str(self.no_units),

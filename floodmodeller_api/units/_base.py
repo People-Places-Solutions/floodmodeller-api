@@ -217,5 +217,16 @@ class Unit(Jsonable):
 
         return rules
 
-    def _remove_unit_name(self, line: str) -> str:
-        return line.replace(self._unit, "").strip()
+    def _remove_unit_name(self, line: str, *, remove_revision: bool = False) -> str:
+        line = line.replace(self._unit, "")
+        if remove_revision:
+            line = line.replace("#revision#", "")
+        return line.strip()
+
+    def _create_header(self, *, include_revision: bool = False) -> str:
+        header = self._unit
+        if include_revision:
+            header += f" #revision#{self._revision}"
+        if self.comment != "":
+            header += f" {self.comment}"
+        return header

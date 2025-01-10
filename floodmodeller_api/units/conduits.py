@@ -265,7 +265,7 @@ class CONDUIT(Unit):
     def _write(self):
         """Function to write a valid CONDUIT block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "CONDUIT " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.spill)
         c_block = [header, self._subtype, labels]
 

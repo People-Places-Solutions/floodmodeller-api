@@ -122,7 +122,7 @@ class QTBDY(Unit):
     def _write(self):
         """Function to write a valid QTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = "QTBDY " + self.comment
+        header = self._create_header()
         name = self.name[: self._label_len]
         self.nrows = len(self.data)
 
@@ -221,7 +221,7 @@ class HTBDY(Unit):
     def _write(self):
         """Function to write a valid HTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for HTBDY
-        header = "HTBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -287,7 +287,7 @@ class QHBDY(Unit):
     def _write(self):
         """Function to write a valid QHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QHBDY
-        header = "QHBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -348,7 +348,7 @@ class REFHBDY(Unit):
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
-        b = refhbdy_block[0].replace("REFHBDY #revision#", "").strip()
+        b = self._remove_unit_name(refhbdy_block[0], remove_revision=True)
         self._revision = _to_int(b[0], 1)
         self.comment = b[1:].strip()
         self.name = refhbdy_block[1][: self._label_len].strip()
@@ -425,7 +425,7 @@ class REFHBDY(Unit):
     def _write(self):
         """Function to write a valid REFHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = f"REFHBDY #revision#{self._revision} {self.comment}"
+        header = self._create_header(include_revision=True)
         name = self.name[: self._label_len]
 
         refhbdy_block = [header, name]

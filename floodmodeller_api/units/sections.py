@@ -194,7 +194,7 @@ class RIVER(Unit):
         if self.subtype == "SECTION":
             # Function to check the params are valid for RIVER SECTION unit
             _validate_unit(self)
-            header = "RIVER " + self.comment
+            header = self._create_header()
             labels = join_n_char_ljust(
                 self._label_len,
                 self.name,
@@ -396,7 +396,7 @@ class INTERPOLATE(Unit):
         """Function to write a valid INTERPOLATE block"""
 
         _validate_unit(self)
-        header = "INTERPOLATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -493,7 +493,7 @@ class REPLICATE(Unit):
         """Function to write a valid REPLICATE block"""
 
         _validate_unit(self)
-        header = "REPLICATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,

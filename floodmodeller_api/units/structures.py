@@ -352,7 +352,7 @@ class BRIDGE(Unit):
     def _write(self):  # noqa: C901, PLR0912, PLR0915
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
-        header = "BRIDGE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -668,7 +668,7 @@ class SLUICE(Unit):
     def _write(self):
         """Function to write a valid SLUICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "SLUICE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.remote_label)
         block = [header, self.subtype, labels]
 
@@ -857,7 +857,7 @@ class ORIFICE(Unit):
     def _write(self):
         """Function to write a valid ORIFICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "ORIFICE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
 
         self._subtype = "FLAPPED" if self.flapped else "OPEN"
@@ -962,7 +962,7 @@ class SPILL(Unit):
     def _write(self):
         """Function to write a valid SPILL block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "SPILL " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1048,7 +1048,7 @@ class RNWEIR(Unit):
     def _write(self):
         """Function to write a valid RNWEIR block"""
         _validate_unit(self)
-        header = "RNWEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1147,7 +1147,7 @@ class WEIR(Unit):
     def _write(self):
         """Function to write a valid WEIR block"""
         _validate_unit(self)
-        header = "WEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1242,7 +1242,7 @@ class CRUMP(Unit):
     def _write(self):
         """Function to write a valid CRUMP block"""
         _validate_unit(self)
-        header = "CRUMP " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -1357,7 +1357,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         """Function to write a valid FLAT-V WEIR block"""
 
         _validate_unit(self)
-        header = "FLAT-V WEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -1508,7 +1508,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         """Function to write a valid RESERVOIR block"""
 
         _validate_unit(self)
-        header = "RESERVOIR " + self.comment
+        header = self._create_header()
         self.labels = "          ".join(self.all_labels)
         block = [header, self.labels]
 
@@ -1633,7 +1633,7 @@ class OUTFALL(Unit):
     def _write(self):
         """Function to write a valid OUTFALL block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "OUTFALL " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
 
         self._subtype = "FLAPPED" if self.flapped else "OPEN"
