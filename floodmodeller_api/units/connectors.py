@@ -8,7 +8,7 @@ class JUNCTION(Unit):
     def _read(self, block: list[str]) -> None:
         self._raw_block = block
 
-        self.comment = block[0].replace(self._unit, "").strip()
+        self.comment = self._remove_unit_name(block[0])
         self._subtype = block[1].split(" ")[0].strip()
         self.labels = split_12_char(block[2])
 

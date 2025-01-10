@@ -98,7 +98,7 @@ class QTBDY(Unit):
     def _read(self, qtbdy_block):
         """Function to read a given QTBDY block and store data as class attributes"""
         self.name = qtbdy_block[1][: self._label_len].strip()
-        self.comment = qtbdy_block[0].replace("QTBDY", "").strip()
+        self.comment = self._remove_unit_name(qtbdy_block[0])
         qtbdy_params = split_10_char(f"{qtbdy_block[2]:<90}")
         self.nrows = int(qtbdy_params[0])
         self.timeoffset = _to_float(qtbdy_params[1])
@@ -195,7 +195,7 @@ class HTBDY(Unit):
     def _read(self, htbdy_block):
         """Function to read a given HTBDY block and store data as class attributes"""
         self.name = htbdy_block[1][: self._label_len].strip()
-        self.comment = htbdy_block[0].replace("HTBDY", "").strip()
+        self.comment = self._remove_unit_name(htbdy_block[0])
         htbdy_params = split_10_char(f"{htbdy_block[2]:<50}")
         self.nrows = int(htbdy_params[0])
         self._something = _to_str(htbdy_params[1], "")
@@ -273,7 +273,7 @@ class QHBDY(Unit):
     def _read(self, qhbdy_block):
         """Function to read a given QHBDY block and store data as class attributes"""
         self.name = qhbdy_block[1][: self._label_len].strip()
-        self.comment = qhbdy_block[0].replace("QHBDY", "").strip()
+        self.comment = self._remove_unit_name(qhbdy_block[0])
         qhbdy_params = split_10_char(f"{qhbdy_block[2]:<30}")
         self.nrows = int(qhbdy_params[0])
         self.interpmethod = _to_str(qhbdy_params[2], "LINEAR")

@@ -133,7 +133,7 @@ class BRIDGE(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = br_block[0].replace("BRIDGE", "").strip()
+        self.comment = self._remove_unit_name(br_block[0])
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
@@ -601,7 +601,7 @@ class SLUICE(Unit):
         self.name = labels[0]
         self.ds_label = labels[1]
         self.remote_label = labels[2]
-        self.comment = block[0].replace("SLUICE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<80}")
@@ -837,7 +837,7 @@ class ORIFICE(Unit):
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("ORIFICE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
@@ -938,7 +938,7 @@ class SPILL(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("SPILL", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params = split_10_char(block[2])
@@ -1030,7 +1030,7 @@ class RNWEIR(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("RNWEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<50}")
@@ -1131,7 +1131,7 @@ class WEIR(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("WEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # Exponent
         self.exponent = _to_float(block[2].strip())
@@ -1225,7 +1225,7 @@ class CRUMP(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = block[0].replace("CRUMP", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
@@ -1334,7 +1334,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = block[0].replace("FLAT-V WEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<90}")
@@ -1458,7 +1458,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.all_labels = labels[0 : len(labels)]
-        self.comment = block[0].replace("RESERVOIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
@@ -1613,7 +1613,7 @@ class OUTFALL(Unit):
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("OUTFALL", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")

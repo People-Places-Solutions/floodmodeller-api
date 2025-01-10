@@ -77,7 +77,7 @@ class CULVERT(Unit):
 
         # Extract common attributes
         self._subtype = block[1].split(" ")[0].strip()
-        self.comment = block[0].replace("CULVERT", "").strip()
+        self.comment = self._remove_unit_name(block[0])
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]

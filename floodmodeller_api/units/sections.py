@@ -129,7 +129,7 @@ class RIVER(Unit):
             self.lat2 = labels[4]
             self.lat3 = labels[5]
             self.lat4 = labels[6]
-            self.comment = riv_block[0].replace("RIVER", "").strip()
+            self.comment = self._remove_unit_name(riv_block[0])
 
             params = split_10_char(f"{riv_block[3]:<40}")
             self.dist_to_next = _to_float(params[0])
@@ -384,7 +384,7 @@ class INTERPOLATE(Unit):
         self.lat2 = labels[4]
         self.lat3 = labels[5]
         self.lat4 = labels[6]
-        self.comment = block[0].replace("INTERPOLATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<30}")
@@ -480,7 +480,7 @@ class REPLICATE(Unit):
         self.lat3 = labels[5]
         self.lat4 = labels[6]
 
-        self.comment = block[0].replace("REPLICATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")

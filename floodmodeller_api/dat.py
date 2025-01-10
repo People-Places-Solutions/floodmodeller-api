@@ -110,8 +110,6 @@ class DAT(FMFile):
         """
         self._diff(other, force_print=force_print)
 
-    # def _get_unit_from_connectivity(self, method) #use this as method prev and next
-
     @handle_exception(when="calculate next unit in")
     def next(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds next unit in the reach.

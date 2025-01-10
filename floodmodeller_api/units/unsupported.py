@@ -26,7 +26,7 @@ class UNSUPPORTED(Unit):
         self._unit = unit_type
         self._subtype = subtype
         self._raw_block = block
-        self.comment = block[0].replace(self._unit, "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         if self._subtype is False:
             self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)

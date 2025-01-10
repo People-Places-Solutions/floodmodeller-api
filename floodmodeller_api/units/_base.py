@@ -216,3 +216,6 @@ class Unit(Jsonable):
         self._last_rule_row = rule_row
 
         return rules
+
+    def _remove_unit_name(self, line: str) -> str:
+        return line.replace(self._unit, "").strip()

@@ -184,7 +184,7 @@ class CONDUIT(Unit):
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.spill = labels[1]
-        self.comment = c_block[0].replace("CONDUIT", "").strip()
+        self.comment = self._remove_unit_name(c_block[0])
 
         # Read CIRCULAR type unit
         if self._subtype == "CIRCULAR":
