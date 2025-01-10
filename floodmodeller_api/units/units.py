@@ -50,6 +50,7 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "COMMENT": {"group": "comments", "has_subtype": False},
     "JUNCTION": {"group": "connectors", "has_subtype": True},
     "LATERAL": {"group": "connectors", "has_subtype": False},
+    "RESERVOIR": {"group": "connectors", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -82,7 +83,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
     "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
-    "RESERVOIR": {"has_subtype": False},  # reservoir unit [connector]
     "SCSBDY": {
         "group": "boundaries",
         "has_subtype": False,
