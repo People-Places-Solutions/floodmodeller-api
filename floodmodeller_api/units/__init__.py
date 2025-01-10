@@ -1,7 +1,7 @@
 from .boundaries import HTBDY, QHBDY, QTBDY, REFHBDY
 from .comment import COMMENT
 from .conduits import CONDUIT
-from .connectors import JUNCTION
+from .connectors import JUNCTION, LATERAL
 from .iic import IIC
 from .losses import BLOCKAGE, CULVERT
 from .sections import INTERPOLATE, REPLICATE, RIVER

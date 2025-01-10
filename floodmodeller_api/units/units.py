@@ -49,6 +49,7 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "OUTFALL": {"group": "structures", "has_subtype": True},
     "COMMENT": {"group": "comments", "has_subtype": False},
     "JUNCTION": {"group": "connectors", "has_subtype": True},
+    "LATERAL": {"group": "connectors", "has_subtype": False},
 }
 
 UNSUPPORTED_UNIT_TYPES = {
@@ -70,7 +71,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "GERRBDY": {"group": "boundaries", "has_subtype": False},  # gen rainfall runoff
     "INVERTED SYPHON": {"group": "structures", "has_subtype": True},  # invert syphon
     "LABYRINTH WEIR": {"group": "structures", "has_subtype": False},  # labyrinth weir
-    "LATERAL": {"has_subtype": False},  # [connector]
     "LOSS": {"has_subtype": False},  # found in .dat
     "LOSSID": {"has_subtype": False},  # found in .dat
     "MANHOLE": {"has_subtype": False},  # Manhole [connector]
