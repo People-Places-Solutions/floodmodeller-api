@@ -16,16 +16,21 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 
-class UnitTypes(TypedDict):
+class SupportedUnitTypes(TypedDict):
     group: str
     has_subtype: bool
 
 
+class UnsupportedUnitTypes(TypedDict):
+    group: NotRequired[str]
+    has_subtype: bool
+
+
 # Unit types and support
-SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
+SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},
     "HTBDY": {"group": "boundaries", "has_subtype": False},
     "QHBDY": {"group": "boundaries", "has_subtype": False},
@@ -53,7 +58,7 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "RESERVOIR": {"group": "connectors", "has_subtype": False},
 }
 
-UNSUPPORTED_UNIT_TYPES = {
+UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "ABSTRACTION": {"has_subtype": False},
     "BERNOULLI": {"has_subtype": False},
     "BREACH": {"has_subtype": False},  # breach

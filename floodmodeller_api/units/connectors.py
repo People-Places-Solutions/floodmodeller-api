@@ -19,7 +19,7 @@ class JUNCTION(Unit):
     def _write(self) -> list[str]:
         return [
             self._create_header(),
-            self.subtype,
+            self.subtype,  # type: ignore
             join_12_char_ljust(*self.labels).rstrip(),
         ]
 
@@ -38,7 +38,7 @@ class LATERAL(Unit):
     def _write(self) -> list[str]:
         return [
             self._create_header(),
-            self.name,
+            self.name,  # type: ignore
             self.weight_factor,
             str(self.no_units),
             *self._raw_block[4:],

@@ -225,9 +225,9 @@ class Unit(Jsonable):
 
     def _create_header(self, *, include_revision: bool = False) -> str:
         header = self._unit
-        if include_revision:
+        if include_revision and hasattr(self, "_revision"):
             header += f" #revision#{self._revision}"
-        if self.comment != "":
+        if hasattr(self, "comment") and self.comment != "":
             header += f" {self.comment}"
         return header
 
