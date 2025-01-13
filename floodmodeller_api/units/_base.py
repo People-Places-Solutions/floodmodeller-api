@@ -230,3 +230,6 @@ class Unit(Jsonable):
         if self.comment != "":
             header += f" {self.comment}"
         return header
+
+    def _get_first_word(self, line: str) -> str:
+        return line.split(" ")[0].strip()

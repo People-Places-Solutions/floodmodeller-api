@@ -126,7 +126,7 @@ class BRIDGE(Unit):
 
     def _read(self, br_block):  # noqa: C901, PLR0912, PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
-        self._subtype = br_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(br_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
@@ -594,7 +594,7 @@ class SLUICE(Unit):
 
     def _read(self, block):
         """Function to read a given SLUICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
@@ -830,7 +830,7 @@ class ORIFICE(Unit):
 
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
@@ -1606,7 +1606,7 @@ class OUTFALL(Unit):
 
     def _read(self, block):
         """Function to read a given OUTFALL block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels

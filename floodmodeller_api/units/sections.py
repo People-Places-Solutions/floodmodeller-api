@@ -117,7 +117,7 @@ class RIVER(Unit):
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
 
-        self._subtype = riv_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(riv_block[1])
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels

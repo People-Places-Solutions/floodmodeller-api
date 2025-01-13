@@ -9,7 +9,7 @@ class JUNCTION(Unit):
         self._raw_block = block
 
         self.comment = self._remove_unit_name(block[0])
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.labels = split_12_char(block[2])
 
         self.name = self.labels[0]

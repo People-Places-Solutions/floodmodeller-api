@@ -32,7 +32,7 @@ class UNSUPPORTED(Unit):
             self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
 
         else:
-            self._subtype = block[1].split(" ")[0].strip()
+            self._subtype = self._get_first_word(block[1])
             self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
 
         if self.labels[1] != "":

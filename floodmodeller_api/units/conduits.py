@@ -179,7 +179,7 @@ class CONDUIT(Unit):
 
     def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
-        self._subtype = c_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(c_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]

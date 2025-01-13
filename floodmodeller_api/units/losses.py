@@ -76,7 +76,7 @@ class CULVERT(Unit):
         """Function to read a given CULVERT block and store data as class attributes"""
 
         # Extract common attributes
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.comment = self._remove_unit_name(block[0])
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
