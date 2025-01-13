@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ._base import Unit
 from .helpers import _to_int, join_12_char_ljust, split_12_char
 
