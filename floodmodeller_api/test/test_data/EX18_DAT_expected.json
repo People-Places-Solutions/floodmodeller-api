@@ -1758,6 +1758,60 @@
             "S5"
           ]
         }
+      },
+      "S0": {
+        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "S0          QT1         QT2",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1400.000",
+            "    23.000  1600.000",
+            "      0000      0000         0"
+          ],
+          "_revision": 1,
+          "comment": "",
+          "labels": [
+            "S0",
+            "QT1",
+            "QT2"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5
+        }
+      },
+      "CSO": {
+        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSO",
+          "_raw_block": [
+            "RESERVOIR #revision#1",
+            "CSO",
+            "",
+            "         5",
+            "    19.000   800.000",
+            "    20.000  1000.000",
+            "    21.000  1200.000",
+            "    22.000  1200.000",
+            "    23.000  1200.000",
+            "      0000      0000         0"
+          ],
+          "_revision": 1,
+          "comment": "",
+          "labels": [
+            "CSO"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5
+        }
       }
     },
     "structures": {
@@ -1972,34 +2026,6 @@
       }
     },
     "_unsupported": {
-      "S0 (RESERVOIR)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S0",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "S0          QT1         QT2",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1400.000",
-            "    23.000  1600.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
-          "labels": [
-            "S0",
-            "QT1",
-            "QT2"
-          ],
-          "ds_label": "QT1"
-        }
-      },
       "C2m (MANHOLE)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -2021,7 +2047,6 @@
           "ds_label": "C2md"
         }
       },
-
       "P_suc (OCPUMP)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -2069,32 +2094,6 @@
             "P_del"
           ],
           "ds_label": "P_del"
-        }
-      },
-      "CSO (RESERVOIR)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSO",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "CSO",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1200.000",
-            "    23.000  1200.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
-          "labels": [
-            "CSO",
-            ""
-          ]
         }
       }
     },
@@ -2181,12 +2180,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S0",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
           "_raw_block": [
             "RESERVOIR #revision#1",
             "S0          QT1         QT2",
@@ -2199,13 +2196,15 @@
             "    23.000  1600.000",
             "      0000      0000         0"
           ],
-          "comment": "#revision#1",
+          "_revision": 1,
+          "comment": "",
           "labels": [
             "S0",
             "QT1",
             "QT2"
           ],
-          "ds_label": "QT1"
+          "lateral_inflow_labels": [],
+          "no_rows": 5
         }
       },
       {
@@ -3526,12 +3525,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSO",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
           "_raw_block": [
             "RESERVOIR #revision#1",
             "CSO",
@@ -3544,11 +3541,13 @@
             "    23.000  1200.000",
             "      0000      0000         0"
           ],
-          "comment": "#revision#1",
+          "_revision": 1,
+          "comment": "",
           "labels": [
-            "CSO",
-            ""
-          ]
+            "CSO"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5
         }
       }
     ],
