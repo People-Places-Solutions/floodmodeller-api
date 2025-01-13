@@ -16729,13 +16729,13 @@
     },
     "conduits": {},
     "losses": {},
-    "_unsupported": {
-      "P0000 (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+    "_unsupported": {},
+    "connectors": {
+      "P0000": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P0000",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -16750,12 +16750,11 @@
           ]
         }
       },
-      "P11951A (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+      "P11951A": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P11951A",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -16770,12 +16769,11 @@
           ]
         }
       },
-      "P44865J (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+      "P44865J": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P44865J",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -16833,11 +16831,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P0000",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -18985,11 +18982,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P11951A",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",
@@ -24568,11 +24564,10 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "P44865J",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
           "_raw_block": [
             "JUNCTION",

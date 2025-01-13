@@ -126,14 +126,14 @@ class BRIDGE(Unit):
 
     def _read(self, br_block):  # noqa: C901, PLR0912, PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
-        self._subtype = br_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(br_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = br_block[0].replace("BRIDGE", "").strip()
+        self.comment = self._remove_unit_name(br_block[0])
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
@@ -352,7 +352,7 @@ class BRIDGE(Unit):
     def _write(self):  # noqa: C901, PLR0912, PLR0915
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
-        header = "BRIDGE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -594,14 +594,14 @@ class SLUICE(Unit):
 
     def _read(self, block):
         """Function to read a given SLUICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.remote_label = labels[2]
-        self.comment = block[0].replace("SLUICE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<80}")
@@ -668,7 +668,7 @@ class SLUICE(Unit):
     def _write(self):
         """Function to write a valid SLUICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "SLUICE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label, self.remote_label)
         block = [header, self.subtype, labels]
 
@@ -830,14 +830,14 @@ class ORIFICE(Unit):
 
     def _read(self, block):
         """Function to read a given ORIFICE block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("ORIFICE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
@@ -857,7 +857,7 @@ class ORIFICE(Unit):
     def _write(self):
         """Function to write a valid ORIFICE block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "ORIFICE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
 
         self._subtype = "FLAPPED" if self.flapped else "OPEN"
@@ -938,7 +938,7 @@ class SPILL(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("SPILL", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params = split_10_char(block[2])
@@ -962,7 +962,7 @@ class SPILL(Unit):
     def _write(self):
         """Function to write a valid SPILL block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "SPILL " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1030,7 +1030,7 @@ class RNWEIR(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("RNWEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<50}")
@@ -1048,7 +1048,7 @@ class RNWEIR(Unit):
     def _write(self):
         """Function to write a valid RNWEIR block"""
         _validate_unit(self)
-        header = "RNWEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1131,7 +1131,7 @@ class WEIR(Unit):
         labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("WEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # Exponent
         self.exponent = _to_float(block[2].strip())
@@ -1147,7 +1147,7 @@ class WEIR(Unit):
     def _write(self):
         """Function to write a valid WEIR block"""
         _validate_unit(self)
-        header = "WEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
         block = [header, labels]
 
@@ -1225,7 +1225,7 @@ class CRUMP(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = block[0].replace("CRUMP", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
@@ -1242,7 +1242,7 @@ class CRUMP(Unit):
     def _write(self):
         """Function to write a valid CRUMP block"""
         _validate_unit(self)
-        header = "CRUMP " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -1334,7 +1334,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = block[0].replace("FLAT-V WEIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<90}")
@@ -1357,7 +1357,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         """Function to write a valid FLAT-V WEIR block"""
 
         _validate_unit(self)
-        header = "FLAT-V WEIR " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -1458,7 +1458,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.all_labels = labels[0 : len(labels)]
-        self.comment = block[0].replace("RESERVOIR", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # Option 1 (runs if comment == "#revision#1")
         if self.comment == "#revision#1":
@@ -1508,7 +1508,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
         """Function to write a valid RESERVOIR block"""
 
         _validate_unit(self)
-        header = "RESERVOIR " + self.comment
+        header = self._create_header()
         self.labels = "          ".join(self.all_labels)
         block = [header, self.labels]
 
@@ -1606,14 +1606,14 @@ class OUTFALL(Unit):
 
     def _read(self, block):
         """Function to read a given OUTFALL block and store data as class attributes"""
-        self._subtype = block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(block[1])
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
-        self.comment = block[0].replace("OUTFALL", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
@@ -1633,7 +1633,7 @@ class OUTFALL(Unit):
     def _write(self):
         """Function to write a valid OUTFALL block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "OUTFALL " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
 
         self._subtype = "FLAPPED" if self.flapped else "OPEN"

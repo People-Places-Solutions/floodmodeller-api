@@ -16,16 +16,21 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 
-class UnitTypes(TypedDict):
+class SupportedUnitTypes(TypedDict):
     group: str
     has_subtype: bool
 
 
+class UnsupportedUnitTypes(TypedDict):
+    group: NotRequired[str]
+    has_subtype: bool
+
+
 # Unit types and support
-SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
+SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "QTBDY": {"group": "boundaries", "has_subtype": False},
     "HTBDY": {"group": "boundaries", "has_subtype": False},
     "QHBDY": {"group": "boundaries", "has_subtype": False},
@@ -48,9 +53,12 @@ SUPPORTED_UNIT_TYPES: dict[str, UnitTypes] = {
     "REPLICATE": {"group": "sections", "has_subtype": False},
     "OUTFALL": {"group": "structures", "has_subtype": True},
     "COMMENT": {"group": "comments", "has_subtype": False},
+    "JUNCTION": {"group": "connectors", "has_subtype": True},
+    "LATERAL": {"group": "connectors", "has_subtype": False},
+    "RESERVOIR": {"group": "connectors", "has_subtype": False},
 }
 
-UNSUPPORTED_UNIT_TYPES = {
+UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "ABSTRACTION": {"has_subtype": False},
     "BERNOULLI": {"has_subtype": False},
     "BREACH": {"has_subtype": False},  # breach
@@ -68,9 +76,7 @@ UNSUPPORTED_UNIT_TYPES = {
     "GAUGE": {"has_subtype": False},  # Gauge
     "GERRBDY": {"group": "boundaries", "has_subtype": False},  # gen rainfall runoff
     "INVERTED SYPHON": {"group": "structures", "has_subtype": True},  # invert syphon
-    "JUNCTION": {"has_subtype": True},  # [connector]
     "LABYRINTH WEIR": {"group": "structures", "has_subtype": False},  # labyrinth weir
-    "LATERAL": {"has_subtype": False},  # [connector]
     "LOSS": {"has_subtype": False},  # found in .dat
     "LOSSID": {"has_subtype": False},  # found in .dat
     "MANHOLE": {"has_subtype": False},  # Manhole [connector]
@@ -82,7 +88,6 @@ UNSUPPORTED_UNIT_TYPES = {
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
     "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
-    "RESERVOIR": {"has_subtype": False},  # reservoir unit [connector]
     "SCSBDY": {
         "group": "boundaries",
         "has_subtype": False,

@@ -120,7 +120,7 @@ def test_create_from_blank():
     assert len(blank_unit.data) == 0
     assert len(blank_unit.active_data) == 0
     assert blank_unit._write() == [
-        "RIVER ",
+        "RIVER",
         "SECTION",
         "new_section                                                                         ",
         "     0.000            0.000100  1000.000",
