@@ -1,5 +1,5 @@
-""" This sample script demonstrates simple way to produce an interactive chart using the plotly
-    package based on a ZZN file """
+"""This sample script demonstrates simple way to produce an interactive chart using the plotly
+package based on a ZZN file"""
 
 # Import modules
 import os

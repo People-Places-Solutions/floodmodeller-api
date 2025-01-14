@@ -1,4 +1,4 @@
-""" This sample script shows how to extract the flow time series for a single node from a zzn file """
+"""This sample script shows how to extract the flow time series for a single node from a zzn file"""
 
 # Import modules
 import os
