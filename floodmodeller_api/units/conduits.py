@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import logging
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -257,8 +259,9 @@ class CONDUIT(Unit):
 
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
-            print(
-                f'This Conduit sub-type: "{self._subtype}" is currently unsupported for reading/editing',
+            logging.warning(
+                "This Conduit sub-type: '%s' is currently unsupported for reading/editing",
+                self._subtype,
             )
             self._raw_block = c_block
 
