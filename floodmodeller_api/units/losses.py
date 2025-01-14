@@ -121,8 +121,6 @@ class CULVERT(Unit):
             )
             self._raw_block = block
 
-        # TODO: Create from blank.  Not supported currently as CULVERT has multiple subtypes
-
     def _write(self):
         """Function to write a valid CULVERT block"""
 

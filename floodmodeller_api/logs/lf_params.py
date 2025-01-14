@@ -390,10 +390,6 @@ lf1_steady_data_to_extract = {
     },
 }
 
-# TODO for LF2:
-# - "start" only works for v6
-# - what if there are multiple domains?
-
 lf2_data_to_extract = {
     # start
     "version": {

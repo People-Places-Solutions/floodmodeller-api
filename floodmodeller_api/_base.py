@@ -133,7 +133,8 @@ class FMFile(Jsonable):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def _handle_exception(self, err, when) -> NoReturn:
-        raise FloodModellerAPIError(err, when, self._filetype, self._filepath) from err
+        filepath_or_none = self._filepath if hasattr(self, "_filepath") else None
+        raise FloodModellerAPIError(err, when, self._filetype, filepath_or_none) from err
 
     def __eq__(self, other, return_diff=False):
         result = True

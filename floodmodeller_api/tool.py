@@ -156,9 +156,6 @@ class Gui:
             entry.pack()
             self.root_entries[name] = entry
 
-        # TODO: Add a progress bar if appropriate
-        # TODO: Present some useful information: either tool outputs or logs
-
     def run_gui_callback(self):
         """
         Method to run the gui callback function.

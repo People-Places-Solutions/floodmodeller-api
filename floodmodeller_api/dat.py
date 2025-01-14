@@ -418,9 +418,6 @@ class DAT(FMFile):
                     del unit_group[name]
                     # Update label in ICs
                     if unit_group_name not in ["boundaries", "losses"]:
-                        # TODO: Need to do a more thorough check for whether a unit is one in the ICs
-                        # e.g. Culvert inlet and river section may have same label, but only river
-                        # section label should update in ICs
                         self.initial_conditions.update_label(name, unit.name)
 
                     # Update label in GISINFO and GXY data
