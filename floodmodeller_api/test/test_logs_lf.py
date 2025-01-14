@@ -10,11 +10,11 @@ from floodmodeller_api.logs import create_lf
 
 
 @pytest.fixture()
-def lf1_fp(test_workspace):
+def lf1_fp(test_workspace: Path) -> Path:
     return Path(test_workspace, "ex3.lf1")
 
 
-def test_lf1_info_dict(lf1_fp):
+def test_lf1_info_dict(lf1_fp: Path):
     """LF1: Check info dictionary"""
     lf1 = LF1(lf1_fp)
     assert lf1.info["version"] == "5.0.0.7752"
@@ -23,23 +23,29 @@ def test_lf1_info_dict(lf1_fp):
     assert lf1.info["progress"] == 100
 
 
-def test_lf1_report_progress(lf1_fp):
+def test_lf1_report_progress(lf1_fp: Path):
     """LF1: Check report_progress()"""
     lf1 = LF1(lf1_fp)
     assert lf1.report_progress() == 100
 
 
-def test_lf1_to_dataframe(lf1_fp):
+def test_lf1_to_dataframe(lf1_fp: Path):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
-    lf1_df = lf1.to_dataframe()
+    lf1_df = lf1.to_dataframe(variable="all", result_type="all")
+
     assert lf1_df.loc[lf1_df.index[0], "iter"] == 6
+    assert lf1.to_dataframe(variable="iter", result_type="all").iloc[0] == 6
+
     assert lf1_df.loc[lf1_df.index[-1], "outflow"] == 21.06
+    assert lf1.to_dataframe(variable="outflow", result_type="all").iloc[-1] == 21.06
+
     assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
+    assert lf1.to_dataframe(variable="mass_error", result_type="all").iloc[4] == -0.07
 
 
-def test_lf1_from_ief(lf1_fp, test_workspace):
-    """LF1: Check IEF.get_lf1()"""
+def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
+    """LF1: Check IEF.get_log()"""
     lf1 = LF1(lf1_fp)
 
     ief_fp = Path(test_workspace, "ex3.ief")
