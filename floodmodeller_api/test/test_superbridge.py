@@ -123,3 +123,5 @@ def test_write_superbridge(folder: Path):
         new_output = new_unit._write()
         assert unit == new_unit, f"unit objects not equal for {file=}"
         assert output == new_output, f"unit outputs not equal for {file=}"
+        for line in output:
+            assert isinstance(line, str), f"{line=} is not a string"

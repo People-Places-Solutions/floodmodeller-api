@@ -221,7 +221,7 @@ class SUPERBRIDGE(Unit):
             self.orifice_upper_transition_dist,
             self.orifice_discharge_coefficient,
         )
-        line_7 = self.abutment_type
+        line_7 = str(self.abutment_type)
         if self.specify_piers:
             if self.pier_use_calibration_coeff:
                 line_8 = h.join_10_char(
