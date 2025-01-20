@@ -20,6 +20,7 @@ from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
 from ._helpers import (
+    get_int,
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
@@ -29,6 +30,8 @@ from ._helpers import (
     read_bridge_pier_locations,
     read_dataframe_from_lines,
     read_spill_section_data,
+    read_superbridge_block_data,
+    read_superbridge_opening_data,
     set_bridge_params,
     set_pier_params,
     split_10_char,
@@ -37,6 +40,7 @@ from ._helpers import (
     to_int,
     to_str,
     write_dataframe,
+    write_dataframes,
 )
 
 
@@ -239,6 +243,71 @@ class BRIDGE(Unit):
                 read_bridge_pier_locations,
             )
 
+        elif self.subtype == "INTEGRATED":
+            self.revision = to_int(br_block[3])
+            self.bridge_name = br_block[4]
+            self.integrated_subtype = br_block[5].strip()
+            set_bridge_params(self, br_block[6])
+            self.abutment_type = to_int(br_block[7])
+            set_pier_params(self, br_block[8])
+            self.aligned = br_block[9].strip() == "ALIGNED"
+
+            end_idx = 10
+            self.section_nrows: list[int] = []
+            self.section_data: list[pd.DataFrame] = []
+            for _ in range(4):
+                nrows, end_idx, data = read_dataframe_from_lines(
+                    br_block,
+                    end_idx,
+                    read_bridge_cross_sections,
+                    include_panel_marker=True,
+                )
+                self.section_nrows.append(nrows)
+                self.section_data.append(data)
+
+            self.opening_type = br_block[end_idx]
+            end_idx += 1
+            self.opening_nrows = get_int(br_block[end_idx])
+            end_idx += 1
+            self.opening_nsubrows: list[int] = []
+            self.opening_data: list[pd.DataFrame] = []
+            for _ in range(self.opening_nrows):
+                nrows, end_idx, data = read_dataframe_from_lines(
+                    br_block,
+                    end_idx,
+                    read_superbridge_opening_data,
+                )
+                self.opening_nsubrows.append(nrows)
+                self.opening_data.append(data)
+
+            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_culvert_data,
+            )
+
+            spill_params = split_10_char(f"{br_block[end_idx]:<30}")
+            self.weir_coefficient = to_float(spill_params[1])
+            self.modular_limit = to_float(spill_params[2])
+            self.spill_nrows, end_idx, self.spill_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_spill_section_data,
+            )
+
+            self.block_comment = br_block[end_idx]
+            end_idx += 1
+            block_params = split_10_char(f"{br_block[end_idx]:<50}")
+            self.inlet_loss = to_float(block_params[1])
+            self.outlet_loss = to_float(block_params[2])
+            self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
+            self.override = block_params[4] == "OVERRIDE"
+            self.block_nrows, end_idx, self.block_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_superbridge_block_data,
+            )
+
         else:
             # This else block is triggered for bridge subtypes which aren't yet supported
             # and just keeps the 'br_block' in its raw state to write back.
@@ -356,6 +425,81 @@ class BRIDGE(Unit):
             br_block.extend(pier_locs_data)
 
             return br_block
+
+        if self.subtype == "INTEGRATED":
+            line_1_2 = br_block
+            line_3 = str(self.revision)
+            line_4 = self.bridge_name
+            line_5 = self.integrated_subtype
+            line_6 = join_10_char(
+                self.calibration_coefficient,
+                self.skew,
+                self.bridge_width_dual,
+                self.bridge_dist_dual,
+                self.total_pier_width,
+                "ORIFICE" if self.orifice_flow else "",
+                self.orifice_lower_transition_dist,
+                self.orifice_upper_transition_dist,
+                self.orifice_discharge_coefficient,
+            )
+            line_7 = str(self.abutment_type)
+            if self.specify_piers:
+                if self.pier_use_calibration_coeff:
+                    line_8 = join_10_char(
+                        self.npiers,
+                        "COEFF",
+                        "",
+                        self.pier_calibration_coeff,
+                    )
+                else:
+                    line_8 = join_10_char(
+                        self.npiers,
+                        self.pier_shape,
+                        self.pier_faces,
+                    )
+            else:
+                line_8 = join_10_char(
+                    0,
+                    self.soffit_shape,
+                )
+            line_9 = "ALIGNED" if self.aligned else ""
+            line_10_11_12_13 = write_dataframes(None, self.section_nrows, self.section_data)
+            line_14 = self.opening_type
+            line_15 = write_dataframes(self.opening_nrows, self.opening_nsubrows, self.opening_data)
+            line_16 = write_dataframe(self.culvert_nrows, self.culvert_data)
+            line_17 = write_dataframe(
+                join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
+                self.spill_data,
+            )
+            line_18 = self.block_comment
+            line_19 = write_dataframe(
+                join_10_char(
+                    self.block_nrows,
+                    self.inlet_loss,
+                    self.outlet_loss,
+                    self.block_method,
+                    "OVERRIDE" if self.override else "NOOVERRIDE",
+                ),
+                self.block_data,
+            )
+
+            return [
+                *line_1_2,
+                line_3,
+                line_4,
+                line_5,  # type: ignore
+                line_6,
+                line_7,
+                line_8,
+                line_9,
+                *line_10_11_12_13,
+                line_14,
+                *line_15,
+                *line_16,
+                *line_17,
+                line_18,
+                *line_19,
+            ]
 
         return self._raw_block
 

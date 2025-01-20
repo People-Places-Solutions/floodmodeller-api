@@ -26,7 +26,6 @@ from .units import (
     RNWEIR,
     SLUICE,
     SPILL,
-    SUPERBRIDGE,
     UNSUPPORTED,
     WEIR,
     Variables,
@@ -84,7 +83,6 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.units.structures.SLUICE": SLUICE,
     "floodmodeller_api.units.structures.SPILL": SPILL,
     "floodmodeller_api.units.structures.WEIR": WEIR,
-    "floodmodeller_api.units.superbridge.SUPERBRIDGE": SUPERBRIDGE,
     "floodmodeller_api.units.unsupported.UNSUPPORTED": UNSUPPORTED,
     "floodmodeller_api.units.variables.Variables": Variables,
 }

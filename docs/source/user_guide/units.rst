@@ -109,11 +109,6 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.OUTFALL
 
-``SUPERBRIDGE()``
-~~~~~~~~~~~~~~~~~
-
-.. autoclass:: floodmodeller_api.units.SUPERBRIDGE
-
 .. _loss_units:
 
 Loss units

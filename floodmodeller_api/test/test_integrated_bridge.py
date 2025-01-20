@@ -7,25 +7,25 @@ from typing import TYPE_CHECKING
 import pandas as pd
 import pytest
 
-from floodmodeller_api.units.superbridge import SUPERBRIDGE
+from floodmodeller_api.units import BRIDGE
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
-def create_superbridge(path: Path) -> SUPERBRIDGE:
+def create_bridge(path: Path) -> BRIDGE:
     with open(path) as file:
         lines = [line.rstrip("\n") for line in file]
-    return SUPERBRIDGE(lines)
+    return BRIDGE(lines)
 
 
 @pytest.fixture()
 def folder(test_workspace: Path) -> Path:
-    return test_workspace / "superbridge"
+    return test_workspace / "integrated_bridge"
 
 
-def test_read_superbridge(folder: Path):  # noqa: PLR0915 (all needed)
-    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
+    unit = create_bridge(folder / "US_vSP_NoBl_2O_Para.ied")
 
     assert unit.comment == "prototype for rev 3 / No Spill data, no blockage"
 
@@ -36,7 +36,7 @@ def test_read_superbridge(folder: Path):  # noqa: PLR0915 (all needed)
 
     assert unit.revision == 3
     assert unit.bridge_name == "Clifton Suspension Bridge"
-    assert unit.subtype == "USBPR"
+    assert unit.integrated_subtype == "USBPR"
 
     assert unit.calibration_coefficient == 1
     assert unit.skew == 0
@@ -115,12 +115,12 @@ def test_read_superbridge(folder: Path):  # noqa: PLR0915 (all needed)
     pd.testing.assert_frame_equal(unit.block_data, pd.DataFrame(expected), check_dtype=False)
 
 
-def test_write_superbridge(folder: Path):
+def test_write_bridge(folder: Path):
     for file in folder.glob("*.ied"):
-        unit = create_superbridge(folder / file)
+        unit = create_bridge(folder / file)
         output = unit._write()
 
-        new_unit = SUPERBRIDGE(output)
+        new_unit = BRIDGE(output)
         new_output = new_unit._write()
         assert unit == new_unit, f"unit objects not equal for {file=}"
         assert output == new_output, f"unit outputs not equal for {file=}"
@@ -129,25 +129,29 @@ def test_write_superbridge(folder: Path):
 
 
 def test_valid_change(folder: Path):
-    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+    unit = create_bridge(folder / "US_vSP_NoBl_2O_Para.ied")
 
     assert unit.calibration_coefficient == 1
     unit.calibration_coefficient = 10
     assert unit.calibration_coefficient == 10
 
     output = unit._write()
-    new_unit = SUPERBRIDGE(output)
+    new_unit = BRIDGE(output)
     assert new_unit.calibration_coefficient == 10
 
 
 def test_invalid_change(folder: Path):
-    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+    unit = create_bridge(folder / "US_vSP_NoBl_2O_Para.ied")
     unit.calibration_coefficient = "hi"  # type: ignore
     # ignoring typing as this mistake is on purpose
     msg = (
         "One or more parameters in <floodmodeller_api Unit Class:"
-        " SUPERBRIDGE(name=Label11, type=USBPR)> are invalid:"
+        " BRIDGE(name=Label11, type=INTEGRATED)> are invalid:"
         "\n     calibration_coefficient -> Expected: (<class 'float'>, <class 'int'>)"
     )
     with pytest.raises(ValueError, match=re.escape(msg)):
         unit._write()
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])
