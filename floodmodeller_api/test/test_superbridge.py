@@ -142,7 +142,7 @@ def test_valid_change(folder: Path):
 
 def test_invalid_change(folder: Path):
     unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
-    unit.calibration_coefficient = "hi"
+    unit.calibration_coefficient = "hi"  # type: ignore (this is on purpose)
     msg = (
         "One or more parameters in <floodmodeller_api Unit Class:"
         " SUPERBRIDGE(name=Label11, type=USBPR)> are invalid:"
