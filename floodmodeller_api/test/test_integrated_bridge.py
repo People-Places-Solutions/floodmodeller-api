@@ -79,7 +79,7 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
             "Mannings n": [0.035, 0.035, 0.035, 0.035],
             "Panel": ["*", "", "", "*"],
             "Embankments": ["LEFT", "", "", "RIGHT"],
-        }
+        },
     )
     pd.testing.assert_frame_equal(unit.section_data_list[0], expected)
 
@@ -103,7 +103,7 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
             "Cd Full": [],
             "Drowning Coefficient": [],
             "X": [],
-        }
+        },
     )
     pd.testing.assert_frame_equal(unit.culvert_data, expected, check_dtype=False)
 
@@ -113,7 +113,7 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
             "Y": [7.0, 9.0, 7.0],
             "Easting": [0.0, 0.0, 0.0],
             "Northing": [0.0, 0.0, 0.0],
-        }
+        },
     )
     pd.testing.assert_frame_equal(unit.spill_data, expected)
 

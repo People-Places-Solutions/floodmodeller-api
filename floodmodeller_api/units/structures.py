@@ -464,11 +464,15 @@ class BRIDGE(Unit):
                 )
             line_9 = "ALIGNED" if self.aligned else ""
             line_10_11_12_13 = write_dataframes(
-                None, self.section_nrows_list, self.section_data_list
+                None,
+                self.section_nrows_list,
+                self.section_data_list,
             )
             line_14 = self.opening_type
             line_15 = write_dataframes(
-                self.opening_nrows, self.opening_nsubrows_list, self.opening_data_list
+                self.opening_nrows,
+                self.opening_nsubrows_list,
+                self.opening_data_list,
             )
             line_16 = write_dataframe(self.culvert_nrows, self.culvert_data)
             line_17 = write_dataframe(
