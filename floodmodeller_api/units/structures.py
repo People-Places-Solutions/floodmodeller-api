@@ -155,7 +155,7 @@ class BRIDGE(Unit):
     soffit_shape: str
     pier_faces: str
 
-    def _read(self, br_block: list[str]) -> None:
+    def _read(self, br_block: list[str]) -> None:  # noqa: PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
@@ -317,7 +317,7 @@ class BRIDGE(Unit):
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self) -> list[str]:
+    def _write(self) -> list[str]:  # noqa: PLR0915
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = "BRIDGE " + self.comment
