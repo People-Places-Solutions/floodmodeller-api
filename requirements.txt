@@ -5,7 +5,6 @@ lxml==5.3.0
 pytest==7.4.4
 pytest-cov==5.0.0
 pytest-mock==3.14.0
-black==24.3.0
 mypy==1.13.0
 pylint==3.1.0
 ruff==0.8.2

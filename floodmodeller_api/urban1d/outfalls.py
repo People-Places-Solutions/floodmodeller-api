@@ -39,7 +39,7 @@ class OUTFALL(UrbanUnit):
 
     _unit = "OUTFALL"
     MIN_LENGTH_FREE_NORMAL = 5
-    MIN_LENGTH_FIXED_NORMAL_TIMESERIES = 6
+    MIN_LENGTH_FIXED_TIDAL_TIMESERIES = 6
 
     def _read(self, line):
         unit_data = line.split()
@@ -59,15 +59,15 @@ class OUTFALL(UrbanUnit):
             self.gated = to_str(unit_data[3], "NO")
             self.routeto = to_str(unit_data[4], "")
 
-        elif self.type in ("FIXED", "NORMAL", "TIMESERIES"):
+        elif self.type in ("FIXED", "TIDAL", "TIMESERIES"):
             # Extend length of unit_data to account for missing optional arguments.
-            while len(unit_data) < self.MIN_LENGTH_FIXED_NORMAL_TIMESERIES:
+            while len(unit_data) < self.MIN_LENGTH_FIXED_TIDAL_TIMESERIES:
                 unit_data.append("")
 
             if self.type == "FIXED":
                 self.stage = to_float(unit_data[3], 0.0)
 
-            elif self.type == "NORMAL":
+            elif self.type == "TIDAL":
                 self.tcurve = to_str(unit_data[3], "")
 
             elif self.type == "TIMESERIES":

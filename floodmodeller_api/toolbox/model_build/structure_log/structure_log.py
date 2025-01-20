@@ -422,7 +422,6 @@ class StructureLogBuilder:
         return text
 
     def _format_bridge_dimensions(self, unit_dict):
-
         if len(unit_dict["opening_data"]) == 1:
             opening = unit_dict["opening_data"][0]
             height = opening["opening_height"]
@@ -545,7 +544,7 @@ class StructureLogBuilder:
 
             culvert_loss = ""
 
-            match (unit_type):
+            match unit_type:
                 case "BRIDGE":
                     dimensions = self._format_bridge_dimensions(unit_dict)
                 case "ORIFICE":

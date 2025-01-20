@@ -1,5 +1,5 @@
-""" This sample script demonstrates a process to automatically adjust all QTBDY units in an IED file
-    to maintain a minimum flow of 50% of the peak throughout the falling limb. """
+"""This sample script demonstrates a process to automatically adjust all QTBDY units in an IED file
+to maintain a minimum flow of 50% of the peak throughout the falling limb."""
 
 # Import modules
 import os
