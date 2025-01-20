@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -125,3 +126,27 @@ def test_write_superbridge(folder: Path):
         assert output == new_output, f"unit outputs not equal for {file=}"
         for line in output:
             assert isinstance(line, str), f"{line=} is not a string"
+
+
+def test_valid_change(folder: Path):
+    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+
+    assert unit.calibration_coefficient == 1
+    unit.calibration_coefficient = 10
+    assert unit.calibration_coefficient == 10
+
+    output = unit._write()
+    new_unit = SUPERBRIDGE(output)
+    assert new_unit.calibration_coefficient == 10
+
+
+def test_invalid_change(folder: Path):
+    unit = create_superbridge(folder / "US_vSP_NoBl_2O_Para.ied")
+    unit.calibration_coefficient = "hi"
+    msg = (
+        "One or more parameters in <floodmodeller_api Unit Class:"
+        " SUPERBRIDGE(name=Label11, type=USBPR)> are invalid:"
+        "\n     calibration_coefficient -> Expected: (<class 'float'>, <class 'int'>)"
+    )
+    with pytest.raises(ValueError, match=re.escape(msg)):
+        unit._write()
