@@ -54,11 +54,11 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
 
     assert unit.aligned is True
 
-    assert unit.section_nrows == [4, 0, 0, 0]
+    assert unit.section_nrows_list == [4, 0, 0, 0]
 
     assert unit.opening_type == "PARABOLA1"
     assert unit.opening_nrows == 2
-    assert unit.opening_nsubrows == [3, 3]
+    assert unit.opening_nsubrows_list == [3, 3]
 
     assert unit.culvert_nrows == 0
 
@@ -72,47 +72,53 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
     assert unit.block_method == "USDEPTH"
     assert unit.override is False
 
-    expected = {
-        "X": [-10.0, -10.0, 10.0, 10.0],
-        "Y": [5.0, 0.0, 0.0, 5.0],
-        "Mannings n": [0.035, 0.035, 0.035, 0.035],
-        "Panel": ["*", "", "", "*"],
-        "Embankments": ["LEFT", "", "", "RIGHT"],
-    }
-    pd.testing.assert_frame_equal(unit.section_data[0], pd.DataFrame(expected))
+    expected = pd.DataFrame(
+        {
+            "X": [-10.0, -10.0, 10.0, 10.0],
+            "Y": [5.0, 0.0, 0.0, 5.0],
+            "Mannings n": [0.035, 0.035, 0.035, 0.035],
+            "Panel": ["*", "", "", "*"],
+            "Embankments": ["LEFT", "", "", "RIGHT"],
+        }
+    )
+    pd.testing.assert_frame_equal(unit.section_data_list[0], expected)
 
-    expected = {"X": [], "Y": [], "Mannings n": [], "Panel": [], "Embankments": []}
-    pd.testing.assert_frame_equal(unit.section_data[1], pd.DataFrame(expected), check_dtype=False)
-    pd.testing.assert_frame_equal(unit.section_data[2], pd.DataFrame(expected), check_dtype=False)
-    pd.testing.assert_frame_equal(unit.section_data[3], pd.DataFrame(expected), check_dtype=False)
+    expected = pd.DataFrame({"X": [], "Y": [], "Mannings n": [], "Panel": [], "Embankments": []})
+    pd.testing.assert_frame_equal(unit.section_data_list[1], expected, check_dtype=False)
+    pd.testing.assert_frame_equal(unit.section_data_list[2], expected, check_dtype=False)
+    pd.testing.assert_frame_equal(unit.section_data_list[3], expected, check_dtype=False)
 
-    expected = {"X": [-7.5, -5.0, -2.5], "Z": [0.0, 5.0, 0.0]}
-    pd.testing.assert_frame_equal(unit.opening_data[0], pd.DataFrame(expected))
+    expected = pd.DataFrame({"X": [-7.5, -5.0, -2.5], "Z": [0.0, 5.0, 0.0]})
+    pd.testing.assert_frame_equal(unit.opening_data_list[0], expected)
 
-    expected = {"X": [2.5, 5.0, 7.5], "Z": [0.0, 5.0, 0.0]}
-    pd.testing.assert_frame_equal(unit.opening_data[1], pd.DataFrame(expected))
+    expected = pd.DataFrame({"X": [2.5, 5.0, 7.5], "Z": [0.0, 5.0, 0.0]})
+    pd.testing.assert_frame_equal(unit.opening_data_list[1], expected)
 
-    expected = {
-        "Invert": [],
-        "Soffit": [],
-        "Section Area": [],
-        "Cd Part Full": [],
-        "Cd Full": [],
-        "Drowning Coefficient": [],
-        "X": [],
-    }
-    pd.testing.assert_frame_equal(unit.culvert_data, pd.DataFrame(expected), check_dtype=False)
+    expected = pd.DataFrame(
+        {
+            "Invert": [],
+            "Soffit": [],
+            "Section Area": [],
+            "Cd Part Full": [],
+            "Cd Full": [],
+            "Drowning Coefficient": [],
+            "X": [],
+        }
+    )
+    pd.testing.assert_frame_equal(unit.culvert_data, expected, check_dtype=False)
 
-    expected = {
-        "X": [-10.0, 0.0, 10.0],
-        "Y": [7.0, 9.0, 7.0],
-        "Easting": [0.0, 0.0, 0.0],
-        "Northing": [0.0, 0.0, 0.0],
-    }
-    pd.testing.assert_frame_equal(unit.spill_data, pd.DataFrame(expected))
+    expected = pd.DataFrame(
+        {
+            "X": [-10.0, 0.0, 10.0],
+            "Y": [7.0, 9.0, 7.0],
+            "Easting": [0.0, 0.0, 0.0],
+            "Northing": [0.0, 0.0, 0.0],
+        }
+    )
+    pd.testing.assert_frame_equal(unit.spill_data, expected)
 
-    expected = {"percentage": [], "time": [], "datetime": []}
-    pd.testing.assert_frame_equal(unit.block_data, pd.DataFrame(expected), check_dtype=False)
+    expected = pd.DataFrame({"percentage": [], "time": [], "datetime": []})
+    pd.testing.assert_frame_equal(unit.block_data, expected, check_dtype=False)
 
 
 def test_write_bridge(folder: Path):
@@ -151,7 +157,3 @@ def test_invalid_change(folder: Path):
     )
     with pytest.raises(ValueError, match=re.escape(msg)):
         unit._write()
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

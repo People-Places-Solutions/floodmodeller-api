@@ -253,8 +253,8 @@ class BRIDGE(Unit):
             self.aligned = br_block[9].strip() == "ALIGNED"
 
             end_idx = 10
-            self.section_nrows: list[int] = []
-            self.section_data: list[pd.DataFrame] = []
+            self.section_nrows_list: list[int] = []
+            self.section_data_list: list[pd.DataFrame] = []
             for _ in range(4):
                 nrows, end_idx, data = read_dataframe_from_lines(
                     br_block,
@@ -262,23 +262,23 @@ class BRIDGE(Unit):
                     read_bridge_cross_sections,
                     include_panel_marker=True,
                 )
-                self.section_nrows.append(nrows)
-                self.section_data.append(data)
+                self.section_nrows_list.append(nrows)
+                self.section_data_list.append(data)
 
             self.opening_type = br_block[end_idx]
             end_idx += 1
             self.opening_nrows = get_int(br_block[end_idx])
             end_idx += 1
-            self.opening_nsubrows: list[int] = []
-            self.opening_data: list[pd.DataFrame] = []
+            self.opening_nsubrows_list: list[int] = []
+            self.opening_data_list: list[pd.DataFrame] = []
             for _ in range(self.opening_nrows):
                 nrows, end_idx, data = read_dataframe_from_lines(
                     br_block,
                     end_idx,
                     read_superbridge_opening_data,
                 )
-                self.opening_nsubrows.append(nrows)
-                self.opening_data.append(data)
+                self.opening_nsubrows_list.append(nrows)
+                self.opening_data_list.append(data)
 
             self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
                 br_block,
@@ -463,9 +463,13 @@ class BRIDGE(Unit):
                     self.soffit_shape,
                 )
             line_9 = "ALIGNED" if self.aligned else ""
-            line_10_11_12_13 = write_dataframes(None, self.section_nrows, self.section_data)
+            line_10_11_12_13 = write_dataframes(
+                None, self.section_nrows_list, self.section_data_list
+            )
             line_14 = self.opening_type
-            line_15 = write_dataframes(self.opening_nrows, self.opening_nsubrows, self.opening_data)
+            line_15 = write_dataframes(
+                self.opening_nrows, self.opening_nsubrows_list, self.opening_data_list
+            )
             line_16 = write_dataframe(self.culvert_nrows, self.culvert_data)
             line_17 = write_dataframe(
                 join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
