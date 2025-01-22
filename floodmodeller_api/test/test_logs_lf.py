@@ -1,3 +1,4 @@
+import datetime as dt
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -42,6 +43,11 @@ def test_lf1_to_dataframe(lf1_fp: Path):
 
     assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
     assert lf1.to_dataframe(variable="mass_error", result_type="all").iloc[4] == -0.07
+
+    assert lf1.to_dataframe(variable="iter", result_type="max") == 6
+    assert lf1.to_dataframe(variable="iter", result_type="max", include_time=True) == (6, dt.timedelta(0))
+
+    # TODO: include_tuflow, multilevel_header
 
 
 def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):

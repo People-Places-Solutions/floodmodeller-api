@@ -182,7 +182,7 @@ class LF(FMFile):
         *,
         include_time: bool = False,
         include_tuflow: bool = False,
-    ) -> pd.DataFrame:
+    ) -> pd.DataFrame | float | tuple[float, dt.timedelta]:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
@@ -214,17 +214,18 @@ class LF(FMFile):
         lf_df = lf_df.sort_index()
 
         if result_type == "all":
-            return lf_df
+            return lf_df  # pd.DataFrame
+        # else lf_df is pd.Series
 
-        lf_df.columns = [f"{result_type} {x}" for x in lf_df.columns]
-        extreme = lf_df.max() if result_type == "max" else lf_df.min()
+        lf_df.name = f"{result_type} {variable}"
+        extreme = lf_df.max() if result_type == "max" else lf_df.min()  # float
 
         if include_time:
             extreme_times = lf_df.idxmax() if result_type == "max" else lf_df.idxmin()
-            extreme_times.index = [f"{x} time" for x in extreme_times.index]
-            extreme = pd.concat([extreme, extreme_times])
+            extreme_times.name = f"{result_type} time"
+            extreme = (extreme, extreme_times)  # tuple(float, timedelta)
 
-        return extreme
+        return extreme  # float | tuple(float, timedelta)
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""
