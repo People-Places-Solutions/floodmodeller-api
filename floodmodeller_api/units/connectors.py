@@ -84,6 +84,7 @@ class LATERAL(Unit):
 
 class RESERVOIR(Unit):
     _unit = "RESERVOIR"
+    _required_columns = ("Elevation", "Plan Area")
 
     def _read(self, block: list[str]) -> None:
         self._raw_block = block
