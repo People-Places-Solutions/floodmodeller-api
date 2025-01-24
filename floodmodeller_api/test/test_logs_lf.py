@@ -45,7 +45,7 @@ def test_lf1_to_dataframe(lf1_fp: Path):
 
     lf1_tuflow_df = lf1.to_dataframe(variable="all", include_tuflow=True)
     non_tuflow_columns = [col for col in lf1_tuflow_df.columns if "tuflow" not in col]
-    assert lf1_tuflow_df[non_tuflow_columns].equals(lf1_df)
+    pd.testing.assert_frame_equal(lf1_tuflow_df[non_tuflow_columns], lf1_df)
 
     tuflow_columns = [col for col in lf1_tuflow_df.columns if "tuflow" in col]
     expected_tuflow_columns = ["tuflow_vol", "tuflow_n_wet", "tuflow_dt"]

@@ -175,12 +175,7 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(
-        self,
-        variable: str = "all",
-        *,
-        include_tuflow: bool = False,
-    ) -> pd.DataFrame:
+    def to_dataframe(self, variable: str = "all", *, include_tuflow: bool = False) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
