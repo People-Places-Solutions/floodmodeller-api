@@ -1,4 +1,4 @@
-""" This sample script shows how you could raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation) """
+"""This sample script shows how you could raise the minimum bed level 300mm across all sections in a DAT file (i.e siltation)"""
 
 # Import modules
 import os

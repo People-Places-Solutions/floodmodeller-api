@@ -1524,7 +1524,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
             # Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area)
-                for _, elevation, plan_area, in self.data.itertuples()
+                for _, elevation, plan_area in self.data.itertuples()
             ]
             block.extend(section_data)
 
@@ -1538,7 +1538,7 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
             # Reservoir section data
             section_data = [
                 join_12_char_ljust(elevation, plan_area)
-                for _, elevation, plan_area, in self.data.itertuples()
+                for _, elevation, plan_area in self.data.itertuples()
             ]
             block.extend(section_data)
 

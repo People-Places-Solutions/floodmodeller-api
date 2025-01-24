@@ -1,5 +1,5 @@
-""" This sample script demonstrates how you could create a set of new IED files, each representing a different
-    culvert width for the culvert 'T2' """
+"""This sample script demonstrates how you could create a set of new IED files, each representing a different
+culvert width for the culvert 'T2'"""
 
 # Import modules
 import os
