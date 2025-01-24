@@ -71,7 +71,7 @@ class LATERAL(Unit):
         self._subtype = subtype
         self.weight_factor = weight_factor
 
-        self._data = (
+        self.data = (
             data
             if isinstance(data, pd.DataFrame)
             else pd.DataFrame(
@@ -79,7 +79,7 @@ class LATERAL(Unit):
                 columns=self._required_columns,
             )
         )
-        self.no_units = len(self._data)
+        self.no_units = len(self.data)
 
 
 class RESERVOIR(Unit):
@@ -119,3 +119,27 @@ class RESERVOIR(Unit):
                 *self._raw_block[3:],  # FIXME
             ]
         return lines
+
+    def _create_from_blank(
+        self,
+        name: str = "",
+        comment: str = "",
+        subtype: str = "OPEN",
+        lateral_inflow_labels: list[str] | None = None,
+        data: pd.DataFrame | None = None,
+    ) -> None:
+        self.name = name
+        self.comment = comment
+        self._subtype = subtype
+        self._revision = 1
+        self.lateral_inflow_labels = lateral_inflow_labels
+
+        self.data = (
+            data
+            if isinstance(data, pd.DataFrame)
+            else pd.DataFrame(
+                [],
+                columns=self._required_columns,
+            )
+        )
+        self.no_rows = len(self.data)
