@@ -15,6 +15,8 @@
 
 # Flood Modeller Python API
 [![Try in GitHub Codespaces!](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&repo=473959586&quickstart=1)
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/People-Places-Solutions/floodmodeller-api/blob/b40354f0db28cc6e5a76bff8baf0e1a3d48a5766/README.md)
+
 
 This python package is designed to be used in conjunction with your installation of Flood Modeller to provide users with a set of tools to extend the capabilities of Flood Modeller and build into automated workflows.
 
