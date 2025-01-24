@@ -23,6 +23,17 @@ class JUNCTION(Unit):
             join_12_char_ljust(*self.labels).rstrip(),
         ]
 
+    def _create_from_blank(
+        self,
+        comment: str = "",
+        subtype: str = "OPEN",
+        labels: list[str] | None = None,
+    ) -> None:
+        self.comment = comment
+        self._subtype = subtype
+        self.labels = labels if labels is not None else []
+        self.name = self.labels[0]
+
 
 class LATERAL(Unit):
     _unit = "LATERAL"
