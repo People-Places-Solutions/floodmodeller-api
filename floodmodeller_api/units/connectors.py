@@ -39,11 +39,7 @@ class JUNCTION(Unit):
 
 class LATERAL(Unit):
     _unit = "LATERAL"
-    _required_columns: tuple[str] = (
-        "Node Label",
-        "Custom Weight Factor",
-        "Use Weight Factor",
-    )
+    _required_columns = ("Node Label", "Custom Weight Factor", "Use Weight Factor")
 
     def _read(self, block: list[str]) -> None:
         self._raw_block = block
