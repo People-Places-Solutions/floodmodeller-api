@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pandas as pd
+
 from ._base import Unit
 from .helpers import _to_int, join_12_char_ljust, split_12_char
 
@@ -37,6 +39,11 @@ class JUNCTION(Unit):
 
 class LATERAL(Unit):
     _unit = "LATERAL"
+    _required_columns: tuple[str] = (
+        "Node Label",
+        "Custom Weight Factor",
+        "Use Weight Factor",
+    )
 
     def _read(self, block: list[str]) -> None:
         self._raw_block = block
@@ -54,6 +61,29 @@ class LATERAL(Unit):
             str(self.no_units),
             *self._raw_block[4:],  # FIXME
         ]
+
+    def _create_from_blank(
+        self,
+        name: str = "",
+        comment: str = "",
+        subtype: str = "OPEN",
+        weight_factor: str = "REACH",
+        data: pd.DataFrame | None = None,
+    ) -> None:
+        self.name = name
+        self.comment = comment
+        self._subtype = subtype
+        self.weight_factor = weight_factor
+
+        self._data = (
+            data
+            if isinstance(data, pd.DataFrame)
+            else pd.DataFrame(
+                [],
+                columns=self._required_columns,
+            )
+        )
+        self.no_units = len(self._data)
 
 
 class RESERVOIR(Unit):
