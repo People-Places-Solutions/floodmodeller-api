@@ -16,7 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import NotRequired, TypedDict
+from typing import TypedDict
 
 
 class SupportedUnitTypes(TypedDict):
@@ -25,7 +25,7 @@ class SupportedUnitTypes(TypedDict):
 
 
 class UnsupportedUnitTypes(TypedDict):
-    group: NotRequired[str]
+    group: str | None
     has_subtype: bool
 
 
@@ -59,39 +59,33 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
 }
 
 UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
-    "ABSTRACTION": {"has_subtype": False},
-    "BERNOULLI": {"has_subtype": False},
-    "BREACH": {"has_subtype": False},  # breach
+    "ABSTRACTION": {"group": None, "has_subtype": False},
+    "BERNOULLI": {"group": None, "has_subtype": False},
+    "BREACH": {"group": None, "has_subtype": False},  # breach
     "FEHBDY": {"group": "boundaries", "has_subtype": False},  # RAINFALL RUNOFF METHOD boundary
-    "FLOOD RELIEF": {"has_subtype": True},  # found in dat file
+    "FLOOD RELIEF": {"group": None, "has_subtype": True},  # found in dat file
     "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True},  # found in FM help
-    "FLOODPLAIN": {"has_subtype": True},  # floodplain section culvert
+    "FLOODPLAIN": {"group": None, "has_subtype": True},  # floodplain section culvert
     "FRQSIM": {"group": "boundaries", "has_subtype": False},  # flood FReQuency SIMulation
-    "FSRBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # FEH Method (FEH Rainfall Runoff Method)
+    "FSRBDY": {"group": "boundaries", "has_subtype": False},  # FEH Rainfall Runoff Method
     "FSSR16BDY": {"group": "boundaries", "has_subtype": False},  # FSSR16 Method
     "GATED WEIR": {"group": "structures", "has_subtype": False},  # gated weir
-    "GAUGE": {"has_subtype": False},  # Gauge
+    "GAUGE": {"group": None, "has_subtype": False},  # Gauge
     "GERRBDY": {"group": "boundaries", "has_subtype": False},  # gen rainfall runoff
     "INVERTED SYPHON": {"group": "structures", "has_subtype": True},  # invert syphon
     "LABYRINTH WEIR": {"group": "structures", "has_subtype": False},  # labyrinth weir
-    "LOSS": {"has_subtype": False},  # found in .dat
-    "LOSSID": {"has_subtype": False},  # found in .dat
-    "MANHOLE": {"has_subtype": False},  # Manhole [connector]
+    "LOSS": {"group": None, "has_subtype": False},  # found in .dat
+    "LOSSID": {"group": None, "has_subtype": False},  # found in .dat
+    "MANHOLE": {"group": None, "has_subtype": False},  # Manhole [connector]
     "NCDBDY": {"group": "boundaries", "has_subtype": False},  # Normal/Critical Depth Boundary
     "NOTWEIR": {"group": "structures", "has_subtype": False},  # Notional Weir
-    "OCPUMP": {"has_subtype": False},  # pump [junctions]
-    "POND": {"has_subtype": True},  # Pond units, online pond etc [connector]
+    "OCPUMP": {"group": None, "has_subtype": False},  # pump [junctions]
+    "POND": {"group": None, "has_subtype": True},  # Pond units, online pond etc [connector]
     "QH CONTROL": {"group": "structures", "has_subtype": False},  # Flow-head control weir
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
     "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
-    "SCSBDY": {
-        "group": "boundaries",
-        "has_subtype": False,
-    },  # US SCS Method now SS for rainfall/runoff
+    "SCSBDY": {"group": "boundaries", "has_subtype": False},  # US SCS now SS for rainfall/runoff
     "SCWEIR": {"group": "structures", "has_subtype": False},  # sharp crested weir
     "SYPHON": {"group": "structures", "has_subtype": False},  # syphon unit
     "TIDBDY": {"group": "boundaries", "has_subtype": False},  # tidal

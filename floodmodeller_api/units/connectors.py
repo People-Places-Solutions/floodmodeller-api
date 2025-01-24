@@ -41,7 +41,7 @@ class LATERAL(Unit):
             self.name,  # type: ignore
             self.weight_factor,
             str(self.no_units),
-            *self._raw_block[4:],
+            *self._raw_block[4:],  # FIXME
         ]
 
 
@@ -74,11 +74,11 @@ class RESERVOIR(Unit):
             lines += [
                 join_12_char_ljust(*self.lateral_inflow_labels).rstrip(),
                 f"{self.no_rows:>10}",
-                *self._raw_block[4:],
+                *self._raw_block[4:],  # FIXME
             ]
         else:
             lines += [
                 f"{self.no_rows:>10}",
-                *self._raw_block[3:],
+                *self._raw_block[3:],  # FIXME
             ]
         return lines
