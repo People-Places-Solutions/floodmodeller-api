@@ -54,8 +54,6 @@ def test_lf1_to_dataframe(lf1_fp: Path):
     for col in tuflow_columns:
         assert lf1_tuflow_df[col].isna().all()  # there is no tuflow in this lf1
 
-    # TODO: multilevel_header
-
 
 def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
     """LF1: Check IEF.get_log()"""
