@@ -177,12 +177,10 @@ class LF(FMFile):
 
     def to_dataframe(
         self,
-        result_type: str = "all",
         variable: str = "all",
         *,
-        include_time: bool = False,
         include_tuflow: bool = False,
-    ) -> pd.DataFrame | float | tuple[float, dt.timedelta]:
+    ) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
@@ -191,9 +189,6 @@ class LF(FMFile):
         Returns:
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
-        if result_type not in {"all", "max", "min"}:
-            msg = f"Result type '{result_type}' not recognised"
-            raise ValueError(msg)
 
         lf_df_data = {
             k: getattr(self, k)
@@ -211,21 +206,7 @@ class LF(FMFile):
         lf_df.columns = lf_df.columns.droplevel()
         if variable != "all":
             lf_df = lf_df[variable]  # otherwise subheaders result in extra columns
-        lf_df = lf_df.sort_index()
-
-        if result_type == "all":
-            return lf_df  # pd.DataFrame
-        # else lf_df is pd.Series
-
-        lf_df.name = f"{result_type} {variable}"
-        extreme = lf_df.max() if result_type == "max" else lf_df.min()  # float
-
-        if include_time:
-            extreme_times = lf_df.idxmax() if result_type == "max" else lf_df.idxmin()
-            extreme_times.name = f"{result_type} time"
-            extreme = (extreme, extreme_times)  # tuple(float, timedelta)
-
-        return extreme  # float | tuple(float, timedelta)
+        return lf_df.sort_index()
 
     def _sync_cols(self):
         """Ensures Parser values (of type "all") have an entry each iteration"""

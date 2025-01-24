@@ -1,4 +1,3 @@
-import datetime as dt
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -33,21 +32,29 @@ def test_lf1_report_progress(lf1_fp: Path):
 def test_lf1_to_dataframe(lf1_fp: Path):
     """LF1: Check to_dataframe()"""
     lf1 = LF1(lf1_fp)
-    lf1_df = lf1.to_dataframe(variable="all", result_type="all")
+    lf1_df = lf1.to_dataframe(variable="all")
 
     assert lf1_df.loc[lf1_df.index[0], "iter"] == 6
-    assert lf1.to_dataframe(variable="iter", result_type="all").iloc[0] == 6
+    assert lf1.to_dataframe(variable="iter").iloc[0] == 6
 
     assert lf1_df.loc[lf1_df.index[-1], "outflow"] == 21.06
-    assert lf1.to_dataframe(variable="outflow", result_type="all").iloc[-1] == 21.06
+    assert lf1.to_dataframe(variable="outflow").iloc[-1] == 21.06
 
     assert lf1_df.loc[lf1_df.index[4], "mass_error"] == -0.07
-    assert lf1.to_dataframe(variable="mass_error", result_type="all").iloc[4] == -0.07
+    assert lf1.to_dataframe(variable="mass_error").iloc[4] == -0.07
 
-    assert lf1.to_dataframe(variable="iter", result_type="max") == 6
-    assert lf1.to_dataframe(variable="iter", result_type="max", include_time=True) == (6, dt.timedelta(0))
+    lf1_tuflow_df = lf1.to_dataframe(variable="all", include_tuflow=True)
+    non_tuflow_columns = [col for col in lf1_tuflow_df.columns if "tuflow" not in col]
+    assert lf1_tuflow_df[non_tuflow_columns].equals(lf1_df)
 
-    # TODO: include_tuflow, multilevel_header
+    tuflow_columns = [col for col in lf1_tuflow_df.columns if "tuflow" in col]
+    expected_tuflow_columns = ["tuflow_vol", "tuflow_n_wet", "tuflow_dt"]
+    assert set(tuflow_columns) == set(expected_tuflow_columns)
+
+    for col in tuflow_columns:
+        assert lf1_tuflow_df[col].isna().all()  # there is no tuflow in this lf1
+
+    # TODO: multilevel_header
 
 
 def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
