@@ -226,6 +226,6 @@ def test_create_and_insert_connectors():
     dat = DAT()
     junction = JUNCTION(comment="hi", labels=["A", "B"])
     lateral = LATERAL(name="lat", comment="bye")
-    reservoir = RESERVOIR()
+    reservoir = RESERVOIR(name="res", comment="hello", lateral_inflow_labels=["C", "D"])
     dat.insert_units([junction, lateral, reservoir], add_at=-1)
-    print(dat._all_units)
+    assert dat.connectors == {"A": junction, "lat": lateral, "res": reservoir}

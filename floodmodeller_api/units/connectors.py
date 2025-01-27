@@ -121,11 +121,12 @@ class RESERVOIR(Unit):
             *write_dataframe(self.no_rows, self.data),
         ]
 
-    def _create_from_blank(
+    def _create_from_blank(  # noqa: PLR0913 (need that many)
         self,
         name: str = "",
         comment: str = "",
         subtype: str = "OPEN",
+        labels: list[str] | None = None,
         lateral_inflow_labels: list[str] | None = None,
         data: pd.DataFrame | None = None,
     ) -> None:
@@ -133,7 +134,10 @@ class RESERVOIR(Unit):
         self.comment = comment
         self._subtype = subtype
         self._revision = 1
-        self.lateral_inflow_labels = lateral_inflow_labels
+        self.labels = labels if labels is not None else []
+        self.lateral_inflow_labels = (
+            lateral_inflow_labels if lateral_inflow_labels is not None else []
+        )
 
         self.data = (
             data
