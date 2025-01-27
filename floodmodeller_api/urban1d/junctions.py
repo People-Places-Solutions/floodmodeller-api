@@ -41,8 +41,6 @@ class JUNCTION(UrbanUnit):
     def _read(self, line):
         """Function to read a given JUNCTION line and store data as class attributes"""
 
-        # TODO: add functionality to read comments
-
         unit_data = line.split()  # Get unit parameters
 
         # Extend length of unit_data if options variables not provided.
@@ -61,8 +59,6 @@ class JUNCTION(UrbanUnit):
         """Function to write a valid JUNCTION line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO:Improve indentation format when writing and include header for completeness
 
         return join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,

@@ -197,8 +197,6 @@ class INP(FMFile):
         in_block = False
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
-            # TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
-
             # Check if subsection is known
             if line.upper() in subsections.ALL_SUBSECTIONS:
                 if in_block is True:

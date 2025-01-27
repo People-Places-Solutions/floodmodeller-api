@@ -33,5 +33,3 @@ elif args.ld:
         with contextlib.suppress(Exception):
             os.system(f'python "{file!s}" -h')
         print("================================================\n")
-
-# TODO: Add functionality to create a bat and py file in scripts, add to setup.py and install to path

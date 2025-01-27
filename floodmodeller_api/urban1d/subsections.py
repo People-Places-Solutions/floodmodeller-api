@@ -32,7 +32,6 @@ SupportedSubsections = TypedDict(
 )
 
 # Unit types and support
-# TODO: Update functionality - SWMM manual indicates only first 4 characters of subsection heading are needed
 SUPPORTED_SUBSECTIONS: dict[str, SupportedSubsections] = {
     "[JUNCTIONS]": {"group": "units", "attribute": "_junctions", "class": JUNCTIONS},
     "[OUTFALLS]": {"group": "units", "attribute": "_outfalls", "class": OUTFALLS},
