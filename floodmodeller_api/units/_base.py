@@ -216,3 +216,20 @@ class Unit(Jsonable):
         self._last_rule_row = rule_row
 
         return rules
+
+    def _remove_unit_name(self, line: str, *, remove_revision: bool = False) -> str:
+        line = line.replace(self._unit, "")
+        if remove_revision:
+            line = line.replace("#revision#", "", 1)
+        return line.strip()
+
+    def _create_header(self, *, include_revision: bool = False) -> str:
+        header = self._unit
+        if include_revision and hasattr(self, "_revision"):
+            header += f" #revision#{self._revision}"
+        if hasattr(self, "comment") and self.comment != "":
+            header += f" {self.comment}"
+        return header
+
+    def _get_first_word(self, line: str) -> str:
+        return line.split(" ")[0].strip()

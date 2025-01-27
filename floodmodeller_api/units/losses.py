@@ -76,8 +76,8 @@ class CULVERT(Unit):
         """Function to read a given CULVERT block and store data as class attributes"""
 
         # Extract common attributes
-        self._subtype = block[1].split(" ")[0].strip()
-        self.comment = block[0].replace("CULVERT", "").strip()
+        self._subtype = self._get_first_word(block[1])
+        self.comment = self._remove_unit_name(block[0])
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
@@ -128,7 +128,7 @@ class CULVERT(Unit):
 
         _validate_unit(self)
 
-        header = "CULVERT " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -192,7 +192,7 @@ class BLOCKAGE(Unit):
         """Function to read a given BLOCKAGE block and store data as class attributes"""
 
         # Extract comment and revision number
-        b = block[0].replace("BLOCKAGE #revision#", " ").strip()
+        b = self._remove_unit_name(block[0], remove_revision=True)
         self._revision = to_int(b[0], 1)
         self.comment = b[1:].strip()
 
@@ -241,7 +241,7 @@ class BLOCKAGE(Unit):
             msg = f"Parameter error with {self!r} - blockage percentage must be between 0 and 1"
             raise ValueError(msg)
 
-        header = f"BLOCKAGE #revision#{self._revision} {self.comment}"
+        header = self._create_header(include_revision=True)
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
