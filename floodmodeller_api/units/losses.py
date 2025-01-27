@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+import logging
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -115,9 +117,10 @@ class CULVERT(Unit):
             self.headloss_type = to_str(params[2], "TOTAL")
 
         else:
-            # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
-            print(
-                f'This Culvert sub-type: "{self.subtype}" is currently unsupported for reading/editing',
+            # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in its raw state to write back.
+            logging.warning(
+                "This Culvert sub-type: '%s' is currently unsupported for reading/editing",
+                self.subtype,
             )
             self._raw_block = block
 

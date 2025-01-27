@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import filecmp
+import logging
 import re
 import tempfile
 from datetime import datetime
@@ -80,7 +81,11 @@ class BackupControl(Jsonable):
         # Create the backup directory if it doesn't exist
         if not self.backup_dir.exists():
             self.backup_dir.mkdir()
-            print(f"{self.__class__.__name__}: Initialised backup directory at {self.backup_dir}")
+            logging.info(
+                "%s: Initialised backup directory at %s",
+                self.__class__.__name__,
+                self.backup_dir,
+            )
 
         # Create the backup CSV file if it doesn't exist
         if not self.backup_csv_path.exists():

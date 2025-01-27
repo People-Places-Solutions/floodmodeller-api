@@ -18,6 +18,8 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM Units """
 
+import logging
+
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
@@ -91,9 +93,9 @@ class Unit(Jsonable):
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
