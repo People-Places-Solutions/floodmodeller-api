@@ -17,8 +17,6 @@ class JUNCTION(Unit):
     _unit = "JUNCTION"
 
     def _read(self, block: list[str]) -> None:
-        self._raw_block = block
-
         self.comment = self._remove_unit_name(block[0])
         self._subtype = self._get_first_word(block[1])
         self.labels = split_12_char(block[2])
@@ -106,7 +104,13 @@ class RESERVOIR(Unit):
             idx = 2
 
         self.no_rows = to_int(block[idx])
-        self.data = read_reservoir_data(block[idx + 1 :])
+        start_idx = idx + 1
+        end_idx = start_idx + self.no_rows
+        self.data = read_reservoir_data(block[start_idx:end_idx])
+
+        print(self.data)
+
+        # TODO: easting, northing, runoff for revision 1
 
     def _write(self) -> list[str]:
         lateral_inflow_labels = (

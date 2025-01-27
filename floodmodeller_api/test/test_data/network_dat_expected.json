@@ -1867,11 +1867,6 @@
           "_label_len": 12,
           "_name": "RESOUT2b",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RESOUT2b    RESOUT2u    RESOUT2d"
-          ],
           "comment": "",
           "labels": [
             "RESOUT2b",
@@ -1886,11 +1881,6 @@
           "_label_len": 12,
           "_name": "CSRD14u",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD14u     MILLBu      MILLAu"
-          ],
           "comment": "",
           "labels": [
             "CSRD14u",
@@ -1905,11 +1895,6 @@
           "_label_len": 12,
           "_name": "CSRD12u",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD12u     MILLBd      CSRD12d"
-          ],
           "comment": "",
           "labels": [
             "CSRD12u",
@@ -1924,11 +1909,6 @@
           "_label_len": 12,
           "_name": "CSRD09",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD09      CSRD09u     ROAD1"
-          ],
           "comment": "",
           "labels": [
             "CSRD09",
@@ -1943,11 +1923,6 @@
           "_label_len": 12,
           "_name": "CSRD08a",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD08a     CSRD08      ROAD2"
-          ],
           "comment": "",
           "labels": [
             "CSRD08a",
@@ -1962,11 +1937,6 @@
           "_label_len": 12,
           "_name": "CSRD02d",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD02d     RAILRDu     RAILBRu"
-          ],
           "comment": "",
           "labels": [
             "CSRD02d",
@@ -1981,11 +1951,6 @@
           "_label_len": 12,
           "_name": "RAILBRd",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RAILBRd     RAILRDd     CSRD01a"
-          ],
           "comment": "",
           "labels": [
             "RAILBRd",
@@ -2000,11 +1965,6 @@
           "_label_len": 12,
           "_name": "DS2",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "DS2         FOOTa       FOOTBRu"
-          ],
           "comment": "",
           "labels": [
             "DS2",
@@ -2019,11 +1979,6 @@
           "_label_len": 12,
           "_name": "FOOTb",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "FOOTb       FOOTBRd     DS3"
-          ],
           "comment": "",
           "labels": [
             "FOOTb",
@@ -12691,11 +12646,6 @@
           "_label_len": 12,
           "_name": "RESOUT2b",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RESOUT2b    RESOUT2u    RESOUT2d"
-          ],
           "comment": "",
           "labels": [
             "RESOUT2b",
@@ -14995,11 +14945,6 @@
           "_label_len": 12,
           "_name": "CSRD14u",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD14u     MILLBu      MILLAu"
-          ],
           "comment": "",
           "labels": [
             "CSRD14u",
@@ -16031,11 +15976,6 @@
           "_label_len": 12,
           "_name": "CSRD12u",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD12u     MILLBd      CSRD12d"
-          ],
           "comment": "",
           "labels": [
             "CSRD12u",
@@ -17255,11 +17195,6 @@
           "_label_len": 12,
           "_name": "CSRD09",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD09      CSRD09u     ROAD1"
-          ],
           "comment": "",
           "labels": [
             "CSRD09",
@@ -17728,11 +17663,6 @@
           "_label_len": 12,
           "_name": "CSRD08a",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD08a     CSRD08      ROAD2"
-          ],
           "comment": "",
           "labels": [
             "CSRD08a",
@@ -19237,11 +19167,6 @@
           "_label_len": 12,
           "_name": "CSRD02d",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD02d     RAILRDu     RAILBRu"
-          ],
           "comment": "",
           "labels": [
             "CSRD02d",
@@ -19302,11 +19227,6 @@
           "_label_len": 12,
           "_name": "RAILBRd",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RAILBRd     RAILRDd     CSRD01a"
-          ],
           "comment": "",
           "labels": [
             "RAILBRd",
@@ -20364,11 +20284,6 @@
           "_label_len": 12,
           "_name": "DS2",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "DS2         FOOTa       FOOTBRu"
-          ],
           "comment": "",
           "labels": [
             "DS2",
@@ -20424,11 +20339,6 @@
           "_label_len": 12,
           "_name": "FOOTb",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "FOOTb       FOOTBRd     DS3"
-          ],
           "comment": "",
           "labels": [
             "FOOTb",

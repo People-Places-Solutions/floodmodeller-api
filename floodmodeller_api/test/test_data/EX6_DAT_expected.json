@@ -16737,11 +16737,6 @@
           "_label_len": 12,
           "_name": "P0000",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P0000       P0000a      P0000c"
-          ],
           "comment": "",
           "labels": [
             "P0000",
@@ -16756,11 +16751,6 @@
           "_label_len": 12,
           "_name": "P11951A",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P11951A     P11951U     P11951q"
-          ],
           "comment": "",
           "labels": [
             "P11951A",
@@ -16775,11 +16765,6 @@
           "_label_len": 12,
           "_name": "P44865J",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P44865J     P44865U     P44865O"
-          ],
           "comment": "",
           "labels": [
             "P44865J",
@@ -16836,11 +16821,6 @@
           "_label_len": 12,
           "_name": "P0000",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P0000       P0000a      P0000c"
-          ],
           "comment": "",
           "labels": [
             "P0000",
@@ -18987,11 +18967,6 @@
           "_label_len": 12,
           "_name": "P11951A",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P11951A     P11951U     P11951q"
-          ],
           "comment": "",
           "labels": [
             "P11951A",
@@ -24569,11 +24544,6 @@
           "_label_len": 12,
           "_name": "P44865J",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "P44865J     P44865U     P44865O"
-          ],
           "comment": "",
           "labels": [
             "P44865J",
