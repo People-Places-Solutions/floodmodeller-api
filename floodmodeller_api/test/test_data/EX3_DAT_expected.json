@@ -8555,7 +8555,8 @@
               "Section Area": {},
               "Cd Part Full": {},
               "Cd Full": {},
-              "Drowning Coefficient": {}
+              "Drowning Coefficient": {},
+              "X": {}
             }
           }
         }
@@ -10442,7 +10443,8 @@
               "Section Area": {},
               "Cd Part Full": {},
               "Cd Full": {},
-              "Drowning Coefficient": {}
+              "Drowning Coefficient": {},
+              "X": {}
             }
           }
         }

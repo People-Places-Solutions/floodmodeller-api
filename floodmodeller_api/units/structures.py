@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -19,15 +19,28 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .helpers import (
-    _to_float,
-    _to_int,
-    _to_str,
+from ._helpers import (
+    get_int,
     join_10_char,
     join_12_char_ljust,
     join_n_char_ljust,
+    read_bridge_cross_sections,
+    read_bridge_culvert_data,
+    read_bridge_opening_data,
+    read_bridge_pier_locations,
+    read_dataframe_from_lines,
+    read_spill_section_data,
+    read_superbridge_block_data,
+    read_superbridge_opening_data,
+    set_bridge_params,
+    set_pier_params,
     split_10_char,
     split_n_char,
+    to_float,
+    to_int,
+    to_str,
+    write_dataframe,
+    write_dataframes,
 )
 
 
@@ -124,8 +137,27 @@ class BRIDGE(Unit):
 
     _unit = "BRIDGE"
 
-    def _read(self, br_block):  # noqa: C901, PLR0912, PLR0915
+    # attributes set in a function (for mypy)
+    calibration_coefficient: float
+    skew: float
+    bridge_width_dual: float
+    bridge_dist_dual: float
+    total_pier_width: float
+    orifice_flow: bool
+    orifice_lower_transition_dist: float
+    orifice_upper_transition_dist: float
+    orifice_discharge_coefficient: float
+    specify_piers: bool
+    npiers: int
+    pier_use_calibration_coeff: bool
+    pier_calibration_coeff: float
+    pier_shape: str
+    soffit_shape: str
+    pier_faces: str
+
+    def _read(self, br_block: list[str]) -> None:  # noqa: PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
+        self.comment = self._remove_unit_name(br_block[0])
         self._subtype = self._get_first_word(br_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
@@ -133,223 +165,159 @@ class BRIDGE(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.comment = self._remove_unit_name(br_block[0])
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
-            # Read Params
-            params = split_10_char(f"{br_block[4]:<90}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            self.skew = _to_float(params[1])
-            self.bridge_width_dual = _to_float(params[2])
-            self.bridge_dist_dual = _to_float(params[3])
-            if params[5] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
-            self.orifice_lower_transition_dist = _to_float(params[6])
-            self.orifice_upper_transition_dist = _to_float(params[7])
-            self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
+            set_bridge_params(self, br_block[4], include_pier=False)
 
-            # Read cross section data
-            self.section_nrows = int(split_10_char(br_block[5])[0])
-            data_list = []
-            for row in br_block[6 : 6 + self.section_nrows]:
-                row_split = split_10_char(f"{row:<50}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                data_list.append([x, y, n, embankment])
-            self.section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments"],
+            self.section_nrows, end_idx, self.section_data = read_dataframe_from_lines(
+                br_block,
+                5,
+                read_bridge_cross_sections,
             )
 
-            # Read bridge opening data
-            self.opening_nrows = int(split_10_char(br_block[6 + self.section_nrows])[0])
-            data_list = []
-            for row in br_block[6 + self.section_nrows + 1 :]:
-                row_split = split_10_char(f"{row:<40}")
-                start = _to_float(row_split[0])  # Start (m)
-                finish = _to_float(row_split[1])  # Finish (m)
-                spring = _to_float(row_split[2])  # Springing Level
-                soffit = _to_float(row_split[3])  # Soffit Level
-                data_list.append([start, finish, spring, soffit])
-            self.opening_data = pd.DataFrame(
-                data_list,
-                columns=["Start", "Finish", "Springing Level", "Soffit Level"],
+            self.opening_nrows, end_idx, self.opening_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_opening_data,
             )
 
         # Read USBPR type unit
         elif self.subtype == "USBPR1978":
-            # Read Params
-            params = split_10_char(f"{br_block[4]:<90}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            self.skew = _to_float(params[1])
-            self.bridge_width_dual = _to_float(params[2])
-            self.bridge_dist_dual = _to_float(params[3])
-            self.total_pier_width = _to_float(params[4])
-            if params[5] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
-            self.orifice_lower_transition_dist = _to_float(params[6])
-            self.orifice_upper_transition_dist = _to_float(params[7])
-            self.orifice_discharge_coefficient = _to_float(params[8], 1.0)
+            set_bridge_params(self, br_block[4])
 
             self.abutment_type = split_10_char(br_block[5])[0]
             self.abutment_alignment = split_10_char(br_block[7])[0]
 
-            pier_info = split_10_char(f"{br_block[6]:<40}")
-            if int(pier_info[0]) > 0:
-                self.specify_piers = True
-                self.npiers = int(pier_info[0])
-                if pier_info[1] == "COEF":
-                    self.pier_use_calibration_coeff = True
-                    self.pier_calibration_coeff = _to_float(pier_info[3])
-                else:
-                    self.pier_use_calibration_coeff = False
-                    self.pier_shape = pier_info[1]
-                    self.pier_faces = pier_info[2]
-            else:
-                self.specify_piers = False
-                self.soffit_shape = pier_info[1]
+            set_pier_params(self, br_block[6])
 
-            # Read cross section data
-            self.section_nrows = int(split_10_char(br_block[8])[0])
-            data_list = []
-            for row in br_block[9 : 9 + self.section_nrows]:
-                row_split = split_10_char(f"{row:<50}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                data_list.append([x, y, n, embankment])
-            self.section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments"],
+            self.section_nrows, end_idx, self.section_data = read_dataframe_from_lines(
+                br_block,
+                8,
+                read_bridge_cross_sections,
             )
 
-            # Read bridge opening data
-            self.opening_nrows = int(split_10_char(br_block[9 + self.section_nrows])[0])
-            data_list = []
-            start_row = 9 + self.section_nrows + 1
-            end_row = start_row + self.opening_nrows
-            for row in br_block[start_row:end_row]:
-                row_split = split_10_char(f"{row:<40}")
-                start = _to_float(row_split[0])  # Start (m)
-                finish = _to_float(row_split[1])  # Finish (m)
-                spring = _to_float(row_split[2])  # Springing Level
-                soffit = _to_float(row_split[3])  # Soffit Level
-                data_list.append([start, finish, spring, soffit])
-            self.opening_data = pd.DataFrame(
-                data_list,
-                columns=["Start", "Finish", "Springing Level", "Soffit Level"],
+            self.opening_nrows, end_idx, self.opening_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_opening_data,
             )
 
-            # Read flood relief culvert data
-            self.culvert_nrows = int(
-                split_10_char(br_block[9 + self.section_nrows + self.opening_nrows + 1])[0],
-            )
-            data_list = []
-            start_row = 9 + self.section_nrows + self.opening_nrows + 2
-            end_row = start_row + self.culvert_nrows
-            for row in br_block[start_row:end_row]:
-                row_split = split_10_char(f"{row:<60}")
-                invert = _to_float(row_split[0])  # Invert
-                soffit = _to_float(row_split[1])  # Soffit
-                area = _to_float(row_split[2])  # Section Area
-                cd_part = _to_float(row_split[3])  # Cd Part Full
-                cd_full = _to_float(row_split[4])  # Cd Full
-                drown = _to_float(row_split[5])  # Drowning Coefficient
-                data_list.append([invert, soffit, area, cd_part, cd_full, drown])
-            self.culvert_data = pd.DataFrame(
-                data_list,
-                columns=[
-                    "Invert",
-                    "Soffit",
-                    "Section Area",
-                    "Cd Part Full",
-                    "Cd Full",
-                    "Drowning Coefficient",
-                ],
+            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_culvert_data,
             )
 
         # Read Pierloss type bridge
         elif self.subtype == "PIERLOSS":
             # Read Params
-            params = split_10_char(f"{br_block[4]:<50}")
-            self.calibration_coefficient = _to_float(params[0], 1.0)
-            if params[1] == "ORIFICE":
-                self.orifice_flow = True
-            else:
-                self.orifice_flow = False
-            self.orifice_lower_transition_dist = _to_float(params[3])
-            self.orifice_upper_transition_dist = _to_float(params[4])
-            self.orifice_discharge_coefficient = _to_float(params[2], 1.0)
+            pierloss_params = split_10_char(f"{br_block[4]:<50}")
+            self.calibration_coefficient = to_float(pierloss_params[0], 1.0)
+            self.orifice_flow = pierloss_params[1] == "ORIFICE"
+            self.orifice_discharge_coefficient = to_float(pierloss_params[2], 1.0)
+            self.orifice_lower_transition_dist = to_float(pierloss_params[3])
+            self.orifice_upper_transition_dist = to_float(pierloss_params[4])
+
             additional_params = split_10_char(f"{br_block[5]:<20}")
-            self.pier_coefficient = _to_float(additional_params[0], 0.9)
-            self.bridge_width = _to_float(additional_params[1])
+            self.pier_coefficient = to_float(additional_params[0], 0.9)
+            self.bridge_width = to_float(additional_params[1])
 
-            # Read US cross section data
-            self.us_section_nrows = int(split_10_char(br_block[6])[0])
-            data_list = []
-            for row in br_block[7 : 7 + self.us_section_nrows]:
-                row_split = split_10_char(f"{row:<60}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                top_level = row_split[5]  # Top Level (m)
-                data_list.append([x, y, n, embankment, top_level])
-            self.us_section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
+            self.us_section_nrows, end_idx, self.us_section_data = read_dataframe_from_lines(
+                br_block,
+                6,
+                read_bridge_cross_sections,
+                include_top_level=True,
             )
 
-            # Read DS cross section data
-            new_idx = 6 + 1 + self.us_section_nrows
-            self.ds_section_nrows = int(split_10_char(br_block[new_idx])[0])
-            data_list = []
-            for row in br_block[new_idx + 1 : new_idx + 1 + self.ds_section_nrows]:
-                row_split = split_10_char(f"{row:<60}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
-                embankment = row_split[4]  # Embankment flag
-                top_level = row_split[5]  # Top Level (m)
-                data_list.append([x, y, n, embankment, top_level])
-            self.ds_section_data = pd.DataFrame(
-                data_list,
-                columns=["X", "Y", "Mannings n", "Embankments", "Top Level"],
+            self.ds_section_nrows, end_idx, self.ds_section_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_cross_sections,
+                include_top_level=True,
             )
 
-            # Read pier locations
-            new_idx += 1 + self.ds_section_nrows
-            self.pier_locs_nrows = int(split_10_char(br_block[new_idx])[0])
-            data_list = []
-            for row in br_block[new_idx + 1 : new_idx + 1 + self.pier_locs_nrows]:
-                row_split = split_10_char(f"{row:<40}")
-                l_x = _to_float(row_split[0])  # chainage
-                l_top_level = _to_float(row_split[1])  # Top Level (m)
-                r_x = _to_float(row_split[2])  # chainage
-                r_top_level = _to_float(row_split[3])  # Top Level (m)
-                data_list.append([l_x, l_top_level, r_x, r_top_level])
-            self.pier_locs_data = pd.DataFrame(
-                data_list,
-                columns=["Left X", "Left Top Level", "Right X", "Right Top Level"],
+            self.pier_locs_nrows, end_idx, self.pier_locs_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_pier_locations,
+            )
+
+        elif self.subtype == "INTEGRATED":
+            self.revision = to_int(br_block[3])
+            self.bridge_name = br_block[4]
+            self.integrated_subtype = br_block[5].strip()
+            set_bridge_params(self, br_block[6])
+            self.abutment_type = to_int(br_block[7])
+            set_pier_params(self, br_block[8])
+            self.aligned = br_block[9].strip() == "ALIGNED"
+
+            end_idx = 10
+            self.section_nrows_list: list[int] = []
+            self.section_data_list: list[pd.DataFrame] = []
+            for _ in range(4):
+                nrows, end_idx, data = read_dataframe_from_lines(
+                    br_block,
+                    end_idx,
+                    read_bridge_cross_sections,
+                    include_panel_marker=True,
+                )
+                self.section_nrows_list.append(nrows)
+                self.section_data_list.append(data)
+
+            self.opening_type = br_block[end_idx]
+            end_idx += 1
+            self.opening_nrows = get_int(br_block[end_idx])
+            end_idx += 1
+            self.opening_nsubrows_list: list[int] = []
+            self.opening_data_list: list[pd.DataFrame] = []
+            for _ in range(self.opening_nrows):
+                nrows, end_idx, data = read_dataframe_from_lines(
+                    br_block,
+                    end_idx,
+                    read_superbridge_opening_data,
+                )
+                self.opening_nsubrows_list.append(nrows)
+                self.opening_data_list.append(data)
+
+            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_bridge_culvert_data,
+            )
+
+            spill_params = split_10_char(f"{br_block[end_idx]:<30}")
+            self.weir_coefficient = to_float(spill_params[1])
+            self.modular_limit = to_float(spill_params[2])
+            self.spill_nrows, end_idx, self.spill_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_spill_section_data,
+            )
+
+            self.block_comment = br_block[end_idx]
+            end_idx += 1
+            block_params = split_10_char(f"{br_block[end_idx]:<50}")
+            self.inlet_loss = to_float(block_params[1])
+            self.outlet_loss = to_float(block_params[2])
+            self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
+            self.override = block_params[4] == "OVERRIDE"
+            self.block_nrows, end_idx, self.block_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_superbridge_block_data,
             )
 
         else:
-            # This else block is triggered for bridge subtypes which aren't yet supported, and just keeps the 'br_block' in it's raw state to write back.
+            # This else block is triggered for bridge subtypes which aren't yet supported
+            # and just keeps the 'br_block' in its raw state to write back.
             print(
                 f'This Bridge sub-type: "{self.subtype}" is currently unsupported for reading/editing',
             )
             self._raw_block = br_block
             self.name = br_block[2][:12].strip()
 
-    def _write(self):  # noqa: C901, PLR0912, PLR0915
+    def _write(self) -> list[str]:  # noqa: PLR0915
         """Function to write a valid BRIDGE block"""
         _validate_unit(self)  # Function to check the params are valid for BRIDGE unit
         header = self._create_header()
@@ -375,25 +343,14 @@ class BRIDGE(Unit):
                 self.orifice_upper_transition_dist,
                 self.orifice_discharge_coefficient,
             )
+            br_block.extend(["MANNING", params])
+
             self.section_nrows = len(self.section_data)
-            br_block.extend(["MANNING", params, f"{self.section_nrows!s:>10}"])
-
-            section_data = []
-            for _, x, y, n, embankments in self.section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += embankments
-                section_data.append(row)
-
+            section_data = write_dataframe(self.section_nrows, self.section_data, empty=3)
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{self.opening_nrows!s:>10}")
-            opening_data = []
-            for _, start, finish, spring, soffit in self.opening_data.itertuples():
-                row = join_10_char(start, finish, spring, soffit)
-                opening_data.append(row)
-
+            opening_data = write_dataframe(self.opening_nrows, self.opening_data)
             br_block.extend(opening_data)
 
             return br_block
@@ -413,13 +370,12 @@ class BRIDGE(Unit):
             )
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
-                    pier_params = f'{self.npiers:>10}{"COEF":<10}{"":>10}{self.calibration_coefficient:>10.3f}'
+                    pier_params = f'{self.npiers:>10}{"COEFF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
                 pier_params = f"{0:>10}{self.soffit_shape}"
 
-            self.section_nrows = len(self.section_data)
             br_block.extend(
                 [
                     "MANNING",
@@ -427,40 +383,19 @@ class BRIDGE(Unit):
                     f"{self.abutment_type!s:>10}",
                     pier_params,
                     self.abutment_alignment,
-                    f"{self.section_nrows!s:>10}",
                 ],
             )
 
-            section_data = []
-            for _, x, y, n, embankments in self.section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += embankments
-                section_data.append(row)
+            self.section_nrows = len(self.section_data)
+            section_data = write_dataframe(self.section_nrows, self.section_data, empty=3)
             br_block.extend(section_data)
 
             self.opening_nrows = len(self.opening_data)
-            br_block.append(f"{self.opening_nrows!s:>10}")
-            opening_data = []
-            for _, start, finish, spring, soffit in self.opening_data.itertuples():
-                row = join_10_char(start, finish, spring, soffit)
-                opening_data.append(row)
+            opening_data = write_dataframe(self.opening_nrows, self.opening_data)
             br_block.extend(opening_data)
 
             self.culvert_nrows = len(self.culvert_data)
-            br_block.append(f"{self.culvert_nrows!s:>10}")
-            culvert_data = []
-            for (
-                _,
-                invert,
-                soffit,
-                area,
-                cd_part,
-                cd_full,
-                drown,
-            ) in self.culvert_data.itertuples():
-                row = join_10_char(invert, soffit, area, cd_part, cd_full, drown)
-                culvert_data.append(row)
+            culvert_data = write_dataframe(self.culvert_nrows, self.culvert_data)
             br_block.extend(culvert_data)
 
             return br_block
@@ -475,51 +410,104 @@ class BRIDGE(Unit):
                 self.orifice_upper_transition_dist,
             )
             additional_params = join_10_char(self.pier_coefficient, self.bridge_width)
-            self.us_section_nrows = len(self.us_section_data)
-            br_block.extend(
-                [
-                    "YARNELL",
-                    params,
-                    additional_params,
-                    f"{self.us_section_nrows!s:>10}",
-                ],
-            )
+            br_block.extend(["YARNELL", params, additional_params])
 
-            us_section_data = []
-            for _, x, y, n, embankments, top_level in self.us_section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += f"{embankments:<10}"
-                row += join_10_char(top_level)
-                us_section_data.append(row)
+            self.us_section_nrows = len(self.us_section_data)
+            us_section_data = write_dataframe(self.us_section_nrows, self.us_section_data, empty=3)
             br_block.extend(us_section_data)
 
             self.ds_section_nrows = len(self.ds_section_data)
-            br_block.append(f"{self.ds_section_nrows!s:>10}")
-            ds_section_data = []
-            for _, x, y, n, embankments, top_level in self.ds_section_data.itertuples():
-                # Adding extra 10 spaces before embankment flag
-                row = join_10_char(x, y, n, "")
-                row += f"{embankments:<10}"
-                row += join_10_char(top_level)
-                ds_section_data.append(row)
+            ds_section_data = write_dataframe(self.ds_section_nrows, self.ds_section_data, empty=3)
             br_block.extend(ds_section_data)
 
             self.pier_locs_nrows = len(self.pier_locs_data)
-            br_block.append(f"{self.pier_locs_nrows!s:>10}")
-            pier_locs_data = []
-            for (
-                _,
-                l_x,
-                l_top_level,
-                r_x,
-                r_top_level,
-            ) in self.pier_locs_data.itertuples():
-                row = join_10_char(l_x, l_top_level, r_x, r_top_level)
-                pier_locs_data.append(row)
+            pier_locs_data = write_dataframe(self.pier_locs_nrows, self.pier_locs_data)
             br_block.extend(pier_locs_data)
 
             return br_block
+
+        if self.subtype == "INTEGRATED":
+            line_1_2 = br_block
+            line_3 = str(self.revision)
+            line_4 = self.bridge_name
+            line_5 = self.integrated_subtype
+            line_6 = join_10_char(
+                self.calibration_coefficient,
+                self.skew,
+                self.bridge_width_dual,
+                self.bridge_dist_dual,
+                self.total_pier_width,
+                "ORIFICE" if self.orifice_flow else "",
+                self.orifice_lower_transition_dist,
+                self.orifice_upper_transition_dist,
+                self.orifice_discharge_coefficient,
+            )
+            line_7 = str(self.abutment_type)
+            if self.specify_piers:
+                if self.pier_use_calibration_coeff:
+                    line_8 = join_10_char(
+                        self.npiers,
+                        "COEFF",
+                        "",
+                        self.pier_calibration_coeff,
+                    )
+                else:
+                    line_8 = join_10_char(
+                        self.npiers,
+                        self.pier_shape,
+                        self.pier_faces,
+                    )
+            else:
+                line_8 = join_10_char(
+                    0,
+                    self.soffit_shape,
+                )
+            line_9 = "ALIGNED" if self.aligned else ""
+            line_10_11_12_13 = write_dataframes(
+                None,
+                self.section_nrows_list,
+                self.section_data_list,
+            )
+            line_14 = self.opening_type
+            line_15 = write_dataframes(
+                self.opening_nrows,
+                self.opening_nsubrows_list,
+                self.opening_data_list,
+            )
+            line_16 = write_dataframe(self.culvert_nrows, self.culvert_data)
+            line_17 = write_dataframe(
+                join_10_char(self.spill_nrows, self.weir_coefficient, self.modular_limit),
+                self.spill_data,
+            )
+            line_18 = self.block_comment
+            line_19 = write_dataframe(
+                join_10_char(
+                    self.block_nrows,
+                    self.inlet_loss,
+                    self.outlet_loss,
+                    self.block_method,
+                    "OVERRIDE" if self.override else "NOOVERRIDE",
+                ),
+                self.block_data,
+            )
+
+            return [
+                *line_1_2,
+                line_3,
+                line_4,
+                line_5,  # type: ignore
+                line_6,
+                line_7,
+                line_8,
+                line_9,
+                *line_10_11_12_13,
+                line_14,
+                *line_15,
+                *line_16,
+                *line_17,
+                line_18,
+                *line_19,
+            ]
 
         return self._raw_block
 
@@ -605,30 +593,30 @@ class SLUICE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<80}")
-        self.weir_flow_coefficient = _to_float(params1[0], 1.0)
-        self.under_gate_flow = _to_float(params1[1], 1.0)
-        self.weir_breadth = _to_float(params1[2])
-        self.crest_elevation = _to_float(params1[3])
-        self.gate_height_or_chord = _to_float(params1[4])
-        self.weir_length = _to_float(params1[5])
+        self.weir_flow_coefficient = to_float(params1[0], 1.0)
+        self.under_gate_flow = to_float(params1[1], 1.0)
+        self.weir_breadth = to_float(params1[2])
+        self.crest_elevation = to_float(params1[3])
+        self.gate_height_or_chord = to_float(params1[4])
+        self.weir_length = to_float(params1[5])
         if self.subtype == "RADIAL":
             self.use_degrees = params1[6] == "DEGREES"
             self.allow_free_flow_under = params1[7] == "FREESLUICE"
 
         # Second parameter line
         params2 = split_10_char(f"{block[4]:<70}")
-        self.us_weir_height = _to_float(params2[0])
-        self.ds_weir_height = _to_float(params2[1])
-        self.bias_factor = _to_float(params2[2], 1.0)
-        self.over_gate_flow = _to_float(params2[3], 1.0)
+        self.us_weir_height = to_float(params2[0])
+        self.ds_weir_height = to_float(params2[1])
+        self.bias_factor = to_float(params2[2], 1.0)
+        self.over_gate_flow = to_float(params2[3], 1.0)
         if self.subtype == "RADIAL":
-            self.pivot_height = _to_float(params2[4], 0.7)
-            self.gate_radius = _to_float(params2[5], 0.7)
+            self.pivot_height = to_float(params2[4], 0.7)
+            self.gate_radius = to_float(params2[5], 0.7)
         else:
             self.modular_limits = {
-                "weir_flow": _to_float(params2[4]),
-                "under_gate_flow": _to_float(params2[5], 1.0),
-                "over_gate_flow": _to_float(params2[6], 1.0),
+                "weir_flow": to_float(params2[4]),
+                "under_gate_flow": to_float(params2[5], 1.0),
+                "over_gate_flow": to_float(params2[6], 1.0),
             }
 
         # Third parameter line
@@ -636,15 +624,15 @@ class SLUICE(Unit):
         self.ngates = int(params3[0])  # number of gates
         if self.subtype == "RADIAL":
             self.modular_limits = {
-                "weir_flow": _to_float(params3[1]),
-                "under_gate_flow": _to_float(params3[2], 1.0),
-                "over_gate_flow": _to_float(params3[3], 1.0),
+                "weir_flow": to_float(params3[1]),
+                "under_gate_flow": to_float(params3[2], 1.0),
+                "over_gate_flow": to_float(params3[3], 1.0),
             }
-            self.timeunit = _to_str(params3[4], "SECONDS", check_float=True)
-            self.extendmethod = _to_str(params3[5], "EXTEND")
+            self.timeunit = to_str(params3[4], "SECONDS", check_float=True)
+            self.extendmethod = to_str(params3[5], "EXTEND")
         else:
-            self.timeunit = _to_str(params3[1], "SECONDS", check_float=True)
-            self.extendmethod = _to_str(params3[2], "EXTEND")
+            self.timeunit = to_str(params3[1], "SECONDS", check_float=True)
+            self.extendmethod = to_str(params3[2], "EXTEND")
 
         # Control lines
         self.control_method = block[6].split()[0].upper()
@@ -763,8 +751,8 @@ class SLUICE(Unit):
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
                     row_split = split_10_char(f"{row:<20}")
-                    x = _to_float(row_split[0])  # time
-                    y = _to_float(row_split[1])  # opening
+                    x = to_float(row_split[0])  # time
+                    y = to_float(row_split[1])  # opening
                     data_list.append([x, y])
 
                 gate_data = pd.DataFrame(data_list, columns=["Time", "Opening"])
@@ -785,9 +773,9 @@ class SLUICE(Unit):
                 data_list = []
                 for row in block[gate_row + 2 : gate_row + 2 + nrows]:
                     row_split = split_10_char(f"{row:<30}")
-                    x = _to_float(row_split[0])  # time
+                    x = to_float(row_split[0])  # time
                     y = row_split[1]  # mode
-                    z = _to_float(row_split[2])  # opening
+                    z = to_float(row_split[2])  # opening
                     data_list.append([x, y, z])
 
                 gate_data = pd.DataFrame(data_list, columns=["Time", "Mode", "Opening"])
@@ -841,18 +829,18 @@ class ORIFICE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
-        self.invert = _to_float(params1[0])
-        self.soffit = _to_float(params1[1])
-        self.bore_area = _to_float(params1[2])
-        self.upstream_sill = _to_float(params1[3])
-        self.downstream_sill = _to_float(params1[4])
-        self.shape = _to_str(params1[5], "RECTANGLE")
+        self.invert = to_float(params1[0])
+        self.soffit = to_float(params1[1])
+        self.bore_area = to_float(params1[2])
+        self.upstream_sill = to_float(params1[3])
+        self.downstream_sill = to_float(params1[4])
+        self.shape = to_str(params1[5], "RECTANGLE")
 
         # Second parameter line
         params2 = split_10_char(block[4])
-        self.weir_flow = _to_float(params2[0], 1.0)
-        self.surcharged_flow = _to_float(params2[1], 1.0)
-        self.modular_limit = _to_float(params2[2], 0.7)
+        self.weir_flow = to_float(params2[0], 1.0)
+        self.surcharged_flow = to_float(params2[1], 1.0)
+        self.modular_limit = to_float(params2[2], 0.7)
 
     def _write(self):
         """Function to write a valid ORIFICE block"""
@@ -942,22 +930,11 @@ class SPILL(Unit):
 
         # First parameter line
         params = split_10_char(block[2])
-        self.weir_coefficient = _to_float(params[0], 1.2)
-        self.modular_limit = _to_float(params[1], 0.9)
+        self.weir_coefficient = to_float(params[0], 1.2)
+        self.modular_limit = to_float(params[1], 0.9)
 
         # Spill section data
-        data_list = []
-        for row in block[4:]:
-            row_split = split_10_char(f"{row:<40}")
-            x = _to_float(row_split[0])  # chainage
-            y = _to_float(row_split[1])  # elevation
-            e = _to_float(row_split[2])  # easting
-            n = _to_float(row_split[3])  # northing
-
-            data_list.append([x, y, e, n])
-
-        spill_data = pd.DataFrame(data_list, columns=["X", "Y", "Easting", "Northing"])
-        self.data = spill_data
+        self.data = read_spill_section_data(block[4:])
 
     def _write(self):
         """Function to write a valid SPILL block"""
@@ -1034,16 +1011,16 @@ class RNWEIR(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<50}")
-        self.velocity_coefficient = _to_float(params1[0])
-        self.weir_length = _to_float(params1[1])
-        self.weir_breadth = _to_float(params1[2])
-        self.weir_elevation = _to_float(params1[3])
-        self.modular_limit = _to_float(params1[4])
+        self.velocity_coefficient = to_float(params1[0])
+        self.weir_length = to_float(params1[1])
+        self.weir_breadth = to_float(params1[2])
+        self.weir_elevation = to_float(params1[3])
+        self.modular_limit = to_float(params1[4])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid RNWEIR block"""
@@ -1134,15 +1111,15 @@ class WEIR(Unit):
         self.comment = self._remove_unit_name(block[0])
 
         # Exponent
-        self.exponent = _to_float(block[2].strip())
+        self.exponent = to_float(block[2].strip())
 
         # Parameters line
         params = split_10_char(f"{block[3]:<50}")
-        self.discharge_coefficient = _to_float(params[0])
-        self.velocity_coefficient = _to_float(params[1])
-        self.weir_breadth = _to_float(params[2])
-        self.weir_elevation = _to_float(params[3])
-        self.modular_limit = _to_float(params[4])
+        self.discharge_coefficient = to_float(params[0])
+        self.velocity_coefficient = to_float(params[1])
+        self.weir_breadth = to_float(params[2])
+        self.weir_elevation = to_float(params[3])
+        self.modular_limit = to_float(params[4])
 
     def _write(self):
         """Function to write a valid WEIR block"""
@@ -1229,15 +1206,15 @@ class CRUMP(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
-        self.calibration_coefficient = _to_float(params1[0])
-        self.weir_breadth = _to_float(params1[1])
-        self.weir_elevation = _to_float(params1[2])
-        self.modular_limit = _to_float(params1[3])
+        self.calibration_coefficient = to_float(params1[0])
+        self.weir_breadth = to_float(params1[1])
+        self.weir_elevation = to_float(params1[2])
+        self.modular_limit = to_float(params1[3])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid CRUMP block"""
@@ -1338,20 +1315,20 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<90}")
-        self.calibration_coefficient = _to_float(params1[0])
-        self.weir_breadth = _to_float(params1[1])
-        self.weir_elevation = _to_float(params1[2])
-        self.modular_limit = _to_float(params1[3])
-        self.v_slope = _to_float(params1[4])
-        self.side_slope = _to_float(params1[5])
-        self.ds_face_slope = _to_float(params1[6])
-        self.coriolis_coefficient = _to_float(params1[7])
-        self.bank_top_elevation = _to_float(params1[8])
+        self.calibration_coefficient = to_float(params1[0])
+        self.weir_breadth = to_float(params1[1])
+        self.weir_elevation = to_float(params1[2])
+        self.modular_limit = to_float(params1[3])
+        self.v_slope = to_float(params1[4])
+        self.side_slope = to_float(params1[5])
+        self.ds_face_slope = to_float(params1[6])
+        self.coriolis_coefficient = to_float(params1[7])
+        self.bank_top_elevation = to_float(params1[8])
 
         # Second parameter line
         params2 = split_10_char(f"{block[3]:<20}")
-        self.upstream_crest_height = _to_float(params2[0])
-        self.downstream_crest_height = _to_float(params2[1])
+        self.upstream_crest_height = to_float(params2[0])
+        self.downstream_crest_height = to_float(params2[1])
 
     def _write(self):
         """Function to write a valid FLAT-V WEIR block"""
@@ -1470,14 +1447,14 @@ class RESERVOIR(Unit):  # FIXME NOT CURRENTLY IN USE
             self.lat4 = lateral_labels[3]
 
             # Number of pairs of data
-            self.num_pairs = _to_int(block[3])
+            self.num_pairs = to_int(block[3])
 
             # Reservoir section data
             data_list = []
             for row in block[4 : len(block) - 1]:
                 row_split = split_10_char(f"{row:<20}")
-                elevation = _to_float(row_split[0])  # elevation
-                plan_area = _to_float(row_split[1])  # plan area
+                elevation = to_float(row_split[0])  # elevation
+                plan_area = to_float(row_split[1])  # plan area
                 data_list.append([elevation, plan_area])
             reservoir_data = pd.DataFrame(data_list, columns=["Elevation", "Plan Area"])
             self.data = reservoir_data
@@ -1487,19 +1464,19 @@ class RESERVOIR(Unit):  # FIXME NOT CURRENTLY IN USE
                 f"{block[len(block)-1]:<{3*self._label_len}}",
                 self._label_len,
             )
-            self.easting = _to_float(coordinate_data[0])
-            self.northing = _to_float(coordinate_data[1])
-            self.runoff_factor = _to_float(coordinate_data[2])
+            self.easting = to_float(coordinate_data[0])
+            self.northing = to_float(coordinate_data[1])
+            self.runoff_factor = to_float(coordinate_data[2])
         else:  # Option 2 (runs if comment != "#revision#1")
             # Number of pairs of data
-            self.num_pairs = _to_int(block[2])
+            self.num_pairs = to_int(block[2])
 
             # Reservoir section data
             data_list = []
             for row in block[3:]:
                 row_split = split_10_char(f"{row:<20}")
-                elevation = _to_float(row_split[0])  # elevation
-                plan_area = _to_float(row_split[1])  # plan area
+                elevation = to_float(row_split[0])  # elevation
+                plan_area = to_float(row_split[1])  # plan area
                 data_list.append([elevation, plan_area])
             reservoir_data = pd.DataFrame(data_list, columns=["Elevation", "Plan Area"])
             self.data = reservoir_data
@@ -1617,18 +1594,18 @@ class OUTFALL(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[3]:<60}")
-        self.invert = _to_float(params1[0])
-        self.soffit = _to_float(params1[1])
-        self.bore_area = _to_float(params1[2])
-        self.upstream_sill = _to_float(params1[3])
-        self.downstream_sill = _to_float(params1[4])
-        self.shape = _to_str(params1[5], "RECTANGLE")
+        self.invert = to_float(params1[0])
+        self.soffit = to_float(params1[1])
+        self.bore_area = to_float(params1[2])
+        self.upstream_sill = to_float(params1[3])
+        self.downstream_sill = to_float(params1[4])
+        self.shape = to_str(params1[5], "RECTANGLE")
 
         # Second parameter line
         params2 = split_10_char(block[4])
-        self.weir_flow = _to_float(params2[0], 1.0)
-        self.surcharged_flow = _to_float(params2[1], 1.0)
-        self.modular_limit = _to_float(params2[2], 0.7)
+        self.weir_flow = to_float(params2[0], 1.0)
+        self.surcharged_flow = to_float(params2[1], 1.0)
+        self.modular_limit = to_float(params2[2], 0.7)
 
     def _write(self):
         """Function to write a valid OUTFALL block"""

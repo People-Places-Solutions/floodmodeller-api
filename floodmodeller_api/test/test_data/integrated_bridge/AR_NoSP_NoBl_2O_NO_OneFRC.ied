@@ -1,0 +1,33 @@
+BRIDGE prototype for rev 3 / No Spill data, no blockage
+INTEGRATED
+Label11     Label12     CH0001      CH0002
+3
+Clifton Suspension Bridge
+ARCH
+         1         0         0         0         0NOORIFICE                                      1.0
+         3
+         0FLAT      DIA              2.5     1.100NONUNI
+ALIGNED   
+         4
+   -10.000     5.000     0.035*         LEFT
+   -10.000     0.000     0.035
+    10.000     0.000     0.035
+    10.000     5.000     0.035*         RIGHT
+         0
+         0
+         0
+PARABOLA1
+         2
+         3
+    -7.500     5.000
+    -5.000     5.000
+    -2.500     5.000
+         3
+     2.500     5.000
+     5.000     5.000
+     7.500     5.000
+         1       [FRC line - this text not read anywhere]
+     4.000     5.000     2.000     1.000     1.000     0.700
+         0       1.7       0.9
+No blockage            
+         0     0.500     1.000

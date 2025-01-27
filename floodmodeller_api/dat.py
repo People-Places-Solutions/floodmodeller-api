@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -22,7 +22,7 @@ from typing import Any
 from . import units
 from ._base import FMFile
 from .units._base import Unit
-from .units.helpers import _to_float, _to_int
+from .units._helpers import join_10_char, split_10_char, to_float, to_int
 from .util import handle_exception
 from .validation.validation import _validate_unit
 
@@ -350,33 +350,33 @@ class DAT(FMFile):
         self.title = self._raw_data[0]
         self.general_parameters = {}
         line = f"{self._raw_data[2]:<70}"
-        params = units.helpers.split_10_char(line)
+        params = split_10_char(line)
         if params[6] == "":
             # Adds the measurements unit as DEFAULT if not specified
             params[6] = "DEFAULT"
         line = f"{self._raw_data[3]:<70}"
-        params.extend(units.helpers.split_10_char(line))
+        params.extend(split_10_char(line))
 
-        self.general_parameters["Node Count"] = _to_int(params[0], 0)
-        self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
-        self.general_parameters["Upper Froude"] = _to_float(params[2], 0.9)
-        self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
-        self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
-        self._label_len = _to_int(params[5], 12)  # label length
+        self.general_parameters["Node Count"] = to_int(params[0], 0)
+        self.general_parameters["Lower Froude"] = to_float(params[1], 0.75)
+        self.general_parameters["Upper Froude"] = to_float(params[2], 0.9)
+        self.general_parameters["Min Depth"] = to_float(params[3], 0.1)
+        self.general_parameters["Convergence Direct"] = to_float(params[4], 0.001)
+        self._label_len = to_int(params[5], 12)  # label length
         self.general_parameters["Units"] = params[6]  # "DEFAULT" set during read above.
-        self.general_parameters["Water Temperature"] = _to_float(params[7], 10.0)
-        self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.01)
-        self.general_parameters["Convergence Head"] = _to_float(params[9], 0.01)
-        self.general_parameters["Mathematical Damping"] = _to_float(params[10], 0.7)
-        self.general_parameters["Pivotal Choice"] = _to_float(params[11], 0.1)
-        self.general_parameters["Under-relaxation"] = _to_float(params[12], 0.7)
-        self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0.0)
+        self.general_parameters["Water Temperature"] = to_float(params[7], 10.0)
+        self.general_parameters["Convergence Flow"] = to_float(params[8], 0.01)
+        self.general_parameters["Convergence Head"] = to_float(params[9], 0.01)
+        self.general_parameters["Mathematical Damping"] = to_float(params[10], 0.7)
+        self.general_parameters["Pivotal Choice"] = to_float(params[11], 0.1)
+        self.general_parameters["Under-relaxation"] = to_float(params[12], 0.7)
+        self.general_parameters["Matrix Dummy"] = to_float(params[13], 0.0)
         self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
     def _update_general_parameters(self) -> None:
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters["RAD File"]
-        general_params_1 = units.helpers.join_10_char(
+        general_params_1 = join_10_char(
             self.general_parameters["Node Count"],
             self.general_parameters["Lower Froude"],
             self.general_parameters["Upper Froude"],
@@ -387,7 +387,7 @@ class DAT(FMFile):
         general_params_1 += self.general_parameters["Units"]
         self._raw_data[2] = general_params_1
 
-        general_params_2 = units.helpers.join_10_char(
+        general_params_2 = join_10_char(
             self.general_parameters["Water Temperature"],
             self.general_parameters["Convergence Flow"],
             self.general_parameters["Convergence Head"],
