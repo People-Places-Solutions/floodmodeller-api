@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -23,15 +23,15 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .conveyance import calculate_cross_section_conveyance_cached
-from .helpers import (
-    _to_float,
-    _to_int,
+from ._helpers import (
     join_10_char,
     join_n_char_ljust,
     split_10_char,
     split_n_char,
+    to_float,
+    to_int,
 )
+from .conveyance import calculate_cross_section_conveyance_cached
 
 
 class RIVER(Unit):
@@ -132,16 +132,16 @@ class RIVER(Unit):
             self.comment = riv_block[0].replace("RIVER", "").strip()
 
             params = split_10_char(f"{riv_block[3]:<40}")
-            self.dist_to_next = _to_float(params[0])
-            self.slope = _to_float(params[2], 0.0001)
-            self.density = _to_float(params[3], 1000.0)
+            self.dist_to_next = to_float(params[0])
+            self.slope = to_float(params[2], 0.0001)
+            self.density = to_float(params[3], 1000.0)
             self.nrows = int(split_10_char(riv_block[4])[0])
             data_list = []
             for row in riv_block[5:]:
                 row_split = split_10_char(f"{row:<100}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
+                x = to_float(row_split[0])  # chainage
+                y = to_float(row_split[1])  # elevation
+                n = to_float(row_split[2])  # Mannings
                 try:
                     # panel marker
                     panel = row_split[3][0] == "*"
@@ -150,15 +150,15 @@ class RIVER(Unit):
 
                 try:
                     # relative path length
-                    rpl = _to_float(row_split[3][1 if panel else 0 :].strip())
+                    rpl = to_float(row_split[3][1 if panel else 0 :].strip())
                 except IndexError:
                     rpl = 0.000
                 marker = row_split[4]  # Marker
-                easting = _to_float(row_split[5])  # easting
-                northing = _to_float(row_split[6])  # northing
+                easting = to_float(row_split[5])  # easting
+                northing = to_float(row_split[6])  # northing
 
                 deactivation = row_split[7]  # deactivation marker
-                sp_marker = _to_int(row_split[8])  # special marker
+                sp_marker = to_int(row_split[8])  # special marker
                 data_list.append(
                     [
                         x,
@@ -388,9 +388,9 @@ class INTERPOLATE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<30}")
-        self.dist_to_next = _to_float(params1[0])
-        self.easting = _to_float(params1[1])
-        self.northing = _to_float(params1[2])
+        self.dist_to_next = to_float(params1[0])
+        self.easting = to_float(params1[1])
+        self.northing = to_float(params1[2])
 
     def _write(self):
         """Function to write a valid INTERPOLATE block"""
@@ -484,10 +484,10 @@ class REPLICATE(Unit):
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
-        self.dist_to_next = _to_float(params1[0])
-        self.bed_level_drop = _to_float(params1[1])
-        self.easting = _to_float(params1[2])
-        self.northing = _to_float(params1[3])
+        self.dist_to_next = to_float(params1[0])
+        self.bed_level_drop = to_float(params1[1])
+        self.easting = to_float(params1[2])
+        self.northing = to_float(params1[3])
 
     def _write(self):
         """Function to write a valid REPLICATE block"""

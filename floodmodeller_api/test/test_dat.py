@@ -85,9 +85,9 @@ def test_dat_read_doesnt_change_data(test_workspace, tmpdir):
         new_path = Path(tmpdir) / "tmp.dat"
         dat.save(new_path)
         second_dat = DAT(new_path)
-        assert dat == second_dat  # Checks equivalence on the class itself
+        assert dat == second_dat, f"dat objects not equal for {datfile=}"
         second_output = second_dat._write()
-        assert first_output == second_output
+        assert first_output == second_output, f"dat outputs not equal for {datfile=}"
 
 
 def test_insert_unit_before(units, dat_ex6):
