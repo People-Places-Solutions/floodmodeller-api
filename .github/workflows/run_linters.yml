@@ -28,10 +28,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run black
-        run: black ${{ env.FILES_TO_CHECK }} --check
+      - name: Run ruff formatter
+        run: ruff format --check ${{ env.FILES_TO_CHECK }}
 
-      - name: Run ruff
+      - name: Run ruff linter
         run: ruff check ${{ env.FILES_TO_CHECK }}
 
       - name: Run pylint

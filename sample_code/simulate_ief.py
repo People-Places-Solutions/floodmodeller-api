@@ -1,4 +1,4 @@
-""" This sample script shows how a single IEF can be simulated directly using python """
+"""This sample script shows how a single IEF can be simulated directly using python"""
 
 # Import modules
 import os

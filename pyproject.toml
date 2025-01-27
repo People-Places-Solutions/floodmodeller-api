@@ -15,6 +15,7 @@ enable = "used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
+exclude = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = ["ALL"]
