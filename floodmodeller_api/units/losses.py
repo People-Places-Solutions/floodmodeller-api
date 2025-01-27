@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -19,15 +19,15 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .helpers import (
-    _to_data_list,
-    _to_float,
-    _to_int,
-    _to_str,
+from ._helpers import (
     join_10_char,
     join_n_char_ljust,
     split_10_char,
     split_n_char,
+    to_data_list,
+    to_float,
+    to_int,
+    to_str,
 )
 
 
@@ -91,28 +91,28 @@ class CULVERT(Unit):
 
             # Read first set of general parameters
             params = split_10_char(f"{block[3]:<60}")
-            self.k = _to_float(params[0], 0.0)
-            self.m = _to_float(params[1], 0.0)
-            self.c = _to_float(params[2], 0.0)
-            self.y = _to_float(params[3], 0.0)
-            self.ki = _to_float(params[4], 0.0)
-            self.type_code = _to_str(params[5], "A")
+            self.k = to_float(params[0], 0.0)
+            self.m = to_float(params[1], 0.0)
+            self.c = to_float(params[2], 0.0)
+            self.y = to_float(params[3], 0.0)
+            self.ki = to_float(params[4], 0.0)
+            self.type_code = to_str(params[5], "A")
 
             # Read trash screen and remaining general parameters
             params1 = split_10_char(f"{block[4]:<70}")
-            self.screen_width = _to_float(params1[0], 0.0)
-            self.bar_proportion = _to_float(params1[1], 0.0)
-            self.debris_proportion = _to_float(params1[2], 0.0)
-            self.loss_coefficient = _to_float(params1[3], 0.0)
-            self.reverse_flow_mode = _to_str(params1[4], "CALCULATED", check_float=True)
-            self.headloss_type = _to_str(params1[5], "TOTAL")
-            self.max_screen_height = _to_float(params1[6], 0.0)
+            self.screen_width = to_float(params1[0], 0.0)
+            self.bar_proportion = to_float(params1[1], 0.0)
+            self.debris_proportion = to_float(params1[2], 0.0)
+            self.loss_coefficient = to_float(params1[3], 0.0)
+            self.reverse_flow_mode = to_str(params1[4], "CALCULATED", check_float=True)
+            self.headloss_type = to_str(params1[5], "TOTAL")
+            self.max_screen_height = to_float(params1[6], 0.0)
 
         elif self.subtype == "OUTLET":
             params = split_10_char(f"{block[3]:<30}")
-            self.loss_coefficient = _to_float(params[0], 1.0)
-            self.reverse_flow_mode = _to_str(params[1], "CALCULATED")
-            self.headloss_type = _to_str(params[2], "TOTAL")
+            self.loss_coefficient = to_float(params[0], 1.0)
+            self.reverse_flow_mode = to_str(params[1], "CALCULATED")
+            self.headloss_type = to_str(params[2], "TOTAL")
 
         else:
             # This else block is triggered for culvert subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
@@ -191,7 +191,7 @@ class BLOCKAGE(Unit):
 
         # Extract comment and revision number
         b = block[0].replace("BLOCKAGE #revision#", " ").strip()
-        self._revision = _to_int(b[0], 1)
+        self._revision = to_int(b[0], 1)
         self.comment = b[1:].strip()
 
         # Extract labels
@@ -204,25 +204,25 @@ class BLOCKAGE(Unit):
 
         # Extract inlet and outlet loss coefficients
         params = split_10_char(f"{block[2]:<20}")
-        self.inlet_loss = _to_float(params[0], 1.5)
-        self.outlet_loss = _to_float(params[1], 1.0)
+        self.inlet_loss = to_float(params[0], 1.5)
+        self.outlet_loss = to_float(params[1], 1.0)
 
         # Extract blockage timeseries parameters
         params1 = split_10_char(f"{block[3]:<40}")
         self.nrows = int(params1[0])
-        self.timeoffset = _to_float(params1[1])
+        self.timeoffset = to_float(params1[1])
 
-        self.timeunit = _to_str(params1[2], "HOURS", check_float=True)
+        self.timeunit = to_str(params1[2], "HOURS", check_float=True)
         if self.timeunit == "DATE":
             self.timeunit = "DATES"  # Parameter value updated to 'DATES' for consistency with other unit types.  'DATE' and 'DATES' both accepted for blockage unit ONLY
 
-        self.extendmethod = _to_str(params1[3], "NOEXTEND")
+        self.extendmethod = to_str(params1[3], "NOEXTEND")
 
         # Extract blockage to timeseries
         data_list = (
-            _to_data_list(block[4:], num_cols=2, date_col=0)
+            to_data_list(block[4:], num_cols=2, date_col=0)
             if self.timeunit == "DATES"
-            else _to_data_list(block[4:], num_cols=2)
+            else to_data_list(block[4:], num_cols=2)
         )  # Enforced two columns as Flood Modeller saves old parameters when using DATES (also to avoid extra 'HOURS' bug)
 
         self.data = pd.DataFrame(data_list, columns=["Time", "Blockage"])

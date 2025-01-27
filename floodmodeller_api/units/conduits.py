@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -19,14 +19,14 @@ import pandas as pd
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .helpers import (
-    _to_float,
-    _to_int,
-    _to_str,
+from ._helpers import (
     join_10_char,
     join_n_char_ljust,
     split_10_char,
     split_n_char,
+    to_float,
+    to_int,
+    to_str,
 )
 
 
@@ -189,70 +189,70 @@ class CONDUIT(Unit):
         # Read CIRCULAR type unit
         if self._subtype == "CIRCULAR":
             # Read Params
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
             params = split_10_char(f"{c_block[5]:<80}")
-            self.invert = _to_float(params[0])
-            self.diameter = _to_float(params[1])
-            self.use_bottom_slot = _to_str(params[2], "GLOBAL")
-            self.bottom_slot_dist = _to_float(params[3])
-            self.bottom_slot_depth = _to_float(params[4])
-            self.use_top_slot = _to_str(params[5], "GLOBAL")
-            self.top_slot_dist = _to_float(params[6])
-            self.top_slot_depth = _to_float(params[7])
+            self.invert = to_float(params[0])
+            self.diameter = to_float(params[1])
+            self.use_bottom_slot = to_str(params[2], "GLOBAL")
+            self.bottom_slot_dist = to_float(params[3])
+            self.bottom_slot_depth = to_float(params[4])
+            self.use_top_slot = to_str(params[5], "GLOBAL")
+            self.top_slot_dist = to_float(params[6])
+            self.top_slot_depth = to_float(params[7])
             friction_params = split_10_char(f"{c_block[6]:<20}")
-            self.friction_below_axis = _to_float(friction_params[0])
-            self.friction_above_axis = _to_float(friction_params[1])
+            self.friction_below_axis = to_float(friction_params[0])
+            self.friction_above_axis = to_float(friction_params[1])
 
         elif self._subtype == "RECTANGULAR":
             # Read Params
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
             self.friction_eq = c_block[4].strip()
             params = split_10_char(f"{c_block[5]:<90}")
-            self.invert = _to_float(params[0])
-            self.width = _to_float(params[1])
-            self.height = _to_float(params[2])
-            self.use_bottom_slot = _to_str(params[3], "GLOBAL")
-            self.bottom_slot_dist = _to_float(params[4])
-            self.bottom_slot_depth = _to_float(params[5])
-            self.use_top_slot = _to_str(params[6], "GLOBAL")
-            self.top_slot_dist = _to_float(params[7])
-            self.top_slot_depth = _to_float(params[8])
+            self.invert = to_float(params[0])
+            self.width = to_float(params[1])
+            self.height = to_float(params[2])
+            self.use_bottom_slot = to_str(params[3], "GLOBAL")
+            self.bottom_slot_dist = to_float(params[4])
+            self.bottom_slot_depth = to_float(params[5])
+            self.use_top_slot = to_str(params[6], "GLOBAL")
+            self.top_slot_dist = to_float(params[7])
+            self.top_slot_depth = to_float(params[8])
             friction_params = split_10_char(f"{c_block[6]:<30}")
-            self.friction_on_invert = _to_float(friction_params[0])
-            self.friction_on_walls = _to_float(friction_params[1])
-            self.friction_on_soffit = _to_float(friction_params[2])
+            self.friction_on_invert = to_float(friction_params[0])
+            self.friction_on_walls = to_float(friction_params[1])
+            self.friction_on_soffit = to_float(friction_params[2])
 
         elif self._subtype in ("SPRUNG", "SPRUNGARCH"):
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            self.equation = _to_str(c_block[4], "MANNING")
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
+            self.equation = to_str(c_block[4], "MANNING")
             params = split_10_char(f"{c_block[5]:<100}")
-            self.elevation_invert = _to_float(params[0])
-            self.width = _to_float(params[1])
-            self.height_springing = _to_float(params[2])
-            self.height_crown = _to_float(params[3])
-            self.use_bottom_slot = _to_str(params[4], "GLOBAL")
-            self.bottom_slot_dist = _to_float(params[5])
-            self.bottom_slot_depth = _to_float(params[6])
-            self.use_top_slot = _to_str(params[7], "GLOBAL")
-            self.top_slot_dist = _to_float(params[8])
-            self.top_slot_depth = _to_float(params[9])
+            self.elevation_invert = to_float(params[0])
+            self.width = to_float(params[1])
+            self.height_springing = to_float(params[2])
+            self.height_crown = to_float(params[3])
+            self.use_bottom_slot = to_str(params[4], "GLOBAL")
+            self.bottom_slot_dist = to_float(params[5])
+            self.bottom_slot_depth = to_float(params[6])
+            self.use_top_slot = to_str(params[7], "GLOBAL")
+            self.top_slot_dist = to_float(params[8])
+            self.top_slot_depth = to_float(params[9])
             friction_params = split_10_char(f"{c_block[6]:<30}")
-            self.friction_on_invert = _to_float(friction_params[0])
-            self.friction_on_walls = _to_float(friction_params[1])
-            self.friction_on_soffit = _to_float(friction_params[2])
+            self.friction_on_invert = to_float(friction_params[0])
+            self.friction_on_walls = to_float(friction_params[1])
+            self.friction_on_soffit = to_float(friction_params[2])
 
         elif self._subtype == "SECTION":
-            self.dist_to_next = _to_float(split_10_char(c_block[3])[0])
-            end_index = 5 + _to_int(c_block[4])
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
+            end_index = 5 + to_int(c_block[4])
             x = []
             y = []
             friction = []
             for i in range(5, end_index):
                 row_data = split_10_char(f"{c_block[i]:<30}")
-                x.append(_to_float(row_data[0]))
-                y.append(_to_float(row_data[1]))
-                friction.append(_to_float(row_data[2]))
+                x.append(to_float(row_data[0]))
+                y.append(to_float(row_data[1]))
+                friction.append(to_float(row_data[2]))
             self.coords = pd.DataFrame({"x": x, "y": y, "cw_friction": friction})
 
         else:

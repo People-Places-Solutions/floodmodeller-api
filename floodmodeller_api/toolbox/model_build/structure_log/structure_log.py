@@ -338,7 +338,7 @@ class StructureLogBuilder:
 
         culvert_data = []
         if hasattr(structure, "culvert_data") and structure.culvert_data.shape[0] > 1:
-            for _, row in structure.culvert_data:
+            for _, row in structure.culvert_data.iterrows():
                 culvert = {
                     "invert": row["Invert"],
                     "soffit": row["Soffit"],
