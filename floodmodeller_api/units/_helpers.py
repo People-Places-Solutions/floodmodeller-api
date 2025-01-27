@@ -289,6 +289,18 @@ def read_superbridge_block_data(lines: list[str]) -> pd.DataFrame:
     return pd.DataFrame(data_list, columns=["percentage", "time", "datetime"])
 
 
+def read_lateral_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_12_char(f"{line:<36}")
+        label = line_split[0]
+        factor = to_float(line_split[1])
+        flag = line_split[2]
+        data_list.append([label, factor, flag])
+    columns = ["Node Label", "Custom Weight Factor", "Use Weight Factor"]
+    return pd.DataFrame(data_list, columns=columns)
+
+
 def get_int(line: str) -> int:
     return int(float(split_10_char(line)[0]))
 
@@ -297,11 +309,12 @@ def write_dataframe(
     header: int | str | None,
     df: pd.DataFrame,
     empty: int | None = None,
+    n: int = 10,
 ) -> list[str]:
     df_to_use = copy.deepcopy(df)
     if empty is not None:
         df_to_use.insert(empty, "_", [None] * len(df_to_use))
-    lines = [join_10_char(*x) for x in df_to_use.itertuples(index=False)]
+    lines = [join_n_char_ljust(n, *x) for x in df_to_use.itertuples(index=False)]
     if header is not None:
         lines = [str(header), *lines]
     return lines

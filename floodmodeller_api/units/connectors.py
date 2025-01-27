@@ -3,7 +3,7 @@ from __future__ import annotations
 import pandas as pd
 
 from ._base import Unit
-from .helpers import _to_int, join_12_char_ljust, split_12_char
+from ._helpers import join_12_char_ljust, read_lateral_data, split_12_char, to_int, write_dataframe
 
 
 class JUNCTION(Unit):
@@ -42,20 +42,18 @@ class LATERAL(Unit):
     _required_columns = ("Node Label", "Custom Weight Factor", "Use Weight Factor")
 
     def _read(self, block: list[str]) -> None:
-        self._raw_block = block
-
         self.comment = self._remove_unit_name(block[0])
         self.name = block[1]
         self.weight_factor = block[2]
-        self.no_units = _to_int(block[3])
+        self.no_units = to_int(block[3])
+        self.data = read_lateral_data(block[4:])
 
     def _write(self) -> list[str]:
         return [
             self._create_header(),
             self.name,  # type: ignore
             self.weight_factor,
-            str(self.no_units),
-            *self._raw_block[4:],  # FIXME
+            *write_dataframe(self.no_units, self.data, n=12),
         ]
 
     def _create_from_blank(
@@ -90,7 +88,7 @@ class RESERVOIR(Unit):
         self._raw_block = block
 
         b = self._remove_unit_name(block[0], remove_revision=True)
-        self._revision = _to_int(b[0], 1) if b != "" else None
+        self._revision = to_int(b[0], 1) if b != "" else None
         self.comment = b[1:].strip()
 
         self.labels = split_12_char(block[1])
@@ -98,9 +96,9 @@ class RESERVOIR(Unit):
 
         if self._revision == 1:
             self.lateral_inflow_labels = split_12_char(block[2])
-            self.no_rows = _to_int(block[3])
+            self.no_rows = to_int(block[3])
         else:
-            self.no_rows = _to_int(block[2])
+            self.no_rows = to_int(block[2])
 
     def _write(self) -> list[str]:
         lines = [

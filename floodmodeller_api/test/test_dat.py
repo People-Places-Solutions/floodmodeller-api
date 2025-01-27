@@ -222,7 +222,7 @@ def test_diff(test_workspace, capsys):
     )
 
 
-def test_create_and_insert_units():
+def test_create_and_insert_connectors():
     dat = DAT()
     junction = JUNCTION(comment="hi", labels=["A", "B"])
     lateral = LATERAL(name="lat", comment="bye")
