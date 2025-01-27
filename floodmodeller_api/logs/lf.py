@@ -55,7 +55,7 @@ class LF(FMFile):
     def __init__(
         self,
         lf_filepath: str | Path | None,
-        data_to_extract: dict,
+        data_to_extract: dict[str, dict],
         steady: bool = False,
     ):
         FMFile.__init__(self, lf_filepath)
@@ -175,7 +175,7 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self, *, include_tuflow: bool = False) -> pd.DataFrame:
+    def to_dataframe(self, variable: str = "all", *, include_tuflow: bool = False) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
@@ -185,17 +185,22 @@ class LF(FMFile):
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
 
-        # TODO: make more like ZZN.to_dataframe
-
-        data_type_all = {
+        lf_df_data = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
+            if v["data_type"] == "all"  # with entries every iteration
+            and (include_tuflow or "tuflow" not in k)  # tuflow-related only if requested
+            and (variable in ("all", k, *v.get("subheaders", [])))  # if it or all are requested
         }
 
-        lf_df = pd.concat(data_type_all, axis=1)
-        lf_df.columns = lf_df.columns.droplevel()
+        if lf_df_data == {}:
+            msg = f"No data extracted for variable '{variable}'"
+            raise ValueError(msg)
 
+        lf_df = pd.concat(lf_df_data, axis=1)
+        lf_df.columns = lf_df.columns.droplevel()
+        if variable != "all":
+            lf_df = lf_df[variable]  # otherwise subheaders result in extra columns
         return lf_df.sort_index()
 
     def _sync_cols(self):

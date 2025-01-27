@@ -343,10 +343,10 @@ class _ZZ(FMFile):
         if result_type == "all":
             return self._get_all(variable, multilevel_header)
 
-        if result_type in ("max", "min"):
+        if result_type in {"max", "min"}:
             return self._get_extremes(variable, result_type, include_time)
 
-        msg = f'Result type: "{result_type}" not recognised'
+        msg = f"Result type '{result_type}' not recognised"
         raise ValueError(msg)
 
     def export_to_csv(
