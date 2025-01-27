@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -23,9 +23,8 @@ def _validate_unit(unit, urban=False):
     param_validation_dict = {}
     all_valid = True
     for param in dir(unit):
-        options = (
-            parameter_options if not urban else urban_parameter_options
-        )  # define which dictionary to use
+        # define which dictionary to use
+        options = parameter_options if not urban else urban_parameter_options
 
         if param in options:
             value = getattr(unit, param)
