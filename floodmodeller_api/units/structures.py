@@ -1427,7 +1427,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
             setattr(self, param, val)
 
 
-class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
+class RESERVOIR(Unit):  # FIXME NOT CURRENTLY IN USE
     """Class to hold and process RESERVOIR unit type
 
     Args:
