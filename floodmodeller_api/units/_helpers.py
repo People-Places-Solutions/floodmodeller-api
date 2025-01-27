@@ -301,6 +301,17 @@ def read_lateral_data(lines: list[str]) -> pd.DataFrame:
     return pd.DataFrame(data_list, columns=columns)
 
 
+def read_reservoir_data(lines: list[str]) -> pd.DataFrame:
+    data_list = []
+    for line in lines:
+        line_split = split_10_char(f"{line:<20}")
+        elevation = to_float(line_split[0])
+        area = to_float(line_split[1])
+        data_list.append([elevation, area])
+    columns = ["Elevation", "Plan Area"]
+    return pd.DataFrame(data_list, columns=columns)
+
+
 def get_int(line: str) -> int:
     return int(float(split_10_char(line)[0]))
 

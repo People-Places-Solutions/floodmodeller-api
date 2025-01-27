@@ -3,7 +3,14 @@ from __future__ import annotations
 import pandas as pd
 
 from ._base import Unit
-from ._helpers import join_12_char_ljust, read_lateral_data, split_12_char, to_int, write_dataframe
+from ._helpers import (
+    join_12_char_ljust,
+    read_lateral_data,
+    read_reservoir_data,
+    split_12_char,
+    to_int,
+    write_dataframe,
+)
 
 
 class JUNCTION(Unit):
@@ -85,8 +92,6 @@ class RESERVOIR(Unit):
     _required_columns = ("Elevation", "Plan Area")
 
     def _read(self, block: list[str]) -> None:
-        self._raw_block = block
-
         b = self._remove_unit_name(block[0], remove_revision=True)
         self._revision = to_int(b[0], 1) if b != "" else None
         self.comment = b[1:].strip()
@@ -96,28 +101,25 @@ class RESERVOIR(Unit):
 
         if self._revision == 1:
             self.lateral_inflow_labels = split_12_char(block[2])
-            self.no_rows = to_int(block[3])
+            idx = 3
         else:
-            self.no_rows = to_int(block[2])
+            idx = 2
+
+        self.no_rows = to_int(block[idx])
+        self.data = read_reservoir_data(block[idx + 1 :])
 
     def _write(self) -> list[str]:
-        lines = [
+        lateral_inflow_labels = (
+            [join_12_char_ljust(*self.lateral_inflow_labels).rstrip()]
+            if self._revision == 1
+            else []
+        )
+        return [
             self._create_header(include_revision=self._revision is not None),
             join_12_char_ljust(*self.labels).rstrip(),
+            *lateral_inflow_labels,
+            *write_dataframe(self.no_rows, self.data),
         ]
-
-        if self._revision == 1:
-            lines += [
-                join_12_char_ljust(*self.lateral_inflow_labels).rstrip(),
-                f"{self.no_rows:>10}",
-                *self._raw_block[4:],  # FIXME
-            ]
-        else:
-            lines += [
-                f"{self.no_rows:>10}",
-                *self._raw_block[3:],  # FIXME
-            ]
-        return lines
 
     def _create_from_blank(
         self,
