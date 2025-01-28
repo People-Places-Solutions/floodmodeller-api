@@ -72,7 +72,9 @@ class XML2D(FMFile):
     GOOD_EXIT_CODE = 100
 
     @handle_exception(when="read")
-    def __init__(self, xml_filepath: str | Path | None = None, from_json: bool = False):
+    def __init__(self, xml_filepath: str | Path | None = None, xsd_loc: str | Path | None = None, from_json: bool = False):
+        if xsd_loc is not None:
+            self._xsd_loc = xsd_loc
         if from_json:
             return
         if xml_filepath is not None:
