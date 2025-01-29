@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import csv
+import logging
 import subprocess
 import time
 from io import StringIO
@@ -226,8 +227,9 @@ class IEF(FMFile):
             ):
                 # Check if valid flag
                 if prop.upper() not in flags:
-                    print(
-                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n",
+                    logging.warning(
+                        "'%s' is not a valid IEF flag, it will be ommited from the IEF\n",
+                        prop,
                     )
                     continue
 
@@ -501,10 +503,10 @@ class IEF(FMFile):
             msg = f"Flood Modeller engine not found! Expected location: {isis32_fp}"
             raise Exception(msg)
 
-        run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
+        run_command = f'"{isis32_fp}" -sd "{self._filepath.resolve()}"'
 
         if method.upper() == "WAIT":
-            print("Executing simulation...")
+            logging.info("Executing simulation...")
             # execute simulation
             process = Popen(run_command, cwd=Path(self._filepath).parent)
 
@@ -521,10 +523,10 @@ class IEF(FMFile):
 
             if result == 1 and raise_on_failure:
                 raise RuntimeError(summary)
-            print(summary)
+            logging.info(summary)
 
         elif method.upper() == "RETURN_PROCESS":
-            print("Executing simulation...")
+            logging.info("Executing simulation...")
             # execute simulation
             return Popen(run_command, cwd=Path(self._filepath).parent)
 

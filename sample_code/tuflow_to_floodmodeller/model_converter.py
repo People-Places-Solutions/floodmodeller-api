@@ -63,17 +63,20 @@ class TuflowModelConverter:
         self._initialise_control_files()
 
     def _create_logger(self) -> None:
-        for handler in logging.root.handlers[:]:
-            logging.root.removeHandler(handler)
+        self._logger = logging.getLogger(f"TuflowModelConverter.{self._name}")
+        self._logger.setLevel(logging.INFO)
 
-        logging.basicConfig(
-            filename=Path.joinpath(self._root, f"{self._name}_conversion.log"),
-            filemode="w",
-            format="%(asctime)s - %(levelname)s - %(message)s",
+        log_path = Path.joinpath(self._root, f"{self._name}_conversion.log")
+        file_handler = logging.FileHandler(log_path, mode="w")
+        file_handler.setLevel(logging.INFO)
+
+        formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%H:%M:%S",
-            level=logging.INFO,
         )
-        self._logger = logging.getLogger(__name__)
+        file_handler.setFormatter(formatter)
+
+        self._logger.addHandler(file_handler)
 
     def _initialise_control_files(self) -> None:
         self._logger.info("reading TUFLOW files...")

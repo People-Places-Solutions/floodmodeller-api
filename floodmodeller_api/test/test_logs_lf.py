@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -68,41 +69,44 @@ def test_lf1_from_ief(lf1_fp: Path, test_workspace: Path):
     pd.testing.assert_frame_equal(lf1.to_dataframe(), lf1_from_ief.to_dataframe())
 
 
-def test_log_file_unsupported(capsys):
-    lf = create_lf(None, "lf3")
+def test_log_file_unsupported(caplog):
+    with caplog.at_level(logging.WARNING):
+        lf = create_lf(None, "lf3")
 
     assert lf is None
     assert (
-        capsys.readouterr().out
-        == "No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
+        caplog.text
+        == "WARNING  root:lf.py:325 No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
     )
 
 
 @pytest.mark.usefixtures("log_timeout")
-def test_log_file_timeout(capsys):
-    lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = False
-    lf = create_lf(lf_filepath, "lf1")
+def test_log_file_timeout(caplog):
+    with caplog.at_level(logging.WARNING):
+        lf_filepath = MagicMock()
+        lf_filepath.is_file.return_value = False
+        lf = create_lf(lf_filepath, "lf1")
 
     assert lf is None
     assert (
-        capsys.readouterr().out
-        == "No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
+        caplog.text
+        == "WARNING  root:lf.py:325 No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
     )
 
 
 @pytest.mark.usefixtures("log_timeout")
 @freeze_time("1970-01-01 00:00:00", tick=True)
-def test_log_file_from_old_run(capsys):
-    lf_filepath = MagicMock()
-    lf_filepath.is_file.return_value = True
-    lf_filepath.stat.return_value.st_mtime = -10
-    lf = create_lf(lf_filepath, "lf1")
+def test_log_file_from_old_run(caplog):
+    with caplog.at_level(logging.WARNING):
+        lf_filepath = MagicMock()
+        lf_filepath.is_file.return_value = True
+        lf_filepath.stat.return_value.st_mtime = -10
+        lf = create_lf(lf_filepath, "lf1")
 
     assert lf is None
     assert (
-        capsys.readouterr().out
-        == "No progress bar as log file is from previous run. Simulation will continue as usual.\n"
+        caplog.text
+        == "WARNING  root:lf.py:325 No progress bar as log file is from previous run. Simulation will continue as usual.\n"
     )
 
 
