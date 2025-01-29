@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from unittest.mock import patch
 
@@ -194,12 +195,14 @@ def test_remove_unit(dat_ex3):
     assert (prev_dat_struct_len - len(dat_ex3._dat_struct)) == 1
 
 
-def test_diff(test_workspace, capsys):
-    dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
-    dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
-    dat_ex4.diff(dat_ex4_changed)
-    assert capsys.readouterr().out == (
-        "Files not equivalent, 12 difference(s) found:\n"
+def test_diff(test_workspace, caplog):
+    with caplog.at_level(logging.INFO):
+        dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
+        dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
+        dat_ex4.diff(dat_ex4_changed)
+
+    assert caplog.text == (
+        "INFO     root:_base.py:134 Files not equivalent, 12 difference(s) found:\n"
         "  DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
         "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
         "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"

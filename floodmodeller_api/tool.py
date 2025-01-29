@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import tkinter as tk
 from dataclasses import dataclass
@@ -305,9 +306,9 @@ class FMTool:
             value = getattr(args, input_param.name)
             input_kwargs[input_param.name] = input_param.dtype(value)
 
-        print(f"Running {self.name}")
+        logging.info("Running %s", self.name)
         self.run(**input_kwargs)
-        print("Completed")
+        logging.info("Completed")
         # Return nothing
 
     def generate_gui(self):
