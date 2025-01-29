@@ -242,5 +242,5 @@ class Unit(Jsonable):
         comment = line_without_name[1:].strip()
         return revision, comment
 
-    def _enforce_dataframe(self, data: Any, columns: list[str]) -> pd.DataFrame:
+    def _enforce_dataframe(self, data: Any, columns: tuple[str, ...]) -> pd.DataFrame:
         return data if isinstance(data, pd.DataFrame) else pd.DataFrame([], columns=columns)

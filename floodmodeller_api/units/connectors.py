@@ -85,7 +85,7 @@ class LATERAL(Unit):
 
         self.data = self._enforce_dataframe(
             data,
-            ["Node Label", "Custom Weight Factor", "Use Weight Factor"],
+            ("Node Label", "Custom Weight Factor", "Use Weight Factor"),
         )
         self.no_units = len(self.data)
 
@@ -173,5 +173,5 @@ class RESERVOIR(Unit):
             lateral_inflow_labels if lateral_inflow_labels is not None else []
         )
 
-        self.data = self._enforce_dataframe(data, ["Elevation", "Plan Area"])
+        self.data = self._enforce_dataframe(data, ("Elevation", "Plan Area"))
         self.no_rows = len(self.data)
