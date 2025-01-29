@@ -71,7 +71,7 @@ class LATERAL(Unit):
         weight_factor (str, optional): Corresponding weight factors or user-defined area for
             each receiving unit
         data (pandas.DataFrame): Dataframe object containing all the reservoir section data.
-            Columns are ``'Node Label','Custom Weight Factor', 'Use Weight Factor'``
+            Columns are ``'Node Label', 'Custom Weight Factor', 'Use Weight Factor'``
 
     Returns:
         LATERAL: Flood Modeller LATERAL Unit class object"""

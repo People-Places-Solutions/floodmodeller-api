@@ -126,7 +126,7 @@ Loss units
 .. _connector_units:
 
 Connector units
--------------
+---------------
 ``JUNCTION()``
 ~~~~~~~~~~~~~~
 
