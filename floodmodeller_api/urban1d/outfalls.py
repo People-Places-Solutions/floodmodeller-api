@@ -30,11 +30,11 @@ class OUTFALL(UrbanUnit):
         stage (float): elevation of fixed stage for outfall (ft or m) (required when "FIXED" type)
         tcurve (string): name of curve in [CURVES] section containing tidal height (required when "TIDAL" type)
         tseries (string): name of timeseries in [TIMESERIES] section that describes how outfall stage varies with time (required when "TIMESERIES" type)
-        gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO") TODO: is this required, or can it be missing
+        gated (sring): "YES" or "NO" depending on whether flat gate is present that prevents reverse flow. (optional for all types, default is "NO")
         routeto (string): Optional name of a subcatchment that recieves the outfall's discharge. (default is not be "", and to no route outfall's discharge)
 
     Returns:
-        OUTFALL: Flood Modeller OUTFALL Unit class object TODO: add urban 1d in to all instances within urban 1d API
+        OUTFALL: Flood Modeller OUTFALL Unit class object
     """
 
     _unit = "OUTFALL"
@@ -43,9 +43,6 @@ class OUTFALL(UrbanUnit):
 
     def _read(self, line):
         unit_data = line.split()
-
-        # TODO: add functionality to read comments
-        # TODO: considering raising an exception if any of the required parameters are missing
 
         self.name = str(unit_data[0])
         self.elevation = to_float(unit_data[1], 0.0)
@@ -80,8 +77,6 @@ class OUTFALL(UrbanUnit):
         """Function to write a valid OUTFALL line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO:Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,

@@ -43,8 +43,6 @@ class RAINGAUGE(UrbanUnit):
     def _read(self, line):
         """Function to read a given RAINGAUGE line and store data as class attributes"""
 
-        # TODO: add functionality to read comments
-
         unit_data = line.split()  # Get unit parameters
 
         self.name = str(unit_data[0])
@@ -79,8 +77,6 @@ class RAINGAUGE(UrbanUnit):
 
         _validate_unit(self, urban=True)
 
-        # TODO:Improve indentation format when writing and include header for completeness
-
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,
             self.format,
@@ -101,8 +97,6 @@ class RAINGAUGE(UrbanUnit):
             raise RuntimeError(msg)
 
         return params1 + params2
-
-        # TODO: Implement validation that does not allow spaces to be entered in attribute values
 
 
 class RAINGAUGES(UrbanSubsection):

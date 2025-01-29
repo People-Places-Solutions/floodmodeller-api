@@ -241,7 +241,7 @@ class TuflowToDat:
         self._xs_attributes["northing"] = northing
 
     def _organise_df(self):
-        # FIXME: Currently works but misses out last XS in series
+        # NB. this currently works but misses out last XS in series
         #   organise df
         self._xs_attributes["order"] = 0
         order_counter = 1

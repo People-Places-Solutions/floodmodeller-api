@@ -117,7 +117,7 @@ def handle_exception(when: str) -> Callable:
 class FloodModellerAPIError(Exception):
     """Custom exception class for Flood Modeller API errors."""
 
-    def __init__(self, original_exception, when, filetype, filepath) -> None:
+    def __init__(self, original_exception, when, filetype, filepath: Path | None = None) -> None:
         tb = original_exception.__traceback__
         while tb.tb_next is not None:
             tb = tb.tb_next
@@ -125,9 +125,11 @@ class FloodModellerAPIError(Exception):
         tb_path = Path(tb.tb_frame.f_code.co_filename)
         fname = "/".join(tb_path.parts[-2:])
 
+        end_of_str = f"{filepath}" if filepath is not None else "from blank"
+
         message = (
             "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-            f"\nAPI Error: Problem encountered when trying to {when} {filetype} file {filepath}."
+            f"\nAPI Error: Problem encountered when trying to {when} {filetype} file {end_of_str}."
             f"\n\nDetails: {__version__}-{fname}-{line_no}"
             f"\nMsg: {original_exception}"
             "\n\nFor additional support, go to: https://github.com/People-Places-Solutions/floodmodeller-api"

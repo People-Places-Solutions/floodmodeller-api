@@ -355,7 +355,7 @@ def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
         last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
         time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-        # it's old if it's over OLD_FILE seconds old (TODO: is this robust?)
+        # it's old if it's over OLD_FILE seconds old
         old_log_file = time_diff_sec > OLD_FILE
 
         # timeout

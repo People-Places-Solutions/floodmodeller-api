@@ -34,7 +34,6 @@ class UrbanUnit(Jsonable):
             return
         if unit_block is not None:
             self._read(unit_block)
-            # TODO: add functionality to read description
         else:
             self._create_from_blank(**kwargs)
 
@@ -160,8 +159,6 @@ class UrbanSubsection(Jsonable):
 
                 units[unit.name] = unit
                 del units[name]
-
-                # TODO: update label in any other units where required.
 
         return block
 
