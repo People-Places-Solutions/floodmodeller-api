@@ -225,7 +225,6 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
-    # TODO: a refactor to combine the _add_conduits and _add_structures together would be nice for clarity
     def add_conduits(self):
         conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
 
@@ -360,7 +359,6 @@ class StructureLogBuilder:
         }
 
     def _sluice_data(self, structure: SLUICE) -> dict:
-        # TODO: these could do with more attention, given more time
         dimensions = extract_attrs(structure, {"crest_elevation", "weir_breadth", "weir_length"})
 
         return {"dimensions": dimensions}

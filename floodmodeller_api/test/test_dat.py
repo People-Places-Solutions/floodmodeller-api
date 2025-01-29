@@ -42,13 +42,6 @@ def dat_ex6(test_workspace):
         yield dat
 
 
-def test_dat_str_not_changed_by_write(dat_fp, data_before):
-    # TODO: Update this test - it isn't really testing anything since the behaviour of the fixture is exactly the same
-    """DAT: Test str representation equal to dat file with no changes"""
-    dat = DAT(dat_fp)
-    assert dat._write() == data_before
-
-
 def test_changing_section_and_dist_works(dat_fp, data_before):
     """DAT: Test changing and reverting section name and dist to next makes no changes"""
     dat = DAT(dat_fp)
