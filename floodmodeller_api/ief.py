@@ -503,7 +503,7 @@ class IEF(FMFile):
             msg = f"Flood Modeller engine not found! Expected location: {isis32_fp}"
             raise Exception(msg)
 
-        run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
+        run_command = f'"{isis32_fp}" -sd "{self._filepath.resolve()}"'
 
         if method.upper() == "WAIT":
             logging.info("Executing simulation...")
