@@ -1781,7 +1781,10 @@
             "QT2"
           ],
           "lateral_inflow_labels": [],
-          "no_rows": 5
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       },
       "CSO": {
@@ -1814,7 +1817,10 @@
             "CSO"
           ],
           "lateral_inflow_labels": [],
-          "no_rows": 5
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       }
     },
@@ -2215,7 +2221,10 @@
             "QT2"
           ],
           "lateral_inflow_labels": [],
-          "no_rows": 5
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       },
       {
@@ -3555,7 +3564,10 @@
             "CSO"
           ],
           "lateral_inflow_labels": [],
-          "no_rows": 5
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       }
     ],
