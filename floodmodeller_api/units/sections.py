@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import logging
-from typing import ClassVar
 
 import pandas as pd
 
@@ -59,7 +58,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns: ClassVar[list[str]] = [
+    _required_columns = (
         "X",
         "Y",
         "Mannings n",
@@ -70,7 +69,7 @@ class RIVER(Unit):
         "Northing",
         "Deactivation",
         "SP. Marker",
-    ]
+    )
 
     def _create_from_blank(  # noqa: PLR0913
         self,
@@ -105,20 +104,13 @@ class RIVER(Unit):
         }.items():
             setattr(self, param, val)
 
-        self._data = (
-            data
-            if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [],
-                columns=self._required_columns,
-            )
-        )
+        self._data = self._enforce_dataframe(data, self._required_columns)
         self._active_data = None
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
 
-        self._subtype = riv_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(riv_block[1])
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
@@ -130,7 +122,7 @@ class RIVER(Unit):
             self.lat2 = labels[4]
             self.lat3 = labels[5]
             self.lat4 = labels[6]
-            self.comment = riv_block[0].replace("RIVER", "").strip()
+            self.comment = self._remove_unit_name(riv_block[0])
 
             params = split_10_char(f"{riv_block[3]:<40}")
             self.dist_to_next = to_float(params[0])
@@ -196,7 +188,7 @@ class RIVER(Unit):
         if self.subtype == "SECTION":
             # Function to check the params are valid for RIVER SECTION unit
             _validate_unit(self)
-            header = "RIVER " + self.comment
+            header = self._create_header()
             labels = join_n_char_ljust(
                 self._label_len,
                 self.name,
@@ -386,7 +378,7 @@ class INTERPOLATE(Unit):
         self.lat2 = labels[4]
         self.lat3 = labels[5]
         self.lat4 = labels[6]
-        self.comment = block[0].replace("INTERPOLATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<30}")
@@ -398,7 +390,7 @@ class INTERPOLATE(Unit):
         """Function to write a valid INTERPOLATE block"""
 
         _validate_unit(self)
-        header = "INTERPOLATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -482,7 +474,7 @@ class REPLICATE(Unit):
         self.lat3 = labels[5]
         self.lat4 = labels[6]
 
-        self.comment = block[0].replace("REPLICATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
@@ -495,7 +487,7 @@ class REPLICATE(Unit):
         """Function to write a valid REPLICATE block"""
 
         _validate_unit(self)
-        header = "REPLICATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
