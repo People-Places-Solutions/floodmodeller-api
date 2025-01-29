@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING
 
 from floodmodeller_api.validation import _validate_unit
 
@@ -16,6 +16,9 @@ from ._helpers import (
     to_int,
     write_dataframe,
 )
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 class JUNCTION(Unit):
@@ -50,7 +53,6 @@ class JUNCTION(Unit):
 
 class LATERAL(Unit):
     _unit = "LATERAL"
-    _required_columns = ("Node Label", "Custom Weight Factor", "Use Weight Factor")
 
     def _read(self, block: list[str]) -> None:
         self.comment = self._remove_unit_name(block[0])
@@ -81,13 +83,9 @@ class LATERAL(Unit):
         self._subtype = subtype
         self.weight_factor = weight_factor
 
-        self.data = (
-            data
-            if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [],
-                columns=self._required_columns,
-            )
+        self.data = self._enforce_dataframe(
+            data,
+            ["Node Label", "Custom Weight Factor", "Use Weight Factor"],
         )
         self.no_units = len(self.data)
 
@@ -110,7 +108,6 @@ class RESERVOIR(Unit):
         RESERVOIR: Flood Modeller RESERVOIR Unit class object"""
 
     _unit = "RESERVOIR"
-    _required_columns = ("Elevation", "Plan Area")
 
     def _read(self, block: list[str]) -> None:
         self._revision, self.comment = self._get_revision_and_comment(block[0])
@@ -154,7 +151,7 @@ class RESERVOIR(Unit):
 
     def _create_from_blank(  # noqa: PLR0913 (need that many)
         self,
-        name: str = "",
+        name: str = "new_reservoir",
         comment: str = "",
         subtype: str = "OPEN",
         labels: list[str] | None = None,
@@ -176,12 +173,5 @@ class RESERVOIR(Unit):
             lateral_inflow_labels if lateral_inflow_labels is not None else []
         )
 
-        self.data = (
-            data
-            if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [],
-                columns=self._required_columns,
-            )
-        )
+        self.data = self._enforce_dataframe(data, ["Elevation", "Plan Area"])
         self.no_rows = len(self.data)

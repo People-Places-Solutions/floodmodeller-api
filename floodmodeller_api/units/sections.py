@@ -16,8 +16,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import ClassVar
-
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -58,7 +56,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns: ClassVar[list[str]] = [
+    _required_columns = (
         "X",
         "Y",
         "Mannings n",
@@ -69,7 +67,7 @@ class RIVER(Unit):
         "Northing",
         "Deactivation",
         "SP. Marker",
-    ]
+    )
 
     def _create_from_blank(  # noqa: PLR0913
         self,
@@ -104,14 +102,7 @@ class RIVER(Unit):
         }.items():
             setattr(self, param, val)
 
-        self._data = (
-            data
-            if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [],
-                columns=self._required_columns,
-            )
-        )
+        self._data = self._enforce_dataframe(data, self._required_columns)
         self._active_data = None
 
     def _read(self, riv_block):

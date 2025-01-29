@@ -213,7 +213,9 @@ class BLOCKAGE(Unit):
 
         self.timeunit = to_str(params1[2], "HOURS", check_float=True)
         if self.timeunit == "DATE":
-            self.timeunit = "DATES"  # Parameter value updated to 'DATES' for consistency with other unit types.  'DATE' and 'DATES' both accepted for blockage unit ONLY
+            self.timeunit = "DATES"
+            # Parameter value updated to 'DATES' for consistency with other unit types.
+            # 'DATE' and 'DATES' both accepted for blockage unit ONLY
 
         self.extendmethod = to_str(params1[3], "NOEXTEND")
 

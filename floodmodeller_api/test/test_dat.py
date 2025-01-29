@@ -236,7 +236,3 @@ def test_create_and_insert_connectors():
     )
     dat.insert_units([junction, lateral, reservoir], add_at=-1)
     assert dat.connectors == {"A": junction, "lat": lateral, "res": reservoir}
-
-
-if __name__ == "__main__":
-    pytest.main([__file__])

@@ -18,6 +18,8 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM Units """
 
+from typing import Any
+
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
@@ -239,3 +241,6 @@ class Unit(Jsonable):
         revision = to_int(line_without_name[0], None) if line_without_name != "" else None
         comment = line_without_name[1:].strip()
         return revision, comment
+
+    def _enforce_dataframe(self, data: Any, columns: list[str]) -> pd.DataFrame:
+        return data if isinstance(data, pd.DataFrame) else pd.DataFrame([], columns=columns)
