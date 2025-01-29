@@ -22,6 +22,16 @@ if TYPE_CHECKING:
 
 
 class JUNCTION(Unit):
+    """Class to hold and process JUNCTION unit type
+
+    Args:
+        comment (str, optional): Comment included in unit.
+        subtype (str, optional): Defines the type of junction unit (*Should not be changed*)
+        labels (str, optional): Unlimited number of labels, the first of which is the name.
+
+    Returns:
+        JUNCTION: Flood Modeller JUNCTION Unit class object"""
+
     _unit = "JUNCTION"
 
     def _read(self, block: list[str]) -> None:
@@ -52,6 +62,20 @@ class JUNCTION(Unit):
 
 
 class LATERAL(Unit):
+    """Class to hold and process LATERAL unit type
+
+    Args:
+        name (str, optional): Unit name.
+        comment (str, optional): Comment included in unit.
+        subtype (str, optional): Defines the type of lateral unit (*Should not be changed*)
+        weight_factor (str, optional): Corresponding weight factors or user-defined area for
+            each receiving unit
+        data (pandas.DataFrame): Dataframe object containing all the reservoir section data.
+            Columns are ``'Node Label','Custom Weight Factor', 'Use Weight Factor'``
+
+    Returns:
+        LATERAL: Flood Modeller LATERAL Unit class object"""
+
     _unit = "LATERAL"
 
     def _read(self, block: list[str]) -> None:
@@ -72,7 +96,7 @@ class LATERAL(Unit):
 
     def _create_from_blank(
         self,
-        name: str = "",
+        name: str = "new_junction",
         comment: str = "",
         subtype: str = "OPEN",
         weight_factor: str = "REACH",

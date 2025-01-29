@@ -122,3 +122,22 @@ Loss units
 ~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.CULVERT
+
+.. _connector_units:
+
+Connector units
+-------------
+``JUNCTION()``
+~~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.JUNCTION
+
+``LATERAL()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.LATERAL
+
+``RESERVOIR()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.RESERVOIR
