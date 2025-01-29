@@ -26,7 +26,6 @@ from ._helpers import (
     split_n_char,
     to_data_list,
     to_float,
-    to_int,
     to_str,
 )
 
@@ -192,9 +191,7 @@ class BLOCKAGE(Unit):
         """Function to read a given BLOCKAGE block and store data as class attributes"""
 
         # Extract comment and revision number
-        b = self._remove_unit_name(block[0], remove_revision=True)
-        self._revision = to_int(b[0], 1)
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(block[0])
 
         # Extract labels
         labels = split_n_char(f"{block[1]:<{5*self._label_len}}", self._label_len)

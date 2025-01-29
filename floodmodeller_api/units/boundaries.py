@@ -26,7 +26,6 @@ from ._helpers import (
     split_10_char,
     to_data_list,
     to_float,
-    to_int,
     to_str,
 )
 
@@ -348,9 +347,7 @@ class REFHBDY(Unit):
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
-        b = self._remove_unit_name(refhbdy_block[0], remove_revision=True)
-        self._revision = to_int(b[0], 1)
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(refhbdy_block[0])
         self.name = refhbdy_block[1][: self._label_len].strip()
 
         # line 3

@@ -113,9 +113,7 @@ class RESERVOIR(Unit):
     _required_columns = ("Elevation", "Plan Area")
 
     def _read(self, block: list[str]) -> None:
-        b = self._remove_unit_name(block[0], remove_revision=True)
-        self._revision = to_int(b[0], 1) if b != "" else None
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(block[0])
 
         self.labels = split_12_char(block[1])
         self.name = self.labels[0]
