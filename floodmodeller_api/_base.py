@@ -89,7 +89,7 @@ class FMFile(Jsonable):
             raise UserWarning(msg)
 
         string = self._write()
-        with open(self._filepath, "w") as _file:
+        with open(self._filepath, "w", encoding='cp1252') as _file:
             _file.write(string)
         logging.info("%s File Updated!", self._filepath)
 
@@ -103,7 +103,7 @@ class FMFile(Jsonable):
             Path.mkdir(filepath.parent)
 
         string = self._write()
-        with open(filepath, "w", encoding="cp1252") as _file:  # TODO: investigate this?
+        with open(filepath, "w", encoding="cp1252") as _file: 
             _file.write(string)
         self._filepath = filepath  # Updates the filepath attribute to the given path
 
