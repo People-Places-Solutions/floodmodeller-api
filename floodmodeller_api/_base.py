@@ -37,6 +37,7 @@ class FMFile(Jsonable):
     _filetype: str
     _suffix: str
     MAX_DIFF = 25
+    ENCODING = "cp1252"
 
     def __init__(self, filepath: str | Path | None = None, **kwargs):
         if filepath is not None:
@@ -89,7 +90,7 @@ class FMFile(Jsonable):
             raise UserWarning(msg)
 
         string = self._write()
-        with open(self._filepath, "w", encoding='cp1252') as _file:
+        with open(self._filepath, "w", encoding=self.ENCODING) as _file:
             _file.write(string)
         logging.info("%s File Updated!", self._filepath)
 
@@ -103,7 +104,7 @@ class FMFile(Jsonable):
             Path.mkdir(filepath.parent)
 
         string = self._write()
-        with open(filepath, "w", encoding="cp1252") as _file: 
+        with open(filepath, "w", encoding=self.ENCODING) as _file:
             _file.write(string)
         self._filepath = filepath  # Updates the filepath attribute to the given path
 
