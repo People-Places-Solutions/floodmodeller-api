@@ -44,8 +44,8 @@ def dat_ex6(test_workspace):
 
 @pytest.fixture()
 def dat_encoding_fps(test_workspace):
-    return [Path(test_workspace, "encoding_test_utf8.dat"), 
-            Path(test_workspace, "encoding_test_cp1252.dat")
+    return [Path(test_workspace, "encoding_test_utf8.dat"),
+            Path(test_workspace, "encoding_test_cp1252.dat"),
             ]
 
 
@@ -226,7 +226,6 @@ def test_diff(test_workspace, caplog):
 
 
 def test_encoding(dat_encoding_fps: list[str], tmpdir: str):
-
     for i, dat_encoding_fp in enumerate(dat_encoding_fps):
         dat = DAT(dat_encoding_fp)
         new_path = Path(tmpdir) / f"tmp_encoding_{i}.dat"
