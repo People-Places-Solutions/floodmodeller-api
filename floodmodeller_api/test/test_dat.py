@@ -42,6 +42,13 @@ def dat_ex6(test_workspace):
         yield dat
 
 
+@pytest.fixture()
+def dat_encoding_fps(test_workspace):
+    return [Path(test_workspace, "encoding_test_utf8.dat"), 
+            Path(test_workspace, "encoding_test_cp1252.dat")
+            ]
+
+
 def test_changing_section_and_dist_works(dat_fp, data_before):
     """DAT: Test changing and reverting section name and dist to next makes no changes"""
     dat = DAT(dat_fp)
@@ -202,7 +209,7 @@ def test_diff(test_workspace, caplog):
         dat_ex4.diff(dat_ex4_changed)
 
     assert caplog.text == (
-        "INFO     root:_base.py:134 Files not equivalent, 12 difference(s) found:\n"
+        "INFO     root:_base.py:135 Files not equivalent, 12 difference(s) found:\n"
         "  DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
         "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
         "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
@@ -216,3 +223,11 @@ def test_diff(test_workspace, caplog):
         "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
         "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
     )
+
+
+def test_encoding(dat_encoding_fps: list[str], tmpdir: str):
+
+    for i, dat_encoding_fp in enumerate(dat_encoding_fps):
+        dat = DAT(dat_encoding_fp)
+        new_path = Path(tmpdir) / f"tmp_encoding_{i}.dat"
+        dat.save(new_path)
