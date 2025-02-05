@@ -162,11 +162,11 @@ class BRIDGE(Unit):
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
-        self.us_remote_label = labels[2]
-        self.ds_remote_label = labels[3]
+        self.labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
+        self.us_remote_label = self.labels[2]
+        self.ds_remote_label = self.labels[3]
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
@@ -588,10 +588,10 @@ class SLUICE(Unit):
         self._subtype = block[1].split(" ")[0].strip()
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
-        self.remote_label = labels[2]
+        self.labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
+        self.remote_label = self.labels[2]
         self.comment = block[0].replace("SLUICE", "").strip()
 
         # First parameter line
@@ -826,9 +826,9 @@ class ORIFICE(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
+        self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
         self.comment = block[0].replace("ORIFICE", "").strip()
 
         # First parameter line
@@ -927,9 +927,9 @@ class SPILL(Unit):
     def _read(self, block):
         """Function to read a given SPILL block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
+        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
         self.comment = block[0].replace("SPILL", "").strip()
 
         # First parameter line
@@ -1008,9 +1008,9 @@ class RNWEIR(Unit):
     def _read(self, block):
         """Function to read a given RNWEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
+        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
         self.comment = block[0].replace("RNWEIR", "").strip()
 
         # First parameter line
@@ -1109,9 +1109,9 @@ class WEIR(Unit):
     def _read(self, block):
         """Function to read a given WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
+        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
         self.comment = block[0].replace("WEIR", "").strip()
 
         # Exponent
@@ -1201,11 +1201,11 @@ class CRUMP(Unit):
     def _read(self, block):
         """Function to read a given CRUMP block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
-        self.us_remote_label = labels[2]
-        self.ds_remote_label = labels[3]
+        self.labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
+        self.us_remote_label = self.labels[2]
+        self.ds_remote_label = self.labels[3]
         self.comment = block[0].replace("CRUMP", "").strip()
 
         # First parameter line
@@ -1310,11 +1310,11 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
     def _read(self, block):
         """Function to read a given FLAT-V WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
-        self.us_remote_label = labels[2]
-        self.ds_remote_label = labels[3]
+        self.labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
+        self.us_remote_label = self.labels[2]
+        self.ds_remote_label = self.labels[3]
         self.comment = block[0].replace("FLAT-V WEIR", "").strip()
 
         # First parameter line
@@ -1436,9 +1436,9 @@ class RESERVOIR(Unit):  # NOT CURRENTLY IN USE
 
         # Extends label line to be correct length before splitting to pick up blank labels
         num_labels = len(block[1]) // self._label_len
-        labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.all_labels = labels[0 : len(labels)]
+        self.labels = split_n_char(f"{block[1]:<{num_labels*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.all_labels = self.labels[0 : len(self.labels)]
         self.comment = block[0].replace("RESERVOIR", "").strip()
 
         # Option 1 (runs if comment == "#revision#1")
@@ -1591,9 +1591,9 @@ class OUTFALL(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.ds_label = labels[1]
+        self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.ds_label = self.labels[1]
         self.comment = block[0].replace("OUTFALL", "").strip()
 
         # First parameter line

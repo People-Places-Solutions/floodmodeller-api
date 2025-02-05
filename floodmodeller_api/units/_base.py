@@ -31,6 +31,7 @@ class Unit(Jsonable):
     _unit: str
     _subtype: str | None = None
     _name: str | None = None
+    labels: list[str]  # required for network creation
 
     def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
         if from_json:

@@ -122,14 +122,14 @@ class RIVER(Unit):
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
             # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
-            self.name = labels[0]
-            self.spill1 = labels[1]
-            self.spill2 = labels[2]
-            self.lat1 = labels[3]
-            self.lat2 = labels[4]
-            self.lat3 = labels[5]
-            self.lat4 = labels[6]
+            self.labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
+            self.name = self.labels[0]
+            self.spill1 = self.labels[1]
+            self.spill2 = self.labels[2]
+            self.lat1 = self.labels[3]
+            self.lat2 = self.labels[4]
+            self.lat3 = self.labels[5]
+            self.lat4 = self.labels[6]
             self.comment = riv_block[0].replace("RIVER", "").strip()
 
             params = split_10_char(f"{riv_block[3]:<40}")
@@ -378,14 +378,14 @@ class INTERPOLATE(Unit):
         """Function to read a given INTERPOLATE WEIR block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.first_spill = labels[1]
-        self.second_spill = labels[2]
-        self.lat1 = labels[3]
-        self.lat2 = labels[4]
-        self.lat3 = labels[5]
-        self.lat4 = labels[6]
+        self.labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.first_spill = self.labels[1]
+        self.second_spill = self.labels[2]
+        self.lat1 = self.labels[3]
+        self.lat2 = self.labels[4]
+        self.lat3 = self.labels[5]
+        self.lat4 = self.labels[6]
         self.comment = block[0].replace("INTERPOLATE", "").strip()
 
         # First parameter line
@@ -473,14 +473,14 @@ class REPLICATE(Unit):
         """Function to read a given REPLICATE block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
-        self.name = labels[0]
-        self.first_spill = labels[1]
-        self.second_spill = labels[2]
-        self.lat1 = labels[3]
-        self.lat2 = labels[4]
-        self.lat3 = labels[5]
-        self.lat4 = labels[6]
+        self.labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.first_spill = self.labels[1]
+        self.second_spill = self.labels[2]
+        self.lat1 = self.labels[3]
+        self.lat2 = self.labels[4]
+        self.lat3 = self.labels[5]
+        self.lat4 = self.labels[6]
 
         self.comment = block[0].replace("REPLICATE", "").strip()
 

@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -527,13 +528,13 @@ class DAT(FMFile):
 
     def _initialize_collections(self):
         # Initialize unit collections
-        self.sections = {}
-        self.boundaries = {}
-        self.structures = {}
-        self.conduits = {}
-        self.losses = {}
-        self._unsupported = {}
-        self._all_units = []
+        self.sections: dict[str, Unit] = {}
+        self.boundaries: dict[str, Unit] = {}
+        self.structures: dict[str, Unit] = {}
+        self.conduits: dict[str, Unit] = {}
+        self.losses: dict[str, Unit] = {}
+        self._unsupported: dict[str, Unit] = {}
+        self._all_units: list[Unit] = []
 
     def _process_supported_unit(self, unit_type, unit_data):
         # Handle initial conditions block
@@ -904,3 +905,30 @@ class DAT(FMFile):
             new = f"{unit_type}_{unit_subtype}_{new_lbl}"
 
             self._gxy_data = self._gxy_data.replace(old, new)
+
+    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
+        """Creates a list of nodes (units) and edges (labels joining units)."""
+        label_lists = [[label for label in unit.labels if label != ""] for unit in self._all_units]
+
+        label_to_unit_pair: dict[str, list[Unit]] = defaultdict(list)
+        for idx, (unit, label_list) in enumerate(zip(self._all_units, label_lists)):
+            if hasattr(unit, "dist_to_next") and unit.dist_to_next > 0:
+                next_unit = self._all_units[idx + 1]
+                next_next_unit = self._all_units[idx + 2]
+                if (next_unit.dist_to_next == 0) or (not hasattr(next_next_unit, "dist_to_next")):
+                    renamed_label = next_unit.name + "_dummy"
+                    label_list.append(renamed_label)
+                    label_lists[idx + 1].append(renamed_label)
+                else:
+                    label_list.append(next_unit.name)
+
+            for label in label_list:
+                label_to_unit_pair[label].append(unit)
+
+        unit_pairs = [tuple(unit_pair) for unit_pair in label_to_unit_pair.values()]
+        units_per_edge = 2
+        if not all(len(x) == units_per_edge for x in unit_pairs):
+            msg = "Unable to create valid network with current algorithm or data."
+            raise RuntimeError(msg)
+
+        return self._all_units, unit_pairs
