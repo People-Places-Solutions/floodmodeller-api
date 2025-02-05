@@ -22,6 +22,7 @@ from typing import Any
 
 from . import units
 from ._base import FMFile
+from .units import COMMENT
 from .units._base import Unit
 from .units._helpers import join_10_char, split_10_char, to_float, to_int
 from .util import handle_exception
@@ -908,17 +909,18 @@ class DAT(FMFile):
 
     def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
         """Creates a list of nodes (units) and edges (labels joining units)."""
-        label_lists = [[label for label in unit.labels if label != ""] for unit in self._all_units]
+        units_in_network = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
+        label_lists = [[label for label in unit.labels if label != ""] for unit in units_in_network]
 
         label_to_unit_pair: dict[str, list[Unit]] = defaultdict(list)
-        for idx, (unit, label_list) in enumerate(zip(self._all_units, label_lists)):
+        for idx, (unit, label_list) in enumerate(zip(units_in_network, label_lists)):
             if hasattr(unit, "dist_to_next") and unit.dist_to_next > 0:
-                next_unit = self._all_units[idx + 1]
-                next_next_unit = self._all_units[idx + 2]
+                next_unit = units_in_network[idx + 1]
+                next_next_unit = units_in_network[idx + 2]
                 if (next_unit.dist_to_next == 0) or (not hasattr(next_next_unit, "dist_to_next")):
                     renamed_label = next_unit.name + "_dummy"
                     label_list.append(renamed_label)
-                    label_lists[idx + 1].append(renamed_label)
+                    label_lists[idx + 1].append(renamed_label)  # this is why a dictionary is needed
                 else:
                     label_list.append(next_unit.name)
 
@@ -931,4 +933,4 @@ class DAT(FMFile):
             msg = "Unable to create valid network with current algorithm or data."
             raise RuntimeError(msg)
 
-        return self._all_units, unit_pairs
+        return units_in_network, unit_pairs
