@@ -908,18 +908,18 @@ class DAT(FMFile):
             self._gxy_data = self._gxy_data.replace(old, new)
 
     def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
-        """Creates a list of nodes (defined by units) and edges (defined by labels)."""
-        # collect all labels
-        units_in_network = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
-        label_lists = [[label for label in unit.labels if label != ""] for unit in units_in_network]
+        """Create a list of nodes (defined by units) and edges (defined by labels)."""
+        # collect all relevant units and labels
+        units = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
+        label_lists = [[label for label in unit.labels if label != ""] for unit in units]
 
-        # collect units for each label
-        label_to_unit_pair: dict[str, list[Unit]] = defaultdict(list)
-        for idx, (unit, label_list) in enumerate(zip(units_in_network, label_lists)):
+        # connect units for each label
+        label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
+        for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
             # implicit downstream labels within reaches
             if hasattr(unit, "dist_to_next") and unit.dist_to_next > 0:
-                next_unit = units_in_network[idx + 1]
-                next_next_unit = units_in_network[idx + 2]
+                next_unit = units[idx + 1]
+                next_next_unit = units[idx + 2]
                 if (next_unit.dist_to_next == 0) or (not hasattr(next_next_unit, "dist_to_next")):
                     renamed_label = next_unit.name + "_dummy"
                     label_list.append(renamed_label)
@@ -929,19 +929,19 @@ class DAT(FMFile):
 
             # explicit labels
             for label in label_list:
-                label_to_unit_pair[label].append(unit)
+                label_to_unit_list[label].append(unit)
 
         # check validity of network
         units_per_edge = 2
-        invalid_labels = [k for k, v in label_to_unit_pair.items() if len(v) != units_per_edge]
+        invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
         no_invalid_labels = len(invalid_labels)
         if no_invalid_labels > 0:
             msg = (
-                "Unable to create valid network with the current algorithm and/or data."
-                f" The following {no_invalid_labels} labels have invalid edges: {invalid_labels}"
+                "Unable to create a valid network with the current algorithm and/or data."
+                f" The following {no_invalid_labels} labels do not join two units: {invalid_labels}"
             )
             raise RuntimeError(msg)
 
         # the labels themselves are no longer needed
-        unit_pairs = [tuple(unit_pair) for unit_pair in label_to_unit_pair.values()]
-        return units_in_network, unit_pairs
+        unit_pairs = [tuple(unit_pair) for unit_pair in label_to_unit_list.values()]
+        return units, unit_pairs
