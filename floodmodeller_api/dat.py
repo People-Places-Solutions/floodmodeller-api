@@ -908,12 +908,15 @@ class DAT(FMFile):
             self._gxy_data = self._gxy_data.replace(old, new)
 
     def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
-        """Creates a list of nodes (units) and edges (labels joining units)."""
+        """Creates a list of nodes (defined by units) and edges (defined by labels)."""
+        # collect all labels
         units_in_network = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
         label_lists = [[label for label in unit.labels if label != ""] for unit in units_in_network]
 
+        # collect units for each label
         label_to_unit_pair: dict[str, list[Unit]] = defaultdict(list)
         for idx, (unit, label_list) in enumerate(zip(units_in_network, label_lists)):
+            # implicit downstream labels within reaches
             if hasattr(unit, "dist_to_next") and unit.dist_to_next > 0:
                 next_unit = units_in_network[idx + 1]
                 next_next_unit = units_in_network[idx + 2]
@@ -924,13 +927,21 @@ class DAT(FMFile):
                 else:
                     label_list.append(next_unit.name)
 
+            # explicit labels
             for label in label_list:
                 label_to_unit_pair[label].append(unit)
 
-        unit_pairs = [tuple(unit_pair) for unit_pair in label_to_unit_pair.values()]
+        # check validity of network
         units_per_edge = 2
-        if not all(len(x) == units_per_edge for x in unit_pairs):
-            msg = "Unable to create valid network with current algorithm or data."
+        invalid_labels = [k for k, v in label_to_unit_pair.items() if len(v) != units_per_edge]
+        no_invalid_labels = len(invalid_labels)
+        if no_invalid_labels > 0:
+            msg = (
+                "Unable to create valid network with the current algorithm and/or data."
+                f" The following {no_invalid_labels} labels have invalid edges: {invalid_labels}"
+            )
             raise RuntimeError(msg)
 
+        # the labels themselves are no longer needed
+        unit_pairs = [tuple(unit_pair) for unit_pair in label_to_unit_pair.values()]
         return units_in_network, unit_pairs
