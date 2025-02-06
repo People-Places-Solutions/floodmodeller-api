@@ -908,7 +908,8 @@ class DAT(FMFile):
             self._gxy_data = self._gxy_data.replace(old, new)
 
     def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
-        """Create a list of nodes (defined by units) and edges (defined by labels)."""
+        """Create a list of nodes (defined by units) and edges (defined by labels).
+        Can be used as a direct input to `networkx.Graph.add_edges_from`."""
         # collect all relevant units and labels
         units = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
         label_lists = [[label for label in unit.labels if label != ""] for unit in units]
@@ -916,18 +917,22 @@ class DAT(FMFile):
         # connect units for each label
         label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
         for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
-            # implicit downstream labels within reaches
-            if hasattr(unit, "dist_to_next") and unit.dist_to_next > 0:
+            in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
+            if in_reach:  # has implicit downstream labels
                 next_unit = units[idx + 1]
                 next_next_unit = units[idx + 2]
-                if (next_unit.dist_to_next == 0) or (not hasattr(next_next_unit, "dist_to_next")):
+                end_of_reach = (
+                    (not hasattr(next_unit, "dist_to_next"))
+                    or (next_unit.dist_to_next == 0)
+                    or (not hasattr(next_next_unit, "dist_to_next"))
+                )
+                if end_of_reach:
                     renamed_label = next_unit.name + "_dummy"
                     label_list.append(renamed_label)
-                    label_lists[idx + 1].append(renamed_label)  # this is why a dictionary is needed
+                    label_lists[idx + 1].append(renamed_label)  # why label_lists is made first
                 else:
                     label_list.append(next_unit.name)
 
-            # explicit labels
             for label in label_list:
                 label_to_unit_list[label].append(unit)
 
@@ -935,10 +940,11 @@ class DAT(FMFile):
         units_per_edge = 2
         invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
         no_invalid_labels = len(invalid_labels)
+        no_labels = len(label_to_unit_list)
         if no_invalid_labels > 0:
             msg = (
                 "Unable to create a valid network with the current algorithm and/or data."
-                f" The following {no_invalid_labels} labels do not join two units: {invalid_labels}"
+                f" {no_invalid_labels}/{no_labels} labels do not join two units: {invalid_labels}."
             )
             raise RuntimeError(msg)
 
