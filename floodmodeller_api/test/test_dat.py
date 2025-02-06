@@ -78,12 +78,12 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-def test_dat_read_doesnt_change_data(test_workspace, tmpdir):
+def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
         dat = DAT(datfile)
         first_output = dat._write()
-        new_path = Path(tmpdir) / "tmp.dat"
+        new_path = tmp_path / "tmp.dat"
         dat.save(new_path)
         second_dat = DAT(new_path)
         assert dat == second_dat, f"dat objects not equal for {datfile=}"
@@ -225,8 +225,8 @@ def test_diff(test_workspace, caplog):
     )
 
 
-def test_encoding(dat_encoding_fps: list[str], tmpdir: str):
+def test_encoding(dat_encoding_fps: list[str], tmp_path: str):
     for i, dat_encoding_fp in enumerate(dat_encoding_fps):
         dat = DAT(dat_encoding_fp)
-        new_path = Path(tmpdir) / f"tmp_encoding_{i}.dat"
+        new_path = tmp_path / f"tmp_encoding_{i}.dat"
         dat.save(new_path)
