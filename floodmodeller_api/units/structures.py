@@ -162,11 +162,13 @@ class BRIDGE(Unit):
         self.comment = br_block[0].replace(self._unit, "").strip()
         self._subtype = br_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
-        self.us_remote_label = self.labels[2]
-        self.ds_remote_label = self.labels[3]
+        labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.us_remote_label = labels[2]
+        self.ds_remote_label = labels[3]
+
+        self.labels = [self.name, self.ds_label]
 
         # Read ARCH type unit
         if self.subtype == "ARCH":
@@ -588,10 +590,11 @@ class SLUICE(Unit):
         self._subtype = block[1].split(" ")[0].strip()
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
-        self.remote_label = self.labels[2]
+        labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.remote_label = labels[2]
+        self.labels = [self.name, self.ds_label]
         self.comment = block[0].replace("SLUICE", "").strip()
 
         # First parameter line
@@ -1201,11 +1204,12 @@ class CRUMP(Unit):
     def _read(self, block):
         """Function to read a given CRUMP block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
-        self.us_remote_label = self.labels[2]
-        self.ds_remote_label = self.labels[3]
+        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.us_remote_label = labels[2]
+        self.ds_remote_label = labels[3]
+        self.labels = [self.name, self.ds_label]
         self.comment = block[0].replace("CRUMP", "").strip()
 
         # First parameter line
@@ -1310,11 +1314,12 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
     def _read(self, block):
         """Function to read a given FLAT-V WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
-        self.us_remote_label = self.labels[2]
-        self.ds_remote_label = self.labels[3]
+        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.us_remote_label = labels[2]
+        self.ds_remote_label = labels[3]
+        self.labels = [self.name, self.ds_label]
         self.comment = block[0].replace("FLAT-V WEIR", "").strip()
 
         # First parameter line

@@ -141,6 +141,9 @@ class FMFile(Jsonable):
         raise FloodModellerAPIError(err, when, self._filetype, filepath_or_none) from err
 
     def __eq__(self, other, return_diff=False):
+        if not isinstance(other, FMFile):
+            return NotImplemented if not return_diff else (False, ["Type mismatch"])
+
         result = True
         diff = []
         try:

@@ -50,6 +50,13 @@ class Unit(Jsonable):
     def name(self) -> str | None:
         return self._name
 
+    @property
+    def unique_id(self) -> tuple[str, str]:
+        if self._name is None:
+            msg = "No unique id available."
+            raise ValueError(msg)
+        return (self._unit, self._name)
+
     @name.setter
     def name(self, new_name):
         try:
@@ -102,6 +109,9 @@ class Unit(Jsonable):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
+        if not isinstance(other, Unit):
+            return NotImplemented if not return_diff else (False, ["Type mismatch"])
+
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
