@@ -911,8 +911,6 @@ class DAT(FMFile):
         """Create a list of nodes (defined by units) and edges (defined by labels).
         Edges are directional, based on the order of appearance in the dat file."""
 
-        # TODO: deal with lateral units
-
         # collect all relevant units and labels
         units = [unit for unit in self._all_units if not isinstance(unit, COMMENT)]
         label_lists = [[label for label in unit.labels if label != ""] for unit in units]
