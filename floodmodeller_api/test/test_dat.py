@@ -218,10 +218,10 @@ def test_diff(test_workspace, caplog):
     )
 
 
-def test_network(test_workspace: Path):
+def test_valid_network(test_workspace: Path):
     """Test against network derived manually."""
     dat = DAT(test_workspace / "network.dat")
-    _, actual_edges = dat.get_network()
+    actual_nodes, actual_edges = dat.get_network()
 
     expected_edges = [
         (("FSSR16BDY", "resin"), ("RIVER", "resin")),
@@ -326,16 +326,10 @@ def test_network(test_workspace: Path):
     actual = {tuple(x.unique_id for x in y) for y in actual_edges}
     expected = set(expected_edges)
     assert expected == actual
-
-
-def test_all_valid_networks(test_workspace: Path):
-    """Test dat file that can be made into a valid network."""
-    dat = DAT(test_workspace / "network.dat")
-    actual_nodes, _ = dat.get_network()
     assert len(actual_nodes) == 86
 
 
-def test_all_invalid_networks(test_workspace: Path):
+def test_invalid_network(test_workspace: Path):
     """Test dat file that cannot be made into a valid network."""
     dat = DAT(test_workspace / "All Units 4_6.DAT")
     with pytest.raises(RuntimeError):
