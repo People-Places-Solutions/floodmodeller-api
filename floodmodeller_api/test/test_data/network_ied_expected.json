@@ -88,6 +88,7 @@
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CS26",
+          "labels": ["CS26"],
           "comment": "",
           "nrows": 4,
           "timeoffset": 0.0,
@@ -116,6 +117,7 @@
         "Object Attributes": {
           "_label_len": 12,
           "_name": "DS4",
+          "labels": ["DS4"],
           "comment": "",
           "nrows": 6,
           "interpmethod": "LINEAR",
@@ -236,6 +238,7 @@
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CS26",
+          "labels": ["CS26"],
           "comment": "",
           "nrows": 4,
           "timeoffset": 0.0,
@@ -264,6 +267,7 @@
         "Object Attributes": {
           "_label_len": 12,
           "_name": "DS4",
+          "labels": ["DS4"],
           "comment": "",
           "nrows": 6,
           "interpmethod": "LINEAR",
