@@ -334,4 +334,3 @@ def test_invalid_network(test_workspace: Path):
     dat = DAT(test_workspace / "All Units 4_6.DAT")
     with pytest.raises(RuntimeError):
         dat.get_network()
-
