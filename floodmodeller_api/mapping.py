@@ -74,7 +74,7 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.units.conduits.CONDUIT": CONDUIT,
     "floodmodeller_api.units.connectors.JUNCTION": JUNCTION,
     "floodmodeller_api.units.connectors.LATERAL": LATERAL,
-    "floodmodeller_api.units.connectors.RESERVOIR": RESERVOIR,
+    "floodmodeller_api.units.controls.RESERVOIR": RESERVOIR,
     "floodmodeller_api.units.iic.IIC": IIC,
     "floodmodeller_api.units.losses.BLOCKAGE": BLOCKAGE,
     "floodmodeller_api.units.losses.CULVERT": CULVERT,

@@ -231,4 +231,5 @@ def test_create_and_insert_connectors():
         lateral_inflow_labels=["C", "D"],
     )
     dat.insert_units([junction, lateral, reservoir], add_at=-1)
-    assert dat.connectors == {"A": junction, "lat": lateral, "res": reservoir}
+    assert dat.connectors == {"A": junction, "lat": lateral}
+    assert dat.controls == {"res": reservoir}

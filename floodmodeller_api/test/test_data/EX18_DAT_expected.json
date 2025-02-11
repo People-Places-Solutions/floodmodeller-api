@@ -1748,9 +1748,11 @@
             "S5"
           ]
         }
-      },
+      }
+    },
+    "controls": {
       "S0": {
-        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S0",
@@ -1788,7 +1790,7 @@
         }
       },
       "CSO": {
-        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSO",
@@ -2190,7 +2192,7 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S0",
@@ -3535,7 +3537,7 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.connectors.RESERVOIR",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSO",

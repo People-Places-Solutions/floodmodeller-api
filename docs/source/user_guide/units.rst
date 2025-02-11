@@ -137,6 +137,8 @@ Connector units
 
 .. autoclass:: floodmodeller_api.units.LATERAL
 
+Control units
+---------------
 ``RESERVOIR()``
 ~~~~~~~~~~~~~~~
 

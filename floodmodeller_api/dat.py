@@ -406,6 +406,7 @@ class DAT(FMFile):
             (self.conduits, "conduits"),
             (self.losses, "losses"),
             (self.connectors, "connectors"),
+            (self.controls, "controls"),
         ]:
             for name, unit in unit_group.copy().items():
                 if name != unit.name:
@@ -450,6 +451,7 @@ class DAT(FMFile):
             "conduits": [],
             "losses": [],
             "connectors": [],
+            "controls": [],
         }
 
         for block in self._dat_struct:
@@ -533,6 +535,7 @@ class DAT(FMFile):
         self.conduits = {}
         self.losses = {}
         self.connectors = {}
+        self.controls = {}
         self._unsupported = {}
         self._all_units = []
 
