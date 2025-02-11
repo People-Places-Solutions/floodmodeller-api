@@ -527,12 +527,13 @@ class DAT(FMFile):
 
     def _initialize_collections(self) -> None:
         # Initialize unit collections
-        self.sections: dict[str, units.TSection] = {}
-        self.boundaries: dict[str, units.TBoundary] = {}
-        self.structures: dict[str, units.TStructure] = {}
-        self.conduits: dict[str, units.TConduit] = {}
-        self.losses: dict[str, units.TLoss] = {}
-        self.controls = {}
+        self.sections: dict[str, units.TSections] = {}
+        self.boundaries: dict[str, units.TBoundaries] = {}
+        self.structures: dict[str, units.TStructures] = {}
+        self.conduits: dict[str, units.TConduits] = {}
+        self.losses: dict[str, units.TLosses] = {}
+        self.connectors: dict[str, units.TConnectors] = {}
+        self.controls: dict[str, units.TControls] = {}
         self._unsupported: dict[str, units.TUnsupported] = {}
         self._all_units: list[Unit] = []
 

@@ -38,9 +38,5 @@ class UNSUPPORTED(Unit):
         if self.labels[1] != "":
             self.ds_label = self.labels[1]
 
-        # TODO: delete this bit once the other branch is merged
-        if self._unit == "LATERAL":
-            self.labels += [line[:12].strip() for line in block[4:]]
-
     def _write(self):
         return self._raw_block

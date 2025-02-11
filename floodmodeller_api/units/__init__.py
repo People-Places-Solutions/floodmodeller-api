@@ -23,11 +23,13 @@ from .units import ALL_UNIT_TYPES, SUPPORTED_UNIT_TYPES, UNSUPPORTED_UNIT_TYPES
 from .unsupported import UNSUPPORTED
 from .variables import Variables
 
-TSection: TypeAlias = INTERPOLATE | REPLICATE | RIVER
-TBoundary: TypeAlias = HTBDY | QHBDY | QTBDY | REFHBDY
-TStructure: TypeAlias = (
+TBoundaries: TypeAlias = HTBDY | QHBDY | QTBDY | REFHBDY
+TSections: TypeAlias = INTERPOLATE | REPLICATE | RIVER
+TConduits: TypeAlias = CONDUIT
+TConnectors: TypeAlias = JUNCTION | LATERAL
+TControls: TypeAlias = RESERVOIR
+TLosses: TypeAlias = BLOCKAGE | CULVERT
+TStructures: TypeAlias = (
     BRIDGE | CRUMP | FLAT_V_WEIR | ORIFICE | OUTFALL | RNWEIR | SLUICE | SPILL | WEIR
 )
-TConduit: TypeAlias = CONDUIT
-TLoss: TypeAlias = BLOCKAGE | CULVERT
 TUnsupported: TypeAlias = UNSUPPORTED

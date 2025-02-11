@@ -80,6 +80,7 @@ class LATERAL(Unit):
         self.weight_factor = block[2]
         self.no_units = to_int(block[3])
         self.data = read_lateral_data(block[4:])
+        self.labels = [self.name, *list(self.data["Node Label"])]
 
     def _write(self) -> list[str]:
         _validate_unit(self)
@@ -108,3 +109,4 @@ class LATERAL(Unit):
             ("Node Label", "Custom Weight Factor", "Use Weight Factor"),
         )
         self.no_units = len(self.data)
+        self.labels = [self.name, *list(self.data["Node Label"])]

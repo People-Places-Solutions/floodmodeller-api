@@ -184,6 +184,8 @@ class CONDUIT(Unit):
         self._subtype = self._get_first_word(c_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         self.labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = self.labels[0]
+        self.spill = self.labels[1]
         self.comment = self._remove_unit_name(c_block[0])
 
         # Read CIRCULAR type unit
