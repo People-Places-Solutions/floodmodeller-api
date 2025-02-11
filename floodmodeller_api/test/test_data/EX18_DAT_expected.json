@@ -1744,6 +1744,112 @@
         }
       }
     },
+    "connectors": {
+      "S1u": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S1u",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "S1u",
+            "S1",
+            "S1d"
+          ]
+        }
+      },
+      "S4_drop": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S4_drop",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "S4_drop",
+            "P_suc",
+            "S5"
+          ]
+        }
+      }
+    },
+    "controls": {
+      "S0": {
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "S0",
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "Elevation": {
+                "0": 19.0,
+                "1": 20.0,
+                "2": 21.0,
+                "3": 22.0,
+                "4": 23.0
+              },
+              "Plan Area": {
+                "0": 800.0,
+                "1": 1000.0,
+                "2": 1200.0,
+                "3": 1400.0,
+                "4": 1600.0
+              }
+            }
+          },
+          "_revision": 1,
+          "comment": "",
+          "labels": [
+            "S0",
+            "QT1",
+            "QT2"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
+        }
+      },
+      "CSO": {
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSO",
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "Elevation": {
+                "0": 19.0,
+                "1": 20.0,
+                "2": 21.0,
+                "3": 22.0,
+                "4": 23.0
+              },
+              "Plan Area": {
+                "0": 800.0,
+                "1": 1000.0,
+                "2": 1200.0,
+                "3": 1200.0,
+                "4": 1200.0
+              }
+            }
+          },
+          "_revision": 1,
+          "comment": "",
+          "labels": [
+            "CSO"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
+        }
+      }
+    },
     "structures": {
       "S0": {
         "API Class": "floodmodeller_api.units.structures.WEIR",
@@ -1966,54 +2072,6 @@
       }
     },
     "_unsupported": {
-      "S0 (RESERVOIR)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S0",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "S0          QT1         QT2",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1400.000",
-            "    23.000  1600.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
-          "labels": [
-            "S0",
-            "QT1",
-            "QT2"
-          ],
-          "ds_label": "QT1"
-        }
-      },
-      "S1u (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S1u",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S1u         S1          S1d"
-          ],
-          "comment": "",
-          "labels": [
-            "S1u",
-            "S1",
-            "S1d"
-          ]
-        }
-      },
       "C2m (MANHOLE)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -2033,26 +2091,6 @@
             "C2mH"
           ],
           "ds_label": "C2md"
-        }
-      },
-      "S4_drop (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "S4_drop",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S4_drop     P_suc       S5"
-          ],
-          "comment": "",
-          "labels": [
-            "S4_drop",
-            "P_suc",
-            "S5"
-          ]
         }
       },
       "P_suc (OCPUMP)": {
@@ -2102,32 +2140,6 @@
             "P_del"
           ],
           "ds_label": "P_del"
-        }
-      },
-      "CSO (RESERVOIR)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSO",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "CSO",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1200.000",
-            "    23.000  1200.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
-          "labels": [
-            "CSO",
-            ""
-          ]
         }
       }
     },
@@ -2217,31 +2229,41 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S0",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "S0          QT1         QT2",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1400.000",
-            "    23.000  1600.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "Elevation": {
+                "0": 19.0,
+                "1": 20.0,
+                "2": 21.0,
+                "3": 22.0,
+                "4": 23.0
+              },
+              "Plan Area": {
+                "0": 800.0,
+                "1": 1000.0,
+                "2": 1200.0,
+                "3": 1400.0,
+                "4": 1600.0
+              }
+            }
+          },
+          "_revision": 1,
+          "comment": "",
           "labels": [
             "S0",
             "QT1",
             "QT2"
           ],
-          "ds_label": "QT1"
+          "lateral_inflow_labels": [],
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       },
       {
@@ -2261,17 +2283,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S1u",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S1u         S1          S1d"
-          ],
           "comment": "",
           "labels": [
             "S1u",
@@ -3048,17 +3064,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "S4_drop",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "S4_drop     P_suc       S5"
-          ],
           "comment": "",
           "labels": [
             "S4_drop",
@@ -3595,29 +3605,39 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.controls.RESERVOIR",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSO",
-          "_unit": "RESERVOIR",
-          "_subtype": false,
-          "_raw_block": [
-            "RESERVOIR #revision#1",
-            "CSO",
-            "",
-            "         5",
-            "    19.000   800.000",
-            "    20.000  1000.000",
-            "    21.000  1200.000",
-            "    22.000  1200.000",
-            "    23.000  1200.000",
-            "      0000      0000         0"
-          ],
-          "comment": "#revision#1",
+          "data": {
+            "class": "pandas.DataFrame",
+            "object": {
+              "Elevation": {
+                "0": 19.0,
+                "1": 20.0,
+                "2": 21.0,
+                "3": 22.0,
+                "4": 23.0
+              },
+              "Plan Area": {
+                "0": 800.0,
+                "1": 1000.0,
+                "2": 1200.0,
+                "3": 1200.0,
+                "4": 1200.0
+              }
+            }
+          },
+          "_revision": 1,
+          "comment": "",
           "labels": [
-            "CSO",
-            ""
-          ]
+            "CSO"
+          ],
+          "lateral_inflow_labels": [],
+          "no_rows": 5,
+          "easting": 0,
+          "northing": 0,
+          "runoff": 0
         }
       }
     ],

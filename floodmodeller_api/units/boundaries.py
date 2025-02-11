@@ -26,7 +26,6 @@ from ._helpers import (
     split_10_char,
     to_data_list,
     to_float,
-    to_int,
     to_str,
 )
 
@@ -92,7 +91,7 @@ class QTBDY(Unit):
         """Function to read a given QTBDY block and store data as class attributes"""
         self.name = qtbdy_block[1][: self._label_len].strip()
         self.labels = [self.name]
-        self.comment = qtbdy_block[0].replace("QTBDY", "").strip()
+        self.comment = self._remove_unit_name(qtbdy_block[0])
         qtbdy_params = split_10_char(f"{qtbdy_block[2]:<90}")
         self.nrows = int(qtbdy_params[0])
         self.timeoffset = to_float(qtbdy_params[1])
@@ -116,7 +115,7 @@ class QTBDY(Unit):
     def _write(self):
         """Function to write a valid QTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = "QTBDY " + self.comment
+        header = self._create_header()
         name = self.name[: self._label_len]
         self.nrows = len(self.data)
 
@@ -190,7 +189,7 @@ class HTBDY(Unit):
         """Function to read a given HTBDY block and store data as class attributes"""
         self.name = htbdy_block[1][: self._label_len].strip()
         self.labels = [self.name]
-        self.comment = htbdy_block[0].replace("HTBDY", "").strip()
+        self.comment = self._remove_unit_name(htbdy_block[0])
         htbdy_params = split_10_char(f"{htbdy_block[2]:<50}")
         self.nrows = int(htbdy_params[0])
         self._something = to_str(htbdy_params[1], "")
@@ -216,7 +215,7 @@ class HTBDY(Unit):
     def _write(self):
         """Function to write a valid HTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for HTBDY
-        header = "HTBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -269,7 +268,7 @@ class QHBDY(Unit):
         """Function to read a given QHBDY block and store data as class attributes"""
         self.name = qhbdy_block[1][: self._label_len].strip()
         self.labels = [self.name]
-        self.comment = qhbdy_block[0].replace("QHBDY", "").strip()
+        self.comment = self._remove_unit_name(qhbdy_block[0])
         qhbdy_params = split_10_char(f"{qhbdy_block[2]:<30}")
         self.nrows = int(qhbdy_params[0])
         self.interpmethod = to_str(qhbdy_params[2], "LINEAR")
@@ -283,7 +282,7 @@ class QHBDY(Unit):
     def _write(self):
         """Function to write a valid QHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QHBDY
-        header = "QHBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -344,9 +343,7 @@ class REFHBDY(Unit):
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
-        b = refhbdy_block[0].replace("REFHBDY #revision#", "").strip()
-        self._revision = to_int(b[0], 1)
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(refhbdy_block[0])
         self.name = refhbdy_block[1][: self._label_len].strip()
         self.labels = [self.name]
 
@@ -420,7 +417,7 @@ class REFHBDY(Unit):
     def _write(self):
         """Function to write a valid REFHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = f"REFHBDY #revision#{self._revision} {self.comment}"
+        header = self._create_header(include_revision=True)
         name = self.name[: self._label_len]
 
         refhbdy_block = [header, name]

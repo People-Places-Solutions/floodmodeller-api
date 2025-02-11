@@ -181,12 +181,10 @@ class CONDUIT(Unit):
 
     def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
-        self._subtype = c_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(c_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
         self.labels = split_n_char(f"{c_block[2]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.spill = self.labels[1]
-        self.comment = c_block[0].replace("CONDUIT", "").strip()
+        self.comment = self._remove_unit_name(c_block[0])
 
         # Read CIRCULAR type unit
         if self._subtype == "CIRCULAR":
@@ -268,7 +266,7 @@ class CONDUIT(Unit):
     def _write(self):
         """Function to write a valid CONDUIT block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
-        header = "CONDUIT " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(self._label_len, self.name, self.spill)
         c_block = [header, self._subtype, labels]
 

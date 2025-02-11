@@ -28,7 +28,6 @@ from ._helpers import (
     split_n_char,
     to_data_list,
     to_float,
-    to_int,
     to_str,
 )
 
@@ -78,8 +77,8 @@ class CULVERT(Unit):
         """Function to read a given CULVERT block and store data as class attributes"""
 
         # Extract common attributes
-        self._subtype = block[1].split(" ")[0].strip()
-        self.comment = block[0].replace("CULVERT", "").strip()
+        self._subtype = self._get_first_word(block[1])
+        self.comment = self._remove_unit_name(block[0])
         labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
@@ -131,7 +130,7 @@ class CULVERT(Unit):
 
         _validate_unit(self)
 
-        header = "CULVERT " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -195,9 +194,7 @@ class BLOCKAGE(Unit):
         """Function to read a given BLOCKAGE block and store data as class attributes"""
 
         # Extract comment and revision number
-        b = block[0].replace("BLOCKAGE #revision#", " ").strip()
-        self._revision = to_int(b[0], 1)
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(block[0])
 
         # Extract labels
         self.labels = split_n_char(f"{block[1]:<{5*self._label_len}}", self._label_len)
@@ -219,7 +216,9 @@ class BLOCKAGE(Unit):
 
         self.timeunit = to_str(params1[2], "HOURS", check_float=True)
         if self.timeunit == "DATE":
-            self.timeunit = "DATES"  # Parameter value updated to 'DATES' for consistency with other unit types.  'DATE' and 'DATES' both accepted for blockage unit ONLY
+            self.timeunit = "DATES"
+            # Parameter value updated to 'DATES' for consistency with other unit types.
+            # 'DATE' and 'DATES' both accepted for blockage unit ONLY
 
         self.extendmethod = to_str(params1[3], "NOEXTEND")
 
@@ -244,7 +243,7 @@ class BLOCKAGE(Unit):
             msg = f"Parameter error with {self!r} - blockage percentage must be between 0 and 1"
             raise ValueError(msg)
 
-        header = f"BLOCKAGE #revision#{self._revision} {self.comment}"
+        header = self._create_header(include_revision=True)
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
