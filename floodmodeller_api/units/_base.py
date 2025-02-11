@@ -19,12 +19,13 @@ from __future__ import annotations
 """ Holds the base unit class for all FM Units """
 
 import logging
+from typing import Any
 
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from ._helpers import join_10_char, join_n_char_ljust, split_10_char, to_float, to_str
+from ._helpers import join_10_char, join_n_char_ljust, split_10_char, to_float, to_int, to_str
 
 
 class Unit(Jsonable):
@@ -218,3 +219,29 @@ class Unit(Jsonable):
         self._last_rule_row = rule_row
 
         return rules
+
+    def _remove_unit_name(self, line: str, *, remove_revision: bool = False) -> str:
+        line = line.replace(self._unit, "")
+        if remove_revision:
+            line = line.replace("#revision#", "", 1)
+        return line.strip()
+
+    def _create_header(self, *, include_revision: bool = False) -> str:
+        header = self._unit
+        if include_revision and hasattr(self, "_revision"):
+            header += f" #revision#{self._revision}"
+        if hasattr(self, "comment") and self.comment != "":
+            header += f" {self.comment}"
+        return header
+
+    def _get_first_word(self, line: str) -> str:
+        return line.split(" ")[0].strip()
+
+    def _get_revision_and_comment(self, line: str) -> tuple[int | None, str]:
+        line_without_name = self._remove_unit_name(line, remove_revision=True)
+        revision = to_int(line_without_name[0], None) if line_without_name != "" else None
+        comment = line_without_name[1:].strip()
+        return revision, comment
+
+    def _enforce_dataframe(self, data: Any, columns: tuple[str, ...]) -> pd.DataFrame:
+        return data if isinstance(data, pd.DataFrame) else pd.DataFrame([], columns=columns)

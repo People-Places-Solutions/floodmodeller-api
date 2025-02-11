@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import QTBDY
+from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -216,3 +216,20 @@ def test_diff(test_workspace, caplog):
         "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
         "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
     )
+
+
+def test_create_and_insert_connectors():
+    dat = DAT()
+    junction = JUNCTION(comment="hi", labels=["A", "B"])
+    lateral = LATERAL(name="lat", comment="bye")
+    reservoir = RESERVOIR(
+        easting=0,
+        northing=0,
+        runoff=0,
+        name="res",
+        comment="hello",
+        lateral_inflow_labels=["C", "D"],
+    )
+    dat.insert_units([junction, lateral, reservoir], add_at=-1)
+    assert dat.connectors == {"A": junction, "lat": lateral}
+    assert dat.controls == {"res": reservoir}

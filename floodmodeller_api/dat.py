@@ -110,8 +110,6 @@ class DAT(FMFile):
         """
         self._diff(other, force_print=force_print)
 
-    # def _get_unit_from_connectivity(self, method) #use this as method prev and next
-
     @handle_exception(when="calculate next unit in")
     def next(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds next unit in the reach.
@@ -407,6 +405,8 @@ class DAT(FMFile):
             (self.structures, "structures"),
             (self.conduits, "conduits"),
             (self.losses, "losses"),
+            (self.connectors, "connectors"),
+            (self.controls, "controls"),
         ]:
             for name, unit in unit_group.copy().items():
                 if name != unit.name:
@@ -450,6 +450,8 @@ class DAT(FMFile):
             "sections": [],
             "conduits": [],
             "losses": [],
+            "connectors": [],
+            "controls": [],
         }
 
         for block in self._dat_struct:
@@ -532,6 +534,8 @@ class DAT(FMFile):
         self.structures = {}
         self.conduits = {}
         self.losses = {}
+        self.connectors = {}
+        self.controls = {}
         self._unsupported = {}
         self._all_units = []
 
@@ -556,7 +560,13 @@ class DAT(FMFile):
             return unit_data[2][: self._label_len].strip()
         return unit_data[1][: self._label_len].strip()
 
-    def _add_unit_to_group(self, unit_group, unit_type, unit_name, unit_data):
+    def _add_unit_to_group(
+        self,
+        unit_group,
+        unit_type: str,
+        unit_name: str,
+        unit_data: list[str],
+    ) -> None:
         # Raise exception if a duplicate label is encountered
         if unit_name in unit_group:
             msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}'
@@ -568,7 +578,7 @@ class DAT(FMFile):
         )
         self._all_units.append(unit_group[unit_name])
 
-    def _process_unsupported_unit(self, unit_type, unit_data):
+    def _process_unsupported_unit(self, unit_type, unit_data) -> None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
         unit_name, subtype = self._get_unsupported_unit_name(unit_type, unit_data)
         self._unsupported[f"{unit_name} ({unit_type})"] = units.UNSUPPORTED(
@@ -580,7 +590,7 @@ class DAT(FMFile):
         )
         self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
 
-    def _get_unsupported_unit_name(self, unit_type, unit_data):
+    def _get_unsupported_unit_name(self, unit_type: str, unit_data: list[str]) -> tuple[str, bool]:
         # Check if the unit type has associated subtypes
         if units.UNSUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
             return unit_data[2][: self._label_len].strip(), True

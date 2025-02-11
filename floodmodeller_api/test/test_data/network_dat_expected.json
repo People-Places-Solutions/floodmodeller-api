@@ -1860,6 +1860,134 @@
       "RAD File": ""
     },
     "_label_len": 12,
+    "connectors":{
+      "RESOUT2b": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "RESOUT2b",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "RESOUT2b",
+            "RESOUT2u",
+            "RESOUT2d"
+          ]
+        }
+      },
+      "CSRD14u": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSRD14u",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "CSRD14u",
+            "MILLBu",
+            "MILLAu"
+          ]
+        }
+      },
+      "CSRD12u": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSRD12u",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "CSRD12u",
+            "MILLBd",
+            "CSRD12d"
+          ]
+        }
+      },
+      "CSRD09": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSRD09",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "CSRD09",
+            "CSRD09u",
+            "ROAD1"
+          ]
+        }
+      },
+      "CSRD08a": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSRD08a",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "CSRD08a",
+            "CSRD08",
+            "ROAD2"
+          ]
+        }
+      },
+      "CSRD02d": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "CSRD02d",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "CSRD02d",
+            "RAILRDu",
+            "RAILBRu"
+          ]
+        }
+      },
+      "RAILBRd": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "RAILBRd",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "RAILBRd",
+            "RAILRDd",
+            "CSRD01a"
+          ]
+        }
+      },
+      "DS2": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "DS2",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "DS2",
+            "FOOTa",
+            "FOOTBRu"
+          ]
+        }
+      },
+      "FOOTb": {
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
+        "Object Attributes": {
+          "_label_len": 12,
+          "_name": "FOOTb",
+          "_subtype": "OPEN",
+          "comment": "",
+          "labels": [
+            "FOOTb",
+            "FOOTBRd",
+            "DS3"
+          ]
+        }
+      }
+    },
     "sections": {
       "CS26": {
         "API Class": "floodmodeller_api.units.sections.RIVER",
@@ -11189,6 +11317,7 @@
       }
     },
     "conduits": {},
+    "controls": {},
     "losses": {},
     "_unsupported": {
       "resin (FSSR16BDY)": {
@@ -11236,86 +11365,7 @@
           ]
         }
       },
-      "RESOUT2b (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "RESOUT2b",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RESOUT2b    RESOUT2u    RESOUT2d"
-          ],
-          "comment": "",
-          "labels": [
-            "RESOUT2b",
-            "RESOUT2u",
-            "RESOUT2d"
-          ]
-        }
-      },
-      "CSRD14u (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSRD14u",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD14u     MILLBu      MILLAu"
-          ],
-          "comment": "",
-          "labels": [
-            "CSRD14u",
-            "MILLBu",
-            "MILLAu"
-          ]
-        }
-      },
-      "CSRD12u (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSRD12u",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD12u     MILLBd      CSRD12d"
-          ],
-          "comment": "",
-          "labels": [
-            "CSRD12u",
-            "MILLBd",
-            "CSRD12d"
-          ]
-        }
-      },
-      "CSRD09 (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSRD09",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD09      CSRD09u     ROAD1"
-          ],
-          "comment": "",
-          "labels": [
-            "CSRD09",
-            "CSRD09u",
-            "ROAD1"
-          ]
-        }
-      },
+
       "CSRD09a (BERNOULLI)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -11344,46 +11394,7 @@
           "ds_label": "CSRD08u"
         }
       },
-      "CSRD08a (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSRD08a",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD08a     CSRD08      ROAD2"
-          ],
-          "comment": "",
-          "labels": [
-            "CSRD08a",
-            "CSRD08",
-            "ROAD2"
-          ]
-        }
-      },
-      "CSRD02d (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "CSRD02d",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD02d     RAILRDu     RAILBRu"
-          ],
-          "comment": "",
-          "labels": [
-            "CSRD02d",
-            "RAILRDu",
-            "RAILBRu"
-          ]
-        }
-      },
+      
       "RAILBRu (BERNOULLI)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -11414,46 +11425,7 @@
           "ds_label": "RAILBRd"
         }
       },
-      "RAILBRd (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "RAILBRd",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RAILBRd     RAILRDd     CSRD01a"
-          ],
-          "comment": "",
-          "labels": [
-            "RAILBRd",
-            "RAILRDd",
-            "CSRD01a"
-          ]
-        }
-      },
-      "DS2 (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "DS2",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "DS2         FOOTa       FOOTBRu"
-          ],
-          "comment": "",
-          "labels": [
-            "DS2",
-            "FOOTa",
-            "FOOTBRu"
-          ]
-        }
-      },
+      
       "FOOTBRu (BERNOULLI)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
         "Object Attributes": {
@@ -11477,26 +11449,6 @@
             "FOOTBRd"
           ],
           "ds_label": "FOOTBRd"
-        }
-      },
-      "FOOTb (JUNCTION)": {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
-        "Object Attributes": {
-          "_label_len": 12,
-          "_name": "FOOTb",
-          "_unit": "JUNCTION",
-          "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "FOOTb       FOOTBRd     DS3"
-          ],
-          "comment": "",
-          "labels": [
-            "FOOTb",
-            "FOOTBRd",
-            "DS3"
-          ]
         }
       }
     },
@@ -12690,17 +12642,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "RESOUT2b",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RESOUT2b    RESOUT2u    RESOUT2d"
-          ],
           "comment": "",
           "labels": [
             "RESOUT2b",
@@ -14995,17 +14941,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSRD14u",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD14u     MILLBu      MILLAu"
-          ],
           "comment": "",
           "labels": [
             "CSRD14u",
@@ -16032,17 +15972,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSRD12u",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD12u     MILLBd      CSRD12d"
-          ],
           "comment": "",
           "labels": [
             "CSRD12u",
@@ -17257,17 +17191,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSRD09",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD09      CSRD09u     ROAD1"
-          ],
           "comment": "",
           "labels": [
             "CSRD09",
@@ -17731,17 +17659,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSRD08a",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD08a     CSRD08      ROAD2"
-          ],
           "comment": "",
           "labels": [
             "CSRD08a",
@@ -19241,17 +19163,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "CSRD02d",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "CSRD02d     RAILRDu     RAILBRu"
-          ],
           "comment": "",
           "labels": [
             "CSRD02d",
@@ -19307,17 +19223,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "RAILBRd",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "RAILBRd     RAILRDd     CSRD01a"
-          ],
           "comment": "",
           "labels": [
             "RAILBRd",
@@ -20370,17 +20280,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "DS2",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "DS2         FOOTa       FOOTBRu"
-          ],
           "comment": "",
           "labels": [
             "DS2",
@@ -20431,17 +20335,11 @@
         }
       },
       {
-        "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
+        "API Class": "floodmodeller_api.units.connectors.JUNCTION",
         "Object Attributes": {
           "_label_len": 12,
           "_name": "FOOTb",
-          "_unit": "JUNCTION",
           "_subtype": "OPEN",
-          "_raw_block": [
-            "JUNCTION",
-            "OPEN",
-            "FOOTb       FOOTBRd     DS3"
-          ],
           "comment": "",
           "labels": [
             "FOOTb",
