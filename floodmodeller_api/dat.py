@@ -489,16 +489,12 @@ class DAT(FMFile):
                         unit_name = unit_data[1][: self._label_len].strip()
 
                     # Get unit object
-                    unit_group = getattr(
-                        self,
-                        units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"],
-                    )
+                    unit_group_str = units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                    unit_group = getattr(self, unit_group_str)
                     if unit_name in unit_group:
                         # block still exists
                         new_unit_data = unit_group[unit_name]._write()
-                        existing_units[units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]].append(
-                            unit_name
-                        )
+                        existing_units[unit_group_str].append(unit_name)
                     else:
                         # Bdy block has been deleted
                         new_unit_data = []
