@@ -57,7 +57,9 @@ def from_gui(test_workspace: Path):
 def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
     threshold = 6
 
-    actual = dat.sections[section].conveyance
+    actual = dat.sections[section].conveyance  # type: ignore
+    # ignored because we know that these all have type RIVER
+
     expected = (
         from_gui.set_index(f"{section}_stage")[f"{section}_conveyance"].dropna().drop_duplicates()
     )
@@ -74,14 +76,17 @@ def test_results_close_to_gui(section: str, dat: DAT, from_gui: pd.DataFrame):
 
 @pytest.mark.parametrize("section", ["a", "a2", "b", "b2", "c", "d", "d2", "e", "e2", "e3"])
 def test_results_match_gui_at_shared_points(section: str, dat: DAT, from_gui: pd.DataFrame):
-    tolerance = 1e-2  # 0.001
-    actual = dat.sections[section].conveyance
+    tolerance = 1e-2  # 0.01
+
+    actual = dat.sections[section].conveyance  # type: ignore
+    # ignored because we know that these all have type RIVER
+
     expected = (
         from_gui.set_index(f"{section}_stage")[f"{section}_conveyance"].dropna().drop_duplicates()
     )
     shared_index = sorted(set(actual.index).intersection(expected.index))
     diff = expected[shared_index] - actual[shared_index]
-    assert (abs(diff) < tolerance).all()  # asserts all conveyance values within 0.001 difference
+    assert (abs(diff) < tolerance).all()  # asserts all conveyance values within 0.01 difference
 
 
 def test_calculate_geometry():

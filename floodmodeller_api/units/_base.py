@@ -50,13 +50,6 @@ class Unit(Jsonable):
     def name(self) -> str | None:
         return self._name
 
-    @property
-    def unique_id(self) -> tuple[str, str]:
-        if self._name is None:
-            msg = "No unique id available."
-            raise ValueError(msg)
-        return (self._unit, self._name)
-
     @name.setter
     def name(self, new_name):
         try:
@@ -68,6 +61,13 @@ class Unit(Jsonable):
         except Exception as e:
             msg = f'Failed to set unit name to "{new_name}" due to error: {e}'
             raise Exception(msg) from e
+
+    @property
+    def unique_id(self) -> tuple[str, str]:
+        if self._name is None:
+            msg = "No unique id available."
+            raise ValueError(msg)
+        return (self._unit, self._name)
 
     @property
     def subtype(self) -> str | None:
