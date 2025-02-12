@@ -44,9 +44,10 @@ def dat_ex6(test_workspace):
 
 @pytest.fixture()
 def dat_encoding_fps(test_workspace):
-    return [Path(test_workspace, "encoding_test_utf8.dat"),
-            Path(test_workspace, "encoding_test_cp1252.dat"),
-            ]
+    return [
+        Path(test_workspace, "encoding_test_utf8.dat"),
+        Path(test_workspace, "encoding_test_cp1252.dat"),
+    ]
 
 
 def test_changing_section_and_dist_works(dat_fp, data_before):
@@ -242,7 +243,7 @@ def test_create_and_insert_connectors():
     assert dat.controls == {"res": reservoir}
 
 
-def test_encoding(dat_encoding_fps: list[str], tmp_path: str):
+def test_encoding(dat_encoding_fps: list[Path], tmp_path: Path):
     for i, dat_encoding_fp in enumerate(dat_encoding_fps):
         dat = DAT(dat_encoding_fp)
         new_path = tmp_path / f"tmp_encoding_{i}.dat"
