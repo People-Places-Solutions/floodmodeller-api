@@ -23,7 +23,7 @@ def test_open_ied_does_not_change_file(ied_fp):
     assert ied._write() == data_before
     ied = IED(ied_fp)
     cs26_expected = [
-        "QTBDY ",
+        "QTBDY",
         "CS26",
         "         4     0.000     0.000   seconds  NOEXTEND    LINEAR     0.000     0.000  OVERRIDE",
         "     1.000     0.000",
