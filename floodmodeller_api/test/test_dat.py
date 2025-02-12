@@ -235,8 +235,18 @@ def test_create_and_insert_connectors():
     assert dat.controls == {"res": reservoir}
 
 
-@pytest.mark.parametrize("dat_str", ["encoding_test_utf8.dat", "encoding_test_cp1252.dat"])
-def test_encoding(test_workspace: Path, dat_str: str, tmp_path: Path):
-    dat = DAT(test_workspace / dat_str)
+@pytest.mark.parametrize(
+    ("dat_str", "label"),
+    [
+        ("encoding_test_utf8.dat", "d\xc3\xa5rek"),  # because it's initially saved as utf8
+        ("encoding_test_cp1252.dat", "d\xe5rek"),
+    ],
+)
+def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path):
+    dat_read = DAT(test_workspace / dat_str)
     new_path = tmp_path / "tmp_encoding.dat"
-    dat.save(new_path)
+    dat_read.save(new_path)
+    dat_write = DAT(new_path)
+
+    assert label in dat_read.sections
+    assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
