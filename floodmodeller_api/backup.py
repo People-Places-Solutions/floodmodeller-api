@@ -61,6 +61,8 @@ class BackupControl(Jsonable):
         backup.clear_backup()
     """
 
+    ENCODING = "cp1252"
+
     def __init__(self):
         """
         Initialises a new BackUp object.
@@ -89,7 +91,7 @@ class BackupControl(Jsonable):
 
         # Create the backup CSV file if it doesn't exist
         if not self.backup_csv_path.exists():
-            with open(self.backup_csv_path, "w") as f:
+            with open(self.backup_csv_path, "w", encoding=self.ENCODING) as f:
                 f.write("path,file_id,dttm\n")
 
     def clear_backup(self, file_id="*"):
@@ -236,7 +238,7 @@ class File(BackupControl):
         copy(self.path, backup_filepath)
         # Log an entry to the csv to make it easy to find the file
         log_str = f"{self.path!s},{self.file_id},{self.dttm_str}\n"
-        with open(self.backup_csv_path, "a") as f:
+        with open(self.backup_csv_path, "a", encoding=self.ENCODING) as f:
             f.write(log_str)
 
     def list_backups(self) -> list:
