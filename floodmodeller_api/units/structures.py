@@ -169,8 +169,6 @@ class BRIDGE(Unit):
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
 
-        self.labels = [self.name, self.ds_label]
-
         # Read ARCH type unit
         if self.subtype == "ARCH":
             set_bridge_params(self, br_block[4], include_pier=False)
@@ -595,7 +593,6 @@ class SLUICE(Unit):
         self.name = labels[0]
         self.ds_label = labels[1]
         self.remote_label = labels[2]
-        self.labels = [self.name, self.ds_label]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -830,9 +827,9 @@ class ORIFICE(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
+        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -931,9 +928,9 @@ class SPILL(Unit):
     def _read(self, block):
         """Function to read a given SPILL block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -1012,9 +1009,9 @@ class RNWEIR(Unit):
     def _read(self, block):
         """Function to read a given RNWEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -1113,9 +1110,9 @@ class WEIR(Unit):
     def _read(self, block):
         """Function to read a given WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
+        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
 
         # Exponent
@@ -1210,7 +1207,6 @@ class CRUMP(Unit):
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.labels = [self.name, self.ds_label]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -1320,7 +1316,6 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
-        self.labels = [self.name, self.ds_label]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
@@ -1445,9 +1440,9 @@ class OUTFALL(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
+        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
 
         # First parameter line

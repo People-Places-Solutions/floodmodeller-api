@@ -85,8 +85,6 @@ class CULVERT(Unit):
         self.us_remote_label = labels[2]
         self.ds_remote_label = labels[3]
 
-        self.labels = [self.name, self.ds_label]
-
         # Extract subtype specific attributes
 
         if self.subtype == "INLET":
@@ -203,7 +201,6 @@ class BLOCKAGE(Unit):
         self.us_reference_label = labels[2]
         self.ds_reference_label = labels[3]
         self.constriction_label = labels[4]
-        self.labels = [self.name, self.ds_label]
 
         # Extract inlet and outlet loss coefficients
         params = split_10_char(f"{block[2]:<20}")

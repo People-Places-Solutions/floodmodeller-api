@@ -90,7 +90,6 @@ class QTBDY(Unit):
     def _read(self, qtbdy_block):
         """Function to read a given QTBDY block and store data as class attributes"""
         self.name = qtbdy_block[1][: self._label_len].strip()
-        self.labels = [self.name]
         self.comment = self._remove_unit_name(qtbdy_block[0])
         qtbdy_params = split_10_char(f"{qtbdy_block[2]:<90}")
         self.nrows = int(qtbdy_params[0])
@@ -188,7 +187,6 @@ class HTBDY(Unit):
     def _read(self, htbdy_block):
         """Function to read a given HTBDY block and store data as class attributes"""
         self.name = htbdy_block[1][: self._label_len].strip()
-        self.labels = [self.name]
         self.comment = self._remove_unit_name(htbdy_block[0])
         htbdy_params = split_10_char(f"{htbdy_block[2]:<50}")
         self.nrows = int(htbdy_params[0])
@@ -267,7 +265,6 @@ class QHBDY(Unit):
     def _read(self, qhbdy_block):
         """Function to read a given QHBDY block and store data as class attributes"""
         self.name = qhbdy_block[1][: self._label_len].strip()
-        self.labels = [self.name]
         self.comment = self._remove_unit_name(qhbdy_block[0])
         qhbdy_params = split_10_char(f"{qhbdy_block[2]:<30}")
         self.nrows = int(qhbdy_params[0])
@@ -345,7 +342,6 @@ class REFHBDY(Unit):
         # Extract comment and revision number
         self._revision, self.comment = self._get_revision_and_comment(refhbdy_block[0])
         self.name = refhbdy_block[1][: self._label_len].strip()
-        self.labels = [self.name]
 
         # line 3
         refhbdy_params1 = split_10_char(refhbdy_block[2])

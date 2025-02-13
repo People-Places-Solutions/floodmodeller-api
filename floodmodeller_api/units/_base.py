@@ -19,6 +19,7 @@ from __future__ import annotations
 """ Holds the base unit class for all FM Units """
 
 import logging
+from itertools import chain
 from typing import Any
 
 import pandas as pd
@@ -32,7 +33,6 @@ class Unit(Jsonable):
     _unit: str
     _subtype: str | None = None
     _name: str | None = None
-    labels: list[str]  # required for network creation
 
     def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
         if from_json:
@@ -64,11 +64,34 @@ class Unit(Jsonable):
             raise Exception(msg) from e
 
     @property
-    def unique_id(self) -> tuple[str, str]:
+    def all_labels(self) -> set[str]:
+        """All explicit labels associated with a unit."""
+        label_attrs = [
+            "name",
+            "spill",
+            "spill1",
+            "spill2",
+            "first_spill",
+            "second_spill",
+            "lat1",
+            "lat2",
+            "lat3",
+            "lat4",
+            "ds_label",
+        ]
+        label_list_attrs = ["labels", "lateral_inflow_labels"]
+
+        labels = {getattr(self, x) for x in label_attrs if hasattr(self, x)}
+        label_lists = [getattr(self, x) for x in label_list_attrs if hasattr(self, x)]
+
+        return labels | set(chain(*label_lists))
+
+    @property
+    def unique_name(self) -> str:
         if self._name is None:
-            msg = "No unique id available."
+            msg = "No unique name available."
             raise ValueError(msg)
-        return (self._unit, self._name)
+        return f"{self._unit}_{self._name}"
 
     @property
     def subtype(self) -> str | None:
