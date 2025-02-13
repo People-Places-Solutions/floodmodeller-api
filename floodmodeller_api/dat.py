@@ -919,7 +919,7 @@ class DAT(FMFile):
 
         # collect all relevant units and labels
         units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
-        label_lists = [[label for label in unit.labels if label != ""] for unit in units]
+        label_lists = [[label for label in unit.all_labels if label != ""] for unit in units]
 
         # connect units for each label
         label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
