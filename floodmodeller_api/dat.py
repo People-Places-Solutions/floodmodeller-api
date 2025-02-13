@@ -291,7 +291,7 @@ class DAT(FMFile):
 
     def _read(self) -> None:
         # Read DAT data
-        with open(self._filepath) as dat_file:
+        with open(self._filepath, encoding=self.ENCODING) as dat_file:
             self._raw_data: list[str] = [line.rstrip("\n") for line in dat_file]
 
         # Generate DAT structure

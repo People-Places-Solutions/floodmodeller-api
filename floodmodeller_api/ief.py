@@ -33,19 +33,28 @@ from .diff import check_item_with_dataframe_equal
 from .ief_flags import flags
 from .logs import LF1, create_lf
 from .to_from_json import Jsonable
-from .util import handle_exception
+from .util import handle_exception, is_windows
 from .zz import ZZN
 
 
-def try_numeric(value: str) -> str | int | float:
+def try_converting(value: str) -> str | int | float:
     """Attempt to parse value as float or int if valid, else return the original string"""
     try:
         return int(value)
     except ValueError:
-        try:
-            return float(value)
-        except ValueError:
-            return value
+        pass
+
+    try:
+        return float(value)
+    except ValueError:
+        pass
+
+    if not is_windows() and "\\" in value:
+        # backslashes aren't valid in paths
+        logging.info("Changing '\\' in '%s' to '/' to be valid in Linux.", value)
+        return value.replace("\\", "/")
+
+    return value
 
 
 class IEF(FMFile):
@@ -81,7 +90,7 @@ class IEF(FMFile):
 
     def _read(self):
         # Read IEF data
-        with open(self._filepath) as ief_file:
+        with open(self._filepath, encoding=self.ENCODING) as ief_file:
             raw_data = [line.rstrip("\n") for line in ief_file]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
@@ -117,7 +126,7 @@ class IEF(FMFile):
                     self._ief_properties.append(prop)
                 else:
                     # Sets the property and value as class properties so they can be edited.
-                    setattr(self, prop, try_numeric(value))
+                    setattr(self, prop, try_converting(value))
                     self._ief_properties.append(prop)
                 prev_comment = None
             else:
@@ -209,7 +218,7 @@ class IEF(FMFile):
             if "=" in line:
                 prop, value = line.split("=")
                 # Sets the property and value as class properties so they can be edited.
-                setattr(self, prop, try_numeric(value))
+                setattr(self, prop, try_converting(value))
                 self._ief_properties.append(prop)
             else:
                 # This should add the [] bound headers

@@ -71,12 +71,12 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-def test_dat_read_doesnt_change_data(test_workspace, tmpdir):
+def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
         dat = DAT(datfile)
         first_output = dat._write()
-        new_path = Path(tmpdir) / "tmp.dat"
+        new_path = tmp_path / "tmp.dat"
         dat.save(new_path)
         second_dat = DAT(new_path)
         assert dat == second_dat, f"dat objects not equal for {datfile=}"
@@ -202,7 +202,7 @@ def test_diff(test_workspace, caplog):
         dat_ex4.diff(dat_ex4_changed)
 
     assert caplog.text == (
-        "INFO     root:_base.py:134 Files not equivalent, 12 difference(s) found:\n"
+        "INFO     root:_base.py:135 Files not equivalent, 12 difference(s) found:\n"
         "  DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
         "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
         "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
@@ -351,3 +351,20 @@ def test_create_and_insert_connectors():
     dat.insert_units([junction, lateral, reservoir], add_at=-1)
     assert dat.connectors == {"A": junction, "lat": lateral}
     assert dat.controls == {"res": reservoir}
+
+
+@pytest.mark.parametrize(
+    ("dat_str", "label"),
+    [
+        ("encoding_test_utf8.dat", "d\xc3\xa5rek"),  # because it's initially saved as utf8
+        ("encoding_test_cp1252.dat", "d\xe5rek"),
+    ],
+)
+def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path):
+    dat_read = DAT(test_workspace / dat_str)
+    new_path = tmp_path / "tmp_encoding.dat"
+    dat_read.save(new_path)
+    dat_write = DAT(new_path)
+
+    assert label in dat_read.sections
+    assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
