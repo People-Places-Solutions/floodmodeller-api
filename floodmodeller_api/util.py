@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import sys
 import webbrowser
-from functools import wraps
+from functools import cache, wraps
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -82,6 +82,7 @@ def read_file(filepath: str | Path) -> FMFile:
     raise ValueError(msg)
 
 
+@cache
 def is_windows() -> bool:
     return sys.platform.startswith("win")
 

@@ -9,8 +9,8 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture()
-def ief_fp(test_workspace: str) -> Path:
-    return Path(test_workspace, "network.ief")
+def ief_fp(test_workspace: Path) -> Path:
+    return test_workspace / "network.ief"
 
 
 @pytest.fixture()
@@ -174,3 +174,11 @@ def test_simulate_error_without_save():
     )
     with pytest.raises(FloodModellerAPIError, match=msg):
         ief.simulate()
+
+
+def test_datafile_path(test_workspace: Path):
+    """Tests that `Datafile` can be converted to `Path` even if it contains backslashes in Linux."""
+    ief = IEF(test_workspace / "P3Panels_UNsteady.ief")
+    path = Path(ief.Datafile)
+    assert path.stem == "UptonP8_Panels"
+    assert path.parent == Path("../../networks")
