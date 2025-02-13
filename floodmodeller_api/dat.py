@@ -188,7 +188,7 @@ class DAT(FMFile):
         _junction_match = [
             junction
             for junction in self._all_units
-            if junction._unit == "JUNCTION" and unit.name in junction.labels
+            if junction._unit == "JUNCTION" and unit.name in junction.labels  # type: ignore
         ]
 
         # Case 2: Previous unit has positive distance to next
