@@ -84,7 +84,7 @@ class IEF(FMFile):
         if ief_filepath is not None:
             FMFile.__init__(self, ief_filepath)
             self._read()
-            self._log_path = self._get_result_filepath("lf1")
+            self._log_path = self._filepath.with_suffix(".lf1")
         else:
             self._create_from_blank()
 
@@ -446,6 +446,7 @@ class IEF(FMFile):
             filepath (string): Full filepath to new location for ief file (including '.ief' extension)
         """
         self._save(filepath)
+        self._log_path = self._filepath.with_suffix(".lf1")
 
     @handle_exception(when="simulate")
     def simulate(  # noqa: C901, PLR0912, PLR0913
