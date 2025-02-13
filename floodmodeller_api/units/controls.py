@@ -42,11 +42,12 @@ class RESERVOIR(Unit):
     def _read(self, block: list[str]) -> None:
         self._revision, self.comment = self._get_revision_and_comment(block[0])
 
-        self.labels = split_12_char(block[1])
-        self.name = self.labels[0]
+        self._labels = split_12_char(block[1])
+        self.name = self._labels[0]
 
         if self._revision == 1:
             self.lateral_inflow_labels = split_12_char(block[2])
+            self.labels = self._labels + self.lateral_inflow_labels
             idx = 3
 
             lines = split_10_char(f"{block[-1]:<30}")
@@ -55,6 +56,7 @@ class RESERVOIR(Unit):
             self.runoff = to_float(lines[2])
         else:
             idx = 2
+            self.labels = self._labels
 
         self.no_rows = to_int(block[idx])
         start_idx = idx + 1

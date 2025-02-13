@@ -197,12 +197,13 @@ class BLOCKAGE(Unit):
         self._revision, self.comment = self._get_revision_and_comment(block[0])
 
         # Extract labels
-        self.labels = split_n_char(f"{block[1]:<{5*self._label_len}}", self._label_len)
-        self.name = self.labels[0]
-        self.ds_label = self.labels[1]
-        self.us_reference_label = self.labels[2]
-        self.ds_reference_label = self.labels[3]
-        self.constriction_label = self.labels[4]
+        labels = split_n_char(f"{block[1]:<{5*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.us_reference_label = labels[2]
+        self.ds_reference_label = labels[3]
+        self.constriction_label = labels[4]
+        self.labels = [self.name, self.ds_label]
 
         # Extract inlet and outlet loss coefficients
         params = split_10_char(f"{block[2]:<20}")
