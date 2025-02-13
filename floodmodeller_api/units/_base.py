@@ -84,7 +84,7 @@ class Unit(Jsonable):
         labels = {getattr(self, x) for x in label_attrs if hasattr(self, x)}
         label_lists = [getattr(self, x) for x in label_list_attrs if hasattr(self, x)]
 
-        return labels | set(chain(*label_lists))
+        return (labels | set(chain(*label_lists))) - {""}
 
     @property
     def unique_name(self) -> str:
