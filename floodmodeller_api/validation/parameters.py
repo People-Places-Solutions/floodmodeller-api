@@ -657,4 +657,8 @@ parameter_options = {
         "type": "type-match",
         "options": (float, int),
     },
+    "labels": {
+        "type": "list-string-length",
+        "max_length": 12,
+    },
 }
