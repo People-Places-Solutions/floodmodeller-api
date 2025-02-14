@@ -1,0 +1,24 @@
+***********************************
+What's new in 0.5.2 (February 2025)
+***********************************
+
+This page details the changes for version 0.5.2 of Flood Modeller API
+
+New features
+---------------
+- New integrated :class:`~floodmodeller_api.units.BRIDGE` unit type added
+- New supported units: :class:`~floodmodeller_api.units.RESERVOIR`, :class:`~floodmodeller_api.units.JUNCTION` 
+  and :class:`~floodmodeller_api.units.LATERAL`
+- Return DAT units as a network using :meth:`~floodmodeller_api.DAT.get_network`
+
+Updates
+-----------
+- Improved logging
+- Make LF.to_dataframe behave more like ZZ.to_dataframe
+- Lots of general improvements to clean and tidy up the codebase 
+
+
+Bug fixes
+------------
+- Fix log path handling in IEF class
+- Fix file compatibility issues in linux
