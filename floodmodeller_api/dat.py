@@ -914,8 +914,22 @@ class DAT(FMFile):
             self._gxy_data = self._gxy_data.replace(old, new)
 
     def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
-        """Create a list of nodes (defined by units) and edges (defined by labels).
-        Edges are directional, based on the order of appearance in the dat file."""
+        """Generates a network representation of units and their connections.
+
+        This method creates a directed network where nodes represent units
+        and edges represent labeled connections between them. The edges are
+        directional, determined by the order of appearance in the `.dat` file.
+
+        Raises:
+            ValueError: If a unit has no name when an implicit label is assigned.
+            RuntimeError: If the constructed network contains labels that do not
+                form valid two-unit connections.
+
+        Returns:
+            tuple[list[Unit], list[tuple[Unit, Unit]]]:
+                - A list of `Unit` objects representing the nodes.
+                - A list of tuples, each containing two `Unit` objects representing
+                  a directed edge."""
 
         # collect all relevant units and labels
         units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
