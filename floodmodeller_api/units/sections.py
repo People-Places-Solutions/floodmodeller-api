@@ -110,11 +110,12 @@ class RIVER(Unit):
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
 
-        self._subtype = self._get_first_word(riv_block[1])
+        self._subtype = riv_block[1].split(" ")[0].strip()
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
+
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
-            # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
             self.name = labels[0]
             self.spill1 = labels[1]
             self.spill2 = labels[2]
@@ -179,6 +180,8 @@ class RIVER(Unit):
             )
             self._raw_block = riv_block
             self.name = riv_block[2][: self._label_len].strip()
+            self.dist_to_next = to_float(riv_block[3][:10])
+            self.labels = labels
 
         self._active_data = None
 

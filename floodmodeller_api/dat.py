@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
@@ -187,7 +188,7 @@ class DAT(FMFile):
         _junction_match = [
             junction
             for junction in self._all_units
-            if junction._unit == "JUNCTION" and unit.name in junction.labels
+            if junction._unit == "JUNCTION" and unit.name in junction.labels  # type: ignore
         ]
 
         # Case 2: Previous unit has positive distance to next
@@ -456,62 +457,59 @@ class DAT(FMFile):
 
         for block in self._dat_struct:
             # Check for all supported boundary types
-            if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                # clause for when unit has been inserted into the dat file
-                if "new_insert" in block:
-                    block["start"] = prev_block_end + 1
-                    block["end"] = block["start"] + len(block["new_insert"]) - 1
-                    self._raw_data[block["start"] : block["start"]] = block["new_insert"]
-                    block_shift += len(block["new_insert"])
-                    prev_block_end = block["end"]
-                    del block["new_insert"]
+            if block["Type"] not in units.SUPPORTED_UNIT_TYPES:
+                continue
+            # clause for when unit has been inserted into the dat file
+            if "new_insert" in block:
+                block["start"] = prev_block_end + 1
+                block["end"] = block["start"] + len(block["new_insert"]) - 1
+                self._raw_data[block["start"] : block["start"]] = block["new_insert"]
+                block_shift += len(block["new_insert"])
+                prev_block_end = block["end"]
+                del block["new_insert"]
+
+            else:
+                unit_data = self._raw_data[
+                    block["start"] + block_shift : block["end"] + 1 + block_shift
+                ]
+                prev_block_len = len(unit_data)
+
+                if block["Type"] == "INITIAL CONDITIONS":
+                    new_unit_data = self.initial_conditions._write()
+                elif block["Type"] == "COMMENT":
+                    comment = comment_units[comment_tracker]
+                    new_unit_data = comment._write()
+                    comment_tracker += 1
+
+                elif block["Type"] == "VARIABLES":
+                    new_unit_data = self.variables._write()
 
                 else:
-                    unit_data = self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ]
-                    prev_block_len = len(unit_data)
-
-                    if block["Type"] == "INITIAL CONDITIONS":
-                        new_unit_data = self.initial_conditions._write()
-                    elif block["Type"] == "COMMENT":
-                        comment = comment_units[comment_tracker]
-                        new_unit_data = comment._write()
-                        comment_tracker += 1
-
-                    elif block["Type"] == "VARIABLES":
-                        new_unit_data = self.variables._write()
-
+                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                        unit_name = unit_data[2][: self._label_len].strip()
                     else:
-                        if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                            unit_name = unit_data[2][: self._label_len].strip()
-                        else:
-                            unit_name = unit_data[1][: self._label_len].strip()
+                        unit_name = unit_data[1][: self._label_len].strip()
 
-                        # Get unit object
-                        unit_group = getattr(
-                            self,
-                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"],
-                        )
-                        if unit_name in unit_group:
-                            # block still exists
-                            new_unit_data = unit_group[unit_name]._write()
-                            existing_units[
-                                units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                            ].append(unit_name)
-                        else:
-                            # Bdy block has been deleted
-                            new_unit_data = []
+                    # Get unit object
+                    unit_group_str = units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                    unit_group = getattr(self, unit_group_str)
+                    if unit_name in unit_group:
+                        # block still exists
+                        new_unit_data = unit_group[unit_name]._write()
+                        existing_units[unit_group_str].append(unit_name)
+                    else:
+                        # Bdy block has been deleted
+                        new_unit_data = []
 
-                    new_block_len = len(new_unit_data)
-                    self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ] = new_unit_data
-                    # adjust block shift for change in number of lines in bdy block
-                    block_shift += new_block_len - prev_block_len
-                    prev_block_end = (
-                        block["end"] + block_shift
-                    )  # add in to keep a record of the last block read in
+                new_block_len = len(new_unit_data)
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_unit_data
+                )
+                # adjust block shift for change in number of lines in bdy block
+                block_shift += new_block_len - prev_block_len
+                prev_block_end = (
+                    block["end"] + block_shift
+                )  # add in to keep a record of the last block read in
 
     def _get_unit_definitions(self):
         self._initialize_collections()
@@ -527,19 +525,19 @@ class DAT(FMFile):
                 msg = f"Unexpected unit type encountered: {unit_type}"
                 raise Exception(msg)
 
-    def _initialize_collections(self):
+    def _initialize_collections(self) -> None:
         # Initialize unit collections
-        self.sections = {}
-        self.boundaries = {}
-        self.structures = {}
-        self.conduits = {}
-        self.losses = {}
-        self.connectors = {}
-        self.controls = {}
-        self._unsupported = {}
-        self._all_units = []
+        self.sections: dict[str, units.TSections] = {}
+        self.boundaries: dict[str, units.TBoundaries] = {}
+        self.structures: dict[str, units.TStructures] = {}
+        self.conduits: dict[str, units.TConduits] = {}
+        self.losses: dict[str, units.TLosses] = {}
+        self.connectors: dict[str, units.TConnectors] = {}
+        self.controls: dict[str, units.TControls] = {}
+        self._unsupported: dict[str, units.TUnsupported] = {}
+        self._all_units: list[Unit] = []
 
-    def _process_supported_unit(self, unit_type, unit_data):
+    def _process_supported_unit(self, unit_type, unit_data) -> None:
         # Handle initial conditions block
         if unit_type == "INITIAL CONDITIONS":
             self.initial_conditions = units.IIC(unit_data, n=self._label_len)
@@ -914,3 +912,55 @@ class DAT(FMFile):
             new = f"{unit_type}_{unit_subtype}_{new_lbl}"
 
             self._gxy_data = self._gxy_data.replace(old, new)
+
+    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
+        """Create a list of nodes (defined by units) and edges (defined by labels).
+        Edges are directional, based on the order of appearance in the dat file."""
+
+        # collect all relevant units and labels
+        units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
+        label_lists = [list(unit.all_labels) for unit in units]
+
+        # connect units for each label
+        label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
+        for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
+            in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
+            if in_reach:  # has implicit downstream labels
+                next_unit = units[idx + 1]
+                next_next_unit = units[idx + 2]
+
+                if next_unit.name is None:
+                    msg = "Unit has no name."
+                    raise ValueError(msg)
+
+                end_of_reach = (
+                    (not hasattr(next_unit, "dist_to_next"))
+                    or (next_unit.dist_to_next == 0)
+                    or (not hasattr(next_next_unit, "dist_to_next"))
+                )
+
+                if end_of_reach:
+                    renamed_label = next_unit.name + "_dummy"
+                    label_list.append(renamed_label)
+                    label_lists[idx + 1].append(renamed_label)  # why label_lists is made first
+                else:
+                    label_list.append(next_unit.name)
+
+            for label in label_list:
+                label_to_unit_list[label].append(unit)
+
+        # check validity of network
+        units_per_edge = 2
+        invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
+        no_invalid_labels = len(invalid_labels)
+        no_labels = len(label_to_unit_list)
+        if no_invalid_labels > 0:
+            msg = (
+                "Unable to create a valid network with the current algorithm and/or data."
+                f" {no_invalid_labels}/{no_labels} labels do not join two units: {invalid_labels}."
+            )
+            raise RuntimeError(msg)
+
+        # the labels themselves are no longer needed
+        unit_pairs = [(unit_pair[0], unit_pair[1]) for unit_pair in label_to_unit_list.values()]
+        return units, unit_pairs

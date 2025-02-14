@@ -87,6 +87,12 @@ def _validate_parameter(param, value):  # noqa: C901, PLR0911, PLR0912
             f'-> Exceeds {param["max_length"]} characters',
         )
 
+    if param["type"] == "list-string-length":
+        return (
+            all(len(item) <= param["max_length"] for item in value),
+            f'-> Contains labels exceeding {param["max_length"]} characters',
+        )
+
     if param["type"] == "dict-match":
         for key, rule in param["options"].items():
             if key not in value:

@@ -19,6 +19,7 @@ from __future__ import annotations
 """ Holds the base unit class for all FM Units """
 
 import logging
+from itertools import chain
 from typing import Any
 
 import pandas as pd
@@ -63,6 +64,36 @@ class Unit(Jsonable):
             raise Exception(msg) from e
 
     @property
+    def all_labels(self) -> set[str]:
+        """All explicit labels associated with a unit."""
+        label_attrs = [
+            "name",
+            "spill",
+            "spill1",
+            "spill2",
+            "first_spill",
+            "second_spill",
+            "lat1",
+            "lat2",
+            "lat3",
+            "lat4",
+            "ds_label",
+        ]
+        label_list_attrs = ["labels", "lateral_inflow_labels"]
+
+        labels = {getattr(self, x) for x in label_attrs if hasattr(self, x)}
+        label_lists = [getattr(self, x) for x in label_list_attrs if hasattr(self, x)]
+
+        return (labels | set(chain(*label_lists))) - {""}
+
+    @property
+    def unique_name(self) -> str:
+        if self._name is None:
+            msg = "No unique name available."
+            raise ValueError(msg)
+        return f"{self._unit}_{self._name}"
+
+    @property
     def subtype(self) -> str | None:
         return self._subtype
 
@@ -102,6 +133,9 @@ class Unit(Jsonable):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
+        if not isinstance(other, Unit):
+            return NotImplemented if not return_diff else (False, ["Type mismatch"])
+
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
