@@ -941,7 +941,6 @@ class DAT(FMFile):
             in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
             if in_reach:  # has implicit downstream labels
                 next_unit = units[idx + 1]
-                next_next_unit = units[idx + 2]
 
                 if next_unit.name is None:
                     msg = "Unit has no name."
@@ -950,7 +949,7 @@ class DAT(FMFile):
                 end_of_reach = (
                     (not hasattr(next_unit, "dist_to_next"))
                     or (next_unit.dist_to_next == 0)
-                    or (not hasattr(next_next_unit, "dist_to_next"))
+                    or (not hasattr(units[idx + 2], "dist_to_next"))
                 )
 
                 if end_of_reach:
