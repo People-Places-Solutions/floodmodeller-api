@@ -255,7 +255,7 @@ class Unit(Jsonable):
         return rules
 
     def _remove_unit_name(self, line: str, *, remove_revision: bool = False) -> str:
-        line = line.replace(self._unit, "")
+        line = line.replace(self._unit, "", 1)
         if remove_revision:
             line = line.replace("#revision#", "", 1)
         return line.strip()
