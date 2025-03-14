@@ -1,6 +1,8 @@
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from floodmodeller_api import DAT
 from floodmodeller_api.units import BRIDGE
 
@@ -8,7 +10,7 @@ from floodmodeller_api.units import BRIDGE
 def plot_all_bridge_units(dat_path: Path, output_folder: Path) -> None:
     output_folder.mkdir(exist_ok=True, parents=True)
     dat = DAT(dat_path)
-    for _, unit in dat.structures.items():
+    for unit in dat.structures.values():
         if not isinstance(unit, BRIDGE):
             continue
         plot_bridge_unit(unit, output_folder)
@@ -70,5 +72,5 @@ def create_bridge_opening_coords(unit: BRIDGE) -> tuple:
 
 if __name__ == "__main__":
     plot_all_bridge_units(
-        dat_path=Path("sample_data/EX3.DAT"), output_folder=Path("bridge_plots")
+        dat_path=Path("sample_data/EX3.DAT"), output_folder=Path("bridge_plots"),
     )
