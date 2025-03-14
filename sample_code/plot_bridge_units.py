@@ -72,5 +72,6 @@ def create_bridge_opening_coords(unit: BRIDGE) -> tuple:
 
 if __name__ == "__main__":
     plot_all_bridge_units(
-        dat_path=Path("sample_data/EX3.DAT"), output_folder=Path("bridge_plots"),
+        dat_path=Path("sample_data/EX3.DAT"),
+        output_folder=Path("bridge_plots"),
     )
