@@ -108,7 +108,6 @@ def conduit_chain_dat(conduit_filled):
 
 @pytest.fixture()
 def ex18_dat_path(test_workspace):
-    # TODO: Source a better test case that can be opened to public repo.
     return Path(test_workspace, "EX18.DAT")
 
 

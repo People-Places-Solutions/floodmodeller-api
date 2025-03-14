@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import csv
+import logging
 import subprocess
 import time
 from io import StringIO
@@ -32,19 +33,28 @@ from .diff import check_item_with_dataframe_equal
 from .ief_flags import flags
 from .logs import LF1, create_lf
 from .to_from_json import Jsonable
-from .util import handle_exception
+from .util import handle_exception, is_windows
 from .zz import ZZN
 
 
-def try_numeric(value: str) -> str | int | float:
+def try_converting(value: str) -> str | int | float:
     """Attempt to parse value as float or int if valid, else return the original string"""
     try:
         return int(value)
     except ValueError:
-        try:
-            return float(value)
-        except ValueError:
-            return value
+        pass
+
+    try:
+        return float(value)
+    except ValueError:
+        pass
+
+    if not is_windows() and "\\" in value:
+        # backslashes aren't valid in paths
+        logging.info("Changing '\\' in '%s' to '/' to be valid in Linux.", value)
+        return value.replace("\\", "/")
+
+    return value
 
 
 class IEF(FMFile):
@@ -74,13 +84,13 @@ class IEF(FMFile):
         if ief_filepath is not None:
             FMFile.__init__(self, ief_filepath)
             self._read()
-            self._log_path = self._get_result_filepath("lf1")
+            self._log_path = self._filepath.with_suffix(".lf1")
         else:
             self._create_from_blank()
 
     def _read(self):
         # Read IEF data
-        with open(self._filepath) as ief_file:
+        with open(self._filepath, encoding=self.ENCODING) as ief_file:
             raw_data = [line.rstrip("\n") for line in ief_file]
         # Clean data and add as class properties
         # Create a list to store the properties which are to be saved in IEF, so as to ignore any temp properties.
@@ -116,7 +126,7 @@ class IEF(FMFile):
                     self._ief_properties.append(prop)
                 else:
                     # Sets the property and value as class properties so they can be edited.
-                    setattr(self, prop, try_numeric(value))
+                    setattr(self, prop, try_converting(value))
                     self._ief_properties.append(prop)
                 prev_comment = None
             else:
@@ -208,7 +218,7 @@ class IEF(FMFile):
             if "=" in line:
                 prop, value = line.split("=")
                 # Sets the property and value as class properties so they can be edited.
-                setattr(self, prop, try_numeric(value))
+                setattr(self, prop, try_converting(value))
                 self._ief_properties.append(prop)
             else:
                 # This should add the [] bound headers
@@ -226,8 +236,9 @@ class IEF(FMFile):
             ):
                 # Check if valid flag
                 if prop.upper() not in flags:
-                    print(
-                        f"Warning: '{prop}' is not a valid IEF flag, it will be ommited from the IEF\n",
+                    logging.warning(
+                        "'%s' is not a valid IEF flag, it will be ommited from the IEF\n",
+                        prop,
                     )
                     continue
 
@@ -435,6 +446,7 @@ class IEF(FMFile):
             filepath (string): Full filepath to new location for ief file (including '.ief' extension)
         """
         self._save(filepath)
+        self._log_path = self._filepath.with_suffix(".lf1")
 
     @handle_exception(when="simulate")
     def simulate(  # noqa: C901, PLR0912, PLR0913
@@ -501,10 +513,10 @@ class IEF(FMFile):
             msg = f"Flood Modeller engine not found! Expected location: {isis32_fp}"
             raise Exception(msg)
 
-        run_command = f'"{isis32_fp}" -sd "{self._filepath}"'
+        run_command = f'"{isis32_fp}" -sd "{self._filepath.resolve()}"'
 
         if method.upper() == "WAIT":
-            print("Executing simulation...")
+            logging.info("Executing simulation...")
             # execute simulation
             process = Popen(run_command, cwd=Path(self._filepath).parent)
 
@@ -521,10 +533,10 @@ class IEF(FMFile):
 
             if result == 1 and raise_on_failure:
                 raise RuntimeError(summary)
-            print(summary)
+            logging.info(summary)
 
         elif method.upper() == "RETURN_PROCESS":
-            print("Executing simulation...")
+            logging.info("Executing simulation...")
             # execute simulation
             return Popen(run_command, cwd=Path(self._filepath).parent)
 

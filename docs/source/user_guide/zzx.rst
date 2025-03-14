@@ -31,7 +31,7 @@ The following example shows a simple case of using the ``ZZX`` class to read a .
 
     from floodmodeller_api import ZZX
 
-    zzx = ZZX("..\\Data\\Examples\\1D\\Flow\\EVENT DATA EXAMPLE.zzn")
+    zzx = ZZX("..\\Data\\Examples\\1D\\Flow\\EVENT DATA EXAMPLE.zzx")
 
     zzx.to_dataframe(result_type='max')
 

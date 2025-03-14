@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import io
+import logging
 import time
 from copy import deepcopy
 from pathlib import Path
@@ -216,8 +217,6 @@ class XML2D(FMFile):
         parent_key,
         list_idx=None,
     ):
-        # TODO: Handle removing params
-
         for key, item in new_dict.items():
             if key in self._multi_value_keys and not isinstance(item, list):
                 msg = f"Element: '{key}' must be added as list"
@@ -333,6 +332,10 @@ class XML2D(FMFile):
                 schema_elem = parent_schema_elem.find(
                     f".//{self._w3_schema}*[@name='{add_key}']",
                 )
+
+            if schema_elem is None:
+                msg = f"Schema element for key '{add_key}' not found in XSD."
+                raise ValueError(msg)
 
             if schema_elem.tag.endswith("attribute"):
                 parent.set(add_key, str(add_item))
@@ -499,10 +502,6 @@ class XML2D(FMFile):
 
         """
 
-        # TODO:
-        # - Clean up the lf code?
-        # - Remove or sort out get results
-
         self.range_function = range_function
         self.range_settings = range_settings if range_settings else {}
 
@@ -526,7 +525,6 @@ class XML2D(FMFile):
                 raise Exception(msg)
 
         # checking if all schemes used are fast, if so will use FAST.exe
-        # TODO: Add in option to choose to use or not to use if you can
         is_fast = True
         for domain in self.domains.values():
             if domain["run_data"]["scheme"] != "FAST":
@@ -551,7 +549,7 @@ class XML2D(FMFile):
         stdout = DEVNULL if console_output == "simple" else None
 
         if method.upper() == "WAIT":
-            print("Executing simulation ... ")
+            logging.info("Executing simulation ... ")
             # execute simulation
             process = Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
@@ -568,7 +566,7 @@ class XML2D(FMFile):
             self._interpret_exit_code(exitcode, raise_on_failure)
 
         elif method.upper() == "RETURN_PROCESS":
-            print("Executing simulation ...")
+            logging.info("Executing simulation ...")
             # execute simulation
             return Popen(run_command, cwd=Path(self._filepath).parent, stdout=stdout)
 
@@ -634,4 +632,4 @@ class XML2D(FMFile):
 
         if raise_on_failure and exitcode != self.GOOD_EXIT_CODE:
             raise Exception(msg)
-        print(msg)
+        logging.info(msg)

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -201,10 +201,10 @@ parameter_options = {
         "type": "value-match",
         "options": ["RECTANGLE", "CYLINDER", "SQUARE", "I-BEAM"],
     },
-    # Pier_faces is an optional parameters
+    # Pier_faces is an optional parameter
     "pier_faces": {
         "type": "value-match",
-        "options": ["", "STREAMLINE", "SEMICIRCLE", "TRIANGLE", "DIAPHRAGM"],
+        "options": ["", "STREAMLINE", "SEMICIRCLE", "TRIANGLE", "DIAPHRAGM", "DIA"],
     },
     "soffit_shape": {
         "type": "value-match",
@@ -656,5 +656,9 @@ parameter_options = {
     "bed_level_drop": {
         "type": "type-match",
         "options": (float, int),
+    },
+    "labels": {
+        "type": "list-string-length",
+        "max_length": 12,
     },
 }

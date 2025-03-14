@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -264,7 +264,7 @@ class TimeDeltaSParser(Parser):
     def _process_line(self, raw: str) -> dt.timedelta:
         """Converts string S (with decimal place and "s") to timedelta"""
 
-        s = raw.split("s")[0]  # TODO: not necessary for simulation time
+        s = raw.split("s")[0]  # not necessary for simulation time
         return dt.timedelta(seconds=float(s))
 
 

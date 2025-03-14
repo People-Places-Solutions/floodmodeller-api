@@ -1,10 +1,11 @@
+import logging
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import QTBDY
+from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -41,13 +42,6 @@ def dat_ex6(test_workspace):
         yield dat
 
 
-def test_dat_str_not_changed_by_write(dat_fp, data_before):
-    # TODO: Update this test - it isn't really testing anything since the behaviour of the fixture is exactly the same
-    """DAT: Test str representation equal to dat file with no changes"""
-    dat = DAT(dat_fp)
-    assert dat._write() == data_before
-
-
 def test_changing_section_and_dist_works(dat_fp, data_before):
     """DAT: Test changing and reverting section name and dist to next makes no changes"""
     dat = DAT(dat_fp)
@@ -77,17 +71,17 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-def test_dat_read_doesnt_change_data(test_workspace, tmpdir):
+def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
         dat = DAT(datfile)
         first_output = dat._write()
-        new_path = Path(tmpdir) / "tmp.dat"
+        new_path = tmp_path / "tmp.dat"
         dat.save(new_path)
         second_dat = DAT(new_path)
-        assert dat == second_dat  # Checks equivalence on the class itself
+        assert dat == second_dat, f"dat objects not equal for {datfile=}"
         second_output = second_dat._write()
-        assert first_output == second_output
+        assert first_output == second_output, f"dat outputs not equal for {datfile=}"
 
 
 def test_insert_unit_before(units, dat_ex6):
@@ -201,12 +195,14 @@ def test_remove_unit(dat_ex3):
     assert (prev_dat_struct_len - len(dat_ex3._dat_struct)) == 1
 
 
-def test_diff(test_workspace, capsys):
-    dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
-    dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
-    dat_ex4.diff(dat_ex4_changed)
-    assert capsys.readouterr().out == (
-        "Files not equivalent, 12 difference(s) found:\n"
+def test_diff(test_workspace, caplog):
+    with caplog.at_level(logging.INFO):
+        dat_ex4 = DAT(Path(test_workspace, "ex4.DAT"))
+        dat_ex4_changed = DAT(Path(test_workspace, "ex4_changed.DAT"))
+        dat_ex4.diff(dat_ex4_changed)
+
+    assert caplog.text == (
+        "INFO     root:_base.py:135 Files not equivalent, 12 difference(s) found:\n"
         "  DAT->structures->MILLAu->RNWEIR..MILLAu->upstream_crest_height:  1.07 != 1.37\n"
         "  DAT->structures->MILLBu->RNWEIR..MILLBu->upstream_crest_height:  0.43 != 0.73\n"
         "  DAT->structures->ROAD1->RNWEIR..ROAD1->upstream_crest_height:  2.02 != 2.32\n"
@@ -220,3 +216,155 @@ def test_diff(test_workspace, capsys):
         "  DAT->_all_units->itm[61]->RNWEIR..CSRD01u->upstream_crest_height:  0.81 != 1.11\n"
         "  DAT->_all_units->itm[73]->RNWEIR..FOOTa->upstream_crest_height:  2.47 != 2.77\n"
     )
+
+
+def test_valid_network(test_workspace: Path):
+    """Test against network derived manually."""
+    dat = DAT(test_workspace / "network.dat")
+    actual_nodes, actual_edges = dat.get_network()
+
+    expected_edges = [
+        ("FSSR16BDY_resin", "RIVER_resin"),
+        ("QTBDY_CS26", "RIVER_CS26"),
+        ("RIVER_CS26", "RIVER_CS25"),
+        ("RIVER_CS25", "RIVER_CS24"),
+        ("RIVER_CS25", "SPILL_RD25Su"),
+        ("RIVER_CS24", "RIVER_CS23"),
+        ("RIVER_CS24", "SPILL_RD24Su"),
+        ("RIVER_CS23", "RIVER_CS22"),
+        ("RIVER_CS23", "SPILL_RD23Su"),
+        ("RIVER_CS22", "RIVER_CS21"),
+        ("RIVER_CS22", "SPILL_RD22Su"),
+        ("RIVER_CS21", "RIVER_CS20"),
+        ("RIVER_CS21", "SPILL_RD21Su"),
+        ("RIVER_CS20", "RIVER_CS19"),
+        ("RIVER_CS20", "SPILL_RD20Su"),
+        ("RIVER_CS19", "RIVER_CS18"),
+        ("RIVER_CS19", "SPILL_RD19Su"),
+        ("RIVER_CS18", "RIVER_RESOUT2a"),
+        ("RIVER_CS18", "SPILL_RD18Su"),
+        ("RIVER_RESOUT2a", "RIVER_RESOUT2b"),
+        ("RIVER_RESOUT2b", "JUNCTION_RESOUT2b"),
+        ("JUNCTION_RESOUT2b", "RIVER_RESOUT2u"),
+        ("JUNCTION_RESOUT2b", "RIVER_RESOUT2d"),
+        ("RIVER_resin", "RIVER_CSRD25"),
+        ("RIVER_CSRD25", "RIVER_CSRD24"),
+        ("RIVER_CSRD25", "SPILL_RD25Su"),
+        ("RIVER_CSRD24", "RIVER_CSRD23"),
+        ("RIVER_CSRD24", "SPILL_RD24Su"),
+        ("RIVER_CSRD23", "RIVER_CSRD22"),
+        ("RIVER_CSRD23", "SPILL_RD23Su"),
+        ("RIVER_CSRD22", "RIVER_CSRD21"),
+        ("RIVER_CSRD22", "SPILL_RD22Su"),
+        ("RIVER_CSRD21", "RIVER_CSRD20"),
+        ("RIVER_CSRD21", "SPILL_RD21Su"),
+        ("RIVER_CSRD20", "RIVER_CSRD19"),
+        ("RIVER_CSRD20", "SPILL_RD20Su"),
+        ("RIVER_CSRD19", "RIVER_CSRD18"),
+        ("RIVER_CSRD19", "SPILL_RD19Su"),
+        ("RIVER_CSRD18", "RIVER_CSRD17"),
+        ("RIVER_CSRD18", "SPILL_RD18Su"),
+        ("RIVER_CSRD17", "RIVER_CSRD16"),
+        ("RIVER_CSRD16", "RIVER_CSRD15"),
+        ("RIVER_CSRD15", "RIVER_CSRD14u"),
+        ("RIVER_CSRD14u", "JUNCTION_CSRD14u"),
+        ("JUNCTION_CSRD14u", "RNWEIR_MILLBu"),
+        ("JUNCTION_CSRD14u", "RNWEIR_MILLAu"),
+        ("RNWEIR_MILLAu", "RIVER_MILLAd"),
+        ("RIVER_MILLAd", "RIVER_RESOUT2u"),
+        ("RIVER_RESOUT2d", "RIVER_CSRD13"),
+        ("RIVER_CSRD13", "RIVER_CSRD12u"),
+        ("RIVER_CSRD12u", "JUNCTION_CSRD12u"),
+        ("RNWEIR_MILLBu", "JUNCTION_CSRD12u"),
+        ("JUNCTION_CSRD12u", "RIVER_CSRD12d"),
+        ("RIVER_CSRD12d", "RIVER_CSRD10"),
+        ("RIVER_CSRD10", "RIVER_CSRD09"),
+        ("RIVER_CSRD09u", "RIVER_CSRD09a"),
+        ("RIVER_CSRD09", "JUNCTION_CSRD09"),
+        ("RIVER_CSRD09u", "JUNCTION_CSRD09"),
+        ("JUNCTION_CSRD09", "RNWEIR_ROAD1"),
+        ("RIVER_CSRD09a", "BERNOULLI_CSRD09a"),
+        ("BERNOULLI_CSRD09a", "RIVER_CSRD08u"),
+        ("RIVER_CSRD08u", "RIVER_CSRD08a"),
+        ("RIVER_CSRD08a", "JUNCTION_CSRD08a"),
+        ("JUNCTION_CSRD08a", "RIVER_CSRD08"),
+        ("RNWEIR_ROAD1", "JUNCTION_CSRD08a"),
+        ("RIVER_CSRD08", "RIVER_CSRD07"),
+        ("RIVER_CSRD07", "RIVER_CSRD06"),
+        ("RIVER_CSRD06", "RIVER_CSRD05"),
+        ("RIVER_CSRD05", "RIVER_CSRD04"),
+        ("RIVER_CSRD04", "RIVER_CSRD03"),
+        ("RIVER_CSRD03", "RIVER_CSRD02"),
+        ("RIVER_CSRD02", "RIVER_CSRD02d"),
+        ("RIVER_CSRD02d", "JUNCTION_CSRD02d"),
+        ("JUNCTION_CSRD02d", "RNWEIR_RAILRDu"),
+        ("JUNCTION_CSRD02d", "BERNOULLI_RAILBRu"),
+        ("BERNOULLI_RAILBRu", "JUNCTION_RAILBRd"),
+        ("RNWEIR_RAILRDu", "JUNCTION_RAILBRd"),
+        ("JUNCTION_RAILBRd", "RIVER_CSRD01a"),
+        ("RIVER_CSRD01a", "RIVER_CSRD01u"),
+        ("RIVER_CSRD01u", "RNWEIR_CSRD01u"),
+        ("RNWEIR_CSRD01u", "RIVER_CSRD01d"),
+        ("RIVER_CSRD01d", "RIVER_CSRD01"),
+        ("RIVER_CSRD01", "INTERPOLATE_DS.001"),
+        ("INTERPOLATE_DS.001", "INTERPOLATE_DS.002"),
+        ("INTERPOLATE_DS.002", "INTERPOLATE_DS.003"),
+        ("INTERPOLATE_DS.003", "INTERPOLATE_DS.004"),
+        ("INTERPOLATE_DS.004", "INTERPOLATE_DS.005"),
+        ("INTERPOLATE_DS.005", "INTERPOLATE_DS.006"),
+        ("INTERPOLATE_DS.006", "RIVER_DS2"),
+        ("RIVER_DS2", "JUNCTION_DS2"),
+        ("JUNCTION_DS2", "RNWEIR_FOOTa"),
+        ("JUNCTION_DS2", "BERNOULLI_FOOTBRu"),
+        ("RNWEIR_FOOTa", "JUNCTION_FOOTb"),
+        ("BERNOULLI_FOOTBRu", "JUNCTION_FOOTb"),
+        ("JUNCTION_FOOTb", "RIVER_DS3"),
+        ("RIVER_DS3", "RIVER_DS4"),
+        ("RIVER_DS4", "QHBDY_DS4"),
+    ]
+
+    actual = {tuple(x.unique_name for x in y) for y in actual_edges}
+    expected = set(expected_edges)
+    assert expected == actual
+    assert len(actual_nodes) == 86
+
+
+def test_invalid_network(test_workspace: Path):
+    """Test dat file that cannot be made into a valid network."""
+    dat = DAT(test_workspace / "All Units 4_6.DAT")
+    with pytest.raises(RuntimeError):
+        dat.get_network()
+
+
+def test_create_and_insert_connectors():
+    dat = DAT()
+    junction = JUNCTION(comment="hi", labels=["A", "B"])
+    lateral = LATERAL(name="lat", comment="bye")
+    reservoir = RESERVOIR(
+        easting=0,
+        northing=0,
+        runoff=0,
+        name="res",
+        comment="hello",
+        lateral_inflow_labels=["C", "D"],
+    )
+    dat.insert_units([junction, lateral, reservoir], add_at=-1)
+    assert dat.connectors == {"A": junction, "lat": lateral}
+    assert dat.controls == {"res": reservoir}
+
+
+@pytest.mark.parametrize(
+    ("dat_str", "label"),
+    [
+        ("encoding_test_utf8.dat", "d\xc3\xa5rek"),  # because it's initially saved as utf8
+        ("encoding_test_cp1252.dat", "d\xe5rek"),
+    ],
+)
+def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path):
+    dat_read = DAT(test_workspace / dat_str)
+    new_path = tmp_path / "tmp_encoding.dat"
+    dat_read.save(new_path)
+    dat_write = DAT(new_path)
+
+    assert label in dat_read.sections
+    assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8

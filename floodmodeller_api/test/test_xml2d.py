@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from floodmodeller_api import XML2D
+from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.fixture()
@@ -130,14 +131,13 @@ def test_xml2d_reorder_elem_computational_area_wrong_position():
     x2d.domains[domain]["computational_area"]["ncols"] = 12
     x2d.domains[domain]["computational_area"]["nrows"] = 42
     x2d.domains[domain]["computational_area"]["rotation"] = 3.14159
-
     x2d.domains[domain]["run_data"]["upwind"] = "upwind value"
     x2d.domains[domain]["run_data"]["wall"] = "Humpty Dumpty"
-
-    # TODO: Add check that this should fail validation if in the wrong order
-    # # how do I check that something fails?
-
     assert x2d._write()
+
+    x2d.domains[domain]["run_data"]["upwind123"] = "upwind value"
+    with pytest.raises(FloodModellerAPIError):
+        assert x2d._write()
 
 
 def test_xml2d_update_value(xml_fp, data_before):

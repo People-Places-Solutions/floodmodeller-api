@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from . import units
 from ._base import FMFile
-from .units.helpers import _to_str, join_n_char_ljust
+from .units._helpers import join_n_char_ljust, to_str
 from .urban1d import subsections
 from .urban1d.general_parameters import DEFAULT_OPTIONS
 from .util import handle_exception
@@ -59,7 +59,7 @@ class INP(FMFile):
 
     def _read(self):
         # Read INP file
-        with open(self._filepath) as inp_file:
+        with open(self._filepath, encoding=self.ENCODING) as inp_file:
             self._raw_data = [line.rstrip("\n") for line in inp_file]
 
         # Generate INP file structure
@@ -158,7 +158,7 @@ class INP(FMFile):
                                 data = units.helpers.split_n_char(line, 21)
 
                                 # Set type to Float or Stirng, as appropirate.
-                                self.options[data[0].lower()] = _to_str(
+                                self.options[data[0].lower()] = to_str(
                                     data[1],
                                     None,
                                     check_float=True,
@@ -197,8 +197,6 @@ class INP(FMFile):
         in_block = False
         unit_block = {}
         for idx, line in enumerate(self._raw_data):
-            # TODO: Add functionality to compare first four characters only (alphanumeric) - need to consider names shorter than 4 characters, and those with _ within name
-
             # Check if subsection is known
             if line.upper() in subsections.ALL_SUBSECTIONS:
                 if in_block is True:

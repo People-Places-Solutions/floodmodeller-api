@@ -15,6 +15,7 @@ enable = "used-before-assignment, superfluous-parens, unnecessary-dunder-call"
 [tool.ruff]
 line-length = 100
 builtins = ["__version__"]
+exclude = ["*.ipynb"]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -27,14 +28,11 @@ ignore = [
     "E402",
     "E501",
     "FBT",
-    "FIX",
     "PGH003",
-    "PLW",  # TODO: remove
+    "PLW",
     "PTH123",
     "S",
     "SLF",
-    "T20",  # TODO: remove
-    "TD",
     "TID",
     "TRY",
 ]
@@ -42,6 +40,10 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "test*" = ["PLR0913", "PLR2004"]
+"sample*" = ["T201"]
+"test_tool.py" = ["T201"]
+"example_tool.py" = ["T201"]
+"scripts*" = ["T201"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = true

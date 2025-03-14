@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import csv
+import logging
 from typing import TYPE_CHECKING
 
 from floodmodeller_api import DAT
@@ -224,7 +225,6 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
-    # TODO: a refactor to combine the _add_conduits and _add_structures together would be nice for clarity
     def add_conduits(self):
         conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
 
@@ -245,9 +245,11 @@ class StructureLogBuilder:
                 ("CONDUIT", "SPRUNG"),
                 ("REPLICATE", None),
             ]:
-                print(
-                    f'Conduit sub-type "{conduit.subtype}" is currently unsupported in structure log',
+                logging.warning(
+                    "Conduit subtype: %s not currently supported in structure log",
+                    conduit.subtype,
                 )
+                self._write(conduit.name, conduit._unit, conduit.subtype)
                 continue
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
             self.unit_store[(conduit.name, conduit._unit)]["conduit_data"] = conduit_dict
@@ -339,7 +341,7 @@ class StructureLogBuilder:
 
         culvert_data = []
         if hasattr(structure, "culvert_data") and structure.culvert_data.shape[0] > 1:
-            for _, row in structure.culvert_data:
+            for _, row in structure.culvert_data.iterrows():
                 culvert = {
                     "invert": row["Invert"],
                     "soffit": row["Soffit"],
@@ -357,7 +359,6 @@ class StructureLogBuilder:
         }
 
     def _sluice_data(self, structure: SLUICE) -> dict:
-        # TODO: these could do with more attention, given more time
         dimensions = extract_attrs(structure, {"crest_elevation", "weir_breadth", "weir_length"})
 
         return {"dimensions": dimensions}
@@ -395,7 +396,11 @@ class StructureLogBuilder:
             elif structure._unit == "BRIDGE":
                 self.unit_store[(structure.name, structure._unit)] |= self._bridge_data(structure)
             else:
-                print(f'Structure "{structure._unit}" is currently unsupported in structure log')
+                logging.warning(
+                    "Structure: %s not currently supported in structure log",
+                    structure._unit,
+                )
+                self._write(structure.name, structure._unit, structure.subtype)
                 continue
 
     def _format_friction(self, unit_dict):
@@ -422,7 +427,6 @@ class StructureLogBuilder:
         return text
 
     def _format_bridge_dimensions(self, unit_dict):
-
         if len(unit_dict["opening_data"]) == 1:
             opening = unit_dict["opening_data"][0]
             height = opening["opening_height"]
@@ -545,7 +549,7 @@ class StructureLogBuilder:
 
             culvert_loss = ""
 
-            match (unit_type):
+            match unit_type:
                 case "BRIDGE":
                     dimensions = self._format_bridge_dimensions(unit_dict)
                 case "ORIFICE":

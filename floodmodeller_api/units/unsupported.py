@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -15,7 +15,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 """
 
 from ._base import Unit
-from .helpers import split_n_char
+from ._helpers import split_n_char
 
 
 class UNSUPPORTED(Unit):
@@ -26,18 +26,16 @@ class UNSUPPORTED(Unit):
         self._unit = unit_type
         self._subtype = subtype
         self._raw_block = block
-        self.comment = block[0].replace(self._unit, "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         if self._subtype is False:
             self.labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
 
         else:
-            self._subtype = block[1].split(" ")[0].strip()
-            if self._unit == "JUNCTION":
-                self.labels = split_n_char(block[2], self._label_len)
+            self._subtype = self._get_first_word(block[1])
             self.labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
 
-        if self.labels[1] != "" and self._unit != "JUNCTION":
+        if self.labels[1] != "":
             self.ds_label = self.labels[1]
 
     def _write(self):

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, _to_int, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float, to_int
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -37,7 +37,7 @@ class XSECTION(UrbanUnit):
 
 
     Returns:
-        XSECTION: Flood Modeller XSECTION Unit class object TODO: add urban 1d in to all instances within urban 1d API
+        XSECTION: Flood Modeller XSECTION Unit class object
     """
 
     _unit = "XSECTION"
@@ -48,8 +48,6 @@ class XSECTION(UrbanUnit):
     def _read(self, line):
         unit_data = line.split()
 
-        # TODO: add functionality to read comments
-        # TODO: consider appropriate defaults
         self.name = str(unit_data[0])
 
         if unit_data[1] in _shape_options:
@@ -59,20 +57,20 @@ class XSECTION(UrbanUnit):
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], 0.0)
-            self.geom2 = _to_float(unit_data[3], 0.0)
-            self.geom3 = _to_float(unit_data[4], 0.0)
-            self.geom4 = _to_float(unit_data[5], 0.0)
-            self.barrels = _to_int(unit_data[6], 1)
-            self.culvert = _to_int(unit_data[7], "")
+            self.geom1 = to_float(unit_data[2], 0.0)
+            self.geom2 = to_float(unit_data[3], 0.0)
+            self.geom3 = to_float(unit_data[4], 0.0)
+            self.geom4 = to_float(unit_data[5], 0.0)
+            self.barrels = to_int(unit_data[6], 1)
+            self.culvert = to_int(unit_data[7], "")
 
         elif unit_data[1] == "CUSTOM":
             while len(unit_data) < self.MIN_LENGTH_CUSTOM:
                 unit_data.append("")
 
             self.shape = str(unit_data[1])
-            self.geom1 = _to_float(unit_data[2], "")
-            self.barrels = _to_int(unit_data[6], 1)
+            self.geom1 = to_float(unit_data[2], "")
+            self.barrels = to_int(unit_data[6], 1)
 
         elif unit_data[1] == "IRREGULAR":
             while len(unit_data) < self.MIN_LENGTH_IRREGULAR:
@@ -85,8 +83,6 @@ class XSECTION(UrbanUnit):
         """Function to write a valid OUTFALL line"""
 
         _validate_unit(self, urban=True)
-
-        # TODO:Improve indentation format when writing and include header for completeness
 
         params1 = join_n_char_ljust(17, self.name)
 

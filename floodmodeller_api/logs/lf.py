@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import time
 from typing import TYPE_CHECKING
 
@@ -55,7 +56,7 @@ class LF(FMFile):
     def __init__(
         self,
         lf_filepath: str | Path | None,
-        data_to_extract: dict,
+        data_to_extract: dict[str, dict],
         steady: bool = False,
     ):
         FMFile.__init__(self, lf_filepath)
@@ -175,7 +176,7 @@ class LF(FMFile):
 
         delattr(self, "info")
 
-    def to_dataframe(self, *, include_tuflow: bool = False) -> pd.DataFrame:
+    def to_dataframe(self, variable: str = "all", *, include_tuflow: bool = False) -> pd.DataFrame:
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
@@ -185,17 +186,22 @@ class LF(FMFile):
             pd.DataFrame: DataFrame of log file parameters indexed by simulation time (unsteady) or network iterations (steady)
         """
 
-        # TODO: make more like ZZN.to_dataframe
-
-        data_type_all = {
+        lf_df_data = {
             k: getattr(self, k)
             for k, v in self._data_to_extract.items()
-            if v["data_type"] == "all" and (include_tuflow or "tuflow" not in k)
+            if v["data_type"] == "all"  # with entries every iteration
+            and (include_tuflow or "tuflow" not in k)  # tuflow-related only if requested
+            and (variable in ("all", k, *v.get("subheaders", [])))  # if it or all are requested
         }
 
-        lf_df = pd.concat(data_type_all, axis=1)
-        lf_df.columns = lf_df.columns.droplevel()
+        if lf_df_data == {}:
+            msg = f"No data extracted for variable '{variable}'"
+            raise ValueError(msg)
 
+        lf_df = pd.concat(lf_df_data, axis=1)
+        lf_df.columns = lf_df.columns.droplevel()
+        if variable != "all":
+            lf_df = lf_df[variable]  # otherwise subheaders result in extra columns
         return lf_df.sort_index()
 
     def _sync_cols(self):
@@ -217,7 +223,7 @@ class LF(FMFile):
     def _print_no_lines(self):
         """Prints number of lines that have been read so far"""
 
-        print("Last line read: " + str(self._no_lines))
+        logging.info("Last line read: %s", self._no_lines)
 
     def report_progress(self) -> float:
         """Returns progress for unsteady simulations
@@ -316,7 +322,7 @@ def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
     """Checks for a new log file, waiting for its creation if necessary"""
 
     def _no_log_file(reason: str) -> None:
-        print(f"No progress bar as {reason}. Simulation will continue as usual.")
+        logging.warning("No progress bar as %s. Simulation will continue as usual.", reason)
 
     # ensure progress bar is supported
     if suffix not in {"lf1", "lf2"}:
@@ -349,7 +355,7 @@ def create_lf(filepath: Path, suffix: str) -> LF1 | LF2 | None:
         last_modified = dt.datetime.fromtimestamp(last_modified_timestamp)
         time_diff_sec = (dt.datetime.now() - last_modified).total_seconds()
 
-        # it's old if it's over OLD_FILE seconds old (TODO: is this robust?)
+        # it's old if it's over OLD_FILE seconds old
         old_log_file = time_diff_sec > OLD_FILE
 
         # timeout

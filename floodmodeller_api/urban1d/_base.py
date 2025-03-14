@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,6 +18,8 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM 1D units Units """
 
+import logging
+
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
 
@@ -32,7 +34,6 @@ class UrbanUnit(Jsonable):
             return
         if unit_block is not None:
             self._read(unit_block)
-            # TODO: add functionality to read description
         else:
             self._create_from_blank(**kwargs)
 
@@ -66,9 +67,9 @@ class UrbanUnit(Jsonable):
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
@@ -159,16 +160,14 @@ class UrbanSubsection(Jsonable):
                 units[unit.name] = unit
                 del units[name]
 
-                # TODO: update label in any other units where required.
-
         return block
 
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call

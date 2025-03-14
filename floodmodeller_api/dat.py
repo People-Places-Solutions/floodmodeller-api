@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,13 +16,14 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 from . import units
 from ._base import FMFile
 from .units._base import Unit
-from .units.helpers import _to_float, _to_int
+from .units._helpers import join_10_char, split_10_char, to_float, to_int
 from .util import handle_exception
 from .validation.validation import _validate_unit
 
@@ -110,8 +111,6 @@ class DAT(FMFile):
         """
         self._diff(other, force_print=force_print)
 
-    # def _get_unit_from_connectivity(self, method) #use this as method prev and next
-
     @handle_exception(when="calculate next unit in")
     def next(self, unit: Unit) -> Unit | list[Unit] | None:
         """Finds next unit in the reach.
@@ -189,7 +188,7 @@ class DAT(FMFile):
         _junction_match = [
             junction
             for junction in self._all_units
-            if junction._unit == "JUNCTION" and unit.name in junction.labels
+            if junction._unit == "JUNCTION" and unit.name in junction.labels  # type: ignore
         ]
 
         # Case 2: Previous unit has positive distance to next
@@ -292,7 +291,7 @@ class DAT(FMFile):
 
     def _read(self) -> None:
         # Read DAT data
-        with open(self._filepath) as dat_file:
+        with open(self._filepath, encoding=self.ENCODING) as dat_file:
             self._raw_data: list[str] = [line.rstrip("\n") for line in dat_file]
 
         # Generate DAT structure
@@ -352,33 +351,33 @@ class DAT(FMFile):
         self.title = self._raw_data[0]
         self.general_parameters = {}
         line = f"{self._raw_data[2]:<70}"
-        params = units.helpers.split_10_char(line)
+        params = split_10_char(line)
         if params[6] == "":
             # Adds the measurements unit as DEFAULT if not specified
             params[6] = "DEFAULT"
         line = f"{self._raw_data[3]:<70}"
-        params.extend(units.helpers.split_10_char(line))
+        params.extend(split_10_char(line))
 
-        self.general_parameters["Node Count"] = _to_int(params[0], 0)
-        self.general_parameters["Lower Froude"] = _to_float(params[1], 0.75)
-        self.general_parameters["Upper Froude"] = _to_float(params[2], 0.9)
-        self.general_parameters["Min Depth"] = _to_float(params[3], 0.1)
-        self.general_parameters["Convergence Direct"] = _to_float(params[4], 0.001)
-        self._label_len = _to_int(params[5], 12)  # label length
+        self.general_parameters["Node Count"] = to_int(params[0], 0)
+        self.general_parameters["Lower Froude"] = to_float(params[1], 0.75)
+        self.general_parameters["Upper Froude"] = to_float(params[2], 0.9)
+        self.general_parameters["Min Depth"] = to_float(params[3], 0.1)
+        self.general_parameters["Convergence Direct"] = to_float(params[4], 0.001)
+        self._label_len = to_int(params[5], 12)  # label length
         self.general_parameters["Units"] = params[6]  # "DEFAULT" set during read above.
-        self.general_parameters["Water Temperature"] = _to_float(params[7], 10.0)
-        self.general_parameters["Convergence Flow"] = _to_float(params[8], 0.01)
-        self.general_parameters["Convergence Head"] = _to_float(params[9], 0.01)
-        self.general_parameters["Mathematical Damping"] = _to_float(params[10], 0.7)
-        self.general_parameters["Pivotal Choice"] = _to_float(params[11], 0.1)
-        self.general_parameters["Under-relaxation"] = _to_float(params[12], 0.7)
-        self.general_parameters["Matrix Dummy"] = _to_float(params[13], 0.0)
+        self.general_parameters["Water Temperature"] = to_float(params[7], 10.0)
+        self.general_parameters["Convergence Flow"] = to_float(params[8], 0.01)
+        self.general_parameters["Convergence Head"] = to_float(params[9], 0.01)
+        self.general_parameters["Mathematical Damping"] = to_float(params[10], 0.7)
+        self.general_parameters["Pivotal Choice"] = to_float(params[11], 0.1)
+        self.general_parameters["Under-relaxation"] = to_float(params[12], 0.7)
+        self.general_parameters["Matrix Dummy"] = to_float(params[13], 0.0)
         self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
 
     def _update_general_parameters(self) -> None:
         self._raw_data[0] = self.title
         self._raw_data[5] = self.general_parameters["RAD File"]
-        general_params_1 = units.helpers.join_10_char(
+        general_params_1 = join_10_char(
             self.general_parameters["Node Count"],
             self.general_parameters["Lower Froude"],
             self.general_parameters["Upper Froude"],
@@ -389,7 +388,7 @@ class DAT(FMFile):
         general_params_1 += self.general_parameters["Units"]
         self._raw_data[2] = general_params_1
 
-        general_params_2 = units.helpers.join_10_char(
+        general_params_2 = join_10_char(
             self.general_parameters["Water Temperature"],
             self.general_parameters["Convergence Flow"],
             self.general_parameters["Convergence Head"],
@@ -407,6 +406,8 @@ class DAT(FMFile):
             (self.structures, "structures"),
             (self.conduits, "conduits"),
             (self.losses, "losses"),
+            (self.connectors, "connectors"),
+            (self.controls, "controls"),
         ]:
             for name, unit in unit_group.copy().items():
                 if name != unit.name:
@@ -418,9 +419,6 @@ class DAT(FMFile):
                     del unit_group[name]
                     # Update label in ICs
                     if unit_group_name not in ["boundaries", "losses"]:
-                        # TODO: Need to do a more thorough check for whether a unit is one in the ICs
-                        # e.g. Culvert inlet and river section may have same label, but only river
-                        # section label should update in ICs
                         self.initial_conditions.update_label(name, unit.name)
 
                     # Update label in GISINFO and GXY data
@@ -453,66 +451,65 @@ class DAT(FMFile):
             "sections": [],
             "conduits": [],
             "losses": [],
+            "connectors": [],
+            "controls": [],
         }
 
         for block in self._dat_struct:
             # Check for all supported boundary types
-            if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                # clause for when unit has been inserted into the dat file
-                if "new_insert" in block:
-                    block["start"] = prev_block_end + 1
-                    block["end"] = block["start"] + len(block["new_insert"]) - 1
-                    self._raw_data[block["start"] : block["start"]] = block["new_insert"]
-                    block_shift += len(block["new_insert"])
-                    prev_block_end = block["end"]
-                    del block["new_insert"]
+            if block["Type"] not in units.SUPPORTED_UNIT_TYPES:
+                continue
+            # clause for when unit has been inserted into the dat file
+            if "new_insert" in block:
+                block["start"] = prev_block_end + 1
+                block["end"] = block["start"] + len(block["new_insert"]) - 1
+                self._raw_data[block["start"] : block["start"]] = block["new_insert"]
+                block_shift += len(block["new_insert"])
+                prev_block_end = block["end"]
+                del block["new_insert"]
+
+            else:
+                unit_data = self._raw_data[
+                    block["start"] + block_shift : block["end"] + 1 + block_shift
+                ]
+                prev_block_len = len(unit_data)
+
+                if block["Type"] == "INITIAL CONDITIONS":
+                    new_unit_data = self.initial_conditions._write()
+                elif block["Type"] == "COMMENT":
+                    comment = comment_units[comment_tracker]
+                    new_unit_data = comment._write()
+                    comment_tracker += 1
+
+                elif block["Type"] == "VARIABLES":
+                    new_unit_data = self.variables._write()
 
                 else:
-                    unit_data = self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ]
-                    prev_block_len = len(unit_data)
-
-                    if block["Type"] == "INITIAL CONDITIONS":
-                        new_unit_data = self.initial_conditions._write()
-                    elif block["Type"] == "COMMENT":
-                        comment = comment_units[comment_tracker]
-                        new_unit_data = comment._write()
-                        comment_tracker += 1
-
-                    elif block["Type"] == "VARIABLES":
-                        new_unit_data = self.variables._write()
-
+                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
+                        unit_name = unit_data[2][: self._label_len].strip()
                     else:
-                        if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                            unit_name = unit_data[2][: self._label_len].strip()
-                        else:
-                            unit_name = unit_data[1][: self._label_len].strip()
+                        unit_name = unit_data[1][: self._label_len].strip()
 
-                        # Get unit object
-                        unit_group = getattr(
-                            self,
-                            units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"],
-                        )
-                        if unit_name in unit_group:
-                            # block still exists
-                            new_unit_data = unit_group[unit_name]._write()
-                            existing_units[
-                                units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
-                            ].append(unit_name)
-                        else:
-                            # Bdy block has been deleted
-                            new_unit_data = []
+                    # Get unit object
+                    unit_group_str = units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
+                    unit_group = getattr(self, unit_group_str)
+                    if unit_name in unit_group:
+                        # block still exists
+                        new_unit_data = unit_group[unit_name]._write()
+                        existing_units[unit_group_str].append(unit_name)
+                    else:
+                        # Bdy block has been deleted
+                        new_unit_data = []
 
-                    new_block_len = len(new_unit_data)
-                    self._raw_data[
-                        block["start"] + block_shift : block["end"] + 1 + block_shift
-                    ] = new_unit_data
-                    # adjust block shift for change in number of lines in bdy block
-                    block_shift += new_block_len - prev_block_len
-                    prev_block_end = (
-                        block["end"] + block_shift
-                    )  # add in to keep a record of the last block read in
+                new_block_len = len(new_unit_data)
+                self._raw_data[block["start"] + block_shift : block["end"] + 1 + block_shift] = (
+                    new_unit_data
+                )
+                # adjust block shift for change in number of lines in bdy block
+                block_shift += new_block_len - prev_block_len
+                prev_block_end = (
+                    block["end"] + block_shift
+                )  # add in to keep a record of the last block read in
 
     def _get_unit_definitions(self):
         self._initialize_collections()
@@ -528,17 +525,19 @@ class DAT(FMFile):
                 msg = f"Unexpected unit type encountered: {unit_type}"
                 raise Exception(msg)
 
-    def _initialize_collections(self):
+    def _initialize_collections(self) -> None:
         # Initialize unit collections
-        self.sections = {}
-        self.boundaries = {}
-        self.structures = {}
-        self.conduits = {}
-        self.losses = {}
-        self._unsupported = {}
-        self._all_units = []
+        self.sections: dict[str, units.TSections] = {}
+        self.boundaries: dict[str, units.TBoundaries] = {}
+        self.structures: dict[str, units.TStructures] = {}
+        self.conduits: dict[str, units.TConduits] = {}
+        self.losses: dict[str, units.TLosses] = {}
+        self.connectors: dict[str, units.TConnectors] = {}
+        self.controls: dict[str, units.TControls] = {}
+        self._unsupported: dict[str, units.TUnsupported] = {}
+        self._all_units: list[Unit] = []
 
-    def _process_supported_unit(self, unit_type, unit_data):
+    def _process_supported_unit(self, unit_type, unit_data) -> None:
         # Handle initial conditions block
         if unit_type == "INITIAL CONDITIONS":
             self.initial_conditions = units.IIC(unit_data, n=self._label_len)
@@ -559,7 +558,13 @@ class DAT(FMFile):
             return unit_data[2][: self._label_len].strip()
         return unit_data[1][: self._label_len].strip()
 
-    def _add_unit_to_group(self, unit_group, unit_type, unit_name, unit_data):
+    def _add_unit_to_group(
+        self,
+        unit_group,
+        unit_type: str,
+        unit_name: str,
+        unit_data: list[str],
+    ) -> None:
         # Raise exception if a duplicate label is encountered
         if unit_name in unit_group:
             msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}'
@@ -571,7 +576,7 @@ class DAT(FMFile):
         )
         self._all_units.append(unit_group[unit_name])
 
-    def _process_unsupported_unit(self, unit_type, unit_data):
+    def _process_unsupported_unit(self, unit_type, unit_data) -> None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
         unit_name, subtype = self._get_unsupported_unit_name(unit_type, unit_data)
         self._unsupported[f"{unit_name} ({unit_type})"] = units.UNSUPPORTED(
@@ -583,7 +588,7 @@ class DAT(FMFile):
         )
         self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
 
-    def _get_unsupported_unit_name(self, unit_type, unit_data):
+    def _get_unsupported_unit_name(self, unit_type: str, unit_data: list[str]) -> tuple[str, bool]:
         # Check if the unit type has associated subtypes
         if units.UNSUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
             return unit_data[2][: self._label_len].strip(), True
@@ -907,3 +912,69 @@ class DAT(FMFile):
             new = f"{unit_type}_{unit_subtype}_{new_lbl}"
 
             self._gxy_data = self._gxy_data.replace(old, new)
+
+    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
+        """Generates a network representation of units and their connections.
+
+        This method creates a directed network where nodes represent units
+        and edges represent labeled connections between them. The edges are
+        directional, determined by the order of appearance in the `.dat` file.
+
+        Raises:
+            ValueError: If a unit has no name when an implicit label is assigned.
+            RuntimeError: If the constructed network contains labels that do not
+                form valid two-unit connections.
+
+        Returns:
+            tuple[list[Unit], list[tuple[Unit, Unit]]]:
+                - A list of `Unit` objects representing the nodes.
+                - A list of tuples, each containing two `Unit` objects representing
+                  a directed edge."""
+
+        # collect all relevant units and labels
+        units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
+        label_lists = [list(unit.all_labels) for unit in units]
+
+        # connect units for each label
+        label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
+        for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
+            in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
+            if in_reach:  # has implicit downstream labels
+                next_unit = units[idx + 1]
+                next_next_unit = units[idx + 2]
+
+                if next_unit.name is None:
+                    msg = "Unit has no name."
+                    raise ValueError(msg)
+
+                end_of_reach = (
+                    (not hasattr(next_unit, "dist_to_next"))
+                    or (next_unit.dist_to_next == 0)
+                    or (not hasattr(next_next_unit, "dist_to_next"))
+                )
+
+                if end_of_reach:
+                    renamed_label = next_unit.name + "_dummy"
+                    label_list.append(renamed_label)
+                    label_lists[idx + 1].append(renamed_label)  # why label_lists is made first
+                else:
+                    label_list.append(next_unit.name)
+
+            for label in label_list:
+                label_to_unit_list[label].append(unit)
+
+        # check validity of network
+        units_per_edge = 2
+        invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
+        no_invalid_labels = len(invalid_labels)
+        no_labels = len(label_to_unit_list)
+        if no_invalid_labels > 0:
+            msg = (
+                "Unable to create a valid network with the current algorithm and/or data."
+                f" {no_invalid_labels}/{no_labels} labels do not join two units: {invalid_labels}."
+            )
+            raise RuntimeError(msg)
+
+        # the labels themselves are no longer needed
+        unit_pairs = [(unit_pair[0], unit_pair[1]) for unit_pair in label_to_unit_list.values()]
+        return units, unit_pairs

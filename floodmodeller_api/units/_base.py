@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,11 +18,15 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM Units """
 
+import logging
+from itertools import chain
+from typing import Any
+
 import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from .helpers import _to_float, _to_str, join_10_char, join_n_char_ljust, split_10_char
+from ._helpers import join_10_char, join_n_char_ljust, split_10_char, to_float, to_int, to_str
 
 
 class Unit(Jsonable):
@@ -60,6 +64,36 @@ class Unit(Jsonable):
             raise Exception(msg) from e
 
     @property
+    def all_labels(self) -> set[str]:
+        """All explicit labels associated with a unit."""
+        label_attrs = [
+            "name",
+            "spill",
+            "spill1",
+            "spill2",
+            "first_spill",
+            "second_spill",
+            "lat1",
+            "lat2",
+            "lat3",
+            "lat4",
+            "ds_label",
+        ]
+        label_list_attrs = ["labels", "lateral_inflow_labels"]
+
+        labels = {getattr(self, x) for x in label_attrs if hasattr(self, x)}
+        label_lists = [getattr(self, x) for x in label_list_attrs if hasattr(self, x)]
+
+        return (labels | set(chain(*label_lists))) - {""}
+
+    @property
+    def unique_name(self) -> str:
+        if self._name is None:
+            msg = "No unique name available."
+            raise ValueError(msg)
+        return f"{self._unit}_{self._name}"
+
+    @property
     def subtype(self) -> str | None:
         return self._subtype
 
@@ -91,14 +125,17 @@ class Unit(Jsonable):
     def _diff(self, other):
         diff = self._get_diff(other)
         if diff[0]:
-            print("No difference, units are equivalent")
+            logging.info("No difference, units are equivalent")
         else:
-            print("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
+            logging.info("\n".join([f"{name}:  {reason}" for name, reason in diff[1]]))
 
     def _get_diff(self, other):
         return self.__eq__(other, return_diff=True)  # pylint: disable=unnecessary-dunder-call
 
     def __eq__(self, other, return_diff=False):
+        if not isinstance(other, Unit):
+            return NotImplemented if not return_diff else (False, ["Type mismatch"])
+
         result = True
         diff = []
         result, diff = check_item_with_dataframe_equal(
@@ -114,16 +151,16 @@ class Unit(Jsonable):
     def _read_rules(self, block):
         rule_params = split_10_char(block[self._last_gate_row + 1])
         self.nrules = int(rule_params[0])
-        self.rule_sample_time = _to_float(rule_params[1])
-        self.timeunit = _to_str(rule_params[2], "SECONDS", check_float=False)
-        self.extendmethod = _to_str(rule_params[3], "EXTEND")
+        self.rule_sample_time = to_float(rule_params[1])
+        self.timeunit = to_str(rule_params[2], "SECONDS", check_float=False)
+        self.extendmethod = to_str(rule_params[3], "EXTEND")
         self.rules = self._get_logical_rules(self.nrules, block, self._last_gate_row + 2)
         # Get time rule data set
         nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
         data_list = []
         for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + nrows]:
             row_split = split_10_char(f"{row:<20}")
-            x = _to_float(row_split[0])  # time
+            x = to_float(row_split[0])  # time
             y = row[10:].strip()  # operating rules
             data_list.append([x, y])
         self._last_time_row = self._last_rule_row + nrows + 1
@@ -139,14 +176,14 @@ class Unit(Jsonable):
             self.has_varrules = True
             varrule_params = split_10_char(block[self._last_time_row + 2])
             self.nvarrules = int(varrule_params[0])
-            self.varrule_sample_time = _to_float(rule_params[1])
+            self.varrule_sample_time = to_float(rule_params[1])
             self.varrules = self._get_logical_rules(self.nvarrules, block, self._last_time_row + 3)
             # Get time rule data set
             var_nrows = int(split_10_char(block[self._last_rule_row + 1])[0])
             data_list = []
             for row in block[self._last_rule_row + 2 : self._last_rule_row + 2 + var_nrows]:
                 row_split = split_10_char(f"{row:<20}")
-                x = _to_float(row_split[0])  # time
+                x = to_float(row_split[0])  # time
                 y = row[10:].strip()  # operating rules
                 data_list.append([x, y])
 
@@ -216,3 +253,29 @@ class Unit(Jsonable):
         self._last_rule_row = rule_row
 
         return rules
+
+    def _remove_unit_name(self, line: str, *, remove_revision: bool = False) -> str:
+        line = line.replace(self._unit, "")
+        if remove_revision:
+            line = line.replace("#revision#", "", 1)
+        return line.strip()
+
+    def _create_header(self, *, include_revision: bool = False) -> str:
+        header = self._unit
+        if include_revision and hasattr(self, "_revision"):
+            header += f" #revision#{self._revision}"
+        if hasattr(self, "comment") and self.comment != "":
+            header += f" {self.comment}"
+        return header
+
+    def _get_first_word(self, line: str) -> str:
+        return line.split(" ")[0].strip()
+
+    def _get_revision_and_comment(self, line: str) -> tuple[int | None, str]:
+        line_without_name = self._remove_unit_name(line, remove_revision=True)
+        revision = to_int(line_without_name[0], None) if line_without_name != "" else None
+        comment = line_without_name[1:].strip()
+        return revision, comment
+
+    def _enforce_dataframe(self, data: Any, columns: tuple[str, ...]) -> pd.DataFrame:
+        return data if isinstance(data, pd.DataFrame) else pd.DataFrame([], columns=columns)

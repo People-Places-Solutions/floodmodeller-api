@@ -22,7 +22,7 @@ print(sys.path)
 # -- Project information -----------------------------------------------------
 
 project = "Flood Modeller Python API"
-project_copyright = "2024, Jacobs"
+project_copyright = "2025, Jacobs"
 author = "Joe Pierce"
 
 # The full version, including alpha/beta/rc tags

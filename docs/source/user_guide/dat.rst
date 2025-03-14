@@ -226,7 +226,9 @@ Reference
    .. automethod:: to_json
 
    .. automethod:: from_json
-      
+
+   .. automethod:: get_network
+
 
 Examples
 -----------

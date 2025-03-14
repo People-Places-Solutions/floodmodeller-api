@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -14,7 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-from floodmodeller_api.units.helpers import _to_float, join_n_char_ljust
+from floodmodeller_api.units._helpers import join_n_char_ljust, to_float
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import UrbanSubsection, UrbanUnit
@@ -43,8 +43,6 @@ class RAINGAUGE(UrbanUnit):
     def _read(self, line):
         """Function to read a given RAINGAUGE line and store data as class attributes"""
 
-        # TODO: add functionality to read comments
-
         unit_data = line.split()  # Get unit parameters
 
         self.name = str(unit_data[0])
@@ -55,7 +53,7 @@ class RAINGAUGE(UrbanUnit):
         except ValueError:
             self.interval = str(unit_data[2])  # HH:MM format
 
-        self.snow_catch_factor = _to_float(unit_data[3], 0.0)
+        self.snow_catch_factor = to_float(unit_data[3], 0.0)
         self.data_option = str(unit_data[4])
 
         # Check is raingauge data is provided as a TIMESERIES or as a FILE
@@ -79,8 +77,6 @@ class RAINGAUGE(UrbanUnit):
 
         _validate_unit(self, urban=True)
 
-        # TODO:Improve indentation format when writing and include header for completeness
-
         params1 = join_n_char_ljust(17, self.name) + join_n_char_ljust(
             15,
             self.format,
@@ -101,8 +97,6 @@ class RAINGAUGE(UrbanUnit):
             raise RuntimeError(msg)
 
         return params1 + params2
-
-        # TODO: Implement validation that does not allow spaces to be entered in attribute values
 
 
 class RAINGAUGES(UrbanSubsection):

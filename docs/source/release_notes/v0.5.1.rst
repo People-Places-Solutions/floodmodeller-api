@@ -1,0 +1,19 @@
+************************************
+What's new in 0.5.1 (November 2024)
+************************************
+
+This page details the changes for version 0.5.1 of Flood Modeller API
+
+New features
+---------------
+
+- :doc:`ZZX Support <../user_guide/zzx>` - ZZX class added to support reading supplementary 1D data from Flood Modeller .zzx files
+
+Updates
+-----------
+- Updates to the structure log tool 
+- Added new public attributes for ``FMUnit`` and ``FMFile`` subclasses: ``.unit``, ``.filetype`` and ``.filepath``
+
+Bug fixes
+------------
+- Fix section ``data`` property setter method to allow overwriting the section data directly.

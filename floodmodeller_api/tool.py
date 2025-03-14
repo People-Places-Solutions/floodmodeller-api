@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 import sys
 import tkinter as tk
 from dataclasses import dataclass
@@ -156,9 +157,6 @@ class Gui:
             entry.pack()
             self.root_entries[name] = entry
 
-        # TODO: Add a progress bar if appropriate
-        # TODO: Present some useful information: either tool outputs or logs
-
     def run_gui_callback(self):
         """
         Method to run the gui callback function.
@@ -308,9 +306,9 @@ class FMTool:
             value = getattr(args, input_param.name)
             input_kwargs[input_param.name] = input_param.dtype(value)
 
-        print(f"Running {self.name}")
+        logging.info("Running %s", self.name)
         self.run(**input_kwargs)
-        print("Completed")
+        logging.info("Completed")
         # Return nothing
 
     def generate_gui(self):

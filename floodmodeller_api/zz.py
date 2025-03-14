@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -17,6 +17,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import ctypes as ct
+import logging
 from pathlib import Path
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Any
@@ -192,8 +193,8 @@ def run_routines(
 
 
 def convert_data(data: dict[str, Any]) -> None:
-    for key in data:
-        data[key] = np.array(data[key])
+    for key, value in data.items():
+        data[key] = np.array(value)
 
 
 def convert_meta(meta: dict[str, Any]) -> None:
@@ -343,10 +344,10 @@ class _ZZ(FMFile):
         if result_type == "all":
             return self._get_all(variable, multilevel_header)
 
-        if result_type in ("max", "min"):
+        if result_type in {"max", "min"}:
             return self._get_extremes(variable, result_type, include_time)
 
-        msg = f'Result type: "{result_type}" not recognised'
+        msg = f"Result type '{result_type}' not recognised"
         raise ValueError(msg)
 
     def export_to_csv(
@@ -376,7 +377,7 @@ class _ZZ(FMFile):
             include_time=include_time,
         )
         zz_df.to_csv(save_location)
-        print(f"CSV saved to {save_location}")
+        logging.info("CSV saved to %s", save_location)
 
     def to_json(
         self,

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -60,7 +60,7 @@ class IED(FMFile):
 
     def _read(self):
         # Read IED data
-        with open(self._filepath) as ied_file:
+        with open(self._filepath, encoding=self.ENCODING) as ied_file:
             self._raw_data = [line.rstrip("\n") for line in ied_file]
 
         # Generate IED structure
@@ -205,8 +205,6 @@ class IED(FMFile):
                     subtype=subtype,
                 )
                 self._all_units.append(self._unsupported[f"{unit_name} ({block['Type']})"])
-
-        print()
 
     def _update_ied_struct(self):  # noqa: C901, PLR0912
         # Generate IED structure

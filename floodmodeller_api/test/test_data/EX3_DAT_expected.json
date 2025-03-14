@@ -17,6 +17,8 @@
         "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
       }
     },
+    "connectors": {},
+    "controls": {},
     "_raw_data": [
       "Example file model of river with bridge",
       "#REVISION#1",
@@ -8554,7 +8556,8 @@
               "Section Area": {},
               "Cd Part Full": {},
               "Cd Full": {},
-              "Drowning Coefficient": {}
+              "Drowning Coefficient": {},
+              "X": {}
             }
           }
         }
@@ -10441,7 +10444,8 @@
               "Section Area": {},
               "Cd Part Full": {},
               "Cd Full": {},
-              "Drowning Coefficient": {}
+              "Drowning Coefficient": {},
+              "X": {}
             }
           }
         }

@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,7 +18,7 @@ import pandas as pd
 
 from ..diff import check_item_with_dataframe_equal
 from ..to_from_json import Jsonable
-from .helpers import join_10_char, split_10_char
+from ._helpers import join_10_char, split_10_char
 
 # Initial Conditions Class
 
@@ -65,15 +65,8 @@ class IIC(Jsonable):
                     float(z),
                 ],
             )
-        # AL is this storing the values as strings?
         self.data = pd.DataFrame(data_list, columns=header)
-        # JP Yes
-        # AL If it does, would it worth making it store the values instead?
-        # JP Yes I'll do that, only downside is that the updated values may not match notation
-        #   of original even if no changes. (i.e 2.0 -> 2.00 or 2. -> 2.00)
 
-    # AL Is this only to transform the table of data into a string-like array?
-    # JP Yes it just transforms the dataframe back into valid DAT format
     def _write(self):
         ic_block = [
             "INITIAL CONDITIONS",

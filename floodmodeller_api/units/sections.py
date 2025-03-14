@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,22 +16,22 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from typing import ClassVar
+import logging
 
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
-from .conveyance import calculate_cross_section_conveyance_cached
-from .helpers import (
-    _to_float,
-    _to_int,
+from ._helpers import (
     join_10_char,
     join_n_char_ljust,
     split_10_char,
     split_n_char,
+    to_float,
+    to_int,
 )
+from .conveyance import calculate_cross_section_conveyance_cached
 
 
 class RIVER(Unit):
@@ -58,7 +58,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns: ClassVar[list[str]] = [
+    _required_columns = (
         "X",
         "Y",
         "Mannings n",
@@ -69,7 +69,7 @@ class RIVER(Unit):
         "Northing",
         "Deactivation",
         "SP. Marker",
-    ]
+    )
 
     def _create_from_blank(  # noqa: PLR0913
         self,
@@ -104,24 +104,18 @@ class RIVER(Unit):
         }.items():
             setattr(self, param, val)
 
-        self._data = (
-            data
-            if isinstance(data, pd.DataFrame)
-            else pd.DataFrame(
-                [],
-                columns=self._required_columns,
-            )
-        )
+        self._data = self._enforce_dataframe(data, self._required_columns)
         self._active_data = None
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
 
         self._subtype = riv_block[1].split(" ")[0].strip()
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
+
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
-            # Extends label line to be correct length before splitting to pick up blank labels
-            labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
             self.name = labels[0]
             self.spill1 = labels[1]
             self.spill2 = labels[2]
@@ -129,19 +123,19 @@ class RIVER(Unit):
             self.lat2 = labels[4]
             self.lat3 = labels[5]
             self.lat4 = labels[6]
-            self.comment = riv_block[0].replace("RIVER", "").strip()
+            self.comment = self._remove_unit_name(riv_block[0])
 
             params = split_10_char(f"{riv_block[3]:<40}")
-            self.dist_to_next = _to_float(params[0])
-            self.slope = _to_float(params[2], 0.0001)
-            self.density = _to_float(params[3], 1000.0)
+            self.dist_to_next = to_float(params[0])
+            self.slope = to_float(params[2], 0.0001)
+            self.density = to_float(params[3], 1000.0)
             self.nrows = int(split_10_char(riv_block[4])[0])
             data_list = []
             for row in riv_block[5:]:
                 row_split = split_10_char(f"{row:<100}")
-                x = _to_float(row_split[0])  # chainage
-                y = _to_float(row_split[1])  # elevation
-                n = _to_float(row_split[2])  # Mannings
+                x = to_float(row_split[0])  # chainage
+                y = to_float(row_split[1])  # elevation
+                n = to_float(row_split[2])  # Mannings
                 try:
                     # panel marker
                     panel = row_split[3][0] == "*"
@@ -150,15 +144,15 @@ class RIVER(Unit):
 
                 try:
                     # relative path length
-                    rpl = _to_float(row_split[3][1 if panel else 0 :].strip())
+                    rpl = to_float(row_split[3][1 if panel else 0 :].strip())
                 except IndexError:
                     rpl = 0.000
                 marker = row_split[4]  # Marker
-                easting = _to_float(row_split[5])  # easting
-                northing = _to_float(row_split[6])  # northing
+                easting = to_float(row_split[5])  # easting
+                northing = to_float(row_split[6])  # northing
 
                 deactivation = row_split[7]  # deactivation marker
-                sp_marker = _to_int(row_split[8])  # special marker
+                sp_marker = to_int(row_split[8])  # special marker
                 data_list.append(
                     [
                         x,
@@ -180,11 +174,14 @@ class RIVER(Unit):
 
         else:
             # This else block is triggered for river subtypes which aren't yet supported, and just keeps the 'riv_block' in it's raw state to write back.
-            print(
-                f'This River sub-type: "{self.subtype}" is currently unsupported for reading/editing',
+            logging.warning(
+                "This River sub-type: '%s' is currently unsupported for reading/editing",
+                self.subtype,
             )
             self._raw_block = riv_block
             self.name = riv_block[2][: self._label_len].strip()
+            self.dist_to_next = to_float(riv_block[3][:10])
+            self.labels = labels
 
         self._active_data = None
 
@@ -194,7 +191,7 @@ class RIVER(Unit):
         if self.subtype == "SECTION":
             # Function to check the params are valid for RIVER SECTION unit
             _validate_unit(self)
-            header = "RIVER " + self.comment
+            header = self._create_header()
             labels = join_n_char_ljust(
                 self._label_len,
                 self.name,
@@ -384,19 +381,19 @@ class INTERPOLATE(Unit):
         self.lat2 = labels[4]
         self.lat3 = labels[5]
         self.lat4 = labels[6]
-        self.comment = block[0].replace("INTERPOLATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<30}")
-        self.dist_to_next = _to_float(params1[0])
-        self.easting = _to_float(params1[1])
-        self.northing = _to_float(params1[2])
+        self.dist_to_next = to_float(params1[0])
+        self.easting = to_float(params1[1])
+        self.northing = to_float(params1[2])
 
     def _write(self):
         """Function to write a valid INTERPOLATE block"""
 
         _validate_unit(self)
-        header = "INTERPOLATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,
@@ -480,20 +477,20 @@ class REPLICATE(Unit):
         self.lat3 = labels[5]
         self.lat4 = labels[6]
 
-        self.comment = block[0].replace("REPLICATE", "").strip()
+        self.comment = self._remove_unit_name(block[0])
 
         # First parameter line
         params1 = split_10_char(f"{block[2]:<40}")
-        self.dist_to_next = _to_float(params1[0])
-        self.bed_level_drop = _to_float(params1[1])
-        self.easting = _to_float(params1[2])
-        self.northing = _to_float(params1[3])
+        self.dist_to_next = to_float(params1[0])
+        self.bed_level_drop = to_float(params1[1])
+        self.easting = to_float(params1[2])
+        self.northing = to_float(params1[3])
 
     def _write(self):
         """Function to write a valid REPLICATE block"""
 
         _validate_unit(self)
-        header = "REPLICATE " + self.comment
+        header = self._create_header()
         labels = join_n_char_ljust(
             self._label_len,
             self.name,

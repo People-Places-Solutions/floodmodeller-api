@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -20,14 +20,13 @@ from floodmodeller_api.validation import _validate_unit
 from floodmodeller_api.validation.parameters import parameter_options
 
 from ._base import Unit
-from .helpers import (
-    _to_data_list,
-    _to_float,
-    _to_int,
-    _to_str,
+from ._helpers import (
     join_10_char,
     join_n_char_ljust,
     split_10_char,
+    to_data_list,
+    to_float,
+    to_str,
 )
 
 
@@ -82,13 +81,6 @@ class QTBDY(Unit):
         }.items():
             setattr(self, param, val)
 
-        # AL Since this is most likely used when building a model,
-        # AL it would be nice to have a "name generator" to create
-        # AL a unique name with each call (ie new_qtbdy_12345 then new_qtbdy_02508)
-        # JP Yes this is a good idea, although I'm not sure how it would be best implemented
-        #   since any two instances of the class being initialised would be unaware of each other?
-        #   There is always the option to pass a name when constrcuting the class which may be better
-
         self.data = (
             data
             if isinstance(data, pd.Series)
@@ -98,21 +90,21 @@ class QTBDY(Unit):
     def _read(self, qtbdy_block):
         """Function to read a given QTBDY block and store data as class attributes"""
         self.name = qtbdy_block[1][: self._label_len].strip()
-        self.comment = qtbdy_block[0].replace("QTBDY", "").strip()
+        self.comment = self._remove_unit_name(qtbdy_block[0])
         qtbdy_params = split_10_char(f"{qtbdy_block[2]:<90}")
         self.nrows = int(qtbdy_params[0])
-        self.timeoffset = _to_float(qtbdy_params[1])
-        self._something = _to_float(qtbdy_params[2])
-        self.timeunit = _to_str(qtbdy_params[3], "HOURS", check_float=True)
-        self.extendmethod = _to_str(qtbdy_params[4], "EXTEND")
-        self.interpmethod = _to_str(qtbdy_params[5], "LINEAR")
-        self.flowmultiplier = _to_float(qtbdy_params[6])
-        self.minflow = _to_float(qtbdy_params[7])
-        self.allow_override = _to_str(qtbdy_params[8], "OVERRIDE")  # ''/OVERRIDE or NOOVERRIDE
+        self.timeoffset = to_float(qtbdy_params[1])
+        self._something = to_float(qtbdy_params[2])
+        self.timeunit = to_str(qtbdy_params[3], "HOURS", check_float=True)
+        self.extendmethod = to_str(qtbdy_params[4], "EXTEND")
+        self.interpmethod = to_str(qtbdy_params[5], "LINEAR")
+        self.flowmultiplier = to_float(qtbdy_params[6])
+        self.minflow = to_float(qtbdy_params[7])
+        self.allow_override = to_str(qtbdy_params[8], "OVERRIDE")  # ''/OVERRIDE or NOOVERRIDE
         data_list = (
-            _to_data_list(qtbdy_block[3:], date_col=1)
+            to_data_list(qtbdy_block[3:], date_col=1)
             if self.timeunit == "DATES"
-            else _to_data_list(qtbdy_block[3:])
+            else to_data_list(qtbdy_block[3:])
         )
 
         self.data = pd.DataFrame(data_list, columns=["Flow", "Time"])
@@ -122,7 +114,7 @@ class QTBDY(Unit):
     def _write(self):
         """Function to write a valid QTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = "QTBDY " + self.comment
+        header = self._create_header()
         name = self.name[: self._label_len]
         self.nrows = len(self.data)
 
@@ -195,18 +187,18 @@ class HTBDY(Unit):
     def _read(self, htbdy_block):
         """Function to read a given HTBDY block and store data as class attributes"""
         self.name = htbdy_block[1][: self._label_len].strip()
-        self.comment = htbdy_block[0].replace("HTBDY", "").strip()
+        self.comment = self._remove_unit_name(htbdy_block[0])
         htbdy_params = split_10_char(f"{htbdy_block[2]:<50}")
         self.nrows = int(htbdy_params[0])
-        self._something = _to_str(htbdy_params[1], "")
-        self.timeunit = _to_str(htbdy_params[2], "HOURS", check_float=True)
-        self.extendmethod = _to_str(htbdy_params[3], "EXTEND")
-        self.interpmethod = _to_str(htbdy_params[4], "LINEAR")
+        self._something = to_str(htbdy_params[1], "")
+        self.timeunit = to_str(htbdy_params[2], "HOURS", check_float=True)
+        self.extendmethod = to_str(htbdy_params[3], "EXTEND")
+        self.interpmethod = to_str(htbdy_params[4], "LINEAR")
 
         data_list = (
-            _to_data_list(htbdy_block[3:], date_col=1)
+            to_data_list(htbdy_block[3:], date_col=1)
             if self.timeunit == "DATES"
-            else _to_data_list(htbdy_block[3:])
+            else to_data_list(htbdy_block[3:])
         )
 
         self.data = pd.DataFrame(data_list, columns=["Stage", "Time"])
@@ -221,7 +213,7 @@ class HTBDY(Unit):
     def _write(self):
         """Function to write a valid HTBDY block"""
         _validate_unit(self)  # Function to check the params are valid for HTBDY
-        header = "HTBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -273,12 +265,12 @@ class QHBDY(Unit):
     def _read(self, qhbdy_block):
         """Function to read a given QHBDY block and store data as class attributes"""
         self.name = qhbdy_block[1][: self._label_len].strip()
-        self.comment = qhbdy_block[0].replace("QHBDY", "").strip()
+        self.comment = self._remove_unit_name(qhbdy_block[0])
         qhbdy_params = split_10_char(f"{qhbdy_block[2]:<30}")
         self.nrows = int(qhbdy_params[0])
-        self.interpmethod = _to_str(qhbdy_params[2], "LINEAR")
+        self.interpmethod = to_str(qhbdy_params[2], "LINEAR")
 
-        data_list = _to_data_list(qhbdy_block[3:])
+        data_list = to_data_list(qhbdy_block[3:])
 
         self.data = pd.DataFrame(data_list, columns=["Flow", "Stage"])
         self.data = self.data.set_index("Stage")
@@ -287,7 +279,7 @@ class QHBDY(Unit):
     def _write(self):
         """Function to write a valid QHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QHBDY
-        header = "QHBDY " + self.comment
+        header = self._create_header()
         name = self.name
         self.nrows = len(self.data)
 
@@ -348,43 +340,40 @@ class REFHBDY(Unit):
         """Function to read a given REFHBDY block and store data as class attributes"""
         # line 1 & 2
         # Extract comment and revision number
-        b = refhbdy_block[0].replace("REFHBDY #revision#", "").strip()
-        self._revision = _to_int(b[0], 1)
-        self.comment = b[1:].strip()
+        self._revision, self.comment = self._get_revision_and_comment(refhbdy_block[0])
         self.name = refhbdy_block[1][: self._label_len].strip()
 
         # line 3
         refhbdy_params1 = split_10_char(refhbdy_block[2])
-        # TODO: work out what this is
-        self._something = _to_float(refhbdy_params1[0])
+        self._unknown_param_1 = to_float(refhbdy_params1[0])
         self.easting = int(float(refhbdy_params1[1]))
         self.northing = int(float(refhbdy_params1[2]))
 
         # line 4
         refhbdy_opts = split_10_char(f"{refhbdy_block[3]:<90}")
-        self.time_delay = _to_float(refhbdy_opts[0])
+        self.time_delay = to_float(refhbdy_opts[0])
         # SD / timestep must be odd interval
-        self.timestep = _to_float(refhbdy_opts[1])
+        self.timestep = to_float(refhbdy_opts[1])
         # '' : Full hydrograph, 'pfonly' : peak flow, 'bfonly' : baseflow only
         self.sim_type = refhbdy_opts[2]
-        self.scale_method = _to_str(refhbdy_opts[3], "SCALEFACT")  # PEAKVALUE or SCALEFACT
-        self.scale_value = _to_float(refhbdy_opts[4], 1.0)
-        self.boundary_type = _to_str(refhbdy_opts[5], "HYDROGRAPH")  # HYDROGRAPH or HYETOGRAPH
-        self.scale_type = _to_str(refhbdy_opts[6], "FULL")  # FULL or RUNOFF
-        self.minflow = _to_float(refhbdy_opts[7])
+        self.scale_method = to_str(refhbdy_opts[3], "SCALEFACT")  # PEAKVALUE or SCALEFACT
+        self.scale_value = to_float(refhbdy_opts[4], 1.0)
+        self.boundary_type = to_str(refhbdy_opts[5], "HYDROGRAPH")  # HYDROGRAPH or HYETOGRAPH
+        self.scale_type = to_str(refhbdy_opts[6], "FULL")  # FULL or RUNOFF
+        self.minflow = to_float(refhbdy_opts[7])
         self.allow_override = refhbdy_opts[8]  # ''/OVERRIDE or NOOVERRIDE
 
         # line 5
         refhbdy_params2 = split_10_char(f"{refhbdy_block[4]:<60}")
-        self.area = _to_float(refhbdy_params2[0])
+        self.area = to_float(refhbdy_params2[0])
         try:
             # Maintain SAAR as integer if already is, else use float
             self.saar = int(refhbdy_params2[1])
         except ValueError:
             self.saar = float(refhbdy_params2[1])
-        self.urbext = _to_float(refhbdy_params2[2])
-        self.season = _to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
-        self.calc_source = _to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
+        self.urbext = to_float(refhbdy_params2[2])
+        self.season = to_str(refhbdy_params2[3], "DEFAULT")  # DEFAULT, SUMMER or WINTER
+        self.calc_source = to_str(refhbdy_params2[4], "DLL")  # DLL or REPORT
         self.use_urban_subdivisions = refhbdy_params2[5] != ""
         if self.use_urban_subdivisions:
             # Just keeping this raw for now as unlikely to be used.
@@ -399,37 +388,36 @@ class REFHBDY(Unit):
 
         # line 6
         rainfall_params1 = split_10_char(rainfall_params1)
-        self.storm_area = _to_float(rainfall_params1[0])
-        self.storm_duration = _to_float(rainfall_params1[1])
-        # TODO: work out what this is
-        self._something2 = _to_float(rainfall_params1[2])
+        self.storm_area = to_float(rainfall_params1[0])
+        self.storm_duration = to_float(rainfall_params1[1])
+        self._unknown_param_2 = to_float(rainfall_params1[2])
 
         # line 7
         self.rainfall_comment = rainfall_params2[20:]
         rainfall_params2 = split_10_char(rainfall_params2[:20])
         self.arf_method = rainfall_params2[1]
-        self._something3 = rainfall_params2[0]  # TODO: work out what this is
+        self._unknown_param_3 = rainfall_params2[0]
 
         # line 8
         rainfall_params3 = split_10_char(rainfall_params3)
-        self.observed_rainfall_depth = _to_float(rainfall_params3[0])
-        self.return_period = _to_float(rainfall_params3[1])
-        self.arf = _to_float(rainfall_params3[2])
-        self.ddf_c = _to_float(rainfall_params3[3])
-        self.ddf_d1 = _to_float(rainfall_params3[4])
-        self.ddf_d2 = _to_float(rainfall_params3[5])
-        self.ddf_d3 = _to_float(rainfall_params3[6])
-        self.ddf_e = _to_float(rainfall_params3[7])
-        self.ddf_f = _to_float(rainfall_params3[8])
+        self.observed_rainfall_depth = to_float(rainfall_params3[0])
+        self.return_period = to_float(rainfall_params3[1])
+        self.arf = to_float(rainfall_params3[2])
+        self.ddf_c = to_float(rainfall_params3[3])
+        self.ddf_d1 = to_float(rainfall_params3[4])
+        self.ddf_d2 = to_float(rainfall_params3[5])
+        self.ddf_d3 = to_float(rainfall_params3[6])
+        self.ddf_e = to_float(rainfall_params3[7])
+        self.ddf_f = to_float(rainfall_params3[8])
 
     def _write(self):
         """Function to write a valid REFHBDY block"""
         _validate_unit(self)  # Function to check the params are valid for QTBDY
-        header = f"REFHBDY #revision#{self._revision} {self.comment}"
+        header = self._create_header(include_revision=True)
         name = self.name[: self._label_len]
 
         refhbdy_block = [header, name]
-        line3 = join_10_char(self._something, self.easting, self.northing)
+        line3 = join_10_char(self._unknown_param_1, self.easting, self.northing)
         self.sim_type = (
             "" if self.sim_type.upper() == "FULL" else self.sim_type
         )  # Allow 'full' as an option
@@ -454,8 +442,8 @@ class REFHBDY(Unit):
         if self.use_urban_subdivisions:
             refhbdy_block.extend(self._urban_refh_data)
 
-        line6 = join_10_char(self.storm_area, self.storm_duration, self._something2)
-        line7 = join_10_char(self._something3, self.arf_method) + self.rainfall_comment
+        line6 = join_10_char(self.storm_area, self.storm_duration, self._unknown_param_2)
+        line7 = join_10_char(self._unknown_param_3, self.arf_method) + self.rainfall_comment
         line8 = join_10_char(
             self.observed_rainfall_depth,
             self.return_period,

@@ -8,9 +8,9 @@ import pandas as pd
 from shapely import wkt
 from shapely.geometry import LineString, Point
 
+from floodmodeller_api.units._helpers import to_float
 from floodmodeller_api.units.comment import COMMENT
 from floodmodeller_api.units.conduits import CONDUIT
-from floodmodeller_api.units.helpers import _to_float
 from floodmodeller_api.units.sections import RIVER
 
 if TYPE_CHECKING:
@@ -241,7 +241,7 @@ class TuflowToDat:
         self._xs_attributes["northing"] = northing
 
     def _organise_df(self):
-        # FIXME: Currently works but misses out last XS in series
+        # NB. this currently works but misses out last XS in series
         #   organise df
         self._xs_attributes["order"] = 0
         order_counter = 1
@@ -372,16 +372,16 @@ class TuflowToDat:
         for index, row in self._culvert_attributes.iterrows():
             if row["Type"] == "R":
                 subtype = "RECTANGULAR"
-                width = _to_float(row["Width_or_D"])
-                height = _to_float(row["Height_or_"])
-                friction_on_walls = _to_float(row["n_nF_Cd"])
-                friction_on_invert = _to_float(row["n_nF_Cd"])
-                friction_on_soffit = _to_float(row["n_nF_Cd"])
+                width = to_float(row["Width_or_D"])
+                height = to_float(row["Height_or_"])
+                friction_on_walls = to_float(row["n_nF_Cd"])
+                friction_on_invert = to_float(row["n_nF_Cd"])
+                friction_on_soffit = to_float(row["n_nF_Cd"])
             elif row["Type"] == "C":
                 subtype = "CIRCULAR"
-                diameter = _to_float(row["Width_or_D"])
-                friction_below_axis = _to_float(row["n_nF_Cd"])
-                friction_above_axis = _to_float(row["n_nF_Cd"])
+                diameter = to_float(row["Width_or_D"])
+                friction_below_axis = to_float(row["n_nF_Cd"])
+                friction_above_axis = to_float(row["n_nF_Cd"])
             else:
                 continue
             comment = ""
@@ -396,11 +396,11 @@ class TuflowToDat:
                 if i == 0:
                     name_ud = name + "u"
                     next_dist = length
-                    invert = _to_float(row["US_Invert"])
+                    invert = to_float(row["US_Invert"])
                 else:
                     name_ud = name + "d"
                     next_dist = dist_to_next
-                    invert = _to_float(row["DS_Invert"])
+                    invert = to_float(row["DS_Invert"])
 
                 if row["Type"] == "R":
                     unit = CONDUIT(

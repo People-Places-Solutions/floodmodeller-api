@@ -1,6 +1,6 @@
 """
 Flood Modeller Python API
-Copyright (C) 2024 Jacobs U.K. Limited
+Copyright (C) 2025 Jacobs U.K. Limited
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
 as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -44,9 +44,7 @@ urban_parameter_options = {
         "options": ["INTENSITY", "VOLUME", "CUMULATIVE"],
     },
     "interval": {
-        # TODO: UPDATE TO CONSIDER - decimal hours or hours:minutes format (e.g., 0:15 for 15-minute readings). search for presence of ";" during _read maybe?
         # try turing to float else keep as string
-        # TODO: add new a type of match called RegEx match for example "[0-9]:[0-9]",
         "type": "type-match",
         "options": (float, int, str),
     },
@@ -200,7 +198,6 @@ urban_parameter_options = {
         "options": (type(None), int),
     },
     "culvert": {
-        # TODO: str added to allow case when optional parameter not provided (and so is ""). Update to improve handling,
         "type": "type-match",
         "options": (type(None), int, str),
     },
