@@ -21,7 +21,7 @@ def section_not_cut_at_highest_banks(section: RIVER) -> list[int]:
     left_bank, right_bank = 0, len(section.active_data) - 1
     left_bank_y, right_bank_y = section.active_data.iloc[0].Y, section.active_data.iloc[-1].Y
     max_y = section.active_data.Y.max()
-    max_y_index = section.active_data.Y.argmax()
+    max_y_index = int(section.active_data.Y.argmax())
     threshold_max_y = max_y - 0.01
     if (
         left_bank < max_y_index < right_bank
@@ -30,19 +30,21 @@ def section_not_cut_at_highest_banks(section: RIVER) -> list[int]:
     ):
         bad_indexes.append(max_y_index)
 
-    bed = section.active_data.Y.argmin()
+    bed = int(section.active_data.Y.argmin())
     opposite_bank, opposite_bank_adj = (
         (left_bank, 0) if max_y_index > bed else (right_bank, right_bank + 1)
     )
-    opposite_side_max = section.active_data.iloc[
-        min(opposite_bank_adj, bed) : max(opposite_bank_adj, bed)
-    ].Y.argmax() + min(opposite_bank_adj, bed)
+    start_slice = min(opposite_bank_adj, bed)
+    end_slice = max(opposite_bank_adj, bed)
+    opposite_side_max = (
+        int(section.active_data.iloc[start_slice:end_slice].Y.argmax()) + start_slice
+    )
 
     opposite_bank_y = section.active_data.iloc[opposite_bank].Y
     opposite_side_threshold_y = section.active_data.iloc[opposite_side_max].Y - 0.01
 
     if opposite_side_max != opposite_bank and opposite_side_threshold_y > opposite_bank_y:
-        bad_indexes.append(opposite_side_max)
+        bad_indexes.append(int(opposite_side_max))
 
     return bad_indexes
 
@@ -107,7 +109,7 @@ def plot_section(section: RIVER, bad_indexes: list[int], output_folder: Path) ->
 
 
 if __name__ == "__main__":
-    dat = DAT("sample_data/EX3.DAT")
+    dat = DAT("sample_code/sample_data/EX3.DAT")
     output_folder = Path("uncut_section_plots")
     output_folder.mkdir(parents=True, exist_ok=True)
     identify_all_uncut_sections(dat, output_folder)

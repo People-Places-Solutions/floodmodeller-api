@@ -15,8 +15,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, Path("..\\..").resolve())
-print(sys.path)
+sys.path.insert(0, str(Path("..\\..").resolve()))
 
 
 # -- Project information -----------------------------------------------------
