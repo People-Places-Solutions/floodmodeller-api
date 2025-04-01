@@ -649,7 +649,7 @@ class FLOODPLAIN(Unit):
 
         Returns:
             pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y',
-            'Mannings n','Easting', 'Northing', 
+            'Mannings n','Easting', 'Northing'
         """
         return self._data
 

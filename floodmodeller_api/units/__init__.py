@@ -7,7 +7,7 @@ from .connectors import JUNCTION, LATERAL
 from .controls import RESERVOIR
 from .iic import IIC
 from .losses import BLOCKAGE, CULVERT
-from .sections import INTERPOLATE, REPLICATE, RIVER, FLOODPLAIN
+from .sections import FLOODPLAIN, INTERPOLATE, REPLICATE, RIVER
 from .structures import (
     BRIDGE,
     CRUMP,
