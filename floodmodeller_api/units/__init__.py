@@ -7,7 +7,7 @@ from .connectors import JUNCTION, LATERAL
 from .controls import RESERVOIR
 from .iic import IIC
 from .losses import BLOCKAGE, CULVERT
-from .sections import INTERPOLATE, REPLICATE, RIVER
+from .sections import FLOODPLAIN, INTERPOLATE, REPLICATE, RIVER
 from .structures import (
     BRIDGE,
     CRUMP,
@@ -24,7 +24,7 @@ from .unsupported import UNSUPPORTED
 from .variables import Variables
 
 TBoundaries: TypeAlias = HTBDY | QHBDY | QTBDY | REFHBDY
-TSections: TypeAlias = INTERPOLATE | REPLICATE | RIVER
+TSections: TypeAlias = INTERPOLATE | REPLICATE | RIVER | FLOODPLAIN
 TConduits: TypeAlias = CONDUIT
 TConnectors: TypeAlias = JUNCTION | LATERAL
 TControls: TypeAlias = RESERVOIR

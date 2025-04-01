@@ -545,3 +545,120 @@ class REPLICATE(Unit):
             "northing": northing,
         }.items():
             setattr(self, param, val)
+
+
+class FLOODPLAIN(Unit):
+    """Class to hold and process FLOODPLAIN unit type.
+
+    Args:
+        name (str, optional): FLOODPLAIN section name
+        comment (str, optional): Comment included in unit
+        data (pandas.Dataframe): Dataframe object containing all the floodplain section data as well as all other relevant data.
+            Columns are ``'X', 'Y', 'Mannings n', 'Easting', 'Northing'``
+
+    Raises:
+        NotImplementedError: Raised if class is initialised without existing FLOODPLAIN block (i.e. if attempting to create new FLOODPLAIN unit).
+            This will be an option for future releases
+
+    Returns:
+        FLOODPLAIN: Flood Modeller FLOODPLAIN Unit class object
+    """
+
+    _unit = "FLOODPLAIN"
+    _required_columns = (
+        "X",
+        "Y",
+        "Mannings n",
+        "Easting",
+        "Northing",
+    )
+
+    def _read(self, fp_block):
+        """Function to read a given FLOODPLAIN block and store data as class attributes."""
+
+        self._subtype = fp_block[1].split(" ")[0].strip()
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{fp_block[2]:<{7*self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = self._remove_unit_name(fp_block[0])
+
+        params = split_10_char(f"{fp_block[3]:<60}")
+        self.calibration_coefficient = to_float(params[0])
+        self.modular_limit = to_float(params[1])
+        self.upstream_separation = to_float(params[2])
+        self.downstream_separation = to_float(params[3])
+        self.force_friction_flow = params[4].upper() == "FRICTION"
+        self.ds_area_constraint = to_float(params[5])
+
+        self.nrows = int(split_10_char(fp_block[4])[0])
+        data_list = []
+        for row in fp_block[5:]:
+            row_split = split_10_char(f"{row:<50}")
+            x = to_float(row_split[0])  # chainage
+            y = to_float(row_split[1])  # elevation
+            n = to_float(row_split[2])  # Mannings
+            easting = to_float(row_split[3])  # easting
+            northing = to_float(row_split[4])  # northing
+
+            data_list.append(
+                [
+                    x,
+                    y,
+                    n,
+                    easting,
+                    northing,
+                ],
+            )
+        self._data = pd.DataFrame(
+            data_list,
+            columns=self._required_columns,
+        )
+
+    def _write(self):
+        """Function to write a valid FLOODPLAIN block"""
+
+        # Function to check the params are valid for FLOODPLAIN SECTION unit
+        _validate_unit(self)
+        header = self._create_header()
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+        # Manual so slope can have more sf
+        params = join_10_char(
+            self.calibration_coefficient,
+            self.modular_limit,
+            self.upstream_separation,
+            self.downstream_separation,
+            "FRICTION" if self.force_friction_flow else "",
+            self.ds_area_constraint,
+        )
+        self.nrows = len(self._data)
+        fp_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
+
+        fp_data = []
+        for _, x, y, n, easting, northing in self._data.itertuples():
+            row = join_10_char(x, y, n, easting, northing)
+            fp_data.append(row)
+
+        fp_block.extend(fp_data)
+
+        return fp_block
+
+    @property
+    def data(self) -> pd.DataFrame:
+        """Data table for the FLOODPLAIN cross section.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y',
+            'Mannings n','Easting', 'Northing'
+        """
+        return self._data
+
+    @data.setter
+    def data(self, new_df: pd.DataFrame) -> None:
+        if not isinstance(new_df, pd.DataFrame):
+            msg = "The updated data table for a floodplain section must be a pandas DataFrame."
+            raise ValueError(msg)
+        if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
+        self._data = new_df
