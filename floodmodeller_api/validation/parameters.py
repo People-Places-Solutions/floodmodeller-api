@@ -661,20 +661,4 @@ parameter_options = {
         "type": "list-string-length",
         "max_length": 12,
     },
-    "upstream_separation": {
-        "type": "type-match",
-        "options": (float, int),
-    },
-    "downstream_separation": {
-        "type": "type-match",
-        "options": (float, int),
-    },
-    "force_friction_flow": {
-        "type": "type-match",
-        "options": (bool),
-    },
-    "ds_area_constraint": {
-        "type": "type-match",
-        "options": (float, int),
-    },
 }

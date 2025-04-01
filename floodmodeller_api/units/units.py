@@ -56,7 +56,6 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "JUNCTION": {"group": "connectors", "has_subtype": True},
     "LATERAL": {"group": "connectors", "has_subtype": False},
     "RESERVOIR": {"group": "controls", "has_subtype": False},
-    "FLOODPLAIN": {"group": "sections", "has_subtype": True},
 }
 
 UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
@@ -66,6 +65,7 @@ UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "FEHBDY": {"group": "boundaries", "has_subtype": False},  # RAINFALL RUNOFF METHOD boundary
     "FLOOD RELIEF": {"group": None, "has_subtype": True},  # found in dat file
     "FLOOD RELIEF ARCH": {"group": "structures", "has_subtype": True},  # found in FM help
+    "FLOODPLAIN": {"group": None, "has_subtype": True},  # floodplain section culvert
     "FRQSIM": {"group": "boundaries", "has_subtype": False},  # flood FReQuency SIMulation
     "FSRBDY": {"group": "boundaries", "has_subtype": False},  # FEH Rainfall Runoff Method
     "FSSR16BDY": {"group": "boundaries", "has_subtype": False},  # FSSR16 Method
