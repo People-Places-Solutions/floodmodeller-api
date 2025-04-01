@@ -30,6 +30,7 @@ from ._helpers import (
     split_n_char,
     to_float,
     to_int,
+    write_dataframe,
 )
 from .conveyance import calculate_cross_section_conveyance_cached
 
@@ -112,7 +113,7 @@ class RIVER(Unit):
 
         self._subtype = riv_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{riv_block[2]:<{7 * self._label_len}}", self._label_len)
 
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
@@ -203,7 +204,7 @@ class RIVER(Unit):
                 self.lat4,
             )
             # Manual so slope can have more sf
-            params = f'{self.dist_to_next:>10.3f}{"":>10}{self.slope:>10.6f}{self.density:>10.3f}'
+            params = f"{self.dist_to_next:>10.3f}{'':>10}{self.slope:>10.6f}{self.density:>10.3f}"
             self.nrows = len(self._data)
             riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
 
@@ -373,7 +374,7 @@ class INTERPOLATE(Unit):
         """Function to read a given INTERPOLATE WEIR block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{7 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.first_spill = labels[1]
         self.second_spill = labels[2]
@@ -468,7 +469,7 @@ class REPLICATE(Unit):
         """Function to read a given REPLICATE block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{7 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.first_spill = labels[1]
         self.second_spill = labels[2]
@@ -576,9 +577,9 @@ class FLOODPLAIN(Unit):
     def _read(self, fp_block):
         """Function to read a given FLOODPLAIN block and store data as class attributes."""
 
-        self._subtype = fp_block[1].split(" ")[0].strip()
+        self._subtype = self._get_first_word(fp_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{fp_block[2]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{fp_block[2]:<{7 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(fp_block[0])
@@ -632,16 +633,7 @@ class FLOODPLAIN(Unit):
             self.ds_area_constraint,
         )
         self.nrows = len(self._data)
-        fp_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
-
-        fp_data = []
-        for _, x, y, n, easting, northing in self._data.itertuples():
-            row = join_10_char(x, y, n, easting, northing)
-            fp_data.append(row)
-
-        fp_block.extend(fp_data)
-
-        return fp_block
+        return [header, self.subtype, labels, params, *write_dataframe(self.nrows, self._data)]
 
     @property
     def data(self) -> pd.DataFrame:
@@ -657,7 +649,7 @@ class FLOODPLAIN(Unit):
     def data(self, new_df: pd.DataFrame) -> None:
         if not isinstance(new_df, pd.DataFrame):
             msg = "The updated data table for a floodplain section must be a pandas DataFrame."
-            raise ValueError(msg)
+            raise TypeError(msg)
         if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
             msg = f"The DataFrame must only contain columns: {self._required_columns}"
             raise ValueError(msg)
