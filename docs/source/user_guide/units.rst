@@ -110,7 +110,7 @@ Structure units
 .. autoclass:: floodmodeller_api.units.OUTFALL
 
 ``FLOODPLAIN()``
-~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.FLOODPLAIN
 
