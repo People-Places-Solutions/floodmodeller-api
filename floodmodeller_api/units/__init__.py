@@ -12,6 +12,7 @@ from .structures import (
     BRIDGE,
     CRUMP,
     FLAT_V_WEIR,
+    FLOODPLAIN,
     ORIFICE,
     OUTFALL,
     RNWEIR,
@@ -30,6 +31,6 @@ TConnectors: TypeAlias = JUNCTION | LATERAL
 TControls: TypeAlias = RESERVOIR
 TLosses: TypeAlias = BLOCKAGE | CULVERT
 TStructures: TypeAlias = (
-    BRIDGE | CRUMP | FLAT_V_WEIR | ORIFICE | OUTFALL | RNWEIR | SLUICE | SPILL | WEIR
+    BRIDGE | CRUMP | FLAT_V_WEIR | ORIFICE | OUTFALL | RNWEIR | SLUICE | SPILL | WEIR | FLOODPLAIN
 )
 TUnsupported: TypeAlias = UNSUPPORTED

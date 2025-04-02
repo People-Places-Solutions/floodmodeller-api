@@ -1518,3 +1518,145 @@ class OUTFALL(Unit):
             "modular_limit": modular_limit,
         }.items():
             setattr(self, param, val)
+
+
+class FLOODPLAIN(Unit):
+    """Class to hold and process FLOODPLAIN unit type.
+
+    Args:
+        name (str, optional): FLOODPLAIN section name
+        comment (str, optional): Comment included in unit
+        ds_label (str, optional): Downstream node label
+        data (pandas.Dataframe, optional): Dataframe object containing all the floodplain section data as well as all other relevant data.
+            Columns are ``'X', 'Y', 'Mannings n', 'Easting', 'Northing'``
+        calibration_coefficient (float, optional): Weir coefficient (includes discharge, velocity and calibration coefficients, optional)
+        modular_limit (float, optional): Ratio of upstream and downstream heads when switching between free and drowned mode
+        upstream_separation (float, optional): Distance from centre of upstream cell to section (m)
+        downstream_separation (float, optional): Distance from section to centre of downstream cell (m)
+        force_friction_flow (bool, optional): Force friction flow for all segments
+        ds_area_constraint (float, optional): Minimum value of downstream area (relative to upstream area) when Manning's equation applies. Typical value 0.1.
+
+    Returns:
+        FLOODPLAIN: Flood Modeller FLOODPLAIN Unit class object
+    """
+
+    _unit = "FLOODPLAIN"
+    _required_columns = (
+        "X",
+        "Y",
+        "Mannings n",
+        "Easting",
+        "Northing",
+    )
+
+    def _read(self, fp_block):
+        """Function to read a given FLOODPLAIN block and store data as class attributes."""
+
+        self._subtype = self._get_first_word(fp_block[1])
+        # Extends label line to be correct length before splitting to pick up blank labels
+        labels = split_n_char(f"{fp_block[2]:<{7 * self._label_len}}", self._label_len)
+        self.name = labels[0]
+        self.ds_label = labels[1]
+        self.comment = self._remove_unit_name(fp_block[0])
+
+        params = split_10_char(f"{fp_block[3]:<60}")
+        self.calibration_coefficient = to_float(params[0])
+        self.modular_limit = to_float(params[1])
+        self.upstream_separation = to_float(params[2])
+        self.downstream_separation = to_float(params[3])
+        self.force_friction_flow = params[4].upper() == "FRICTION"
+        self.ds_area_constraint = to_float(params[5])
+
+        self.nrows = int(split_10_char(fp_block[4])[0])
+        data_list = []
+        for row in fp_block[5:]:
+            row_split = split_10_char(f"{row:<50}")
+            x = to_float(row_split[0])  # chainage
+            y = to_float(row_split[1])  # elevation
+            n = to_float(row_split[2])  # Mannings
+            easting = to_float(row_split[3])  # easting
+            northing = to_float(row_split[4])  # northing
+
+            data_list.append(
+                [
+                    x,
+                    y,
+                    n,
+                    easting,
+                    northing,
+                ],
+            )
+        self._data = pd.DataFrame(
+            data_list,
+            columns=self._required_columns,
+        )
+
+    def _write(self):
+        """Function to write a valid FLOODPLAIN block"""
+
+        # Function to check the params are valid for FLOODPLAIN SECTION unit
+        _validate_unit(self)
+        header = self._create_header()
+        labels = join_n_char_ljust(self._label_len, self.name, self.ds_label)
+        # Manual so slope can have more sf
+        params = join_10_char(
+            self.calibration_coefficient,
+            self.modular_limit,
+            self.upstream_separation,
+            self.downstream_separation,
+            "FRICTION" if self.force_friction_flow else "",
+            self.ds_area_constraint,
+        )
+        self.nrows = len(self._data)
+        return [header, self.subtype, labels, params, *write_dataframe(self.nrows, self._data)]
+
+    def _create_from_blank(  # noqa: PLR0913
+        self,
+        name="new_floodplain",
+        comment="",
+        ds_label="",
+        data=None,
+        calibration_coefficient=1.0,
+        modular_limit=0.8,
+        upstream_separation=0.0,
+        downstream_separation=0.0,
+        force_friction_flow=False,
+        ds_area_constraint=0.1,
+    ):
+        # Initiate new FLOODPLAIN (currently hardcoding this as default)
+        self._subtype = "SECTION"
+
+        for param, val in {
+            "name": name,
+            "comment": comment,
+            "ds_label": ds_label,
+            "calibration_coefficient": calibration_coefficient,
+            "modular_limit": modular_limit,
+            "upstream_separation": upstream_separation,
+            "downstream_separation": downstream_separation,
+            "force_friction_flow": force_friction_flow,
+            "ds_area_constraint": ds_area_constraint,
+        }.items():
+            setattr(self, param, val)
+
+        self._data = self._enforce_dataframe(data, self._required_columns)
+
+    @property
+    def data(self) -> pd.DataFrame:
+        """Data table for the FLOODPLAIN cross section.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe for the cross section data with columns: 'X', 'Y',
+            'Mannings n','Easting', 'Northing'
+        """
+        return self._data
+
+    @data.setter
+    def data(self, new_df: pd.DataFrame) -> None:
+        if not isinstance(new_df, pd.DataFrame):
+            msg = "The updated data table for a floodplain section must be a pandas DataFrame."
+            raise TypeError(msg)
+        if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
+            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+            raise ValueError(msg)
+        self._data = new_df

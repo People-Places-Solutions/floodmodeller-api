@@ -1,0 +1,52 @@
+
+#REVISION#1
+         4     0.750     0.900     0.100     0.001        12SI
+    10.000     0.010     0.010     0.700     0.100     0.700     0.000
+RAD FILE
+
+END GENERAL
+RIVER
+SECTION
+1
+     5.000              0.0001      1000
+         1
+     0.000     0.000     0.000     1.000               0.000     0.000          
+RIVER
+SECTION
+2
+     5.000              0.0001      1000
+         1
+     0.000     0.000     0.000     1.000               0.000     0.000          
+RIVER
+SECTION
+3
+     0.000                      1000.000
+         1
+     0.000     0.000     0.000     1.000
+FLOODPLAIN floodplain comment
+SECTION
+3           down
+     1.000     0.800   150.000    75.000  FRICTION     0.100
+         3
+     0.000     1.000     0.030      0.00      0.00
+    10.000     1.500     0.030      0.00      0.00
+    90.000     1.800     0.030      0.00      0.00
+RIVER
+SECTION
+down
+     0.000                      1000.000
+         1
+     0.000     0.000     0.000     1.000
+INITIAL CONDITIONS
+ label   ?      flow     stage froude no  velocity     umode    ustate         z
+3            y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+1            y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+2            y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+down         y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+GISINFO
+RIVER SECTION 1 0 0 0 0 0
+RIVER SECTION 2 0 0 0 0 0
+RIVER SECTION 3 0 0 0 0 0
+FLOODPLAIN SECTION 3 0 0 0 0 0
+RIVER SECTION down 0 0 0 0 0
+down 0 0 0 0 0

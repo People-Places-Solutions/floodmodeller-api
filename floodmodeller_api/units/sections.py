@@ -112,7 +112,7 @@ class RIVER(Unit):
 
         self._subtype = riv_block[1].split(" ")[0].strip()
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{riv_block[2]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{riv_block[2]:<{7 * self._label_len}}", self._label_len)
 
         # Only supporting 'SECTION' subtype for now
         if self.subtype == "SECTION":
@@ -203,7 +203,7 @@ class RIVER(Unit):
                 self.lat4,
             )
             # Manual so slope can have more sf
-            params = f'{self.dist_to_next:>10.3f}{"":>10}{self.slope:>10.6f}{self.density:>10.3f}'
+            params = f"{self.dist_to_next:>10.3f}{'':>10}{self.slope:>10.6f}{self.density:>10.3f}"
             self.nrows = len(self._data)
             riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
 
@@ -373,7 +373,7 @@ class INTERPOLATE(Unit):
         """Function to read a given INTERPOLATE WEIR block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{7 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.first_spill = labels[1]
         self.second_spill = labels[2]
@@ -468,7 +468,7 @@ class REPLICATE(Unit):
         """Function to read a given REPLICATE block and store data as class attributes"""
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{7*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{7 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.first_spill = labels[1]
         self.second_spill = labels[2]
