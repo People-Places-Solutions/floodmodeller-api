@@ -82,7 +82,7 @@ api_class_mapping: dict[str, Any] = {
     "floodmodeller_api.units.sections.INTERPOLATE": INTERPOLATE,
     "floodmodeller_api.units.sections.REPLICATE": REPLICATE,
     "floodmodeller_api.units.sections.RIVER": RIVER,
-    "floodmodeller_api.units.sections.FLOODPLAIN": FLOODPLAIN,
+    "floodmodeller_api.units.structures.FLOODPLAIN": FLOODPLAIN,
     "floodmodeller_api.units.structures.BRIDGE": BRIDGE,
     "floodmodeller_api.units.structures.CRUMP": CRUMP,
     "floodmodeller_api.units.structures.FLAT_V_WEIR": FLAT_V_WEIR,

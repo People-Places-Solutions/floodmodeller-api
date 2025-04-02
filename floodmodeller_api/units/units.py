@@ -56,7 +56,7 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "JUNCTION": {"group": "connectors", "has_subtype": True},
     "LATERAL": {"group": "connectors", "has_subtype": False},
     "RESERVOIR": {"group": "controls", "has_subtype": False},
-    "FLOODPLAIN": {"group": "sections", "has_subtype": True},
+    "FLOODPLAIN": {"group": "structures", "has_subtype": True},
 }
 
 UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {

@@ -109,6 +109,11 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.OUTFALL
 
+``FLOODPLAIN()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.FLOODPLAIN
+
 .. _loss_units:
 
 Loss units
