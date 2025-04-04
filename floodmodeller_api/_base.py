@@ -83,18 +83,24 @@ class FMFile(Jsonable):
     def _read(self):
         raise NotImplementedError
 
-    def _update(self):
+    def update(self) -> None:
+        raise NotImplementedError
+
+    def save(self, filepath: str | Path) -> None:
+        raise NotImplementedError
+
+    def _update(self) -> None:
         """Updates the existing self._filetype based on any altered attributes"""
         if self._filepath is None:
             msg = f"{self._filetype} must be saved to a specific filepath before update() can be called."
             raise UserWarning(msg)
 
         string = self._write()
-        with open(self._filepath, "w", encoding=self.ENCODING) as _file:
+        with open(self._filepath, "w", encoding=self.ENCODING, newline="\r\n") as _file:
             _file.write(string)
         logging.info("%s File Updated!", self._filepath)
 
-    def _save(self, filepath):
+    def _save(self, filepath: str | Path) -> None:
         filepath = Path(filepath).absolute()
         if filepath.suffix.lower() != self._suffix:
             msg = f'Given filepath does not point to a filepath suffixed "{self._suffix}". Please point to the full path to save the {self._filetype} file'
@@ -104,7 +110,7 @@ class FMFile(Jsonable):
             Path.mkdir(filepath.parent)
 
         string = self._write()
-        with open(filepath, "w", encoding=self.ENCODING) as _file:
+        with open(filepath, "w", encoding=self.ENCODING, newline="\r\n") as _file:
             _file.write(string)
         self._filepath = filepath  # Updates the filepath attribute to the given path
 

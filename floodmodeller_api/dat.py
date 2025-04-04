@@ -88,7 +88,7 @@ class DAT(FMFile):
         if self._gxy_data is not None:
             gxy_string = self._gxy_data
             new_gxy_path = filepath.with_suffix(".gxy")
-            with open(new_gxy_path, "w") as gxy_file:
+            with open(new_gxy_path, "w", encoding=self.ENCODING, newline="\r\n") as gxy_file:
                 gxy_file.write(gxy_string)
             self._gxy_filepath = new_gxy_path
 
