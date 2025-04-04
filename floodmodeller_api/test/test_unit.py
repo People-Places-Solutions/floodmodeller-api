@@ -16,6 +16,7 @@ class DummyUnit(Unit):
         ("RESERVOIR", "RESERVOIR 45678 This is a comment", None, "45678 This is a comment"),
         ("RESERVOIR", "RESERVOIR #revision#1 Mr Comment123", 1, "Mr Comment123"),
         ("LATERAL", "LATERAL #revision#1", 1, ""),
+        ("RIVER", "RIVER look at this lovely RIVER", None, "look at this lovely RIVER"),
     ],
 )
 def test_get_revision_and_comment(
@@ -47,6 +48,7 @@ def test_get_revision_and_comment(
             False,
             "#revision#1 another #revision#1 tag",
         ),
+        ("RIVER", "RIVER look at this lovely RIVER", False, "look at this lovely RIVER"),
     ],
 )
 def test_remove_unit_name(unit: str, header: str, remove_revision: bool, expected_result: str):

@@ -442,7 +442,7 @@ class XML2D(FMFile):
         # Update XML dict and tree
         self._read()
 
-    def save(self, filepath: str | Path | None):
+    def save(self, filepath: str | Path) -> None:
         """Saves the XML to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the XML() class will continue working from the saved location, therefore any further calls to XML.update() will
         update in the latest saved location rather than the original source XML used to construct the class
