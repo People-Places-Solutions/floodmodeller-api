@@ -11,7 +11,6 @@ def uplift_floodplain_and_river_mannings(dat, uplift_factor):
 
 
 if __name__ == "__main__":
-
     dat_filepath = Path("<...>.dat")
     for uplift_factor, suffix in [(0.8, "_Nmin20"), (1.2, "_Nplus20")]:
         dat = DAT(dat_filepath)
