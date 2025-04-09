@@ -30,7 +30,8 @@ You can install the floodmodeller_api package from PyPI with the following comma
 pip install floodmodeller-api
 ```
 
-Python 3.10 or greater is required.
+Flood Modeller API is regularly tested for all versions of python 3.10 onwards. Although it may work for older versions of python, we recommend using at least v3.10 and ideally the latest 
+stable release.
 
 Once you have installed floodmodeller_api to your python environment, you can import the package with:
 
