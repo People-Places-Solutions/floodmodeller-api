@@ -18,6 +18,7 @@ from __future__ import annotations
 
 """ Holds the base unit class for all FM Units """
 
+import contextlib
 import logging
 import re
 from itertools import chain
@@ -139,6 +140,10 @@ class Unit(Jsonable):
 
         result = True
         diff = []
+        # Reset data attributes before checking equivalent
+        with contextlib.suppress(AttributeError):
+            _ = self.data, other.data
+
         result, diff = check_item_with_dataframe_equal(
             self.__dict__,
             other.__dict__,

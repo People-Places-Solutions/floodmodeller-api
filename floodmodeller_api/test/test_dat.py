@@ -218,6 +218,18 @@ def test_diff(test_workspace, caplog):
     )
 
 
+def test_diff_active_data(test_workspace):
+    dat = DAT(Path(test_workspace, "ex4.DAT"))
+    dat_copy = DAT(Path(test_workspace, "ex4.DAT"))
+    assert dat == dat_copy
+
+    for section in dat.sections.values():
+        if section.unit == "RIVER":
+            _ = section.active_data
+
+    assert dat == dat_copy
+
+
 def test_valid_network(test_workspace: Path):
     """Test against network derived manually."""
     dat = DAT(test_workspace / "network.dat")
