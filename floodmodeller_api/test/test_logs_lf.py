@@ -27,6 +27,7 @@ def test_lf1_info_dict(lf1_fp_simple: Path):
     assert lf1.info["max_system_volume"] == 270549
     assert lf1.info["mass_balance_error"] == -0.03
     assert lf1.info["progress"] == 100
+    assert lf1.info["total_boundary_inflow"] == 5506290
 
 
 def test_lf1_report_progress(lf1_fp_simple: Path):

@@ -18,9 +18,9 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+import re
 import time
 from typing import TYPE_CHECKING
-import re
 
 import pandas as pd
 
@@ -133,7 +133,7 @@ class LF(FMFile):
                 elif raw_line.startswith(parser.prefix):
                     # store everything after prefix
                     end_of_line = raw_line.split(parser.prefix)[1].lstrip()
-                    
+
                 else:
                     continue
                 parser.process_line(end_of_line)

@@ -171,7 +171,7 @@ class Parser(ABC):
         exclude: str | None = None,
         is_index: bool | None = False,
         before_index: bool | None = False,
-        use_regex: bool | None = False
+        use_regex: bool | None = False,
     ):
         self._name = name
 
