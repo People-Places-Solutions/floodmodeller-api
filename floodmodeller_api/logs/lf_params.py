@@ -468,43 +468,51 @@ lf2_data_to_extract = {
     },
     "timestep": {
         "class": FloatParser,
-        "prefix": "!!output2     Model timestep             :",
+        "prefix": r"^!!output2\s+Model timestep\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "wetting_drying_depth": {
         "class": FloatParser,
-        "prefix": "!!output2     Wetting/drying depth       :",
+        "prefix": r"^!!output2\s+Wetting/drying depth\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "beta": {
         "class": FloatParser,
-        "prefix": "!!output2     Beta                       :",
+        "prefix": r"^!!output2\s+Beta\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "number_of_iterations": {
         "class": FloatParser,
-        "prefix": "!!output2     Number of iterations       :",
+        "prefix": r"^!!output2\s+Number of iterations\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "calculation_depth": {
         "class": FloatParser,
-        "prefix": "!!output2     Calculation depth          :",
+        "prefix": r"^!!output2\s+Calculation depth\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "friction_depth": {
         "class": FloatParser,
-        "prefix": "!!output2     Friction depth             :",
+        "prefix": r"^!!output2\s+Friction depth\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "eddy_viscosity": {
         "class": FloatParser,
-        "prefix": "!!output2     Eddy Viscosity             :",
+        "prefix": r"^!!output2\s+Eddy Viscosity\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "velocity_head_threshold": {
         "class": FloatParser,
-        "prefix": "!!output2     Velocity head threshold    :",
+        "prefix": r"^!!output2\s+Velocity head threshold\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "rainfall_accumulation_depth": {
         "class": FloatParser,
@@ -513,8 +521,9 @@ lf2_data_to_extract = {
     },
     "negative_depth_threshold": {
         "class": FloatParser,
-        "prefix": "!!output2     Negative depth threshold   :",
+        "prefix": r"^!!output2\s+Negative depth threshold\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "memory_use_estimate": {
         "class": FloatSplitParser,
@@ -524,8 +533,9 @@ lf2_data_to_extract = {
     },
     "friction_depth_threshold": {
         "class": FloatParser,
-        "prefix": "!!output2     Friction depth threshold   :",
+        "prefix": r"^!!output2\s+Friction depth threshold\s*:",
         "data_type": "last",
+        "use_regex": True,
     },
     "number_of_cells": {
         "class": FloatParser,
@@ -544,8 +554,9 @@ lf2_data_to_extract = {
     },
     "final_mass_error": {
         "class": FloatSplitParser,
-        "prefix": "!!output2    Final mass error            :",
+        "prefix": r"^!!output2\s+Final mass error\s*:",
         "data_type": "last",
+        "use_regex": True,
         "split": "%",
     },
     "combined_mass_error": {
