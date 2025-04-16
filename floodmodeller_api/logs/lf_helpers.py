@@ -171,6 +171,7 @@ class Parser(ABC):
         exclude: str | None = None,
         is_index: bool | None = False,
         before_index: bool | None = False,
+        use_regex: bool | None = False
     ):
         self._name = name
 
@@ -184,6 +185,7 @@ class Parser(ABC):
 
         self.data_type = data_type
         self.data = data_factory(data_type, name)
+        self.use_regex = use_regex
 
     def process_line(self, raw_line: str) -> None:
         """self._process_line with exception handling of expected nan values"""
