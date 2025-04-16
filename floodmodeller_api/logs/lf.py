@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
+import re
 import time
 from typing import TYPE_CHECKING
 
@@ -124,16 +125,23 @@ class LF(FMFile):
             for key in self._data_to_extract:
                 parser = self._extracted_data[key]
 
-                # lines which start with prefix
-                if raw_line.startswith(parser.prefix):
+                if parser.use_regex:
+                    if not (match := re.match(parser.prefix + "(.*)", raw_line)):
+                        continue
+                    end_of_line = match.group(1).lstrip()
+
+                elif raw_line.startswith(parser.prefix):
                     # store everything after prefix
                     end_of_line = raw_line.split(parser.prefix)[1].lstrip()
-                    parser.process_line(end_of_line)
 
-                    # index marks the end of an iteration
-                    if parser.is_index is True:
-                        self._sync_cols()
-                        self._no_iters += 1
+                else:
+                    continue
+                parser.process_line(end_of_line)
+
+                # index marks the end of an iteration
+                if parser.is_index is True:
+                    self._sync_cols()
+                    self._no_iters += 1
 
             # update counter
             self._no_lines += 1
