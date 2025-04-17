@@ -1,0 +1,19 @@
+***********************************
+What's new in 0.5.3 (April 2025)
+***********************************
+
+This page details the changes for version 0.5.3 of Flood Modeller API
+
+New features
+---------------
+- New supported unit: :class:`~floodmodeller_api.units.FLOODPLAIN`
+
+Updates
+-----------
+- Updated structure log tool 
+
+Bug fixes
+------------
+- `Fix bug in DAT network method <https://github.com/People-Places-Solutions/floodmodeller-api/pull/176>`_
+- `Fix revision comment parsing and CRLF windows line endings <https://github.com/People-Places-Solutions/floodmodeller-api/pull/184>`_
+- `Fix LF1 class not reading all summary data <https://github.com/People-Places-Solutions/floodmodeller-api/pull/186>`_
