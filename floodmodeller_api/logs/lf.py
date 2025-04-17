@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
-import re
 import time
 from typing import TYPE_CHECKING
 
@@ -126,7 +125,7 @@ class LF(FMFile):
                 parser = self._extracted_data[key]
 
                 if parser.use_regex:
-                    if not (match := re.match(parser.prefix + "(.*)", raw_line)):
+                    if not (match := parser.prefix.match(raw_line)):
                         continue
                     end_of_line = match.group(1).lstrip()
 

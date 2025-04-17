@@ -82,7 +82,7 @@ def test_log_file_unsupported(caplog):
     assert lf is None
     assert (
         caplog.text
-        == "WARNING  root:lf.py:333 No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
+        == "WARNING  root:lf.py:332 No progress bar as log file must have suffix lf1 or lf2. Simulation will continue as usual.\n"
     )
 
 
@@ -96,7 +96,7 @@ def test_log_file_timeout(caplog):
     assert lf is None
     assert (
         caplog.text
-        == "WARNING  root:lf.py:333 No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
+        == "WARNING  root:lf.py:332 No progress bar as log file is expected but not detected. Simulation will continue as usual.\n"
     )
 
 
@@ -112,7 +112,7 @@ def test_log_file_from_old_run(caplog):
     assert lf is None
     assert (
         caplog.text
-        == "WARNING  root:lf.py:333 No progress bar as log file is from previous run. Simulation will continue as usual.\n"
+        == "WARNING  root:lf.py:332 No progress bar as log file is from previous run. Simulation will continue as usual.\n"
     )
 
 
