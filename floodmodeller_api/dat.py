@@ -571,9 +571,7 @@ class DAT(FMFile):
             raise Exception(msg)
         # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
         unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
-        unit_group[unit_name] = eval(
-            f"units.{unit_type_safe}({unit_data}, {self._label_len})",
-        )
+        unit_group[unit_name] = getattr(units,unit_type_safe)(unit_data,self._label_len)
         self._all_units.append(unit_group[unit_name])
 
     def _process_unsupported_unit(self, unit_type, unit_data) -> None:
