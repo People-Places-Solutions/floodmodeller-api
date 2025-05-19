@@ -18,13 +18,13 @@ from __future__ import annotations
 
 import csv
 import logging
+import re
 import subprocess
 import time
 from io import StringIO
 from pathlib import Path
 from subprocess import Popen
 from typing import Callable
-import re
 
 import pandas as pd
 from tqdm import trange
@@ -119,7 +119,7 @@ class IEF(FMFile):
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
-                    self._raw_eventdata.append((event_data_title,value))
+                    self._raw_eventdata.append((event_data_title, value))
                     self._ief_properties.append("EventData")
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
@@ -137,18 +137,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
                 prev_comment = None
 
-        # now we deal with the event data, and convert it into the dict-based .eventdata
-        for title,ied_path in self._raw_eventdata:
-            n = 0
-            new_title = title
-            while True:
-                if new_title not in self.eventdata:
-                    self.eventdata[new_title] = ied_path
-                    break
-                else:
-                    n += 1
-                    new_title = title + f"_<{n}>"   
-
+        self._eventdata_read_helper()
         self._check_formatting(raw_data)
         self._update_ief_properties()  # call this here to ensure ief properties is correct
 
@@ -193,10 +182,13 @@ class IEF(FMFile):
                 event_data = getattr(self, prop)
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
-                    pass
                     if idx == event_index:
                         # we enter this block if we're ready to write the event data
-                        title = re.sub("_<\d>","",key)
+                        title = re.sub(
+                            r"_<\d>",
+                            "",
+                            key,
+                        )  # scrub off any extra bits we've added as part of the make-unique bit of reading.
                         ief_string += f";{title}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
@@ -345,6 +337,18 @@ class IEF(FMFile):
                     removed += 1
                     if removed == to_remove:
                         break
+
+    def _eventdata_read_helper(self) -> None:
+        # now we deal with the event data, and convert it into the dict-based .eventdata
+        for title, ied_path in self._raw_eventdata:
+            n = 0
+            new_title = title
+            while True:
+                if new_title not in self.eventdata:
+                    self.eventdata[new_title] = ied_path
+                    break
+                n += 1
+                new_title = title + f"_<{n}>"
 
     def _update_flowtimeprofile_info(self) -> None:
         """Update the flowtimeprofile data stored in ief properties"""

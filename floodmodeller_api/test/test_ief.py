@@ -17,9 +17,11 @@ def ief_fp(test_workspace: Path) -> Path:
 def ief(ief_fp: Path) -> IEF:
     return IEF(ief_fp)
 
+
 @pytest.fixture()
 def multievent_ief(test_workspace: Path) -> IEF:
     return IEF(test_workspace / "multievent.ief")
+
 
 @pytest.fixture()
 def exe_bin(tmpdir) -> Path:
@@ -187,6 +189,39 @@ def test_datafile_path(test_workspace: Path):
     assert path.stem == "UptonP8_Panels"
     assert path.parent == Path("../../networks")
 
+
 def test_unique_events_retained(multievent_ief: IEF):
+    """Tests that the .eventdata attribute retains the same number of items as the original ief"""
     event_dict = multievent_ief.eventdata
     assert len(event_dict) == 7
+
+
+@pytest.mark.parametrize(
+    ("sample_eventdata"),
+    [
+        ({}),
+        ({"Fluvial Inflow": "..\\network.ied", "Event Override": "..\\event_override.ied"}),
+        (
+            {
+                "Fluvial Inflow": "..\\network.ied",
+                "Event Override": "..\\event_override.ied",
+                "Spill Data": "..\\spill1.ied",
+                "Spill Data_<1>": "..\\spill2.ied",
+                "": "..\\ied_01.IED",
+                "_<1>": "..\\ied_02.IED",
+                "_<2>": "..\\ied_03.IED",
+                "Added Event": "../added.ied",
+            }
+        ),
+    ],
+)
+def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
+    """Tests modifying, saving and reading eventdata dictionary.
+
+    Compares that the input is equal to the output."""
+    multievent_ief.eventdata = sample_eventdata
+    new_path = Path(tmpdir) / "tmp.ief"
+    multievent_ief.save(new_path)
+
+    new_ief = IEF(new_path)
+    assert new_ief.eventdata == sample_eventdata
