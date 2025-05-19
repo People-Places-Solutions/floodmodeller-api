@@ -17,6 +17,9 @@ def ief_fp(test_workspace: Path) -> Path:
 def ief(ief_fp: Path) -> IEF:
     return IEF(ief_fp)
 
+@pytest.fixture()
+def multievent_ief(test_workspace: Path) -> IEF:
+    return IEF(test_workspace / "multievent.ief")
 
 @pytest.fixture()
 def exe_bin(tmpdir) -> Path:
@@ -40,6 +43,7 @@ def sleep():
 
 def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
+    # we use this instead of parameterise so it will just automatically test any ief in the test data.
     for ief_file in Path(test_workspace).glob("*.ief"):
         ief = IEF(ief_file)
         first_output = ief._write()
@@ -182,3 +186,7 @@ def test_datafile_path(test_workspace: Path):
     path = Path(ief.Datafile)
     assert path.stem == "UptonP8_Panels"
     assert path.parent == Path("../../networks")
+
+def test_unique_events_retained(multievent_ief: IEF):
+    event_dict = multievent_ief.eventdata
+    assert len(event_dict) == 7

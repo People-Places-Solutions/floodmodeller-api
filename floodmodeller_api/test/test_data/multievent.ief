@@ -1,0 +1,43 @@
+[ISIS Event Header]
+Title=Multievent Test IEF
+Datafile=network.dat
+Results=..\Somewhere
+[ISIS Event Details]
+RunType=Unsteady
+InitialConditions=..\initial_conditions.iic
+Start=0
+Finish=360
+InitialTimestep=10
+MinimumTimestep=10
+MaximumTimestep=10
+SaveInterval=900
+;Fluvial Inflow
+EventData=..\network.ied
+;Event Override
+EventData=..\event_override.ied
+;Spill Data
+EventData=..\spill1.ied
+;Spill Data
+EventData=..\spill2.ied
+;
+EventData=..\ied_01.IED
+;
+EventData=..\ied_02.IED
+;
+EventData=..\ied_03.IED
+Dflood=5
+Qtol=0.1
+Minitr=5
+Maxitr=19
+Theta=0.55
+Weight=0.1
+AdaptiveTimestep=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=1
+RulesAtTimeZero=1
+RulesOnFirstIteration=0
+ResetTimesAfterPos=1
+UseFPSModularLimit=1
+LaunchDoublePrecisionVersion=1
+UseRemoteQ=1
+2DFLOW=1
