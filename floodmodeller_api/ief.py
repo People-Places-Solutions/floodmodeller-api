@@ -24,6 +24,7 @@ from io import StringIO
 from pathlib import Path
 from subprocess import Popen
 from typing import Callable
+import re
 
 import pandas as pd
 from tqdm import trange
@@ -98,6 +99,8 @@ class IEF(FMFile):
         self._ief_properties: list[str] = []
         self.EventData: dict[str, str] = {}
         self.flowtimeprofiles: list[FlowTimeProfile] = []
+
+        self._raw_eventdata = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -116,7 +119,7 @@ class IEF(FMFile):
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
-                    self.eventdata[event_data_title] = value
+                    self._raw_eventdata.append((event_data_title,value))
                     self._ief_properties.append("EventData")
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
@@ -133,6 +136,18 @@ class IEF(FMFile):
                 # This should add the [] bound headers
                 self._ief_properties.append(line)
                 prev_comment = None
+
+        # now we deal with the event data, and convert it into the dict-based .eventdata
+        for title,ied_path in self._raw_eventdata:
+            n = 0
+            new_title = title
+            while True:
+                if new_title not in self.eventdata:
+                    self.eventdata[new_title] = ied_path
+                    break
+                else:
+                    n += 1
+                    new_title = title + f"_<{n}>"   
 
         self._check_formatting(raw_data)
         self._update_ief_properties()  # call this here to ensure ief properties is correct
@@ -178,8 +193,11 @@ class IEF(FMFile):
                 event_data = getattr(self, prop)
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
+                    pass
                     if idx == event_index:
-                        ief_string += f";{key}\nEventData{eq}{event_data[key]!s}\n"
+                        # we enter this block if we're ready to write the event data
+                        title = re.sub("_<\d>","",key)
+                        ief_string += f";{title}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
 
