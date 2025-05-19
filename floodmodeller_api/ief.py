@@ -185,7 +185,7 @@ class IEF(FMFile):
                     if idx == event_index:
                         # we enter this block if we're ready to write the event data
                         title = re.sub(
-                            r"_<\d>",
+                            r"_<\d>$",
                             "",
                             key,
                         )  # scrub off any extra bits we've added as part of the make-unique bit of reading.
