@@ -100,7 +100,7 @@ class IEF(FMFile):
         self.EventData: dict[str, str] = {}
         self.flowtimeprofiles: list[FlowTimeProfile] = []
 
-        self._raw_eventdata = []
+        raw_eventdata = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -119,7 +119,7 @@ class IEF(FMFile):
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
-                    self._raw_eventdata.append((event_data_title, value))
+                    raw_eventdata.append((event_data_title, value))
                     self._ief_properties.append("EventData")
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
@@ -137,7 +137,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
                 prev_comment = None
 
-        self._eventdata_read_helper()
+        self._eventdata_read_helper(raw_eventdata)
         self._check_formatting(raw_data)
         self._update_ief_properties()  # call this here to ensure ief properties is correct
 
@@ -338,9 +338,9 @@ class IEF(FMFile):
                     if removed == to_remove:
                         break
 
-    def _eventdata_read_helper(self) -> None:
+    def _eventdata_read_helper(self, raw_eventdata) -> None:
         # now we deal with the event data, and convert it into the dict-based .eventdata
-        for title, ied_path in self._raw_eventdata:
+        for title, ied_path in raw_eventdata:
             n = 0
             new_title = title
             while True:
