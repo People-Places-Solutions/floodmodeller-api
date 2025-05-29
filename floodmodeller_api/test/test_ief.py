@@ -226,9 +226,8 @@ def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
     new_ief = IEF(new_path)
     assert new_ief.eventdata == sample_eventdata
 
-#TODO test for 'renaming' and event
 
-def test_renaming_eventdata(multievent_ief,tmpdir):
+def test_renaming_eventdata(multievent_ief, tmpdir):
     """Tests renaming an event, after it has been substituted for a temporary one."""
 
     multievent_ief.eventdata["New Title"] = multievent_ief.eventdata.pop("<1>")
@@ -238,12 +237,11 @@ def test_renaming_eventdata(multievent_ief,tmpdir):
     new_ief = IEF(new_path)
 
     assert new_ief.eventdata == {
-                "Fluvial Inflow": "..\\network.ied",
-                "Event Override": "..\\event_override.ied",
-                "Spill Data": "..\\spill1.ied",
-                "Spill Data<0>": "..\\spill2.ied",
-                "<0>": "..\\ied_01.IED",
-                "<1>": "..\\ied_03.IED",
-                "New Title": "..\\ied_02.IED",
-            }
-    
+        "Fluvial Inflow": "..\\network.ied",
+        "Event Override": "..\\event_override.ied",
+        "Spill Data": "..\\spill1.ied",
+        "Spill Data<0>": "..\\spill2.ied",
+        "<0>": "..\\ied_01.IED",
+        "<1>": "..\\ied_03.IED",
+        "New Title": "..\\ied_02.IED",
+    }

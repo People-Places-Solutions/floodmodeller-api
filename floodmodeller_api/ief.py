@@ -37,8 +37,6 @@ from .to_from_json import Jsonable
 from .util import handle_exception, is_windows
 from .zz import ZZN
 
-#TODO change _ from the end of the write regex
-#TODO make the counting start from 0, and append to first blank event
 
 def try_converting(value: str) -> str | int | float:
     """Attempt to parse value as float or int if valid, else return the original string"""
@@ -344,10 +342,8 @@ class IEF(FMFile):
         # now we deal with the event data, and convert it into the dict-based .eventdata
         for title, ied_path in raw_eventdata:
             n = -1
-            if title == "":
-                new_title = "<0>"
-            else:
-                new_title = title
+
+            new_title = "<0>" if title == "" else title
 
             while True:
                 if new_title not in self.eventdata:
