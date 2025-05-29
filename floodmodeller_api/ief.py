@@ -37,6 +37,8 @@ from .to_from_json import Jsonable
 from .util import handle_exception, is_windows
 from .zz import ZZN
 
+#TODO change _ from the end of the write regex
+#TODO make the counting start from 0, and append to first blank event
 
 def try_converting(value: str) -> str | int | float:
     """Attempt to parse value as float or int if valid, else return the original string"""
@@ -185,7 +187,7 @@ class IEF(FMFile):
                     if idx == event_index:
                         # we enter this block if we're ready to write the event data
                         title = re.sub(
-                            r"_<\d>$",
+                            r"<\d>$",
                             "",
                             key,
                         )  # scrub off any extra bits we've added as part of the make-unique bit of reading.
@@ -341,14 +343,18 @@ class IEF(FMFile):
     def _eventdata_read_helper(self, raw_eventdata) -> None:
         # now we deal with the event data, and convert it into the dict-based .eventdata
         for title, ied_path in raw_eventdata:
-            n = 0
-            new_title = title
+            n = -1
+            if title == "":
+                new_title = "<0>"
+            else:
+                new_title = title
+
             while True:
                 if new_title not in self.eventdata:
                     self.eventdata[new_title] = ied_path
                     break
                 n += 1
-                new_title = title + f"_<{n}>"
+                new_title = title + f"<{n}>"
 
     def _update_flowtimeprofile_info(self) -> None:
         """Update the flowtimeprofile data stored in ief properties"""
