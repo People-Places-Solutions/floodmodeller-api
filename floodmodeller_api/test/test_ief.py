@@ -230,7 +230,11 @@ def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
 def test_renaming_eventdata(multievent_ief, tmpdir):
     """Tests renaming an event, after it has been substituted for a temporary one."""
 
-    multievent_ief.eventdata["New Title"] = multievent_ief.eventdata.pop("<1>")
+    mapping = {"<1>": "New Title"}
+
+    multievent_ief.eventdata = {
+        mapping.get(key, key): value for key, value in multievent_ief.eventdata.items()
+    }
     new_path = Path(tmpdir) / "tmp.ief"
     multievent_ief.save(new_path)
 
@@ -242,6 +246,6 @@ def test_renaming_eventdata(multievent_ief, tmpdir):
         "Spill Data": "..\\spill1.ied",
         "Spill Data<0>": "..\\spill2.ied",
         "<0>": "..\\ied_01.IED",
-        "<1>": "..\\ied_03.IED",
         "New Title": "..\\ied_02.IED",
+        "<1>": "..\\ied_03.IED",
     }
