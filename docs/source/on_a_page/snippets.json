@@ -1,0 +1,67 @@
+[
+    {
+        "title": "Import classes",
+        "code": "from floodmodeller_api import DAT, ZZN, IED\nfrom floodmodeller_api.units import RIVER",
+        "size": "s"
+    },
+    {
+        "title": "Load a DAT file and loop through each section",
+        "code": "dat = DAT(\"path/to/file.dat\")\nfor section in dat.sections.items():\n    if isinstance(section, RIVER):\n        print(section.name)",
+        "size": "m"
+    },
+    {
+        "title": "Basic print statement",
+        "code": "print(\"Hello, Flood Modeller!\")",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here\nwith so many lines\nlots\nand lots\nand lots\nand lots of lines",
+        "size": "m"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "big snippet",
+        "code": "some code snippet here",
+        "size": "l"
+    },
+    {
+        "title": "snippet",
+        "code": "some code snippet here",
+        "size": "s"
+    },
+    {
+        "title": "really big snippet",
+        "code": "some code snippet here",
+        "size": "xl"
+    }
+]

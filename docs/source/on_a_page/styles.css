@@ -1,0 +1,270 @@
+/* GLOBAL STYLES */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f8f9fb;
+  margin: 0;
+  padding: 2em;
+  color: #1a1a1a;
+}
+
+.wrapper {
+  max-width: 1000px;
+  /* up from 1200px */
+  margin: 0 auto;
+  padding: 0 3em;
+  /* added horizontal padding */
+}
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 0px;
+    padding-top: 1em;
+}
+
+.highlight {
+  color: #007bff;
+}
+
+/* HEADER */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.logo {
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+.logo span {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.tagline {
+    background: #ffffff;
+    padding: 1em 1.5em;
+    border-radius: 12px;
+    font-size: 1.1em;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.5;
+    max-width: 20em;
+    margin-left: 0;
+    border: 1px solid #007bff00;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    text-align: left;
+    height: auto;
+}
+
+.tagline strong {
+  display: block;
+  font-style: normal;
+  color: #007bff;
+  font-weight: 800;
+  margin-bottom: 0.1em;
+  font-size: 1.5em;
+}
+
+
+/* GRID LAYOUTS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 1em;
+}
+
+.code-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5em;
+  grid-column: 1 / -1;
+}
+
+/* PANELS */
+.panel {
+  background: #e6edf7;
+  padding: 1em;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* CODE BLOCKS */
+.code-grid-container {
+    border: 2px solid #007bff;
+    border-radius: 12px;
+    padding: 2em 0.75em 0.75em 0.75em;
+    margin-top: 3em;
+    background: #f8f9fb;
+    position: relative;
+}
+
+.code-grid-heading {
+  position: absolute;
+  top: -1.5em;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f8f9fb;
+  padding: 0 1em;
+  font-size: 1.6em;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.code-block {
+  background: white;
+  border: 1px solid #cce0f5;
+  border-radius: 8px;
+  padding: 0.75em;
+  font-family: monospace;
+  font-size: 0.85em;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  max-height: 9em;
+}
+
+.code-block:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+  border-color: #007bff;
+}
+
+/* FADE-OUT FOR OVERFLOWING CODE */
+.code-block::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 6em;
+  pointer-events: none;
+  background: linear-gradient(to top, #ffffff, #ffffff00);
+  display: none;
+  /* default hidden */
+}
+
+.code-block.is-clipped::after {
+  display: block;
+}
+
+.code-block.s {
+  grid-column: span 1;
+}
+
+.code-block.m {
+  grid-column: span 2;
+}
+
+.code-block.l {
+  grid-column: span 3;
+}
+
+.code-block.xl {
+  grid-column: span 4;
+}
+
+/* CODE STYLING */
+.code-block pre[class*="language-"],
+.code-block code[class*="language-"] {
+  font-size: 0.85em !important;
+  font-family: 'Fira Code', Consolas, monospace;
+  background: none !important;
+  white-space: pre;
+  /* multi-line, no wrapping */
+  overflow: hidden;
+  padding: 0 !important;
+  margin: 0;
+  line-height: 1.4;
+}
+
+
+
+/* CODE BLOCK TITLE */
+.code-title {
+  background-color: #007bff;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+  padding: 0.4em 0.75em;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  margin: -0.75em -0.75em 0.5em -0.75em;
+  white-space: normal;
+  overflow-wrap: break-word;
+  width: 100%;
+}
+
+/* MODAL OVERLAY */
+.code-modal {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+}
+
+/* MODAL CONTENT */
+.modal-content {
+  background: #f8f9fb;
+  padding: 1em;
+  border-radius: 8px;
+  max-width: 800px;
+  width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content pre {
+  background: white;
+  padding: 1em;
+  border-radius: 6px;
+  font-size: 0.9em;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.modal-title {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 1.1em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+  color: #007bff;
+}
+
+/* COPY BUTTON IN MODAL */
+.copy-button {
+  position: absolute;
+  top: 0.4em;
+  right: 1em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2em;
+}
+
+.copy-button img {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.copy-button:hover img {
+  opacity: 1;
+}
