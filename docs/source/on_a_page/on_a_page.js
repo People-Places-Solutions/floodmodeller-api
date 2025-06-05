@@ -1,4 +1,4 @@
-fetch('snippets.json')
+fetch('on_a_page_snippets.json')
     .then(response => response.json())
     .then(snippets => {
         const codeGrid = document.getElementById('codeGrid');
@@ -89,7 +89,7 @@ document.querySelector('.copy-button').addEventListener('click', () => {
 
     navigator.clipboard.writeText(codeText).then(() => {
         const originalSrc = icon.src;
-        icon.src = "../_static/tick-icon.png";
+        icon.src = "_static/tick-icon.png";
         setTimeout(() => icon.src = originalSrc, 1500);
     }).catch(err => {
         console.error('Copy failed', err);

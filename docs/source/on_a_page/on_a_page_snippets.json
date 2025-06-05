@@ -10,8 +10,8 @@
         "size": "m"
     },
     {
-        "title": "Basic print statement",
-        "code": "print(\"Hello, Flood Modeller!\")",
+        "title": "Calculate the minimum level of a section",
+        "code": "section = dat.sections[\"unit_001\"]\nminimum_level = section.data.Y.min()",
         "size": "s"
     },
     {
