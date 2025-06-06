@@ -95,6 +95,12 @@ When editing event data attibutes, they can simply be edited in the same way as 
 For example, deleting keys using ``del``, adding new keys and editing existing ones.
 
 .. warning::
+    Due to the ``.eventdata`` attribute using a dictionary, reading an IEF file with duplicate event titles 
+    (including blank event titles) will result in a dictionary where the duplicated events are suffixed with
+    '<0>', '<1>' etc, where the first instance is left unchanged. Upon writing to file (via ``ief.save()``, 
+    ``ief._write()`` etc.), any added suffixes are removed (in accordance to the regex pattern ``<\d>$``)
+
+.. warning::
     The ``.eventdata`` attribute has been changed to use a dictionary as of version 0.4.1 of 
     the API. Previously in v0.4.0 ``.eventdata`` would return a list instead, without support
     for reading/editing the event data titles. This introduces a change which is incompatible 

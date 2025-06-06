@@ -19,6 +19,11 @@ def ief(ief_fp: Path) -> IEF:
 
 
 @pytest.fixture()
+def multievent_ief(test_workspace: Path) -> IEF:
+    return IEF(test_workspace / "multievent.ief")
+
+
+@pytest.fixture()
 def exe_bin(tmpdir) -> Path:
     for exe in ["ISISf32.exe", "ISISf32_DoubleP.exe"]:
         exe_path = Path(tmpdir, exe)
@@ -40,6 +45,7 @@ def sleep():
 
 def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
+    # we use this instead of parameterise so it will just automatically test any ief in the test data.
     for ief_file in Path(test_workspace).glob("*.ief"):
         ief = IEF(ief_file)
         first_output = ief._write()
@@ -182,3 +188,64 @@ def test_datafile_path(test_workspace: Path):
     path = Path(ief.Datafile)
     assert path.stem == "UptonP8_Panels"
     assert path.parent == Path("../../networks")
+
+
+def test_unique_events_retained(multievent_ief: IEF):
+    """Tests that the .eventdata attribute retains the same number of items as the original ief"""
+    event_dict = multievent_ief.eventdata
+    assert len(event_dict) == 7
+
+
+@pytest.mark.parametrize(
+    ("sample_eventdata"),
+    [
+        ({}),
+        ({"Fluvial Inflow": "..\\network.ied", "Event Override": "..\\event_override.ied"}),
+        (
+            {
+                "Fluvial Inflow": "..\\network.ied",
+                "Event Override": "..\\event_override.ied",
+                "Spill Data": "..\\spill1.ied",
+                "Spill Data<0>": "..\\spill2.ied",
+                "<0>": "..\\ied_01.IED",
+                "<1>": "..\\ied_02.IED",
+                "<2>": "..\\ied_03.IED",
+                "Added Event": "../added.ied",
+            }
+        ),
+    ],
+)
+def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
+    """Tests modifying, saving and reading eventdata dictionary.
+
+    Compares that the input is equal to the output."""
+    multievent_ief.eventdata = sample_eventdata
+    new_path = Path(tmpdir) / "tmp.ief"
+    multievent_ief.save(new_path)
+
+    new_ief = IEF(new_path)
+    assert new_ief.eventdata == sample_eventdata
+
+
+def test_renaming_eventdata(multievent_ief, tmpdir):
+    """Tests renaming an event, after it has been substituted for a temporary one."""
+
+    mapping = {"<1>": "New Title"}
+
+    multievent_ief.eventdata = {
+        mapping.get(key, key): value for key, value in multievent_ief.eventdata.items()
+    }
+    new_path = Path(tmpdir) / "tmp.ief"
+    multievent_ief.save(new_path)
+
+    new_ief = IEF(new_path)
+
+    assert new_ief.eventdata == {
+        "Fluvial Inflow": "..\\network.ied",
+        "Event Override": "..\\event_override.ied",
+        "Spill Data": "..\\spill1.ied",
+        "Spill Data<0>": "..\\spill2.ied",
+        "<0>": "..\\ied_01.IED",
+        "New Title": "..\\ied_02.IED",
+        "<1>": "..\\ied_03.IED",
+    }

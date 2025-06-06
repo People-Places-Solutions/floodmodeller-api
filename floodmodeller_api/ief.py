@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import logging
+import re
 import subprocess
 import time
 from io import StringIO
@@ -98,6 +99,8 @@ class IEF(FMFile):
         self._ief_properties: list[str] = []
         self.EventData: dict[str, str] = {}
         self.flowtimeprofiles: list[FlowTimeProfile] = []
+
+        raw_eventdata: list[tuple[str, str]] = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -116,7 +119,7 @@ class IEF(FMFile):
                             event_data_title = value
                     else:
                         event_data_title = prev_comment
-                    self.eventdata[event_data_title] = value
+                    raw_eventdata.append((event_data_title, value))
                     self._ief_properties.append("EventData")
 
                 elif prop.upper().startswith("FLOWTIMEPROFILE"):
@@ -134,6 +137,7 @@ class IEF(FMFile):
                 self._ief_properties.append(line)
                 prev_comment = None
 
+        self._eventdata_read_helper(raw_eventdata)
         self._check_formatting(raw_data)
         self._update_ief_properties()  # call this here to ensure ief properties is correct
 
@@ -179,7 +183,10 @@ class IEF(FMFile):
                 # Add multiple EventData if present
                 for idx, key in enumerate(event_data):
                     if idx == event_index:
-                        ief_string += f";{key}\nEventData{eq}{event_data[key]!s}\n"
+                        # we enter this block if we're ready to write the event data
+                        # scrub off any extra bits we've added as part of the make-unique bit of reading.
+                        title = re.sub(r"<\d>$", "", key)
+                        ief_string += f";{title}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
 
@@ -327,6 +334,16 @@ class IEF(FMFile):
                     removed += 1
                     if removed == to_remove:
                         break
+
+    def _eventdata_read_helper(self, raw_eventdata: list[tuple[str, str]]) -> None:
+        # now we deal with the event data, and convert it into the dict-based .eventdata
+        for title, ied_path in raw_eventdata:
+            n = 0
+            new_title = title or "<0>"  # set empty string to placeholder
+            while new_title in self.eventdata:
+                new_title = f"{title}<{n}>"
+                n += 1
+            self.eventdata[new_title] = ied_path
 
     def _update_flowtimeprofile_info(self) -> None:
         """Update the flowtimeprofile data stored in ief properties"""
