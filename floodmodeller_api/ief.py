@@ -100,7 +100,7 @@ class IEF(FMFile):
         self.EventData: dict[str, str] = {}
         self.flowtimeprofiles: list[FlowTimeProfile] = []
 
-        raw_eventdata = []
+        raw_eventdata: list[tuple[str, str]] = []
         for line in raw_data:
             # Handle any comments here (prefixed with ;)
             if line.lstrip().startswith(";"):
@@ -184,11 +184,8 @@ class IEF(FMFile):
                 for idx, key in enumerate(event_data):
                     if idx == event_index:
                         # we enter this block if we're ready to write the event data
-                        title = re.sub(
-                            r"<\d>$",
-                            "",
-                            key,
-                        )  # scrub off any extra bits we've added as part of the make-unique bit of reading.
+                        # scrub off any extra bits we've added as part of the make-unique bit of reading.
+                        title = re.sub(r"<\d>$", "", key)
                         ief_string += f";{title}\nEventData{eq}{event_data[key]!s}\n"
                         break
                 event_index += 1
@@ -338,19 +335,15 @@ class IEF(FMFile):
                     if removed == to_remove:
                         break
 
-    def _eventdata_read_helper(self, raw_eventdata) -> None:
+    def _eventdata_read_helper(self, raw_eventdata: list[tuple[str, str]]) -> None:
         # now we deal with the event data, and convert it into the dict-based .eventdata
         for title, ied_path in raw_eventdata:
-            n = -1
-
-            new_title = "<0>" if title == "" else title
-
-            while True:
-                if new_title not in self.eventdata:
-                    self.eventdata[new_title] = ied_path
-                    break
+            n = 0
+            new_title = title or "<0>"  # set empty string to placeholder
+            while new_title in self.eventdata:
+                new_title = f"{title}<{n}>"
                 n += 1
-                new_title = title + f"<{n}>"
+            self.eventdata[new_title] = ied_path
 
     def _update_flowtimeprofile_info(self) -> None:
         """Update the flowtimeprofile data stored in ief properties"""
