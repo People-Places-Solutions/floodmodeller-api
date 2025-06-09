@@ -84,6 +84,7 @@ header {
 .code-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  grid-auto-flow: dense;
   gap: 0.5em;
   grid-column: 1 / -1;
 }
@@ -257,7 +258,7 @@ header {
   position: relative;
   overflow: hidden;
   margin: 0;
-  max-height: 9em;
+  max-height:13.5em;
 }
 
 .code-block:hover {
@@ -480,6 +481,8 @@ header {
     color: black;
     font-size: 8pt;
   }
+
+  .code-block {font-size: 6pt;}
   .wrapper {
     padding: 0;
     max-width: none;

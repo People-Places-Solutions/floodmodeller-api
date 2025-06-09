@@ -1,9 +1,9 @@
 - title: Import classes
-  size: s
+  size: m
   group: general
   code: |
-    from floodmodeller_api import DAT, ZZN, IED, IEF
-    from floodmodeller_api.units import RIVER, BRIDGE, QTBDY
+    from floodmodeller_api import DAT, ZZN, IED, IEF, XML2D, LF1, read_file, ...
+    from floodmodeller_api.units import RIVER, BRIDGE, QTBDY, HTBDY, RESERVOIR, CULVERT, ...
 
 - title: Check if two files are the same
   size: s
@@ -18,6 +18,13 @@
   code: |
     dat.diff(another_dat)
     ied.diff(another_ied)
+
+- title: Export any file or unit to JSON
+  size: s
+  group: general
+  code: |
+    dat.to_json()
+    dat.sections["RIV001"].to_json()
 
 - title: Load a DAT file
   size: s
@@ -43,7 +50,15 @@
   code: |
     dat.general_parameters
 
-- title: Loop through each section in a DAT and print its name
+- title: Access units in a DAT file
+  size: s
+  group: dat
+  code: |
+    dat.sections
+    dat.structures
+    dat.boundaries
+
+- title: List all sections in a DAT file
   size: s
   group: dat
   code: |
@@ -51,12 +66,27 @@
         if isinstance(section, RIVER):
             print(name)
 
+- title: List all bridge units in DAT file
+  size: s
+  group: dat
+  code: |
+    for name, unit in dat.structures.items:
+        if isinstance(structure, BRIDGE):
+            print(f"{structure.subtype} - {name}")
+
 - title: Calculate the minimum level of a section
   size: s
   group: dat
   code: |
     section = dat.sections["unit_001"]
     minimum_level = section.data.Y.min()
+
+- title: Calculate the average mannings of a section
+  size: s
+  group: dat
+  code: |
+    section = dat.sections["unit_001"]
+    average_mannings = section.data["Mannings n"].mean()
 
 - title: Multiple all river section mannings by a value
   size: s
@@ -81,11 +111,6 @@
   code: |
     import matplotlib.pyplot as plt
 
-    # Read in data
-    dat = DAT("path/to/file.dat")
-    section_data = dat.sections["unit_001"].data
-    conveyance_data = dat.sections["unit_001"].conveyance
-
     def plot_section_with_conveyance(section_data, conveyance_data):
         # Set up matplotlib plot
         fig, ax1 = plt.subplots()
@@ -101,6 +126,10 @@
 
         # display it
         plt.show()
+
+    dat = DAT("path/to/file.dat")
+    section_data = dat.sections["unit_001"].data
+    conveyance_data = dat.sections["unit_001"].conveyance
 
     # Plot with function
     plot_section_with_conveyance(section_data, conveyance_data)
@@ -125,29 +154,43 @@
     blank_dat.insert_units(new_sections, add_at=-1) # insert all the units
     blank_dat.save("filepath.dat")
 
-- title: List all bridge units in DAT file
-  size: s
+- title: Add 300mm siltation to all sections in a DAT file
+  size: m
   group: dat
   code: |
-    for name, unit in dat.structures.items:
-        if isinstance(structure, BRIDGE):
-            print(f"{structure.subtype} - {name}")
+    for name, section in dat.sections.items():
+        df = section.data
+        min_elevation = df["Y"].min() # Get minimum bed level across section
+        raised_bed = min_elevation + 0.3 # Define new minimum bed level by adding 0.3m
+        df["Y"].loc[df["Y"] < raised_bed] = raised_bed # Update any bed levels which are less than the new min bed level
 
-- title: Add 0.1m3/s minflow to all QTBDY units in an IED
+- title: Access QTBDY units in an IED file 
   size: s
   group: ied
   code: |
     ied = IED("path/to/event.ied")
-    for name, unit in ied.boundaries.items():
-        if isinstance(unit, QTBDY):
-            unit.minflow = 0.1
-    ied.update()
+    qtbdy = ied.boundaries.get("QT_name")
 
 - title: Get QTBDY flow data 
   size: s
   group: ied
   code: |
     qtbdy.data
+  
+- title: Get other QTBDY params
+  size: s
+  group: ied
+  code: |
+    qtbdy.minflow
+    qtbdy.flowmultiplier
+
+- title: Add 0.1m3/s minflow to all QTBDY units
+  size: s
+  group: ied
+  code: |
+    for name, unit in ied.boundaries.items():
+        if isinstance(unit, QTBDY):
+            unit.minflow = 0.1
 
 - title: Create new QTBDY unit 
   size: s
@@ -156,12 +199,29 @@
     flow_df = pd.Series([3.0, 4.2, 6.8, 9.3, 12.6, ...], index=[0, 0.1, 0.2, 0.3, 0.4, ...])
     qtbdy = QTBDY(name="my_unit", data=flow_df)
 
-- title: Run simulation from IEF file
+- title: Access IEF properties
   size: s
   group: ief
   code: |
     ief = IEF("path/to/simulation.ief")
+    title = ief.title
+    results_location = ief.results
+    event_data_dict = ief.eventdata
+
+- title: Run simulation from IEF file
+  size: s
+  group: ief
+  code: |
     ief.simulate()
+
+- title: Run simulation from IEF file with params
+  size: s
+  group: ief
+  code: |
+    custom_process = ief.simulate(
+        method="RETURN_PROCESS"
+        enginespath="custom/path/bin"
+    )
 
 - title: Get log and results from IEF
   size: m
