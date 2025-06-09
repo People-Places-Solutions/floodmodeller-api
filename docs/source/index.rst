@@ -12,6 +12,10 @@ Flood Modeller API is a python package which provides a bridge between
 `Flood Modeller <https://www.floodmodeller.com/>`_ and the python programming language 
 to extend the capabilities of Flood Modeller in automated workflows.
 
+.. raw:: html
+
+   For a quick overview of the Flood Modeller API, check out and bookmark <a href="on_a_page.html" target="_blank" rel="noopener noreferrer">Flood Modeller API on a page</a>.<br><br>
+
 .. grid:: 1 2 2 2
    :gutter: 2
 
@@ -80,10 +84,10 @@ to extend the capabilities of Flood Modeller in automated workflows.
          Support & Feedback
 
 
-Contents
----------
+
 .. toctree::
    :maxdepth: 3
+   :hidden:
    
    getting_started/index
    user_guide/index
