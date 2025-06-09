@@ -13,7 +13,7 @@ API on a page
 
 .. raw:: html
 
-   For a quick overview of the Flood Modeller API, check out and bookmark <a href="../on_a_page.html" target="_blank" rel="noopener noreferrer">Flood MOdeller API on a page</a>.
+   For a quick overview of the Flood Modeller API, check out and bookmark <a href="../on_a_page.html" target="_blank" rel="noopener noreferrer">Flood Modeller API on a page</a>.
 
 GitHub Codespace
 -----------------

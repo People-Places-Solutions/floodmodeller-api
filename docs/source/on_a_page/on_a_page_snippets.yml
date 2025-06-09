@@ -1,0 +1,219 @@
+- title: Import classes
+  size: s
+  group: general
+  code: |
+    from floodmodeller_api import DAT, ZZN, IED, IEF
+    from floodmodeller_api.units import RIVER, BRIDGE, QTBDY
+
+- title: Check if two files are the same
+  size: s
+  group: general
+  code: |
+    dat == another_dat
+    ied == another_ied
+  
+- title: View the differences between two files
+  size: s
+  group: general
+  code: |
+    dat.diff(another_dat)
+    ied.diff(another_ied)
+
+- title: Load a DAT file
+  size: s
+  group: dat
+  code: |
+    dat = DAT("path/to/file.dat")
+
+- title: Save a DAT file to a new location
+  size: s
+  group: dat
+  code: |
+    dat.save("path/new_copy.dat")
+
+- title: Save changes to existing DAT location
+  size: s
+  group: dat
+  code: |
+    dat.update()
+
+- title: Read DAT general parameters
+  size: s
+  group: dat
+  code: |
+    dat.general_parameters
+
+- title: Loop through each section in a DAT and print its name
+  size: s
+  group: dat
+  code: |
+    for name, section in dat.sections.items():
+        if isinstance(section, RIVER):
+            print(name)
+
+- title: Calculate the minimum level of a section
+  size: s
+  group: dat
+  code: |
+    section = dat.sections["unit_001"]
+    minimum_level = section.data.Y.min()
+
+- title: Multiple all river section mannings by a value
+  size: s
+  group: dat
+  code: |
+    uplift_factor = 1.2
+    for _, section in dat.sections.items():
+        if not isinstance(section, RIVER):
+            continue
+        section.data["Mannings n"] *= uplift_factor
+
+- title: Get conveyance curve for a section
+  size: s
+  group: dat
+  code: |
+    section = dat.sections["unit_001"]
+    conveyance = section.conveyance
+
+- title: Plot section and conveyance data using matplotlib
+  size: m
+  group: dat
+  code: |
+    import matplotlib.pyplot as plt
+
+    # Read in data
+    dat = DAT("path/to/file.dat")
+    section_data = dat.sections["unit_001"].data
+    conveyance_data = dat.sections["unit_001"].conveyance
+
+    def plot_section_with_conveyance(section_data, conveyance_data):
+        # Set up matplotlib plot
+        fig, ax1 = plt.subplots()
+
+        ax1.plot(section_data.X, section_data.Y, "brown")
+        ax1.fill_between(section_data.X, section_data.Y, section_data.Y.min() - 0.1, color="brown", alpha=0.5)
+        ax1.set_xlabel("Chainage (m)", color="brown")
+        ax1.set_ylabel("Stage (mAOD)")
+
+        ax2 = ax1.twiny()
+        ax2.plot(conveyance_data.values, conveyance_data.index, "b-")
+        ax2.set_xlabel("Conveyance (m3/s)", color="b")
+
+        # display it
+        plt.show()
+
+    # Plot with function
+    plot_section_with_conveyance(section_data, conveyance_data)
+
+- title: Add/remove a unit from a DAT file
+  size: m
+  group: dat
+  code: |
+    unit_S6 = dat.sections["S6"]
+    dat.remove_unit(unit_S6) # remove unit S6 from dat file
+    dat.insert_unit(unit_S6, add_after = dat.sections["S5"]) # add unit back into dat file
+    dat.insert_unit(RIVER(name="new_unit"), add_at=-1) # insert a blank river section at the end
+    dat.update()
+
+- title: Add multiple new units to a blank DAT file
+  size: m
+  group: dat
+  code: |
+    blank_dat = DAT() # create a blank DAT instance
+    blank_dat.sections # currently empty
+    new_sections = [RIVER(name=f"section_{i:>02}") for i in range(5)] # Create 5 new section units
+    blank_dat.insert_units(new_sections, add_at=-1) # insert all the units
+    blank_dat.save("filepath.dat")
+
+- title: List all bridge units in DAT file
+  size: s
+  group: dat
+  code: |
+    for name, unit in dat.structures.items:
+        if isinstance(structure, BRIDGE):
+            print(f"{structure.subtype} - {name}")
+
+- title: Add 0.1m3/s minflow to all QTBDY units in an IED
+  size: s
+  group: ied
+  code: |
+    ied = IED("path/to/event.ied")
+    for name, unit in ied.boundaries.items():
+        if isinstance(unit, QTBDY):
+            unit.minflow = 0.1
+    ied.update()
+
+- title: Get QTBDY flow data 
+  size: s
+  group: ied
+  code: |
+    qtbdy.data
+
+- title: Create new QTBDY unit 
+  size: s
+  group: ied
+  code: |
+    flow_df = pd.Series([3.0, 4.2, 6.8, 9.3, 12.6, ...], index=[0, 0.1, 0.2, 0.3, 0.4, ...])
+    qtbdy = QTBDY(name="my_unit", data=flow_df)
+
+- title: Run simulation from IEF file
+  size: s
+  group: ief
+  code: |
+    ief = IEF("path/to/simulation.ief")
+    ief.simulate()
+
+- title: Get log and results from IEF
+  size: m
+  group: ief
+  code: |
+    ief = IEF("path/to/simulation.ief")
+    log = ief.get_log() # returns LF1 class instance
+    log.info # Check info from log
+    log.convergence # get convergence data
+
+    zzn = ief.get_results() # returns ZZN class instance
+    zzn.to_dataframe() # get results to_dataframe
+
+- title: Create new set of IEF files with suffix '_v2'
+  size: m
+  group: ief
+  code: |
+    ief_files = Path("my_folder").glob("*.ief")
+
+    for ief_path in ief_files:
+        ief_name = ief_path.name  # get existing filename
+        new_ief_name = ief_name.replace(".ief", "_v2.ief")
+        new_ief_path = Path("v2_folder", new_ief_name) 
+
+        ief = IEF(ief_path)
+        ief.title += "_v2"  # Update title
+        ief.results += "_v2" # update results path
+
+        ief.save(new_ief_path)
+
+- title: Export ZZN results to CSV
+  size: s
+  group: zzn
+  code: |
+    zzn = ZZN("path/to/results.zzn")
+    zzn.export_to_csv()
+
+- title: Export ZZN results to CSV with more options
+  size: s
+  group: zzn
+  code: |
+    zzn = ZZN("path/to/results.zzn")
+    zzn.export_to_csv(
+        "custom_name.csv",
+        result_type="max",
+        variable="stage",
+    )
+
+- title: Load 2D XML model
+  size: s
+  group: xml2d
+  code: |
+    from floodmodeller_api import XML2D
+    xml2d = XML2D("path/to/model.xml")
+
