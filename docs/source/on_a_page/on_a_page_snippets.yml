@@ -88,12 +88,12 @@
     section = dat.sections["unit_001"]
     average_mannings = section.data["Mannings n"].mean()
 
-- title: Multiple all river section mannings by a value
+- title: Multiply all river section mannings by a value
   size: s
   group: dat
   code: |
     uplift_factor = 1.2
-    for _, section in dat.sections.items():
+    for section in dat.sections.values():
         if not isinstance(section, RIVER):
             continue
         section.data["Mannings n"] *= uplift_factor
@@ -142,7 +142,7 @@
     dat.remove_unit(unit_S6) # remove unit S6 from dat file
     dat.insert_unit(unit_S6, add_after = dat.sections["S5"]) # add unit back into dat file
     dat.insert_unit(RIVER(name="new_unit"), add_at=-1) # insert a blank river section at the end
-    dat.update()
+    dat.update()  # update the dat file in place
 
 - title: Add multiple new units to a blank DAT file
   size: m
@@ -274,6 +274,5 @@
   size: s
   group: xml2d
   code: |
-    from floodmodeller_api import XML2D
     xml2d = XML2D("path/to/model.xml")
 
