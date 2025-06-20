@@ -1,14 +1,23 @@
 /* GLOBAL STYLES */
+@font-face {
+    font-family:'JCR' ;
+    src: url("_static/JacobsChronos_Rg.ttf");
+}
+.JCR{
+    font-family:'JCR' ;
+}
+
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family:  'JCR', 'Segoe UI', sans-serif;
   background-color: #f8f9fb;
   margin: 0;
   padding: 2em;
   color: #1a1a1a;
+  font-size: 0.85em;
 }
 
 .wrapper {
-  max-width: 1250px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 3em;
 }
@@ -20,7 +29,7 @@ h1 {
 }
 
 .highlight {
-  color: #007bff;
+  color: #0A7DFF;
 }
 
 /* HEADER */
@@ -59,7 +68,7 @@ header {
 .tagline strong {
   display: block;
   font-style: normal;
-  color: #007bff;
+  color: #0A7DFF;
   font-weight: 800;
   margin-bottom: 0.1em;
   font-size: 1.5em;
@@ -126,7 +135,7 @@ header {
 }
 
 .core-classes-grid .group-dat {
-  background-color: #007bff;
+  background-color: #0A7DFF;
 }
 
 .core-classes-grid .group-ief {
@@ -156,7 +165,7 @@ header {
   align-items: center;
   writing-mode: vertical-rl;
   text-orientation: mixed;
-  color: #007bff;
+  color: #0A7DFF;
   font-weight: 700;
   font-size: 1.1em;
   padding: 0em 1em 0em 0em;
@@ -167,7 +176,7 @@ header {
 .use-case-arrow::before {
   content: "";
   position: absolute;
-  bottom: 2em;
+  bottom: 2.5em;
   left: 75%;
   transform: translateX(-50%);
   width: 5px;
@@ -181,9 +190,9 @@ header {
   /* Downward-pointing arrow character */
   position: absolute;
   bottom: 1em;
-  left: 75%;
+  left: 63%;
   transform: translateX(-50%);
-  font-size: 1.2em;
+  font-size: 1.5em;
   color: #57a8ff;
 }
 
@@ -205,7 +214,7 @@ header {
   font-size: 1.1em;
   margin-bottom: 0.25em;
   margin-top: 0.5em;
-  color: #007bff;
+  color: #0A7DFF;
 }
 
 .use-case-category ul {
@@ -223,7 +232,7 @@ header {
 
 /* CODE BLOCKS */
 .code-grid-container {
-  border: 2px solid #007bff;
+  border: 2px solid #0A7DFF;
   border-radius: 12px;
   padding: 2em 0.75em 0.75em 0.75em;
   margin-top: 3em;
@@ -240,7 +249,7 @@ header {
   padding: 0 1em;
   font-size: 1.6em;
   font-weight: 600;
-  color: #007bff;
+  color: #0A7DFF;
 }
 
 .code-block {
@@ -264,7 +273,7 @@ header {
 .code-block:hover {
   transform: scale(1.01);
   box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-  border-color: #007bff;
+  border-color: #0A7DFF;
 }
 
 .code-block::after {
@@ -313,7 +322,7 @@ header {
 
 /* CODE BLOCK TITLE */
 .code-title {
-  background-color: #007bff;
+  background-color: #0A7DFF;
   color: white;
   font-family: 'Segoe UI', sans-serif;
   font-weight: 600;
@@ -331,7 +340,7 @@ header {
 }
 
 .code-block.group-dat .code-title {
-  background-color: #007bff;
+  background-color: #0A7DFF;
 }
 
 .code-block.group-ied .code-title {
@@ -356,8 +365,8 @@ header {
 }
 
 .code-block.group-dat:hover {
-  box-shadow: 0 4px 12px #007bff20;
-  border-color: #007bff;
+  box-shadow: 0 4px 12px #0A7DFF20;
+  border-color: #0A7DFF;
 }
 
 .code-block.group-ied:hover {
@@ -385,7 +394,7 @@ header {
 }
 
 .code-block.group-dat {
-  border: 0.5px solid #007bff75;
+  border: 0.5px solid #0A7DFF75;
 }
 
 .code-block.group-ied {
@@ -445,7 +454,7 @@ header {
   font-size: 1.1em;
   font-weight: 600;
   margin-bottom: 0.5em;
-  color: #007bff;
+  color: #0A7DFF;
 }
 
 .copy-button {
