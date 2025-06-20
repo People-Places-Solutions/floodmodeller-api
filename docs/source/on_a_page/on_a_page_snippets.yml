@@ -283,22 +283,18 @@
     xml2d.domains["domain name"]["computational_area"]
 
 - title: Update to a new active area shapefile in 2D XML
-  size: m
+  size: s
   group: xml2d
   code: |
     xml2d.domains["domain name"]["computational_area"]["active_area"] = "GIS\\New_Active_Area.shp"
 
-- title: Add new roughness layers to 2D XML file
+- title: Add new roughness layer to 2D XML file
   size: m
   group: xml2d
   code: |
     xml2d.domains[domain_name]["roughness"] = [] # created an empty list we can append dictionaries to
     xml2d.domains[domain_name]["roughness"].append(
         {'type': 'file', 'law': 'manning', 'value': 'path/to/my_roughness_file.shp'}
-    )
-    # adding second roughness file.
-    xml2d.domains[domain_name]["roughness"].append(
-        {'type': 'file', 'law': 'manning', 'value': 'path/to/my_second_roughness_file.shp'}
     )
 
 - title: Run 2D simulation
