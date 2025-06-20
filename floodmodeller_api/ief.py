@@ -587,7 +587,7 @@ class IEF(FMFile):
 
         return ZZN(result_path)
 
-    def get_log(self):
+    def get_log(self) -> LF1:
         """If log files for the simulation exist, this function returns them as a LF1 class object
 
         Returns:

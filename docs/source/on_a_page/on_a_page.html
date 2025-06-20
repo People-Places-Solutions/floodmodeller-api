@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Flood Modeller API on a Page</title>
+  <link rel="icon" href="_static/fm_fav.png" type="image/png">
+
+  <!-- Fonts and styles -->
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="on_a_page.css">
+
+  <!-- Prism.js syntax highlighting -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/plugins/autoloader/prism-autoloader.min.js"></script>
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <div>
+        <img src="_static/flood-modeller-logo-hero-image.png" alt="Flood Modeller Logo"
+          style="max-width: 20em; display: block; margin-bottom: -2.5em; margin-top: 0em;">
+        <h1>Flood Modeller API <span class="highlight">on a page</span></h1>
+      </div>
+      <div class="tagline">
+        <strong>In a nutshell...</strong>
+        <small>Flood Modeller API is a Python package that provides a bridge between Flood Modeller and the Python
+          programming language to extend the capabilities of Flood Modeller in automated workflows.</small>
+      </div>
+    </header>
+
+
+
+    <div class="print-layout">
+      <div class="grid">
+        <section class="panel">
+          <h2>Getting started</h2>
+          <ul>
+            <li>
+              <strong>Try it online with Codespaces...</strong><br>
+              Launch a ready-to-use web-based IDE via
+              <a href="https://github.com/codespaces/new?hide_repo_select=true&repo=473959586&quickstart=1"
+                target="_blank">
+                GitHub Codespaces
+              </a> for one-click setup and no local installation.
+            </li>
+            <li>
+              <strong>...or install the API locally:</strong><br>
+              Use any Python 3.10+ environment and install with:<br>
+              <div style="/* display: flex; */text-align: center;margin-left: -2em;">
+                <code><strong>pip install floodmodeller-api</strong></code>
+              </div>
+            </li>
+            <li>
+              <strong>Follow the tutorial notebook:</strong><br>
+              A <em>Getting Started</em> Jupyter notebook is available in the GitHub repo and preloaded in Codespaces.
+              It
+              covers:
+              <ul>
+                <li>A basic Python primer</li>
+                <li>Intro to the <code>floodmodeller_api</code> package</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Explore the documentation:</strong><br>
+              Visit <a href="https://api.floodmodeller.com" target="_blank">api.floodmodeller.com</a> for full user
+              docs.
+            </li>
+            <li>
+              <strong>Python knowledge needed:</strong><br>
+              You’ll need fundamental Python skills, but even basic knowledge is enough to begin using the API.
+            </li>
+          </ul>
+        </section>
+
+        <section class="panel">
+          <h2 style="width: 100%; text-align: left;">Core classes/functionality</h2>
+          <div class="core-classes-grid">
+            <div class="class-name group-dat">DAT</div>
+            <div class="class-desc group-dat-desc">
+              Work with .dat network files. Allows reading and editing unit properties (e.g., global
+              Manning's n updates or custom changes), adding/removing units, or creating new blank networks.
+              Includes tools for exploring connectivity between units.
+            </div>
+
+            <div class="class-name group-ief">IEF</div>
+            <div class="class-desc group-ief-desc">
+              Interact with .ief simulation files. Supports reading/updating simulation properties,
+              referencing new event data, batch-generating IEFs, and running simulations either in a queue or with full
+              subprocess control. Provides direct access to logs and results for end-to-end workflows.
+            </div>
+
+            <div class="class-name group-ied">IED</div>
+            <div class="class-desc group-ied-desc">
+              Handle .ied event files. Similar to the DAT class, with functionality to read,
+              edit, update, add, or remove event units. Useful for automating scenario generation.
+            </div>
+
+            <div class="class-name group-zzn">ZZN</div>
+            <div class="class-desc group-zzn-desc">
+              Work with 1D results in .zzn format. Offers fast reading and export to CSV or directly into a
+              pandas DataFrame for analysis. Supports efficient result filtering by variable, type, node, or
+              timestep.
+            </div>
+
+            <div class="class-name group-xml2d">XML2D</div>
+            <div class="class-desc group-xml2d-desc">
+              Access and modify Flood Modeller’s 2D model .xml files. Allows reading and updating properties,
+              adding/removing elements, and simulating 2D models. Follows the XML schema structure and validates against
+              the Flood Modeller 2D schema.
+            </div>
+          </div>
+        </section>
+
+
+
+        <section class="panel example-use-cases">
+          <h2>Example use-cases</h2>
+          <div class="use-case-wrapper">
+            <div class="use-case-arrow">
+              <span>Increasing complexity</span>
+            </div>
+
+            <div class="use-case-content">
+              <div class="use-case-category">
+                <h3>Quick & Dirty Scripts</h3>
+                <strong>One-off scripts written and run by the same user:</strong>
+                <ul>
+                  <li>Adjusting values in a network</li>
+                  <li>Extracting results</li>
+                  <li>Creating a new suite of simulation files</li>
+                </ul>
+              </div>
+
+              <div class="use-case-category">
+                <h3>Automated Tasks</h3>
+                <strong>Reusable scripts maintained by teams:</strong>
+                <ul>
+                  <li>Automated reporting</li>
+                  <li>Sensitivity run setup</li>
+                  <li>Results analysis</li>
+                </ul>
+              </div>
+
+              <div class="use-case-category">
+                <h3>Bespoke Tools</h3>
+                <strong>Standalone tools for non-coders:</strong>
+                <ul>
+                  <li>Optimisation tools for parameter tuning</li>
+                  <li>'One-click' model builder</li>
+                </ul>
+              </div>
+
+              <div class="use-case-category">
+                <h3>Wider integration</h3>
+                <strong>Integrating functionality into larger applications:</strong>
+                <ul>
+                  <li>Operational dashboards</li>
+                  <li>Live forecasting</li>
+                  <li>Automated model generation (e.g. CAD-driven)</li>
+                </ul>
+              </div>
+            </div>
+        </section>
+
+
+        <section class="panel">
+          <h2>Find out more &amp; get involved</h2>
+          <p>
+            Start using the API today and share it with your colleagues. You can explore the
+            <a href="https://github.com/People-Places-Solutions/floodmodeller-api" target="_blank">GitHub repository</a>
+            and read through the
+            <a href="https://api.floodmodeller.com" target="_blank">API documentation</a>
+            to get started.
+          </p>
+
+          <h3>Watch the mini-tutorials</h3>
+          <ul>
+            <li><a href="https://www.youtube.com/watch?v=WfCNkC44shI?vq=1080p" target="_blank">Running a simulation
+                (video)</a></li>
+            <li><a href="https://www.youtube.com/watch?v=BWV3A7R0fbM?vq=1080p" target="_blank">Using the codespace
+                (video)</a></li>
+            <li><a href="https://www.youtube.com/watch?v=E9JMQ2DKr0c?vq=1080p" target="_blank">Extract ReFH2 csv data
+                into IEDs and QTBDYs (video)</a></li>
+          </ul>
+
+          <h3>Need support?</h3>
+          <ul>
+            <li>
+              <a href="https://github.com/People-Places-Solutions/floodmodeller-api/issues" target="_blank">
+                Open an issue on GitHub
+              </a>
+            </li>
+            <li>
+              <a href="https://www.floodmodeller.com/contact-us" target="_blank">Contact Flood Modeller support</a>
+            </li>
+          </ul>
+
+          <h3>Share and collaborate</h3>
+          <ul>
+            <li>
+              Join the 'Show and Tell' on section on
+              <a href="https://github.com/People-Places-Solutions/floodmodeller-api/discussions" target="_blank">
+                GitHub Discussions page
+              </a> to showcase your code and ideas.
+            </li>
+            <li>
+              Got improvements? Open a pull request to contribute directly to the API's development.
+            </li>
+          </ul>
+        </section>
+
+
+
+
+
+      </div>
+      <div class="code-grid-container">
+        <h2 class="code-grid-heading">Cheat sheet</h2>
+        <div class="code-grid" id="codeGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code Modal -->
+  <div id="code-modal" class="code-modal">
+    <div class="modal-content">
+      <button class="copy-button" title="Copy code">
+        <img src="_static/copy-icon.png" alt="Copy code">
+      </button>
+      <div id="modal-title" class="modal-title"></div>
+      <pre><code class="language-python" id="modal-code"></code></pre>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+
+  <script src="on_a_page.js"></script>
+</body>
+
+</html>

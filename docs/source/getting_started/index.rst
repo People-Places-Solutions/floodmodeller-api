@@ -8,6 +8,13 @@ overview of the package.
    The Flood Modeller Python API is designed to provide additional functionality to `Flood Modeller <https://www.floodmodeller.com/>`_, and to 
    realise the benefits of the API it is important to get the latest version of Flood Modeller and a valid `licence <https://www.floodmodeller.com/pricing>`_.
 
+API on a page
+----------------
+
+.. raw:: html
+
+   For a quick overview of the Flood Modeller API, check out and bookmark <a href="../on_a_page.html" target="_blank" rel="noopener noreferrer">Flood Modeller API on a page</a>.
+
 GitHub Codespace
 -----------------
 

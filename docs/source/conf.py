@@ -101,6 +101,7 @@ html_sidebars = {"**": ["sidebar-nav-bs.html"]}
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 html_css_files = ["fmapi.css"]
+html_extra_path = ["on_a_page"]
 
 
 def setup(app):
