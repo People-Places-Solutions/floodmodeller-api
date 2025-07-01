@@ -696,7 +696,7 @@ class SLUICE(Unit):
             )
 
         # Third parameter line
-        self.ngates = len(self.gates)
+        self.ngates = len(self.gates) if hasattr(self, "gates") else self.ngates
         params3 = join_10_char(self.ngates)
 
         if self.subtype == "RADIAL":
