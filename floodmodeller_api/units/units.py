@@ -89,6 +89,7 @@ UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "SCWEIR": {"group": "structures", "has_subtype": False},  # sharp crested weir
     "SYPHON": {"group": "structures", "has_subtype": False},  # syphon unit
     "TIDBDY": {"group": "boundaries", "has_subtype": False},  # tidal
+    "APITESTDUMMY" : {"group": None, "has_subtype": False},  # Made up for API testing
 }
 
 ALL_UNIT_TYPES = set(SUPPORTED_UNIT_TYPES.keys()).union(UNSUPPORTED_UNIT_TYPES)

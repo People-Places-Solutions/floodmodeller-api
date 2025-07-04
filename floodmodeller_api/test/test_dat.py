@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR
+from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR, UNSUPPORTED
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -40,6 +40,27 @@ def dat_ex6(test_workspace):
         patch.object(dat, "_update_dat_struct", wraps=dat._update_dat_struct),
     ):
         yield dat
+
+@pytest.fixture()
+def unsupported_dummy_unit():
+    data = [
+        "APITESTDUMMY Dummy unnsupported unit for testing purposes",
+        "LBL001      LBL002",
+        "arbitrary data",
+        "        table01234",
+        "    -0.500     0.000     0.000    0.000091000000.0",
+        "     0.000     1.000     1.000    0.0000 910000000",
+        "     1.000     2.000     2.000    0.000091000000.0",
+        "     2.000     3.000     3.000    0.000091000000.0",
+        "     5.000     3.000     3.000    0.000091000000.0",
+    ]
+    return UNSUPPORTED(
+            data,
+            12,
+            unit_name="LBL001",
+            unit_type="APITESTDUMMY",
+            subtype=False,
+        )
 
 
 def test_changing_section_and_dist_works(dat_fp, data_before):
@@ -380,3 +401,33 @@ def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path
 
     assert label in dat_read.sections
     assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
+
+
+def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
+    new_dat = DAT()
+    new_dat.insert_unit(unsupported_dummy_unit, add_at=-1)
+    assert unsupported_dummy_unit in new_dat._unsupported.values()
+    assert len(new_dat._all_units) == 1
+    filepath = tmp_path / "insert_dummy_test.dat"
+    new_dat.save(filepath)
+
+    dat = DAT(filepath)
+    assert unsupported_dummy_unit in dat._unsupported.values()
+    assert len(dat._all_units) == 1
+
+def test_remove_unsupported_unit(test_workspace, unsupported_dummy_unit):
+    dat = DAT(test_workspace/"remove_dummy_test.dat")
+    assert len(dat._all_units) == 1
+    assert len(dat._dat_struct) == 3
+    assert len(dat.initial_conditions.data) == 1
+    assert "LBL001 (APITESTDUMMY)" in dat._unsupported
+    dat.remove_unit(unsupported_dummy_unit)
+    assert len(dat._all_units) == 0
+    assert len(dat._dat_struct) == 2
+    assert len(dat.initial_conditions.data) == 0
+    assert "LBL001 (APITESTDUMMY)" not in dat._unsupported
+    dat._write()
+    assert len(dat._all_units) == 0
+    assert len(dat._dat_struct) == 2
+    assert len(dat.initial_conditions.data) == 0
+    assert "LBL001 (APITESTDUMMY)" not in dat._unsupported
