@@ -488,10 +488,7 @@ class DAT(FMFile):
 
                 else:
                     if unit_type in units.SUPPORTED_UNIT_TYPES:
-                        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
-                            unit_name = unit_data[2][: self._label_len].strip()
-                        else:
-                            unit_name = unit_data[1][: self._label_len].strip()
+                        unit_name = self._get_supported_unit_name(unit_type, unit_data)
                         unit_group_str = units.SUPPORTED_UNIT_TYPES[unit_type]["group"]
                     else:
                         unit_name, _ = self._get_unsupported_unit_name(unit_type, unit_data)
@@ -592,6 +589,11 @@ class DAT(FMFile):
             subtype=subtype,
         )
         self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
+
+    def _get_supported_unit_name(self, unit_type: str, unit_data: list[str]) -> str:
+        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip()
+        return unit_data[1][: self._label_len].strip()
 
     def _get_unsupported_unit_name(self, unit_type: str, unit_data: list[str]) -> tuple[str, bool]:
         # Check if the unit type has associated subtypes
@@ -721,7 +723,13 @@ class DAT(FMFile):
         for unit in self._all_units:
             all_labels.update(unit.all_labels)
         return all_labels
-                
+
+    def _get_unit_group_name(self, unit: Unit) -> str:
+        unit_type = unit.unit
+        if unit_type in units.SUPPORTED_UNIT_TYPES:
+            return units.SUPPORTED_UNIT_TYPES[unit_type]["group"]
+        return "_unsupported"
+
     @handle_exception(when="remove unit from")
     def remove_unit(self, unit: Unit) -> None:
         """Remove a unit from the dat file.
@@ -746,7 +754,7 @@ class DAT(FMFile):
         # remove from raw data
         del self._raw_data[dat_struct_unit["start"] : dat_struct_unit["end"] + 1]
         # remove from unit group
-        unit_group_name = units.SUPPORTED_UNIT_TYPES.get(unit._unit, {}).get("group", "_unsupported")
+        unit_group_name = self._get_unit_group_name(unit)
         unit_group = getattr(self, unit_group_name)
         if unit_group_name == "_unsupported":
             del unit_group[f"{unit.name} ({unit.unit})"]
@@ -762,7 +770,7 @@ class DAT(FMFile):
         self._update_dat_struct()
 
     @handle_exception(when="insert unit into")
-    def insert_unit(  # noqa: C901, PLR0912
+    def insert_unit(
         self,
         unit: Unit,
         add_before: Unit | None = None,
@@ -785,49 +793,18 @@ class DAT(FMFile):
             NameError: Raised if unit name already appears in unit group.
         """
         # catch errors
-        provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
-        if provided_params == 0:
-            msg = "No positional argument given. Please provide either add_before, add_at or add_after"
-            raise SyntaxError(msg)
-        if provided_params > 1:
-            msg = "Only one of add_at, add_before, or add_after required"
-            raise SyntaxError(msg)
-        if not isinstance(unit, Unit):
-            msg = "unit isn't a unit"
-            raise TypeError(msg)
-        if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
-            msg = "add_before or add_after argument must be a Flood Modeller Unit type"
-            raise TypeError(msg)
+        self._validate_insert_unit_params(unit, add_before, add_after, add_at)
 
         unit_class = unit._unit
         if unit_class != "COMMENT":
             _validate_unit(unit)
-            unit_group_name = units.SUPPORTED_UNIT_TYPES.get(unit._unit, {}).get("group", "_unsupported")
+            unit_group_name = self._get_unit_group_name(unit)
             unit_group = getattr(self, unit_group_name)
             if unit.name in unit_group:
                 msg = "Name already appears in unit group. Cannot have two units with same name in same group"
                 raise NameError(msg)
 
-        # positional argument
-        if add_at is not None:
-            insert_index = add_at
-            if insert_index < 0:
-                insert_index += len(self._all_units) + 1
-                if insert_index < 0:
-                    msg = f"invalid add_at index: {add_at}"
-                    raise Exception(msg)
-        else:
-            check_unit = add_before or add_after
-            for index, thing in enumerate(self._all_units):
-                if thing == check_unit:
-                    insert_index = index
-                    insert_index += 1 if add_after else 0
-                    break
-            else:
-                msg = (
-                    f"{check_unit} not found in dat network, so cannot be used to add before/after"
-                )
-                raise Exception(msg)
+        insert_index = self._get_insert_index(add_before, add_after, add_at)
 
         unit_data = unit._write()
         if unit._unit != "COMMENT":
@@ -850,6 +827,55 @@ class DAT(FMFile):
         if not defer_update:
             self._update_raw_data()
             self._update_dat_struct()
+
+    def _validate_insert_unit_params(
+        self,
+        unit: Unit,
+        add_before: Unit | None,
+        add_after: Unit | None,
+        add_at: int | None,
+    ):
+        provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
+        if provided_params == 0:
+            msg = "No positional argument given. Please provide either add_before, add_at or add_after"
+            raise SyntaxError(msg)
+        if provided_params > 1:
+            msg = "Only one of add_at, add_before, or add_after required"
+            raise SyntaxError(msg)
+        if not isinstance(unit, Unit):
+            msg = "unit isn't a unit"
+            raise TypeError(msg)
+        if add_at is None and not (isinstance(add_before, Unit) or isinstance(add_after, Unit)):
+            msg = "add_before or add_after argument must be a Flood Modeller Unit type"
+            raise TypeError(msg)
+
+    def _get_insert_index(
+        self,
+        add_before: Unit | None,
+        add_after: Unit | None,
+        add_at: int | None,
+    ) -> int:
+        # positional argument
+        if add_at is not None:
+            insert_index = add_at
+            if insert_index < 0:
+                insert_index += len(self._all_units) + 1
+                if insert_index < 0:
+                    msg = f"invalid add_at index: {add_at}"
+                    raise Exception(msg)
+        else:
+            check_unit = add_before or add_after
+            for index, thing in enumerate(self._all_units):
+                if thing == check_unit:
+                    insert_index = index
+                    insert_index += 1 if add_after else 0
+                    break
+            else:
+                msg = (
+                    f"{check_unit} not found in dat network, so cannot be used to add before/after"
+                )
+                raise Exception(msg)
+        return insert_index
 
     def insert_units(
         self,

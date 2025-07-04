@@ -41,6 +41,7 @@ def dat_ex6(test_workspace):
     ):
         yield dat
 
+
 @pytest.fixture()
 def unsupported_dummy_unit():
     data = [
@@ -55,12 +56,12 @@ def unsupported_dummy_unit():
         "     5.000     3.000     3.000    0.000091000000.0",
     ]
     return UNSUPPORTED(
-            data,
-            12,
-            unit_name="LBL001",
-            unit_type="APITESTDUMMY",
-            subtype=False,
-        )
+        data,
+        12,
+        unit_name="LBL001",
+        unit_type="APITESTDUMMY",
+        subtype=False,
+    )
 
 
 def test_changing_section_and_dist_works(dat_fp, data_before):
@@ -95,6 +96,9 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
 def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
+        if datfile.name.startswith("encoding_test"):
+            # Skipping these as invalide DAT (multiple GERRBDY)
+            continue
         dat = DAT(datfile)
         first_output = dat._write()
         new_path = tmp_path / "tmp.dat"
@@ -415,8 +419,9 @@ def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
     assert unsupported_dummy_unit in dat._unsupported.values()
     assert len(dat._all_units) == 1
 
+
 def test_remove_unsupported_unit(test_workspace, unsupported_dummy_unit):
-    dat = DAT(test_workspace/"remove_dummy_test.dat")
+    dat = DAT(test_workspace / "remove_dummy_test.dat")
     assert len(dat._all_units) == 1
     assert len(dat._dat_struct) == 3
     assert len(dat.initial_conditions.data) == 1
