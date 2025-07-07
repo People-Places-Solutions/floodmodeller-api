@@ -6,6 +6,9 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 def test_read_file(test_workspace):
     for file in test_workspace.glob("*"):
+        if file.name.startswith("duplicate_unit_test"):
+            # Skipping as invalid DAT (duplicate units)
+            continue
         if (
             file.suffix.lower()
             in [

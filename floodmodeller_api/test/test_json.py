@@ -105,6 +105,9 @@ def test_obj_reproduces_from_json_for_all_test_api_files(
 ):
     """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
     for file in Path(test_workspace).glob(file_extension_glob):
+        if file.name.startswith("duplicate_unit_test"):
+            # Skipping as invalid DAT (duplicate units)
+            continue
         assert api_class(file) == api_class.from_json(api_class(file).to_json())
 
 

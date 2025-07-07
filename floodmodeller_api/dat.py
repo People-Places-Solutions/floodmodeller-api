@@ -453,12 +453,14 @@ class DAT(FMFile):
             "losses": [],
             "connectors": [],
             "controls": [],
+            "_unsupported": [],
         }
 
         for block in self._dat_struct:
             # Check for all supported boundary types
-            if block["Type"] not in units.SUPPORTED_UNIT_TYPES:
+            if block["Type"] not in units.ALL_UNIT_TYPES:
                 continue
+            unit_type = block["Type"]
             # clause for when unit has been inserted into the dat file
             if "new_insert" in block:
                 block["start"] = prev_block_end + 1
@@ -474,24 +476,26 @@ class DAT(FMFile):
                 ]
                 prev_block_len = len(unit_data)
 
-                if block["Type"] == "INITIAL CONDITIONS":
+                if unit_type == "INITIAL CONDITIONS":
                     new_unit_data = self.initial_conditions._write()
-                elif block["Type"] == "COMMENT":
+                elif unit_type == "COMMENT":
                     comment = comment_units[comment_tracker]
                     new_unit_data = comment._write()
                     comment_tracker += 1
 
-                elif block["Type"] == "VARIABLES":
+                elif unit_type == "VARIABLES":
                     new_unit_data = self.variables._write()
 
                 else:
-                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                        unit_name = unit_data[2][: self._label_len].strip()
+                    if unit_type in units.SUPPORTED_UNIT_TYPES:
+                        unit_name = self._get_supported_unit_name(unit_type, unit_data)
+                        unit_group_str = units.SUPPORTED_UNIT_TYPES[unit_type]["group"]
                     else:
-                        unit_name = unit_data[1][: self._label_len].strip()
+                        unit_name, _ = self._get_unsupported_unit_name(unit_type, unit_data)
+                        unit_name = f"{unit_name} ({unit_type})"
+                        unit_group_str = "_unsupported"
 
                     # Get unit object
-                    unit_group_str = units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]
                     unit_group = getattr(self, unit_group_str)
                     if unit_name in unit_group:
                         # block still exists
@@ -577,14 +581,25 @@ class DAT(FMFile):
     def _process_unsupported_unit(self, unit_type, unit_data) -> None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
         unit_name, subtype = self._get_unsupported_unit_name(unit_type, unit_data)
-        self._unsupported[f"{unit_name} ({unit_type})"] = units.UNSUPPORTED(
+        unit_name_and_type = f"{unit_name} ({unit_type})"
+        if unit_name_and_type in self._unsupported:
+            msg = (
+                f"Duplicate label ({unit_name_and_type}) encountered within category: _unsupported"
+            )
+            raise Exception(msg)
+        self._unsupported[unit_name_and_type] = units.UNSUPPORTED(
             unit_data,
             self._label_len,
             unit_name=unit_name,
             unit_type=unit_type,
             subtype=subtype,
         )
-        self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
+        self._all_units.append(self._unsupported[unit_name_and_type])
+
+    def _get_supported_unit_name(self, unit_type: str, unit_data: list[str]) -> str:
+        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip()
+        return unit_data[1][: self._label_len].strip()
 
     def _get_unsupported_unit_name(self, unit_type: str, unit_data: list[str]) -> tuple[str, bool]:
         # Check if the unit type has associated subtypes
@@ -708,6 +723,19 @@ class DAT(FMFile):
 
         return unit_block, in_block
 
+    @property
+    def node_labels(self):
+        all_labels = set()
+        for unit in self._all_units:
+            all_labels.update(unit.all_labels)
+        return all_labels
+
+    def _get_unit_group_name(self, unit: Unit) -> str:
+        unit_type = unit.unit
+        if unit_type in units.SUPPORTED_UNIT_TYPES:
+            return units.SUPPORTED_UNIT_TYPES[unit_type]["group"]
+        return "_unsupported"
+
     @handle_exception(when="remove unit from")
     def remove_unit(self, unit: Unit) -> None:
         """Remove a unit from the dat file.
@@ -732,19 +760,23 @@ class DAT(FMFile):
         # remove from raw data
         del self._raw_data[dat_struct_unit["start"] : dat_struct_unit["end"] + 1]
         # remove from unit group
-        unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
+        unit_group_name = self._get_unit_group_name(unit)
         unit_group = getattr(self, unit_group_name)
-        del unit_group[unit.name]
-        # remove from ICs
-        self.initial_conditions.data = self.initial_conditions.data.loc[
-            self.initial_conditions.data["label"] != unit.name
-        ]
+        if unit_group_name == "_unsupported":
+            del unit_group[f"{unit.name} ({unit.unit})"]
+        else:
+            del unit_group[unit.name]
+        # remove from ICs if no more labels
+        if unit.name not in self.node_labels:
+            self.initial_conditions.data = self.initial_conditions.data.loc[
+                self.initial_conditions.data["label"] != unit.name
+            ]
+            self.general_parameters["Node Count"] -= 1
 
         self._update_dat_struct()
-        self.general_parameters["Node Count"] -= 1
 
     @handle_exception(when="insert unit into")
-    def insert_unit(  # noqa: C901, PLR0912
+    def insert_unit(
         self,
         unit: Unit,
         add_before: Unit | None = None,
@@ -767,6 +799,48 @@ class DAT(FMFile):
             NameError: Raised if unit name already appears in unit group.
         """
         # catch errors
+        self._validate_insert_unit_params(unit, add_before, add_after, add_at)
+
+        unit_class = unit._unit
+        if unit_class != "COMMENT":
+            _validate_unit(unit)
+            unit_group_name = self._get_unit_group_name(unit)
+            unit_group = getattr(self, unit_group_name)
+            if unit.name in unit_group:
+                msg = "Name already appears in unit group. Cannot have two units with same name in same group"
+                raise NameError(msg)
+
+        insert_index = self._get_insert_index(add_before, add_after, add_at)
+
+        unit_data = unit._write()
+        if unit._unit != "COMMENT":
+            if unit_group_name == "_unsupported":
+                unit_group[f"{unit.name} ({unit.unit})"] = unit
+            else:
+                unit_group[unit.name] = unit
+        self._dat_struct.insert(
+            insert_index + 1,
+            {"Type": unit_class, "new_insert": unit_data},
+        )  # add to dat struct without unit.name
+
+        if unit._unit != "COMMENT" and unit.name not in self.node_labels:
+            # update the iic's tables
+            iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data  # flaged
+            self.general_parameters["Node Count"] += 1  # flag no update for comments
+
+        self._all_units.insert(insert_index, unit)
+        if not defer_update:
+            self._update_raw_data()
+            self._update_dat_struct()
+
+    def _validate_insert_unit_params(
+        self,
+        unit: Unit,
+        add_before: Unit | None,
+        add_after: Unit | None,
+        add_at: int | None,
+    ):
         provided_params = sum(arg is not None for arg in (add_before, add_after, add_at))
         if provided_params == 0:
             msg = "No positional argument given. Please provide either add_before, add_at or add_after"
@@ -781,15 +855,12 @@ class DAT(FMFile):
             msg = "add_before or add_after argument must be a Flood Modeller Unit type"
             raise TypeError(msg)
 
-        unit_class = unit._unit
-        if unit_class != "COMMENT":
-            _validate_unit(unit)
-            unit_group_name = units.SUPPORTED_UNIT_TYPES[unit._unit]["group"]
-            unit_group = getattr(self, unit_group_name)
-            if unit.name in unit_group:
-                msg = "Name already appears in unit group. Cannot have two units with same name in same group"
-                raise NameError(msg)
-
+    def _get_insert_index(
+        self,
+        add_before: Unit | None,
+        add_after: Unit | None,
+        add_at: int | None,
+    ) -> int:
         # positional argument
         if add_at is not None:
             insert_index = add_at
@@ -810,28 +881,7 @@ class DAT(FMFile):
                     f"{check_unit} not found in dat network, so cannot be used to add before/after"
                 )
                 raise Exception(msg)
-
-        unit_data = unit._write()
-        self._all_units.insert(insert_index, unit)
-        if unit._unit != "COMMENT":
-            unit_group[unit.name] = unit
-        self._dat_struct.insert(
-            insert_index + 1,
-            {"Type": unit_class, "new_insert": unit_data},
-        )  # add to dat struct without unit.name
-
-        if unit._unit != "COMMENT":
-            # update the iic's tables
-            iic_data = [unit.name, "y", 00.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-            self.initial_conditions.data.loc[len(self.initial_conditions.data)] = iic_data  # flaged
-
-        # update all
-        if unit._unit != "COMMENT":
-            self.general_parameters["Node Count"] += 1  # flag no update for comments
-
-        if not defer_update:
-            self._update_raw_data()
-            self._update_dat_struct()
+        return insert_index
 
     def insert_units(
         self,
