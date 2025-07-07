@@ -96,8 +96,8 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
 def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     for datfile in Path(test_workspace).glob("*.dat"):
-        if datfile.name.startswith("encoding_test"):
-            # Skipping these as invalide DAT (multiple GERRBDY)
+        if datfile.name.startswith("duplicate_unit_test"):
+            # Skipping as invalid DAT (duplicate units)
             continue
         dat = DAT(datfile)
         first_output = dat._write()
@@ -436,3 +436,19 @@ def test_remove_unsupported_unit(test_workspace, unsupported_dummy_unit):
     assert len(dat._dat_struct) == 2
     assert len(dat.initial_conditions.data) == 0
     assert "LBL001 (APITESTDUMMY)" not in dat._unsupported
+
+
+def test_duplicate_unit_raises_error(test_workspace):
+    msg = (
+        r"\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        r"\nAPI Error: Problem encountered when trying to read DAT file .*\."
+        r"\n"
+        r"\nDetails: .*-floodmodeller_api/dat\.py-\d+"
+        r"\nMsg: Duplicate label (.*) encountered within category: .*"
+        r"\n"
+        r"\nFor additional support, go to: https://github\.com/People-Places-Solutions/floodmodeller-api"
+    )
+    with pytest.raises(FloodModellerAPIError, match=msg):
+        DAT(test_workspace / "duplicate_unit_test.dat")
+    with pytest.raises(FloodModellerAPIError, match=msg):
+        DAT(test_workspace / "duplicate_unit_test_unsupported.dat")

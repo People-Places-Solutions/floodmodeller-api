@@ -1,0 +1,28 @@
+duplicate units for test
+#REVISION#1
+         2     0.750     0.900     0.100     0.001        12
+    10.000     0.010     0.010     0.700     0.100     0.700     0.000
+RAD FILE
+
+END GENERAL
+APITESTDUMMY Dummy unnsupported unit for testing purposes
+LBL001      LBL002
+arbitrary data
+        table01234
+    -0.500     0.000     0.000    0.000091000000.0
+     0.000     1.000     1.000    0.0000 910000000
+     1.000     2.000     2.000    0.000091000000.0
+     2.000     3.000     3.000    0.000091000000.0
+     5.000     3.000     3.000    0.000091000000.0
+APITESTDUMMY Dummy unnsupported unit for testing purposes
+LBL001      LBL002
+arbitrary data
+        table01234
+    -0.500     0.000     0.000    0.000091000000.0
+     0.000     1.000     1.000    0.0000 910000000
+     1.000     2.000     2.000    0.000091000000.0
+     2.000     3.000     3.000    0.000091000000.0
+     5.000     3.000     3.000    0.000091000000.0
+GISINFO
+APITESTDUMMY 0 478 986 0 0 1
+0 0 0 0 0 0

@@ -581,14 +581,20 @@ class DAT(FMFile):
     def _process_unsupported_unit(self, unit_type, unit_data) -> None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
         unit_name, subtype = self._get_unsupported_unit_name(unit_type, unit_data)
-        self._unsupported[f"{unit_name} ({unit_type})"] = units.UNSUPPORTED(
+        unit_name_and_type = f"{unit_name} ({unit_type})"
+        if unit_name_and_type in self._unsupported:
+            msg = (
+                f"Duplicate label ({unit_name_and_type}) encountered within category: _unsupported"
+            )
+            raise Exception(msg)
+        self._unsupported[unit_name_and_type] = units.UNSUPPORTED(
             unit_data,
             self._label_len,
             unit_name=unit_name,
             unit_type=unit_type,
             subtype=subtype,
         )
-        self._all_units.append(self._unsupported[f"{unit_name} ({unit_type})"])
+        self._all_units.append(self._unsupported[unit_name_and_type])
 
     def _get_supported_unit_name(self, unit_type: str, unit_data: list[str]) -> str:
         if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
