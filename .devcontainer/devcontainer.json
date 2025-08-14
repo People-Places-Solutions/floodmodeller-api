@@ -2,7 +2,7 @@
 // customisations: https://containers.dev/supporting
 // This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
 {
-  "build": { "dockerfile": "Dockerfile" },
+  "build": { "dockerfile": "../Dockerfile" },
   "name": "Get Started!",
   "customizations": {
     "vscode": {
