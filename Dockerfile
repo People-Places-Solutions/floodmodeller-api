@@ -11,4 +11,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory inside container
 WORKDIR /workspaces
 
-RUN uv venv && source .venv/bin/activate && uv pip install -e . & uv pip install -r requirements.txt
+
