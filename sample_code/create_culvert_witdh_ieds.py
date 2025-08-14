@@ -17,7 +17,7 @@ except ImportError:
 script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
-dat_file = Path("sample_data\\EX17.DAT")
+dat_file = Path("sample_data/EX17.DAT")
 
 dat = DAT(dat_file)  # Read DAT file
 culvert = dat.conduits["T2"]  # get culvert unit 'T2'

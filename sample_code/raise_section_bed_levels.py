@@ -16,7 +16,7 @@ except ImportError:
 script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
-dat = DAT("sample_data\\ex3.dat")  # Initialise DAT class
+dat = DAT(Path("sample_data/ex3.dat"))  # Initialise DAT class
 
 for section in dat.sections.values():  # iterate through all river sections
     section_data = section.data  # get section data
@@ -27,4 +27,4 @@ for section in dat.sections.values():  # iterate through all river sections
         "Y",
     ] = raised_bed  # Raise any levels lower than this to the new lowest level
 
-dat.save("sample_data\\ex3_300m_siltation.dat")  # save updates
+dat.save(Path("sample_data/ex3_300m_siltation.dat"))  # save updates
