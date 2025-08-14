@@ -2,8 +2,11 @@
 // customisations: https://containers.dev/supporting
 // This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
 {
-  "build": { "dockerfile": "../Dockerfile" },
+  "image": "mcr.microsoft.com/devcontainers/python:3",
   "name": "Get Started!",
+  "features": {
+    "ghcr.io/va-h/devcontainers-features/uv:1": {}
+  },
   "customizations": {
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
@@ -20,7 +23,9 @@
           "*.ipynb": "jupyter-notebook"
         },
         "notebook.compactView": false,
-        "pylint.args": ["--ignore"]
+        "pylint.args": [
+          "--ignore"
+        ]
       }
     },
     "codespaces": {
@@ -31,7 +36,5 @@
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  
   "postCreateCommand": "uv venv && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> .venv/bin/activate && source .venv/bin/activate && uv pip install -e . & uv pip install -r requirements.txt"
-    
 }
