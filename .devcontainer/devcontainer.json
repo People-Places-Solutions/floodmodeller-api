@@ -2,7 +2,7 @@
 // customisations: https://containers.dev/supporting
 // This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "image": "python:3.12-slim-bookworm",
   "name": "Get Started!",
   "customizations": {
     "vscode": {
