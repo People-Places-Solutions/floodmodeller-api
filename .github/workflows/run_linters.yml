@@ -23,12 +23,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
       
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ matrix.PYTHON_VERSION }}
+          activate-environment: true      
+      
+      - name: Install reqs
+        run: |          
+          uv pip install .
+          uv pip install -r requirements.txt
 
       - name: Run ruff formatter
         run: ruff format --check ${{ env.FILES_TO_CHECK }}
