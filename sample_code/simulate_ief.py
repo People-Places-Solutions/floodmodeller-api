@@ -17,7 +17,7 @@ script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
 # Initialise ief object
-ief = IEF("sample_data\\ex3.ief")
+ief = IEF(Path("sample_data/ex3.ief"))
 
 # Execute simulation
 ief.simulate()

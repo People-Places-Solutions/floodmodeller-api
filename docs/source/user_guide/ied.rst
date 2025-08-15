@@ -170,7 +170,7 @@ Code:
     import pandas as pd
 
     # Read in QH csv
-    qh_data = pd.read_csv('path\to\data.csv', index_col=0, squeeze=True) # squeeze = True to read in as a Series object
+    qh_data = pd.read_csv('path\to\data.csv', index_col=0).squeeze() # .squeeze()) to read in as a Series object
 
     # Create new QHBDY Unit
     new_qhbdy = QHBDY(name='DS_1', data=qh_data, comment='New downstream boundary') # Additional info such as unit name and comment are added. 

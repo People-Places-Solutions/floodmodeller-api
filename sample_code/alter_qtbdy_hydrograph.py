@@ -19,7 +19,7 @@ script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
 # Read IED file into new IED Class object
-ied = IED("sample_data\\EX3.IED")
+ied = IED(Path("sample_data/EX3.IED"))
 
 
 # Define custom function to alter the flow hydrograph to have a minimum flow of 30% of peak flow ONLY on the falling limb
@@ -40,4 +40,4 @@ for unit in ied.boundaries.values():
     if isinstance(unit, QTBDY):  # check if unit is a QTBDY type
         update_hydrograph(unit)  # Call the custom function defined above to alter hydrograph
 
-ied.save("sample_data\\EX3_qt_adjusted.IED")  # Update the changes in the IED file
+ied.save(Path("sample_data/EX3_qt_adjusted.IED"))  # Update the changes in the IED file

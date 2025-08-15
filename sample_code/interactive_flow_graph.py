@@ -22,7 +22,7 @@ except ImportError:
 script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
-zzn_file = Path("sample_data\\EX3.zzn")
+zzn_file = Path("sample_data/EX3.zzn")
 
 # Read ZZN file
 zzn = ZZN(zzn_file)

@@ -111,9 +111,7 @@ test/
 
 ## Documentation
 The documentation is built using `sphinx`.
-Run the commands
+Run the command:
 ```shell
-cd docs
-make html
+sphinx-build -E -b html docs/source docs/build/html -W
 ```
-to navigate to the `docs` directory and build the documentation.
