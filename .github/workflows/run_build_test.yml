@@ -49,6 +49,9 @@ jobs:
 
   install:
     needs: build
+    permissions:
+      contents: read
+
     runs-on: ${{ matrix.OS }}
     strategy:
       fail-fast: false

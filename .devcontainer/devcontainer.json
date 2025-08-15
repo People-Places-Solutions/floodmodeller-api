@@ -44,6 +44,6 @@
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  "updateContentCommand": "uv pip install -e . && uv pip install -r requirements.txt",
+  "updateContentCommand": "uv pip install -e . && uv pip install -r requirements.txt"
   //"postCreateCommand": "uv venv --python 3.12 && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> .venv/bin/activate && bash -c 'source .venv/bin/activate && uv pip install -e . && uv pip install -r requirements.txt'"
 }
