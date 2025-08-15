@@ -2,8 +2,17 @@
 // customisations: https://containers.dev/supporting
 // This uses github's default image which has tdevtools for python and automatically installs the requirements.txt file post build
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
   "name": "Get Started!",
+  "features": {
+    "ghcr.io/va-h/devcontainers-features/uv:1": {}
+  },
+  "onCreateCommand": "uv venv --python 3.12",
+  "remoteEnv": {
+    "VIRTUAL_ENV": "${containerWorkspaceFolder}/.venv",
+    "PATH": "${containerWorkspaceFolder}/.venv/bin:${containerEnv:PATH}",
+    "LD_LIBRARY_PATH": "${containerEnv:LD_LIBRARY_PATH}:${containerWorkspaceFolder}/floodmodeller_api/libs"
+  },
   "customizations": {
     "vscode": {
       // Add the IDs of extensions you want installed when the container is created.  
@@ -15,12 +24,16 @@
       ],
       // VS Code settings
       "settings": {
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
         "workbench.editorAssociations": {
           "*.md": "vscode.markdown.preview.editor",
           "*.ipynb": "jupyter-notebook"
         },
         "notebook.compactView": false,
-        "pylint.args": ["--ignore"]
+        "pylint.args": [
+          "--ignore"
+        ]
       }
     },
     "codespaces": {
@@ -31,7 +44,6 @@
   },
   // This installs the flood modeller dependencies and attaches the path so that you can do import floodmodeller_api like any installed library
   // This means you don't need to worry about directory scoping rules when importing
-  
-  "postCreateCommand": "pip install -e . && pip install -r requirements.txt && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> ~/.bashrc"
-    
+  "updateContentCommand": "uv pip install -e . && uv pip install -r requirements.txt"
+  //"postCreateCommand": "uv venv --python 3.12 && echo 'export LD_LIBRARY_PATH=\"$LD_LIBRARY_PATH:floodmodeller_api/libs\"' >> .venv/bin/activate && bash -c 'source .venv/bin/activate && uv pip install -e . && uv pip install -r requirements.txt'"
 }
