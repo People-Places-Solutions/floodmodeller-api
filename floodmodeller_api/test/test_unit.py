@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import pandas as pd
 import pytest
 
+from floodmodeller_api.units import QTBDY
 from floodmodeller_api.units._base import Unit  # update this import path to match your repo
 
 
@@ -55,3 +57,13 @@ def test_remove_unit_name(unit: str, header: str, remove_revision: bool, expecte
     dummy_unit = DummyUnit(unit)
     result = dummy_unit._remove_unit_name(header, remove_revision=remove_revision)
     assert result == expected_result
+
+
+def test_partially_defined_unit():
+    actual = QTBDY(["QTBDY comment", "test", "1", "0"]).data
+    expected = pd.Series(
+        [0],
+        index=pd.Index([0], name="Time"),
+        name="Flow",
+    )
+    pd.testing.assert_series_equal(expected, actual)
