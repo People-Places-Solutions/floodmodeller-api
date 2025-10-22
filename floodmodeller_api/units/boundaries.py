@@ -106,7 +106,8 @@ class QTBDY(Unit):
             if self.timeunit == "DATES"
             else to_data_list(qtbdy_block[3:])
         )
-
+        if data_list == [[0]]:
+            data_list = [[0, 0]]
         self.data = pd.DataFrame(data_list, columns=["Flow", "Time"])
         self.data = self.data.set_index("Time")
         self.data = self.data["Flow"]  # Convert to series
@@ -200,6 +201,8 @@ class HTBDY(Unit):
             if self.timeunit == "DATES"
             else to_data_list(htbdy_block[3:])
         )
+        if data_list == [[0]]:
+            data_list = [[0, 0]]
 
         self.data = pd.DataFrame(data_list, columns=["Stage", "Time"])
         self.data = self.data.set_index("Time")
