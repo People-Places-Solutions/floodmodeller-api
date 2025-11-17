@@ -251,4 +251,10 @@ flags = {
     "FLOWTIMEPROFILE18": "Flow Time Profiles",
     "FLOWTIMEPROFILE19": "Flow Time Profiles",
     "FLOWTIMEPROFILE20": "Flow Time Profiles",
+    "ZZDLIMITALL": "ISIS Event Details",
+    "ZZDLIMITBACKFLOW": "ISIS Event Details",
+    "ZZDLIMITSUPERCRITICAL": "ISIS Event Details",
+    "ZZDLIMITCRITICAL": "ISIS Event Details",
+    "ZZDLIMITNORULES": "ISIS Event Details",
+    "ZZDLIMITRESERVOIRBELOW": "ISIS Event Details",
 }
