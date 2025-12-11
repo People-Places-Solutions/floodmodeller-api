@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
+
 import pytest
 
 from floodmodeller_api import DAT
@@ -99,6 +100,7 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
         if datfile.name.startswith("duplicate_unit_test"):
             # Skipping as invalid DAT (duplicate units)
             continue
+
         dat = DAT(datfile)
         first_output = dat._write()
         new_path = tmp_path / "tmp.dat"
@@ -107,6 +109,15 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
         assert dat == second_dat, f"dat objects not equal for {datfile=}"
         second_output = second_dat._write()
         assert first_output == second_output, f"dat outputs not equal for {datfile=}"
+
+        gxy_path = datfile.with_suffix(".gxy")
+        if gxy_path.exists():
+            second_gxy_path = new_path.with_suffix(".gxy")
+            assert second_gxy_path.exists(), f"updated .gxy not found when testing {datfile=}"
+
+            # note filecmp.cmp() doesnt work here because input/output data has different eol sequences.
+            assert gxy_path.read_text() == second_gxy_path.read_text(), f".gxy file content not identical for  {datfile=}"
+
 
 
 def test_insert_unit_before(units, dat_ex6):
