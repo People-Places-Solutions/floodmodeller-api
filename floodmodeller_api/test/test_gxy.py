@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
+from floodmodeller_api import DAT
 from floodmodeller_api.units import QTBDY, RIVER
 
 
@@ -33,3 +36,16 @@ def test_setting_location():
 
     assert unit.location is None
     assert unit._location is None
+
+
+@pytest.mark.parametrize(
+    ("dat_name", "group", "label", "expected_outcome"),
+    [
+        ("EX1.DAT", "sections", "S4", (-38203.94169253, 153846.153846154)),
+    ],
+)
+def test_unit_from_dat(test_workspace, dat_name, group, label, expected_outcome):
+    dat_path = Path(test_workspace, dat_name)
+    dat = DAT(dat_path)
+    unit = getattr(dat, group)[label]
+    assert unit.location == expected_outcome
