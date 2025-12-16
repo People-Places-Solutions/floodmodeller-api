@@ -35,6 +35,7 @@ class Unit(Jsonable):
     _unit: str
     _subtype: str | None = None
     _name: str | None = None
+    _location: tuple[float,float] | None = None
 
     def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
         if from_json:
@@ -52,6 +53,12 @@ class Unit(Jsonable):
     @property
     def name(self) -> str | None:
         return self._name
+    
+    @property
+    def location(self) -> tuple[float,float] | None:
+        # For most units (ones without georef data in their tables), we either use gxy data or None
+        # gxy data written upon instanciation when opening DAT.
+        return self._location
 
     @name.setter
     def name(self, new_name):
@@ -103,6 +110,12 @@ class Unit(Jsonable):
     def subtype(self, new_value):
         msg = "You cannot change the subtype of a unit once it has been instantiated"
         raise ValueError(msg)
+    
+    @location.setter
+    def location(self, new_value):
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
+
 
     def __repr__(self):
         if self._subtype is None:
