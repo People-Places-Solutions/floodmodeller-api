@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
-
 import pytest
 
 from floodmodeller_api import DAT
@@ -116,8 +115,9 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
             assert second_gxy_path.exists(), f"updated .gxy not found when testing {datfile=}"
 
             # note filecmp.cmp() doesnt work here because input/output data has different eol sequences.
-            assert gxy_path.read_text() == second_gxy_path.read_text(), f".gxy file content not identical for  {datfile=}"
-
+            assert (
+                gxy_path.read_text() == second_gxy_path.read_text()
+            ), f".gxy file content not identical for  {datfile=}"
 
 
 def test_insert_unit_before(units, dat_ex6):
