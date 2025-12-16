@@ -42,6 +42,9 @@ def test_setting_location():
     ("dat_name", "group", "label", "expected_outcome"),
     [
         ("EX1.DAT", "sections", "S4", (-38203.94169253, 153846.153846154)),
+        ("River_Bridge_no_gxy.dat","sections","M029",(385029.200,242717.100)),
+        ("River_Bridge_no_gxy.dat","sections","M030",(384689.300,242345.700)),
+        ("River_Bridge_no_gxy.dat","sections","M031",(384545.000,241937.000)),
     ],
 )
 def test_unit_from_dat(test_workspace, dat_name, group, label, expected_outcome):
