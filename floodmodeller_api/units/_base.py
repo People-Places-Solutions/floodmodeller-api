@@ -57,7 +57,7 @@ class Unit(Jsonable):
     @property
     def location(self) -> tuple[float, float] | None:
         # For most units (ones without georef data in their tables), we either use gxy data or None
-        # gxy data written upon instanciation when opening DAT.
+        # gxy data written upon instantiation when opening DAT.
         return self._location
 
     @name.setter
