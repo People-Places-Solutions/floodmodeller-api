@@ -63,6 +63,8 @@ class DAT(FMFile):
 
         self._get_general_parameters()
         self._get_unit_definitions()
+        if self._gxy_data:
+            self._get_unit_locations()
 
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
@@ -529,6 +531,33 @@ class DAT(FMFile):
                 msg = f"Unexpected unit type encountered: {unit_type}"
                 raise Exception(msg)
 
+    def _get_unit_locations(self):
+        # use gxy data to assign locations to units.
+        gxy_lines = self._gxy_data.splitlines()
+        line = 0
+        gxy_dict = {}
+        while True:
+            header = gxy_lines[line][1:-1].split("_", 2)
+
+            # header format for a unit is [TYPE_SUBTYPE_NAME], so simple check that our header is a unit is check split length is 3
+            if len(header) != 3:  # noqa: PLR2004
+                break
+
+            x = float(gxy_lines[line + 1][2:].strip())
+            y = float(gxy_lines[line + 2][2:].strip())
+
+            # key should match ._unique_name attributes
+            gxy_dict[f"{header[0]}_{header[2]}"] = (x, y)
+
+            line += 4
+
+        for unit in self._all_units:
+            if unit._unit in ("COMMENT"):
+                break
+
+            if unit.unique_name in gxy_dict:
+                unit._location = gxy_dict.pop(unit.unique_name)
+
     def _initialize_collections(self) -> None:
         # Initialize unit collections
         self.sections: dict[str, units.TSections] = {}
@@ -552,8 +581,11 @@ class DAT(FMFile):
         else:
             # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
             unit_name = self._get_unit_name(unit_type, unit_data)
-            # Create instance of unit and add to relevant group
+
+            # fetch the relevant group that the unit belongs in
             unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[unit_type]["group"])
+
+            # Create instance of unit and add to group
             self._add_unit_to_group(unit_group, unit_type, unit_name, unit_data)
 
     def _get_unit_name(self, unit_type, unit_data):
@@ -575,8 +607,13 @@ class DAT(FMFile):
             raise Exception(msg)
         # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
         unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
-        unit_group[unit_name] = getattr(units, unit_type_safe)(unit_data, self._label_len)
-        self._all_units.append(unit_group[unit_name])
+
+        # Get class object from unit type and instantiate unit with block data & length.
+        unit = getattr(units, unit_type_safe)(unit_data, self._label_len)
+
+        # Add unit to group, and to all units list.
+        unit_group[unit_name] = unit
+        self._all_units.append(unit)
 
     def _process_unsupported_unit(self, unit_type, unit_data) -> None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
