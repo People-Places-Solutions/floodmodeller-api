@@ -5,12 +5,12 @@ from pathlib import Path
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import QTBDY, RIVER
+from floodmodeller_api.units import QTBDY, RIVER,INTERPOLATE,REPLICATE,RESERVOIR,SPILL,FLOODPLAIN
 
 
 # this would be a fixture but doesnt work when used in parameterised test.
-def blank_with_location():
-    unit = QTBDY()
+def blank_with_location(type,*args,**kwargs):
+    unit = type(*args,**kwargs)
     unit._location = (461193.10, 339088.74)
     return unit
 
@@ -20,7 +20,20 @@ def blank_with_location():
     [
         (RIVER(), None),
         (QTBDY(), None),
-        (blank_with_location(), (461193.10, 339088.74)),
+        (INTERPOLATE(),None),
+        (INTERPOLATE(easting=123.4,northing=987.6),(123.4,987.6)),
+        (REPLICATE(),None),
+        (REPLICATE(easting=123.4,northing=987.6),(123.4,987.6)),
+        (RESERVOIR(),None),
+        (RESERVOIR(easting=123.4,northing=987.6),(123.4,987.6)),
+        (SPILL(),None),
+        (FLOODPLAIN(),None),
+        (blank_with_location(QTBDY), (461193.10, 339088.74)),
+        (blank_with_location(RIVER), (461193.10, 339088.74)),
+        (blank_with_location(INTERPOLATE), (461193.10, 339088.74)),
+        (blank_with_location(INTERPOLATE,easting=123.4,northing=987.6), (461193.10, 339088.74)),
+        (blank_with_location(SPILL), (461193.10, 339088.74)),
+        (blank_with_location(FLOODPLAIN), (461193.10, 339088.74)),
     ],
 )
 def test_unit_location(unit, expected_outcome):

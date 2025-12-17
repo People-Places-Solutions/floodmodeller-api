@@ -984,6 +984,24 @@ class SPILL(Unit):
             else pd.DataFrame([[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"])
         )
 
+    @Unit.location.getter
+    def location(self) -> tuple[float, float] | None:
+        # for SPILL units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. Y-min location if not (0,0)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        try:
+            location = tuple(self.data.loc[self.data.Y.idxmin(), ["Easting", "Northing"]].values)
+            if location != (0,0):
+                return location
+        except (ValueError,IndexError):
+            pass
+
+        return None
+
 
 class RNWEIR(Unit):
     """Class to hold and process RNWEIR unit type
@@ -1660,3 +1678,21 @@ class FLOODPLAIN(Unit):
             msg = f"The DataFrame must only contain columns: {self._required_columns}"
             raise ValueError(msg)
         self._data = new_df
+
+    @Unit.location.getter
+    def location(self) -> tuple[float, float] | None:
+        # for FLOODPLAIN units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. Y-min location if not (0,0)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        try:
+            location = tuple(self.data.loc[self.data.Y.idxmin(), ["Easting", "Northing"]].values)
+            if location != (0,0):
+                return location
+        except (ValueError,IndexError):
+            pass
+
+        return None

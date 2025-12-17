@@ -234,6 +234,32 @@ class RIVER(Unit):
             return riv_block
 
         return self._raw_block
+    
+    @Unit.location.getter
+    def location(self) -> tuple[float, float] | None:
+        # for RIVER units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. BED marker location if not (0,0)
+        # 3. Y-min location if not (0,0)
+        # 4. None
+        if self._location is not None:
+            return self._location
+        
+        try:
+            location = tuple(self.active_data.loc[self.active_data["Marker"] == "BED", ["Easting", "Northing"]].values[0])
+            if location != (0,0):
+                return location
+        except (ValueError,IndexError):
+            pass
+
+        try:
+            location = tuple(self.active_data.loc[self.active_data.Y.idxmin(), ["Easting", "Northing"]].values)
+            if location != (0,0):
+                return location
+        except (ValueError,IndexError):
+            pass
+
+        return None
 
     @property
     def data(self) -> pd.DataFrame:
