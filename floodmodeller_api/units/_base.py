@@ -54,28 +54,6 @@ class Unit(Jsonable):
     def name(self) -> str | None:
         return self._name
 
-    @property
-    def location(self) -> tuple[float, float] | None:
-        # gxy data (_location) written upon instantiation when opening DAT.
-        # default priority is as follows:
-        # 1. gxy data if not None
-        # 2. easting and northing attributes if the unit has them (Interpolates, replicates and reservoirs)
-        # 3. None
-        if self._location is not None:
-            return self._location
-
-        if hasattr(self,"easting") and hasattr(self,"northing"):
-            location = (self.easting,self.northing)
-            if location != (0,0):
-                return location
-        
-        return None
-    
-    @location.setter
-    def location(self, new_value):
-        msg = "Currently unit location is read-only."
-        raise NotImplementedError(msg)
-
     @name.setter
     def name(self, new_name):
         try:
@@ -127,7 +105,27 @@ class Unit(Jsonable):
         msg = "You cannot change the subtype of a unit once it has been instantiated"
         raise ValueError(msg)
 
+    @property
+    def location(self) -> tuple[float, float] | None:
+        # gxy data (_location) written upon instantiation when opening DAT.
+        # default priority is as follows:
+        # 1. gxy data if not None
+        # 2. easting and northing attributes if the unit has them (Interpolates, replicates and reservoirs)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        if hasattr(self,"easting") and hasattr(self,"northing"):
+            location = (self.easting,self.northing)
+            if location != (0,0):
+                return location
+        
+        return None
     
+    @location.setter
+    def location(self, new_value):
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)    
 
     def __repr__(self):
         if self._subtype is None:
