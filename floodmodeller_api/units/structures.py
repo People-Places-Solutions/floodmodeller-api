@@ -995,9 +995,9 @@ class SPILL(Unit):
 
         try:
             location = tuple(self.data.loc[self.data.Y.idxmin(), ["Easting", "Northing"]].values)
-            if location != (0,0):
+            if location != (0, 0):
                 return location
-        except (ValueError,IndexError):
+        except (ValueError, IndexError):
             pass
 
         return None
@@ -1690,9 +1690,9 @@ class FLOODPLAIN(Unit):
 
         try:
             location = tuple(self.data.loc[self.data.Y.idxmin(), ["Easting", "Northing"]].values)
-            if location != (0,0):
+            if location != (0, 0):
                 return location
-        except (ValueError,IndexError):
+        except (ValueError, IndexError):
             pass
 
         return None

@@ -115,17 +115,17 @@ class Unit(Jsonable):
         if self._location is not None:
             return self._location
 
-        if hasattr(self,"easting") and hasattr(self,"northing"):
-            location = (self.easting,self.northing)
-            if location != (0,0):
+        if hasattr(self, "easting") and hasattr(self, "northing"):
+            location = (self.easting, self.northing)
+            if location != (0, 0):
                 return location
-        
+
         return None
-    
+
     @location.setter
     def location(self, new_value):
         msg = "Currently unit location is read-only."
-        raise NotImplementedError(msg)    
+        raise NotImplementedError(msg)
 
     def __repr__(self):
         if self._subtype is None:

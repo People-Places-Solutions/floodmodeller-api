@@ -5,12 +5,20 @@ from pathlib import Path
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import QTBDY, RIVER,INTERPOLATE,REPLICATE,RESERVOIR,SPILL,FLOODPLAIN
+from floodmodeller_api.units import (
+    FLOODPLAIN,
+    INTERPOLATE,
+    QTBDY,
+    REPLICATE,
+    RESERVOIR,
+    RIVER,
+    SPILL,
+)
 
 
 # this would be a fixture but doesnt work when used in parameterised test.
-def blank_with_location(type,*args,**kwargs):
-    unit = type(*args,**kwargs)
+def blank_with_location(unit_class, *args, **kwargs):
+    unit = unit_class(*args, **kwargs)
     unit._location = (461193.10, 339088.74)
     return unit
 
@@ -20,18 +28,18 @@ def blank_with_location(type,*args,**kwargs):
     [
         (RIVER(), None),
         (QTBDY(), None),
-        (INTERPOLATE(),None),
-        (INTERPOLATE(easting=123.4,northing=987.6),(123.4,987.6)),
-        (REPLICATE(),None),
-        (REPLICATE(easting=123.4,northing=987.6),(123.4,987.6)),
-        (RESERVOIR(),None),
-        (RESERVOIR(easting=123.4,northing=987.6),(123.4,987.6)),
-        (SPILL(),None),
-        (FLOODPLAIN(),None),
+        (INTERPOLATE(), None),
+        (INTERPOLATE(easting=123.4, northing=987.6), (123.4, 987.6)),
+        (REPLICATE(), None),
+        (REPLICATE(easting=123.4, northing=987.6), (123.4, 987.6)),
+        (RESERVOIR(), None),
+        (RESERVOIR(easting=123.4, northing=987.6), (123.4, 987.6)),
+        (SPILL(), None),
+        (FLOODPLAIN(), None),
         (blank_with_location(QTBDY), (461193.10, 339088.74)),
         (blank_with_location(RIVER), (461193.10, 339088.74)),
         (blank_with_location(INTERPOLATE), (461193.10, 339088.74)),
-        (blank_with_location(INTERPOLATE,easting=123.4,northing=987.6), (461193.10, 339088.74)),
+        (blank_with_location(INTERPOLATE, easting=123.4, northing=987.6), (461193.10, 339088.74)),
         (blank_with_location(SPILL), (461193.10, 339088.74)),
         (blank_with_location(FLOODPLAIN), (461193.10, 339088.74)),
     ],
@@ -55,9 +63,9 @@ def test_setting_location():
     ("dat_name", "group", "label", "expected_outcome"),
     [
         ("EX1.DAT", "sections", "S4", (-38203.94169253, 153846.153846154)),
-        ("River_Bridge_no_gxy.dat","sections","M029",(385029.200,242717.100)),
-        ("River_Bridge_no_gxy.dat","sections","M030",(384689.300,242345.700)),
-        ("River_Bridge_no_gxy.dat","sections","M031",(384545.000,241937.000)),
+        ("River_Bridge_no_gxy.dat", "sections", "M029", (385029.200, 242717.100)),
+        ("River_Bridge_no_gxy.dat", "sections", "M030", (384689.300, 242345.700)),
+        ("River_Bridge_no_gxy.dat", "sections", "M031", (384545.000, 241937.000)),
     ],
 )
 def test_unit_from_dat(test_workspace, dat_name, group, label, expected_outcome):

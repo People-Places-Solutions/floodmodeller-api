@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+# ruff: noqa: PD011
 from __future__ import annotations
 
 import logging
@@ -234,7 +235,7 @@ class RIVER(Unit):
             return riv_block
 
         return self._raw_block
-    
+
     @Unit.location.getter
     def location(self) -> tuple[float, float] | None:
         # for RIVER units, source priority is as follows:
@@ -244,19 +245,26 @@ class RIVER(Unit):
         # 4. None
         if self._location is not None:
             return self._location
-        
+
         try:
-            location = tuple(self.active_data.loc[self.active_data["Marker"] == "BED", ["Easting", "Northing"]].values[0])
-            if location != (0,0):
+            location = tuple(
+                self.active_data.loc[
+                    self.active_data["Marker"] == "BED",
+                    ["Easting", "Northing"],
+                ].values[0],
+            )
+            if location != (0, 0):
                 return location
-        except (ValueError,IndexError):
+        except (ValueError, IndexError):
             pass
 
         try:
-            location = tuple(self.active_data.loc[self.active_data.Y.idxmin(), ["Easting", "Northing"]].values)
-            if location != (0,0):
+            location = tuple(
+                self.active_data.loc[self.active_data.Y.idxmin(), ["Easting", "Northing"]].values,
+            )
+            if location != (0, 0):
                 return location
-        except (ValueError,IndexError):
+        except (ValueError, IndexError):
             pass
 
         return None
