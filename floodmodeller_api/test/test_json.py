@@ -9,6 +9,13 @@ import pytest
 from floodmodeller_api import DAT, IED, IEF, INP, XML2D
 from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.util import read_file
+from floodmodeller_api.units import (
+    FLOODPLAIN,
+    INTERPOLATE,
+    QTBDY,
+    RIVER,
+    SPILL,
+)
 
 if TYPE_CHECKING:
     from floodmodeller_api._base import FMFile
@@ -104,11 +111,31 @@ def test_obj_reproduces_from_json_for_all_test_api_files(
     file_extension_glob,
 ):
     """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
+    fail_list = []
     for file in Path(test_workspace).glob(file_extension_glob):
         if file.name.startswith("duplicate_unit_test"):
             # Skipping as invalid DAT (duplicate units)
             continue
-        assert api_class(file) == api_class.from_json(api_class(file).to_json())
+
+        if api_class(file) != api_class.from_json(api_class(file).to_json()):
+            fail_list.append(str(file))
+    pass
+    assert len(fail_list) == 0, f"The following files did not reproduce:\n{'\n'.join(fail_list)}"
+
+@pytest.mark.parametrize(
+    ("unit",),
+    [
+        (RIVER(),),
+        (QTBDY(),),
+        (INTERPOLATE(),),
+        (INTERPOLATE(easting=123.4, northing=987.6),),
+        (SPILL(),),
+        (FLOODPLAIN(),),
+    ],
+)
+def test_obj_reproduces_from_json_for_units(unit):
+    assert unit == unit.from_json(unit.to_json())
+    
 
 
 def test_is_jsonable_with_jsonable_object():
