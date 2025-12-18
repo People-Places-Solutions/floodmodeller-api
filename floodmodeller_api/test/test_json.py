@@ -72,8 +72,9 @@ def parameterised_objs_and_expected(test_workspace) -> list[tuple[FMFile, Path]]
         (IEF(test_workspace / "ex3.ief"), test_workspace / "EX3_IEF_expected.json"),
         (XML2D(test_workspace / "Domain1_Q.xml"), test_workspace / "Domain1_Q_xml_expected.json"),
         (XML2D(test_workspace / "Linked1D2D.xml"), test_workspace / "Linked1D2D_xml_expected.json"),
+        (DAT(test_workspace / "River_Bridge.dat"), test_workspace / "River_Bridge_DAT_expected.json"),
+        (DAT(test_workspace / "River_Bridge_no_gxy.dat"), test_workspace / "River_Bridge_no_gxy_DAT_expected.json"),
     ]
-
 
 def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FMFile, Path]]):
     """JSON:  To test if the json object produced in to_json is identical to the expected json file"""
@@ -87,7 +88,7 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
             json_dict_from_file = json.load(file)["Object Attributes"]
 
         # keys to ignore when testing for equivalence
-        keys_to_remove = ["_filepath", "file", "_log_path"]
+        keys_to_remove = ["_filepath", "file", "_log_path","_gxy_filepath"]
         for key in keys_to_remove:
             json_dict_from_obj.pop(key, None)
             json_dict_from_file.pop(key, None)
