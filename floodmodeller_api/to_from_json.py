@@ -82,6 +82,11 @@ def recursive_to_json(obj: Any, is_top_level: bool = True) -> Any:  # noqa: PLR0
     from .units._base import Unit
     from .urban1d._base import UrbanSubsection, UrbanUnit
 
+    if isinstance(obj, tuple):
+        return {
+            "python_tuple": [recursive_to_json(item, is_top_level=False) for item in obj],
+        }
+
     if is_jsonable(obj):
         return obj
 
@@ -173,7 +178,16 @@ def recursive_from_json(obj: dict | Any) -> Any:
         return reconstructed_sr
 
     if "python_set" in obj:
-        return set(obj["python_set"])
+        return set(
+            recursive_from_json(item) if isinstance(item, dict) else item
+            for item in obj["python_set"]
+        )
+
+    if "python_tuple" in obj:
+        return tuple(
+            recursive_from_json(item) if isinstance(item, dict) else item
+            for item in obj["python_tuple"]
+        )
 
     for key, value in obj.items():
         if isinstance(value, dict):
