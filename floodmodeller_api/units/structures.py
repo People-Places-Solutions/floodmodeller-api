@@ -46,11 +46,12 @@ from ._helpers import (
     write_dataframes,
 )
 
+
 def _get_median_coordinate(data):
-    pass
     # trim rows that have invalid coordinates (0,0)
-    data = data[(data["Easting"] != 0) | (data["Northing"]!= 0)]
-    return tuple(data[["Easting","Northing"]].median())
+    data = data[(data["Easting"] != 0) | (data["Northing"] != 0)]
+    return tuple(data[["Easting", "Northing"]].median())
+
 
 class BRIDGE(Unit):
     """Class to hold and process BRIDGE unit type. The Bridge class supports the three main bridge sub-types in
@@ -1000,7 +1001,7 @@ class SPILL(Unit):
 
         try:
             return _get_median_coordinate(self.data)
-        except(ValueError,IndexError):
+        except (ValueError, IndexError):
             return None
 
 
@@ -1691,5 +1692,5 @@ class FLOODPLAIN(Unit):
 
         try:
             return _get_median_coordinate(self.data)
-        except(ValueError,IndexError):
+        except (ValueError, IndexError):
             return None

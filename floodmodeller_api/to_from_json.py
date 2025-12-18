@@ -14,6 +14,7 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+# ruff: noqa: C901
 from __future__ import annotations
 
 import json
@@ -178,10 +179,10 @@ def recursive_from_json(obj: dict | Any) -> Any:
         return reconstructed_sr
 
     if "python_set" in obj:
-        return set(
+        return {
             recursive_from_json(item) if isinstance(item, dict) else item
             for item in obj["python_set"]
-        )
+        }
 
     if "python_tuple" in obj:
         return tuple(

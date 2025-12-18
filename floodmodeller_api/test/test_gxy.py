@@ -66,7 +66,7 @@ def test_setting_location():
         ("River_Bridge_no_gxy.dat", "sections", "M029", (385029.200, 242717.100)),
         ("River_Bridge_no_gxy.dat", "sections", "M030", (384689.300, 242345.700)),
         ("River_Bridge_no_gxy.dat", "sections", "M031", (384545.000, 241937.000)),
-        ("River_Bridge_no_gxy.dat","structures","M047spU",(386710.9, 236857.85)),
+        ("River_Bridge_no_gxy.dat", "structures", "M047spU", (386710.9, 236857.85)),
     ],
 )
 def test_unit_from_dat(test_workspace, dat_name, group, label, expected_outcome):
