@@ -990,7 +990,7 @@ class SPILL(Unit):
             else pd.DataFrame([[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"])
         )
 
-    @Unit.location.getter
+    @property
     def location(self) -> tuple[float, float] | None:
         # for SPILL units, source priority is as follows:
         # 1. GXY location if defined
@@ -1003,6 +1003,11 @@ class SPILL(Unit):
             return _get_median_coordinate(self.data)
         except (ValueError, IndexError):
             return None
+
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
 
 
 class RNWEIR(Unit):
@@ -1681,7 +1686,7 @@ class FLOODPLAIN(Unit):
             raise ValueError(msg)
         self._data = new_df
 
-    @Unit.location.getter
+    @property
     def location(self) -> tuple[float, float] | None:
         # for FLOODPLAIN units, source priority is as follows:
         # 1. GXY location if defined
@@ -1694,3 +1699,8 @@ class FLOODPLAIN(Unit):
             return _get_median_coordinate(self.data)
         except (ValueError, IndexError):
             return None
+
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
