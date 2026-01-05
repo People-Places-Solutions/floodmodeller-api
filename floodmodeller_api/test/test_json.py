@@ -134,12 +134,12 @@ def test_obj_reproduces_from_json_for_all_test_api_files(
 @pytest.mark.parametrize(
     "unit",
     [
-        (RIVER(),),
-        (QTBDY(),),
-        (INTERPOLATE(),),
-        (INTERPOLATE(easting=123.4, northing=987.6),),
-        (SPILL(),),
-        (FLOODPLAIN(),),
+        RIVER(),
+        QTBDY(),
+        INTERPOLATE(),
+        INTERPOLATE(easting=123.4, northing=987.6),
+        SPILL(),
+        FLOODPLAIN(),
     ],
 )
 def test_obj_reproduces_from_json_for_units(unit):
