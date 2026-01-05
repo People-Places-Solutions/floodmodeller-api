@@ -105,7 +105,7 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
         new_path = tmp_path / "tmp.dat"
         dat.save(new_path)
         second_dat = DAT(new_path)
-        assert dat == second_dat, f"dat objects not equal for {datfile=}"
+        assert dat == second_dat, f"dat objects not equal for {datfile=}\n{dat.diff(second_dat)}"
         second_output = second_dat._write()
         assert first_output == second_output, f"dat outputs not equal for {datfile=}"
 
@@ -118,6 +118,10 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
             assert (
                 gxy_path.read_text() == second_gxy_path.read_text()
             ), f".gxy file content not identical for  {datfile=}"
+
+        new_path.unlink()
+        if gxy_path.exists():
+            new_path.with_suffix(".gxy").unlink()
 
 
 def test_insert_unit_before(units, dat_ex6):
