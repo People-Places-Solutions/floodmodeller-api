@@ -127,7 +127,8 @@ def test_obj_reproduces_from_json_for_all_test_api_files(
 
         if api_class(file) != api_class.from_json(api_class(file).to_json()):
             fail_list.append(str(file))
-    assert len(fail_list) == 0, f"The following files did not reproduce:\n{'\n'.join(fail_list)}"
+    failures = "\n".join(fail_list)
+    assert len(fail_list) == 0, f"The following files did not reproduce:\n{failures}"
 
 
 @pytest.mark.parametrize(
