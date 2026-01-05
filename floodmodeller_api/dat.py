@@ -603,7 +603,7 @@ class DAT(FMFile):
     ) -> None:
         # Raise exception if a duplicate label is encountered
         if unit_name in unit_group:
-            msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]["group"]}'
+            msg = f"Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[unit_type]['group']}"
             raise Exception(msg)
         # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
         unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")

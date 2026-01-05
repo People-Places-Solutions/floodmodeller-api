@@ -181,7 +181,7 @@ class IED(FMFile):
                 # Create instance of unit and add to relevant group
                 unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
                 if unit_name in unit_group:
-                    msg = f'Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"]}'
+                    msg = f"Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block['Type']]['group']}"
                     raise Exception(msg)
                 unit_group[unit_name] = getattr(units, block["Type"])(unit_data)
 

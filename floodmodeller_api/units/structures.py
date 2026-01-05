@@ -169,7 +169,7 @@ class BRIDGE(Unit):
         self.comment = self._remove_unit_name(br_block[0])
         self._subtype = self._get_first_word(br_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{br_block[2]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -380,7 +380,7 @@ class BRIDGE(Unit):
             )
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
-                    pier_params = f'{self.npiers:>10}{"COEFF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
+                    pier_params = f"{self.npiers:>10}{'COEFF':<10}{'':>10}{self.pier_calibration_coeff:>10.3f}"
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
@@ -595,7 +595,7 @@ class SLUICE(Unit):
         self._subtype = self._get_first_word(block[1])
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{3 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.remote_label = labels[2]
@@ -681,8 +681,8 @@ class SLUICE(Unit):
             self.weir_length,
         )
         if self.subtype == "RADIAL":
-            params1 += f'{"DEGREES":<10}' if self.use_degrees else f'{"":<10}'
-            params1 += "FREESLUICE" if self.allow_free_flow_under else f'{"":<10}'
+            params1 += f"{'DEGREES':<10}" if self.use_degrees else f"{'':<10}"
+            params1 += "FREESLUICE" if self.allow_free_flow_under else f"{'':<10}"
 
         # Second parameter line
         params2 = join_10_char(
@@ -732,7 +732,7 @@ class SLUICE(Unit):
             # ADD GATES
             block.append(
                 join_10_char(
-                    f'{"LOGICAL":<10}',
+                    f"{'LOGICAL':<10}",
                     self.max_movement_rate,
                     self.max_setting,
                     self.min_setting,
@@ -833,7 +833,7 @@ class ORIFICE(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -934,7 +934,7 @@ class SPILL(Unit):
     def _read(self, block):
         """Function to read a given SPILL block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1029,7 +1029,7 @@ class RNWEIR(Unit):
     def _read(self, block):
         """Function to read a given RNWEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1130,7 +1130,7 @@ class WEIR(Unit):
     def _read(self, block):
         """Function to read a given WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1222,7 +1222,7 @@ class CRUMP(Unit):
     def _read(self, block):
         """Function to read a given CRUMP block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -1331,7 +1331,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
     def _read(self, block):
         """Function to read a given FLAT-V WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -1460,7 +1460,7 @@ class OUTFALL(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])

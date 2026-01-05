@@ -79,7 +79,7 @@ class CULVERT(Unit):
         # Extract common attributes
         self._subtype = self._get_first_word(block[1])
         self.comment = self._remove_unit_name(block[0])
-        labels = split_n_char(f"{block[2]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -195,7 +195,7 @@ class BLOCKAGE(Unit):
         self._revision, self.comment = self._get_revision_and_comment(block[0])
 
         # Extract labels
-        labels = split_n_char(f"{block[1]:<{5*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{5 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_reference_label = labels[2]

@@ -46,12 +46,12 @@ def _validate_unit(unit, urban=False):
 
 def _validate_parameter(param, value):  # noqa: C901, PLR0911, PLR0912
     if param["type"] == "type-match":
-        return isinstance(value, param["options"]), f'-> Expected: {param["options"]}'
+        return isinstance(value, param["options"]), f"-> Expected: {param['options']}"
 
     if param["type"] == "value-match":
         if isinstance(value, str):
-            return value.upper() in param["options"], f'-> Expected: {param["options"]}'
-        return value in param["options"], f'-> Expected: {param["options"]}'
+            return value.upper() in param["options"], f"-> Expected: {param['options']}"
+        return value in param["options"], f"-> Expected: {param['options']}"
 
     if param["type"] == "end-value-match":
         if value.strip().upper().endswith(tuple(param["options"])):
@@ -70,7 +70,7 @@ def _validate_parameter(param, value):  # noqa: C901, PLR0911, PLR0912
 
         return (
             type_match_result or value_match_result,
-            f'-> Expected: Type {param["options"][0]} or Value {param["options"][1]}',
+            f"-> Expected: Type {param['options'][0]} or Value {param['options'][1]}",
         )
 
     if param["type"] == "value-range":
@@ -84,13 +84,13 @@ def _validate_parameter(param, value):  # noqa: C901, PLR0911, PLR0912
     if param["type"] == "string-length":
         return (
             len(value) <= param["max_length"],
-            f'-> Exceeds {param["max_length"]} characters',
+            f"-> Exceeds {param['max_length']} characters",
         )
 
     if param["type"] == "list-string-length":
         return (
             all(len(item) <= param["max_length"] for item in value),
-            f'-> Contains labels exceeding {param["max_length"]} characters',
+            f"-> Contains labels exceeding {param['max_length']} characters",
         )
 
     if param["type"] == "dict-match":

@@ -437,7 +437,7 @@ class StructureLogBuilder:
             height = opening["opening_height"]
             width = opening["width"]
 
-            text += f"Opening {n+1}: h: {height:.2f} x w: {width:.2f} "
+            text += f"Opening {n + 1}: h: {height:.2f} x w: {width:.2f} "
 
         return text.rstrip()
 
@@ -480,24 +480,24 @@ class StructureLogBuilder:
         culvert_loss = ""
         match unit_dict["subtype"]:
             case "CIRCULAR":
-                text += f'dia: {unit_dict["dimensions"]["diameter"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}'
+                text += f"dia: {unit_dict['dimensions']['diameter']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
             case "SPRUNGARCH" | "SPRUNG":
-                text += f'(Springing: {unit_dict["dimensions"]["height_springing"]:.2f}, Crown: {unit_dict["dimensions"]["height_crown"]:.2f}) x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}'
+                text += f"(Springing: {unit_dict['dimensions']['height_springing']:.2f}, Crown: {unit_dict['dimensions']['height_crown']:.2f}) x w: {unit_dict['dimensions']['width']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
             case "RECTANGULAR":
-                text += f'h: {unit_dict["dimensions"]["height"]:.2f} x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}'
+                text += f"h: {unit_dict['dimensions']['height']:.2f} x w: {unit_dict['dimensions']['width']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
             case "SECTION":
-                text += f'h: {unit_dict["dimensions"]["height"]:.2f} x w: {unit_dict["dimensions"]["width"]:.2f} x l: {unit_dict["conduit_data"]["length"]:.2f}'
+                text += f"h: {unit_dict['dimensions']['height']:.2f} x w: {unit_dict['dimensions']['width']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
             case _:
                 return "", ""
 
         if "total_length" in unit_dict["conduit_data"]:
-            text += f' (Total conduit length: {unit_dict["conduit_data"]["total_length"]:.2f})'
+            text += f" (Total conduit length: {unit_dict['conduit_data']['total_length']:.2f})"
 
         if "inlet" in unit_dict["conduit_data"]:
-            culvert_loss += f'Ki: {unit_dict["conduit_data"]["inlet"]}, '
+            culvert_loss += f"Ki: {unit_dict['conduit_data']['inlet']}, "
 
         if "outlet" in unit_dict["conduit_data"]:
-            culvert_loss += f'Ko: {unit_dict["conduit_data"]["outlet"]}, '
+            culvert_loss += f"Ko: {unit_dict['conduit_data']['outlet']}, "
 
         culvert_loss = culvert_loss.rstrip(", ")
 
