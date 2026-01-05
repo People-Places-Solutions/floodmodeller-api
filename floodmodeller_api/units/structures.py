@@ -50,7 +50,10 @@ from ._helpers import (
 def _get_median_coordinate(data):
     # trim rows that have invalid coordinates (0,0)
     data = data[(data["Easting"] != 0) | (data["Northing"] != 0)]
-    return tuple(data[["Easting", "Northing"]].median())
+    median_coords = data[["Easting", "Northing"]].median()
+    if median_coords.isna().any():
+        return None
+    return (float(median_coords["Easting"]), float(median_coords["Northing"]))
 
 
 class BRIDGE(Unit):
