@@ -121,7 +121,7 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
 
         new_path.unlink()
         if gxy_path.exists():
-            new_path.with_suffix(".gxy").unlink()
+            second_gxy_path.unlink()
 
 
 def test_insert_unit_before(units, dat_ex6):

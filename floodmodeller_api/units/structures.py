@@ -997,7 +997,7 @@ class SPILL(Unit):
     def location(self) -> tuple[float, float] | None:
         # for SPILL units, source priority is as follows:
         # 1. GXY location if defined
-        # 2. Y-min location if not (0,0)
+        # 2. median location if not (0,0)
         # 3. None
         if self._location is not None:
             return self._location
@@ -1693,7 +1693,7 @@ class FLOODPLAIN(Unit):
     def location(self) -> tuple[float, float] | None:
         # for FLOODPLAIN units, source priority is as follows:
         # 1. GXY location if defined
-        # 2. Y-min location if not (0,0)
+        # 2. median location if not (0,0)
         # 3. None
         if self._location is not None:
             return self._location
