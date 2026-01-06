@@ -552,7 +552,7 @@ class DAT(FMFile):
             line += 4
 
         for unit in self._all_units:
-            if unit._unit in ("COMMENT"):
+            if unit._unit in ("COMMENT",):
                 break
 
             if unit.unique_name in gxy_dict:
