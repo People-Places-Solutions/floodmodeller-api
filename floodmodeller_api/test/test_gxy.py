@@ -55,7 +55,8 @@ def get_supported_unit_types():
     for unit_type, attributes in floodmodeller_api.units.SUPPORTED_UNIT_TYPES.items():
         if attributes["group"] not in ("other", "comments"):
             unit_type_safe = unit_type.replace(" ", "_").replace(
-                "-", "_",
+                "-",
+                "_",
             )  # Borrowed this from .dat
             unit_class = getattr(floodmodeller_api.units, unit_type_safe)
             all_unit_classes.append(unit_class)
