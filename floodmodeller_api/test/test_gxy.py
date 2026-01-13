@@ -13,7 +13,9 @@ from floodmodeller_api.units import (
     RESERVOIR,
     RIVER,
     SPILL,
+    JUNCTION,
 )
+import floodmodeller_api.units
 
 
 # this would be a fixture but doesnt work when used in parameterised test.
@@ -48,10 +50,34 @@ def test_unit_location(unit, expected_outcome):
     assert unit.location == expected_outcome
 
 
-def test_setting_location():
+def get_supported_unit_types():
+    all_unit_classes = []
+    for unit_type, attributes in floodmodeller_api.units.SUPPORTED_UNIT_TYPES.items():
+        if attributes["group"] not in ("other", "comments"):
+            unit_type_safe = unit_type.replace(" ", "_").replace(
+                "-", "_"
+            )  # Borrowed this from .dat
+            unit_class = getattr(floodmodeller_api.units, unit_type_safe)
+            all_unit_classes.append(unit_class)
+    return all_unit_classes
+
+
+ALL_UNIT_TYPES = get_supported_unit_types()
+
+
+@pytest.mark.parametrize("unit_class", ALL_UNIT_TYPES)
+def test_setting_location(unit_class):
     # first check that we get the not implemented error, then check that the location is still unaffected.
-    # this test should be updated when location is read/write.
-    unit = RIVER()
+    # this test should be updated when location is read/write capable.
+    try:
+        unit = unit_class()
+    except NotImplementedError as error:
+        pytest.skip(f"Creating unit {unit_class=} from blank not supported, skipping...\n{error=}")
+    except IndexError:
+        # This occurs for junction units, because they cannot be created from blank without at least one label.
+        if unit_class == JUNCTION:
+            unit = unit_class(labels=["label1"])
+
     with pytest.raises(NotImplementedError):
         unit.location = (461382.54, 339188.26)
 
