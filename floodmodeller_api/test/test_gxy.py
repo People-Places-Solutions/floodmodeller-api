@@ -4,18 +4,18 @@ from pathlib import Path
 
 import pytest
 
+import floodmodeller_api.units
 from floodmodeller_api import DAT
 from floodmodeller_api.units import (
     FLOODPLAIN,
     INTERPOLATE,
+    JUNCTION,
     QTBDY,
     REPLICATE,
     RESERVOIR,
     RIVER,
     SPILL,
-    JUNCTION,
 )
-import floodmodeller_api.units
 
 
 # this would be a fixture but doesnt work when used in parameterised test.
@@ -55,7 +55,7 @@ def get_supported_unit_types():
     for unit_type, attributes in floodmodeller_api.units.SUPPORTED_UNIT_TYPES.items():
         if attributes["group"] not in ("other", "comments"):
             unit_type_safe = unit_type.replace(" ", "_").replace(
-                "-", "_"
+                "-", "_",
             )  # Borrowed this from .dat
             unit_class = getattr(floodmodeller_api.units, unit_type_safe)
             all_unit_classes.append(unit_class)
