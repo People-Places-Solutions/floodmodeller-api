@@ -149,7 +149,7 @@ def from_json(obj: str | dict) -> dict:
     return recursive_from_json(obj_dict)
 
 
-def recursive_from_json(obj: dict | Any) -> Any: # noqa: C901
+def recursive_from_json(obj: dict | Any) -> Any:  # noqa: C901
     """
     Function to undertake a recursion through the different elements of the JSON object
 
