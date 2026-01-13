@@ -556,7 +556,7 @@ class DAT(FMFile):
                 break
 
             if unit.unique_name in gxy_dict:
-                unit._location = gxy_dict.pop(unit.unique_name)
+                unit.set_cached_location_from_gxy(gxy_dict.pop(unit.unique_name))
 
     def _initialize_collections(self) -> None:
         # Initialize unit collections

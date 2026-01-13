@@ -127,6 +127,13 @@ class Unit(Jsonable):
         msg = "Currently unit location is read-only."
         raise NotImplementedError(msg)
 
+    def set_cached_location_from_gxy(self, location):
+        """Used by DAT to set the _location attribute when reading a gxy.
+
+        This is not a setter, and will not make .gxy modifications.
+        """
+        self._location = location
+
     def __repr__(self):
         if self._subtype is None:
             return f"<floodmodeller_api Unit Class: {self._unit}(name={self._name})>"
