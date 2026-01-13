@@ -14,7 +14,6 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-# ruff: noqa: C901
 from __future__ import annotations
 
 import json
@@ -150,7 +149,7 @@ def from_json(obj: str | dict) -> dict:
     return recursive_from_json(obj_dict)
 
 
-def recursive_from_json(obj: dict | Any) -> Any:
+def recursive_from_json(obj: dict | Any) -> Any: # noqa: C901
     """
     Function to undertake a recursion through the different elements of the JSON object
 
