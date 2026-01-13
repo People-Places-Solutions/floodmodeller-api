@@ -50,7 +50,7 @@ def test_unit_location(unit, expected_outcome):
     assert unit.location == expected_outcome
 
 
-def get_supported_unit_types():
+def get_supported_unit_classes():
     all_unit_classes = []
     for unit_type, attributes in floodmodeller_api.units.SUPPORTED_UNIT_TYPES.items():
         if attributes["group"] not in ("other", "comments"):
@@ -63,10 +63,10 @@ def get_supported_unit_types():
     return all_unit_classes
 
 
-ALL_UNIT_TYPES = get_supported_unit_types()
+SUPPORTED_UNIT_CLASSES = get_supported_unit_classes()
 
 
-@pytest.mark.parametrize("unit_class", ALL_UNIT_TYPES)
+@pytest.mark.parametrize("unit_class", SUPPORTED_UNIT_CLASSES)
 def test_setting_location(unit_class):
     # first check that we get the not implemented error, then check that the location is still unaffected.
     # this test should be updated when location is read/write capable.
