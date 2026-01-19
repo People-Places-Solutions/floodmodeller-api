@@ -91,7 +91,7 @@ jobs:
       run: |
         end=$((SECONDS+${{ env.PYPI_TIMEOUT }}))
         while true; do
-          if pip install "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
+          if uv pip install --refresh "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
             break
           fi
           if [ $SECONDS -ge $end ]; then
