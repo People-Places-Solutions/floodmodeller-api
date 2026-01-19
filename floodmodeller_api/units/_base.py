@@ -35,6 +35,7 @@ class Unit(Jsonable):
     _unit: str
     _subtype: str | None = None
     _name: str | None = None
+    _location: tuple[float, float] | None = None
 
     def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
         if from_json:
@@ -103,6 +104,35 @@ class Unit(Jsonable):
     def subtype(self, new_value):
         msg = "You cannot change the subtype of a unit once it has been instantiated"
         raise ValueError(msg)
+
+    @property
+    def location(self) -> tuple[float, float] | None:
+        # gxy data (_location) written upon instantiation when opening DAT.
+        # default priority is as follows:
+        # 1. gxy data if not None
+        # 2. easting and northing attributes if the unit has them (Interpolates, replicates and reservoirs)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        if hasattr(self, "easting") and hasattr(self, "northing"):
+            location = (self.easting, self.northing)
+            if location != (0, 0):
+                return location
+
+        return None
+
+    @location.setter
+    def location(self, new_value):
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
+
+    def set_cached_location_from_gxy(self, location):
+        """Used by DAT to set the _location attribute when reading a gxy.
+
+        This is not a setter, and will not make .gxy modifications.
+        """
+        self._location = location
 
     def __repr__(self):
         if self._subtype is None:

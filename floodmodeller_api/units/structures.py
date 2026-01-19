@@ -47,6 +47,15 @@ from ._helpers import (
 )
 
 
+def _get_median_coordinate(data):
+    # trim rows that have invalid coordinates (0,0)
+    data = data[(data["Easting"] != 0) | (data["Northing"] != 0)]
+    median_coords = data[["Easting", "Northing"]].median()
+    if median_coords.isna().any():
+        return None
+    return (float(median_coords["Easting"]), float(median_coords["Northing"]))
+
+
 class BRIDGE(Unit):
     """Class to hold and process BRIDGE unit type. The Bridge class supports the three main bridge sub-types in
     Flood Modeller: Arch, USBPR1978 and Pierloss. Each of these sub-types forms a unique instance of the class
@@ -163,7 +172,7 @@ class BRIDGE(Unit):
         self.comment = self._remove_unit_name(br_block[0])
         self._subtype = self._get_first_word(br_block[1])
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{br_block[2]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{br_block[2]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -374,7 +383,7 @@ class BRIDGE(Unit):
             )
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
-                    pier_params = f'{self.npiers:>10}{"COEFF":<10}{"":>10}{self.pier_calibration_coeff:>10.3f}'
+                    pier_params = f"{self.npiers:>10}{'COEFF':<10}{'':>10}{self.pier_calibration_coeff:>10.3f}"
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
@@ -589,7 +598,7 @@ class SLUICE(Unit):
         self._subtype = self._get_first_word(block[1])
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{3*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{3 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.remote_label = labels[2]
@@ -675,8 +684,8 @@ class SLUICE(Unit):
             self.weir_length,
         )
         if self.subtype == "RADIAL":
-            params1 += f'{"DEGREES":<10}' if self.use_degrees else f'{"":<10}'
-            params1 += "FREESLUICE" if self.allow_free_flow_under else f'{"":<10}'
+            params1 += f"{'DEGREES':<10}" if self.use_degrees else f"{'':<10}"
+            params1 += "FREESLUICE" if self.allow_free_flow_under else f"{'':<10}"
 
         # Second parameter line
         params2 = join_10_char(
@@ -726,7 +735,7 @@ class SLUICE(Unit):
             # ADD GATES
             block.append(
                 join_10_char(
-                    f'{"LOGICAL":<10}',
+                    f"{'LOGICAL':<10}",
                     self.max_movement_rate,
                     self.max_setting,
                     self.min_setting,
@@ -827,7 +836,7 @@ class ORIFICE(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -928,7 +937,7 @@ class SPILL(Unit):
     def _read(self, block):
         """Function to read a given SPILL block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -984,6 +993,25 @@ class SPILL(Unit):
             else pd.DataFrame([[0.0, 0.0, 0.0, 0.0]], columns=["X", "Y", "Easting", "Northing"])
         )
 
+    @property
+    def location(self) -> tuple[float, float] | None:
+        # for SPILL units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. median location if not (0,0)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        try:
+            return _get_median_coordinate(self.data)
+        except (ValueError, IndexError):
+            return None
+
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
+
 
 class RNWEIR(Unit):
     """Class to hold and process RNWEIR unit type
@@ -1009,7 +1037,7 @@ class RNWEIR(Unit):
     def _read(self, block):
         """Function to read a given RNWEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1110,7 +1138,7 @@ class WEIR(Unit):
     def _read(self, block):
         """Function to read a given WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1202,7 +1230,7 @@ class CRUMP(Unit):
     def _read(self, block):
         """Function to read a given CRUMP block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -1311,7 +1339,7 @@ class FLAT_V_WEIR(Unit):  # noqa: N801
     def _read(self, block):
         """Function to read a given FLAT-V WEIR block and store data as class attributes"""
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[1]:<{4*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[1]:<{4 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.us_remote_label = labels[2]
@@ -1440,7 +1468,7 @@ class OUTFALL(Unit):
         self.flapped = self.subtype == "FLAPPED"
 
         # Extends label line to be correct length before splitting to pick up blank labels
-        labels = split_n_char(f"{block[2]:<{2*self._label_len}}", self._label_len)
+        labels = split_n_char(f"{block[2]:<{2 * self._label_len}}", self._label_len)
         self.name = labels[0]
         self.ds_label = labels[1]
         self.comment = self._remove_unit_name(block[0])
@@ -1660,3 +1688,22 @@ class FLOODPLAIN(Unit):
             msg = f"The DataFrame must only contain columns: {self._required_columns}"
             raise ValueError(msg)
         self._data = new_df
+
+    @property
+    def location(self) -> tuple[float, float] | None:
+        # for FLOODPLAIN units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. median location if not (0,0)
+        # 3. None
+        if self._location is not None:
+            return self._location
+
+        try:
+            return _get_median_coordinate(self.data)
+        except (ValueError, IndexError):
+            return None
+
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)

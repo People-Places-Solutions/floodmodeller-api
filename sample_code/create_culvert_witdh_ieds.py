@@ -28,5 +28,5 @@ for width in [2.5, 2.6, 2.7, 2.8]:
     culvert.width = width  # Set the width of culvert unit to the desired width
     ied.conduits[culvert.name] = culvert  # Add culvert unit to the blank IED
     ied.save(
-        Path(dat_file.parent, f"{dat_file.stem}_{width*1000}mm_width.IED"),
+        Path(dat_file.parent, f"{dat_file.stem}_{width * 1000}mm_width.IED"),
     )  # Save IED with name based on dat file and width

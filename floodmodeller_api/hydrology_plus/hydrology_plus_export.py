@@ -97,8 +97,7 @@ class HydrologyPlusExport(FMFile):
             if s == scenario and float(sd) == storm_duration and float(rp) == return_period:
                 return column
         msg = (
-            "No matching event was found based on "
-            f"{return_period=}, {storm_duration=}, {scenario=}"
+            f"No matching event was found based on {return_period=}, {storm_duration=}, {scenario=}"
         )
         raise ValueError(msg)
 

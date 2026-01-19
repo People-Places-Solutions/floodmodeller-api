@@ -236,6 +236,42 @@ class RIVER(Unit):
         return self._raw_block
 
     @property
+    def location(self) -> tuple[float, float] | None:
+        # for RIVER units, source priority is as follows:
+        # 1. GXY location if defined
+        # 2. BED marker location if not (0,0)
+        # 3. Y-min location if not (0,0)
+        # 4. None
+        if self._location is not None:
+            return self._location
+
+        try:
+            bed_rows = self.active_data["Marker"] == "BED"
+            bed_points = self.active_data.loc[bed_rows]
+            first_bed = bed_points[["Easting", "Northing"]].iloc[0]
+            location = (float(first_bed["Easting"]), float(first_bed["Northing"]))
+            if location != (0, 0):
+                return location
+        except (ValueError, IndexError):
+            pass
+
+        try:
+            min_idx = self.active_data.Y.idxmin()
+            min_row = self.active_data.loc[min_idx]
+            location = (float(min_row["Easting"]), float(min_row["Northing"]))
+            if location != (0, 0):
+                return location
+        except (ValueError, IndexError):
+            pass
+
+        return None
+
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
+
+    @property
     def data(self) -> pd.DataFrame:
         """Data table for the river cross section.
 
