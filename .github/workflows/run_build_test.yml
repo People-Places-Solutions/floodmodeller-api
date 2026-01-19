@@ -29,7 +29,7 @@ jobs:
     - name: Install the latest version of uv
       uses: astral-sh/setup-uv@v6
       with:
-        python-version: ${{ matrix.PYTHON_VERSION }}
+        python-version: ${{ env.PYTHON_VERSION }}
         activate-environment: true      
     
     - name: Install reqs
@@ -67,9 +67,15 @@ jobs:
 
     steps:
     - name: Set up Python ${{ env.PYTHON_VERSION }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        activate-environment: true
 
     - name: Install the package from Test PyPI
       run: |
