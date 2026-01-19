@@ -69,14 +69,10 @@ def test_setting_location(unit_class):
     # first check that we get the not implemented error, then check that the location is still unaffected.
     # this test should be updated when location is read/write capable.
     try:
-        if unit_class == JUNCTION:
-            # Junction units cannot be created from blank without at least one label.
-            unit = unit_class(labels=["label1"])
-        else:
-            unit = unit_class()
+        # Junction units cannot be created from blank without at least one label.
+        unit = unit_class(labels=["label1"]) if unit_class == JUNCTION else unit_class()
     except NotImplementedError as error:
         pytest.skip(f"Creating unit {unit_class=} from blank not supported, skipping...\n{error=}")
-            
 
     with pytest.raises(NotImplementedError):
         unit.location = (461382.54, 339188.26)
