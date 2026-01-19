@@ -81,7 +81,7 @@ jobs:
       run: |
         end=$((SECONDS+${{ env.PYPI_TIMEOUT }}))
         while true; do
-          if uv pip install --index-strategy unsafe-best-match -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
+          if uv pip install --refresh --index-strategy unsafe-best-match -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "floodmodeller-api==${{ needs.build.outputs.package_version }}"; then
             break
           fi
           if [ $SECONDS -ge $end ]; then
