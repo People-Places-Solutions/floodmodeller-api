@@ -8,6 +8,8 @@ from floodmodeller_api import DAT
 from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR, UNSUPPORTED
 from floodmodeller_api.util import FloodModellerAPIError
 
+from .util import id_from_path, parameterise_glob
+
 
 @pytest.fixture()
 def dat_fp(test_workspace):
@@ -95,33 +97,78 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
 
 def test_dat_read_doesnt_change_data(test_workspace, tmp_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
-    for datfile in Path(test_workspace).glob("*.dat"):
-        if datfile.name.startswith("duplicate_unit_test"):
+    for original_dat_path in Path(test_workspace).glob("*.dat"):
+        if original_dat_path.name.startswith("duplicate_unit_test"):
             # Skipping as invalid DAT (duplicate units)
             continue
 
-        dat = DAT(datfile)
-        first_output = dat._write()
-        new_path = tmp_path / "tmp.dat"
-        dat.save(new_path)
-        second_dat = DAT(new_path)
-        assert dat == second_dat, f"dat objects not equal for {datfile=}\n{dat.diff(second_dat)}"
-        second_output = second_dat._write()
-        assert first_output == second_output, f"dat outputs not equal for {datfile=}"
+        first_dat = DAT(original_dat_path)
+        first_write_output = first_dat._write()
+        second_dat_path = tmp_path / "tmp.dat"
+        first_dat.save(second_dat_path)
+        second_dat = DAT(second_dat_path)
+        
+        # compare that dat objects are equivalent
+        assert first_dat == second_dat, f"dat objects not equal for {original_dat_path=}\n{first_dat.diff(second_dat)}"
 
-        gxy_path = datfile.with_suffix(".gxy")
+        second_write_output = second_dat._write()
+
+        # compare that dat ._write() method outputs are equivalent
+        assert first_write_output == second_write_output, f"dat outputs not equal for {original_dat_path=}"
+
+        # compare that file contents for the second dat are equivalent to the original dat file.
+        assert original_dat_path.read_text() == second_dat_path.read_text(), f"dat file contents not equal for {original_dat_path=}"
+
+        gxy_path = original_dat_path.with_suffix(".gxy")
         if gxy_path.exists():
-            second_gxy_path = new_path.with_suffix(".gxy")
-            assert second_gxy_path.exists(), f"updated .gxy not found when testing {datfile=}"
+            second_gxy_path = second_dat_path.with_suffix(".gxy")
+            assert second_gxy_path.exists(), f"updated .gxy not found when testing {original_dat_path=}"
 
             # note filecmp.cmp() doesnt work here because input/output data has different eol sequences.
             assert (
                 gxy_path.read_text() == second_gxy_path.read_text()
-            ), f".gxy file content not identical for  {datfile=}"
+            ), f".gxy file content not identical for  {original_dat_path=}"
 
-        new_path.unlink()
+        second_dat_path.unlink()
         if gxy_path.exists():
             second_gxy_path.unlink()
+
+@pytest.mark.parametrize("original_dat_path", parameterise_glob("*.dat"),ids=id_from_path)
+def test_dat_read_doesnt_change_data2(test_workspace, tmp_path, original_dat_path):
+    """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
+    if original_dat_path.name.startswith("duplicate_unit_test"):
+        pytest.skip("Skipping as invalid DAT (duplicate units)")
+
+    first_dat = DAT(original_dat_path)
+    first_write_output = first_dat._write()
+    second_dat_path = tmp_path / "tmp.dat"
+    first_dat.save(second_dat_path)
+    second_dat = DAT(second_dat_path)
+    
+    # compare that dat objects are equivalent
+    assert first_dat == second_dat, f"dat objects not equal for {original_dat_path=}\n{first_dat.diff(second_dat)}"
+
+    second_write_output = second_dat._write()
+
+    # compare that dat ._write() method outputs are equivalent
+    assert first_write_output == second_write_output, f"dat outputs not equal for {original_dat_path=}"
+
+    # compare that file contents for the second dat are equivalent to the original dat file.
+    assert original_dat_path.read_text() == second_dat_path.read_text(), f"dat file contents not equal for {original_dat_path=}"
+
+    gxy_path = original_dat_path.with_suffix(".gxy")
+    if gxy_path.exists():
+        second_gxy_path = second_dat_path.with_suffix(".gxy")
+        assert second_gxy_path.exists(), f"updated .gxy not found when testing {original_dat_path=}"
+
+        # note filecmp.cmp() doesnt work here because input/output data has different eol sequences.
+        assert (
+            gxy_path.read_text() == second_gxy_path.read_text()
+        ), f".gxy file content not identical for  {original_dat_path=}"
+
+    second_dat_path.unlink()
+    if gxy_path.exists():
+        second_gxy_path.unlink()
 
 
 def test_insert_unit_before(units, dat_ex6):
