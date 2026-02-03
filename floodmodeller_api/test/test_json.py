@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from itertools import chain
 import json
+from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -105,11 +105,15 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
         assert json_dict_from_obj == json_dict_from_file, f"object not equal for {obj.filepath!s}"
 
 
-@pytest.mark.parametrize("file_path", list(chain(*(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]))),ids=id_from_path)
+@pytest.mark.parametrize(
+    "file_path",
+    list(chain(*(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]))),
+    ids=id_from_path,
+)
 def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
     """JSON:  To test the from_json function,  It should produce the same file from a json file"""
     if file_path.name.startswith("duplicate_unit_test"):
-       pytest.skip("Skipping as invalid file (duplicate units)")
+        pytest.skip("Skipping as invalid file (duplicate units)")
 
     api_class = {
         ".dat": DAT,
@@ -121,6 +125,7 @@ def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
 
     assert api_class(file_path) == api_class.from_json(api_class(file_path).to_json())
 
+
 @pytest.mark.parametrize(
     "unit",
     [
@@ -130,7 +135,8 @@ def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
         INTERPOLATE(easting=123.4, northing=987.6),
         SPILL(),
         FLOODPLAIN(),
-    ],ids=type
+    ],
+    ids=type,
 )
 def test_obj_reproduces_from_json_for_units(unit):
     assert unit == unit.from_json(unit.to_json())

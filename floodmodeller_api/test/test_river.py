@@ -54,14 +54,23 @@ river_unit_data_cases = [
 ]
 river_unit_data_cases_ids = [x[0][0] for x in river_unit_data_cases]
 
-@pytest.mark.parametrize("river_unit_data", [x[0] for x in river_unit_data_cases], ids=river_unit_data_cases_ids)
+
+@pytest.mark.parametrize(
+    "river_unit_data",
+    [x[0] for x in river_unit_data_cases],
+    ids=river_unit_data_cases_ids,
+)
 def test_read_write(river_unit_data):
     river_section_1 = RIVER(river_unit_data)
     river_section_2 = RIVER(river_section_1._write())
     assert river_section_1 == river_section_2
 
 
-@pytest.mark.parametrize(("river_unit_data", "expected_len"), river_unit_data_cases, ids=river_unit_data_cases_ids)
+@pytest.mark.parametrize(
+    ("river_unit_data", "expected_len"),
+    river_unit_data_cases,
+    ids=river_unit_data_cases_ids,
+)
 def test_river_active_data(river_unit_data, expected_len):
     river_section = RIVER(river_unit_data)
     active_data = river_section.active_data

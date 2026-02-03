@@ -213,7 +213,8 @@ def test_unique_events_retained(multievent_ief: IEF):
                 "Added Event": "../added.ied",
             }
         ),
-    ], ids = ["empty", "two_items", "many_items"]
+    ],
+    ids=["empty", "two_items", "many_items"],
 )
 def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
     """Tests modifying, saving and reading eventdata dictionary.

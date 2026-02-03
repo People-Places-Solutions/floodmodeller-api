@@ -4,11 +4,12 @@ from floodmodeller_api import read_file
 from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.util import FloodModellerAPIError
 
+
 @pytest.mark.parametrize("file", parameterise_glob("*"), ids=id_from_path)
-def test_read_file(test_workspace,file):
+def test_read_file(test_workspace, file):
     if file.name.startswith("duplicate_unit_test"):
         pytest.skip("Skipping as invalid DAT (duplicate units)")
-        
+
     if (
         file.suffix.lower()
         in [

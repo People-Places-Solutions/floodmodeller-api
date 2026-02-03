@@ -166,7 +166,8 @@ def test_insert_unit_at(units, dat_ex6):
         {"add_at": 1, "add_after": 3},
         {"add_before": 2, "add_after": 3},
         {"add_at": 1, "add_before": 2, "add_after": 3},
-    ],ids=lambda d: ",".join(d.keys())
+    ],
+    ids=lambda d: ",".join(d.keys()),
 )
 def test_insert_unit_too_many_arguments_error(dat_ex6, units, kwargs):
     msg = (
