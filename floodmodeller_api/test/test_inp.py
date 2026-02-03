@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from floodmodeller_api import INP
+from floodmodeller_api.test.util import id_from_path, parameterise_glob
 
 
 @pytest.fixture()
@@ -36,12 +37,12 @@ def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     assert inp._write() == data_before
 
 
-def test_all_inp_files_in_folder_have_same_output(test_workspace, tmpdir):
+@pytest.mark.parametrize("inpfile", parameterise_glob("*.inp"), ids=id_from_path)
+def test_all_inp_files_in_folder_have_same_output(test_workspace, tmpdir, inpfile):
     """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
-    for inpfile in Path(test_workspace).glob("*.inp"):
-        inp = INP(inpfile)
-        first_output = inp._write()
-        new_path = Path(tmpdir) / "tmp.inp"
-        inp.save(new_path)
-        second_output = INP(new_path)._write()
-        assert first_output == second_output
+    inp = INP(inpfile)
+    first_output = inp._write()
+    new_path = Path(tmpdir) / "tmp.inp"
+    inp.save(new_path)
+    second_output = INP(new_path)._write()
+    assert first_output == second_output

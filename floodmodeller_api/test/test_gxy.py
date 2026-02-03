@@ -44,7 +44,7 @@ def blank_with_location(unit_class, *args, **kwargs):
         (blank_with_location(INTERPOLATE, easting=123.4, northing=987.6), (461193.10, 339088.74)),
         (blank_with_location(SPILL), (461193.10, 339088.74)),
         (blank_with_location(FLOODPLAIN), (461193.10, 339088.74)),
-    ],
+    ],ids=lambda x : f"{x}" if isinstance(x,tuple) or x is None else type(x).__name__,
 )
 def test_unit_location(unit, expected_outcome):
     assert unit.location == expected_outcome
