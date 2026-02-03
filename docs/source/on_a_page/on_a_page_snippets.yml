@@ -70,7 +70,7 @@
   size: s
   group: dat
   code: |
-    for name, unit in dat.structures.items:
+    for name, structure in dat.structures.items():
         if isinstance(structure, BRIDGE):
             print(f"{structure.subtype} - {name}")
 
