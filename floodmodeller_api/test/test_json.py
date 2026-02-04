@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
 from floodmodeller_api import DAT, IED, IEF, INP, XML2D
+from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.units import (
     FLOODPLAIN,
@@ -104,31 +106,24 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
 
 
 @pytest.mark.parametrize(
-    ("api_class", "file_extension_glob"),
-    [
-        (DAT, "*.dat"),
-        (IED, "*.ied"),
-        (XML2D, "*.xml"),
-        (IEF, "*.ief"),
-        (INP, "*.inp"),
-    ],
+    "file_path",
+    list(chain(*(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]))),
+    ids=id_from_path,
 )
-def test_obj_reproduces_from_json_for_all_test_api_files(
-    test_workspace,
-    api_class,
-    file_extension_glob,
-):
-    """JSON:  To test the from_json function,  It should produce the same dat file from a json file"""
-    fail_list = []
-    for file in Path(test_workspace).glob(file_extension_glob):
-        if file.name.startswith("duplicate_unit_test"):
-            # Skipping as invalid DAT (duplicate units)
-            continue
+def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
+    """JSON:  To test the from_json function,  It should produce the same file from a json file"""
+    if file_path.name.startswith("duplicate_unit_test"):
+        pytest.skip("Skipping as invalid file (duplicate units)")
 
-        if api_class(file) != api_class.from_json(api_class(file).to_json()):
-            fail_list.append(str(file))
-    failures = "\n".join(fail_list)
-    assert len(fail_list) == 0, f"The following files did not reproduce:\n{failures}"
+    api_class = {
+        ".dat": DAT,
+        ".ied": IED,
+        ".xml": XML2D,
+        ".ief": IEF,
+        ".inp": INP,
+    }[file_path.suffix.lower()]
+
+    assert api_class(file_path) == api_class.from_json(api_class(file_path).to_json())
 
 
 @pytest.mark.parametrize(
@@ -141,6 +136,7 @@ def test_obj_reproduces_from_json_for_all_test_api_files(
         SPILL(),
         FLOODPLAIN(),
     ],
+    ids=type,
 )
 def test_obj_reproduces_from_json_for_units(unit):
     assert unit == unit.from_json(unit.to_json())

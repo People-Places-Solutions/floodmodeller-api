@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import pandas as pd
 import pytest
 
+from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.units import BRIDGE
 
 if TYPE_CHECKING:
@@ -121,17 +122,17 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
     pd.testing.assert_frame_equal(unit.block_data, expected, check_dtype=False)
 
 
-def test_write_bridge(folder: Path):
-    for file in folder.glob("*.ied"):
-        unit = create_bridge(folder / file)
-        output = unit._write()
+@pytest.mark.parametrize("file", parameterise_glob("integrated_bridge/*.ied"), ids=id_from_path)
+def test_write_bridge(folder: Path, file):
+    unit = create_bridge(file)
+    output = unit._write()
 
-        new_unit = BRIDGE(output)
-        new_output = new_unit._write()
-        assert unit == new_unit, f"unit objects not equal for {file=}"
-        assert output == new_output, f"unit outputs not equal for {file=}"
-        for line in output:
-            assert isinstance(line, str), f"{line=} is not a string"
+    new_unit = BRIDGE(output)
+    new_output = new_unit._write()
+    assert unit == new_unit, f"unit objects not equal for {file=}"
+    assert output == new_output, f"unit outputs not equal for {file=}"
+    for line in output:
+        assert isinstance(line, str), f"{line=} is not a string"
 
 
 def test_valid_change(folder: Path):
