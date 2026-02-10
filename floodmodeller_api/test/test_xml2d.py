@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from floodmodeller_api import XML2D
+from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -38,21 +39,20 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
     assert x2d._write() == data_before
 
 
-def test_xml2d_all_files(test_workspace, tmpdir):
+@pytest.mark.parametrize("xml_file", parameterise_glob("*.xml"), ids=id_from_path)
+def test_xml2d_all_files(tmpdir, xml_file):
     """XML2D: Check all '.xml' files in folder by reading the _write() output into a
     new XML2D instance and checking it stays the same."""
-    for xmlfile in Path(test_workspace).glob("*.xml"):
-        x2d = XML2D(xmlfile)
-        first_output = x2d._write()
-        new_path = Path(tmpdir) / "tmp.xml"
-        x2d.save(new_path)
-        second_x2d = XML2D(new_path)
-        assert x2d == second_x2d
-        second_output = second_x2d._write()
-        assert first_output == second_output
+    x2d = XML2D(xml_file)
+    first_output = x2d._write()
+    new_path = Path(tmpdir) / "tmp.xml"
+    x2d.save(new_path)
+    second_x2d = XML2D(new_path)
+    assert x2d == second_x2d
+    second_output = second_x2d._write()
+    assert first_output == second_output
 
 
-# New tests being added for the add/remove functionalility
 def test_xml2d_change_revert_elem_topography():
     """XML2D: Check that when we change an existing element
     that it is actually adding it and that it is being reverted."""

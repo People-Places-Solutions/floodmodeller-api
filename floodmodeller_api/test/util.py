@@ -1,0 +1,13 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+
+def parameterise_glob(glob_string: str, path: Path | None = None) -> list[Path]:
+    if path is None:
+        path = Path(__file__).parent / "test_data"
+    return list(path.glob(glob_string))
+
+
+def id_from_path(path: Path) -> str:
+    return f"{path.name}"

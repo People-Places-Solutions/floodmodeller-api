@@ -5,6 +5,7 @@ import pytest
 
 from floodmodeller_api import IEF
 from floodmodeller_api.ief import FlowTimeProfile
+from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.util import FloodModellerAPIError
 
 
@@ -43,18 +44,17 @@ def sleep():
         yield sleep
 
 
-def test_ief_read_doesnt_change_data(test_workspace, tmpdir):
+@pytest.mark.parametrize("ief_file", parameterise_glob("*.ief"), ids=id_from_path)
+def test_ief_read_doesnt_change_data(tmpdir, ief_file):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
-    # we use this instead of parameterise so it will just automatically test any ief in the test data.
-    for ief_file in Path(test_workspace).glob("*.ief"):
-        ief = IEF(ief_file)
-        first_output = ief._write()
-        new_path = Path(tmpdir) / "tmp.ief"
-        ief.save(new_path)
-        second_ief = IEF(new_path)
-        assert ief == second_ief  # Checks equivalence on the class itself
-        second_output = second_ief._write()
-        assert first_output == second_output
+    ief = IEF(ief_file)
+    first_output = ief._write()
+    new_path = Path(tmpdir) / "tmp.ief"
+    ief.save(new_path)
+    second_ief = IEF(new_path)
+    assert ief == second_ief  # Checks equivalence on the class itself
+    second_output = second_ief._write()
+    assert first_output == second_output
 
 
 def test_update_property(ief):
@@ -214,6 +214,7 @@ def test_unique_events_retained(multievent_ief: IEF):
             }
         ),
     ],
+    ids=["empty", "two_items", "many_items"],
 )
 def test_adding_eventdata(multievent_ief, sample_eventdata, tmpdir):
     """Tests modifying, saving and reading eventdata dictionary.
