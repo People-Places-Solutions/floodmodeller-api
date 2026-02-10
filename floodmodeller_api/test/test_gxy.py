@@ -21,6 +21,7 @@ from floodmodeller_api.units import (
 # this would be a fixture but doesnt work when used in parameterised test.
 def blank_with_location(unit_class, *args, **kwargs):
     unit = unit_class(*args, **kwargs)
+    unit.name = "Blank_w/_Loc"
     unit._location = (461193.10, 339088.74)
     return unit
 
@@ -45,7 +46,7 @@ def blank_with_location(unit_class, *args, **kwargs):
         (blank_with_location(SPILL), (461193.10, 339088.74)),
         (blank_with_location(FLOODPLAIN), (461193.10, 339088.74)),
     ],
-    ids=lambda x: f"{x}" if isinstance(x, tuple) or x is None else type(x).__name__,
+    ids=lambda x: str(x) if isinstance(x, tuple) or x is None else x.unique_name,
 )
 def test_unit_location(unit, expected_outcome):
     assert unit.location == expected_outcome
