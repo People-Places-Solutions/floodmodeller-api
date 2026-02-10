@@ -123,7 +123,7 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
 
 
 @pytest.mark.parametrize("file", parameterise_glob("integrated_bridge/*.ied"), ids=id_from_path)
-def test_write_bridge(folder: Path, file):
+def test_write_bridge(file):
     unit = create_bridge(file)
     output = unit._write()
 

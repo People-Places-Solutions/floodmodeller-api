@@ -45,7 +45,7 @@ def sleep():
 
 
 @pytest.mark.parametrize("ief_file", parameterise_glob("*.ief"), ids=id_from_path)
-def test_ief_read_doesnt_change_data(test_workspace, tmpdir, ief_file):
+def test_ief_read_doesnt_change_data(tmpdir, ief_file):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
     ief = IEF(ief_file)
     first_output = ief._write()

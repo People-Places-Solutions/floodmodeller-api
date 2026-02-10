@@ -40,7 +40,7 @@ def test_xml2d_link_dtm_changes(xml_fp, data_before):
 
 
 @pytest.mark.parametrize("xml_file", parameterise_glob("*.xml"), ids=id_from_path)
-def test_xml2d_all_files(test_workspace, tmpdir, xml_file):
+def test_xml2d_all_files(tmpdir, xml_file):
     """XML2D: Check all '.xml' files in folder by reading the _write() output into a
     new XML2D instance and checking it stays the same."""
     x2d = XML2D(xml_file)
@@ -53,7 +53,6 @@ def test_xml2d_all_files(test_workspace, tmpdir, xml_file):
     assert first_output == second_output
 
 
-# New tests being added for the add/remove functionalility
 def test_xml2d_change_revert_elem_topography():
     """XML2D: Check that when we change an existing element
     that it is actually adding it and that it is being reverted."""
