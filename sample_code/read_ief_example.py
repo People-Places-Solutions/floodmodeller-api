@@ -17,6 +17,6 @@ script_loc = Path(__file__).resolve().parent
 os.chdir(script_loc)  # Set current working directory to this script location
 
 # Get list of IEF files using glob function
-ief = IEF(Path("sample_code/sample_data/ex3.ief"))
+ief = IEF(Path("sample_data/ex3.ief"))
 
 pass
