@@ -6,7 +6,7 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 
 @pytest.mark.parametrize("file", parameterise_glob("*"), ids=id_from_path)
-def test_read_file(test_workspace, file):
+def test_read_file(file):
     if file.name.startswith("duplicate_unit_test"):
         pytest.skip("Skipping as invalid DAT (duplicate units)")
 
