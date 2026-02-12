@@ -482,6 +482,73 @@ def test_duplicate_unit_raises_error(test_workspace):
 
 
 @pytest.mark.parametrize(
+    ("dat_str", "expected_value"),
+    [
+        (
+            "",
+            {
+                "Node Count": 0,
+                "Lower Froude": 0.75,
+                "Upper Froude": 0.9,
+                "Min Depth": 0.1,
+                "Convergence Direct": 0.001,
+                "Units": "SI",
+                "Water Temperature": 10.0,
+                "Convergence Flow": 0.01,
+                "Convergence Head": 0.01,
+                "Mathematical Damping": 0.7,
+                "Pivotal Choice": 0.1,
+                "Under-relaxation": 0.7,
+                "Matrix Dummy": 0.0,
+                "RAD File": "",
+            },
+        ),
+        (
+            "River_Bridge.dat",
+            {
+                "Node Count": 33,
+                "Lower Froude": 0.75,
+                "Upper Froude": 0.9,
+                "Min Depth": 0.1,
+                "Convergence Direct": 0.001,
+                "Units": "DEFAULT",
+                "Water Temperature": 10.0,
+                "Convergence Flow": 0.01,
+                "Convergence Head": 0.01,
+                "Mathematical Damping": 0.7,
+                "Pivotal Choice": 0.1,
+                "Under-relaxation": 0.7,
+                "Matrix Dummy": 0.0,
+                "RAD File": "",
+            },
+        ),
+        (
+            "general_system_parameters.dat",
+            {
+                "Node Count": 26,
+                "Lower Froude": 0.65,
+                "Upper Froude": 0.95,
+                "Min Depth": 0.5,
+                "Convergence Direct": 0.02,
+                "Units": "US",
+                "Water Temperature": 34.0,
+                "Convergence Flow": 0.1,
+                "Convergence Head": 0.2,
+                "Mathematical Damping": 0.7,
+                "Pivotal Choice": 0.15,
+                "Under-relaxation": 0.75,
+                "Matrix Dummy": 0.001,
+                "RAD File": "roughness.rad",
+            },
+        ),
+    ],
+)
+def test_reading_general_parameters(test_workspace, dat_str, expected_value):
+    dat = DAT(test_workspace / dat_str) if dat_str != "" else DAT()
+    assert dat.general_parameters == expected_value
+
+
+@pytest.mark.parametrize(
     ("parameter_key", "new_value"),
     [
         ("Lower Froude", 0.65),
@@ -500,9 +567,7 @@ def test_duplicate_unit_raises_error(test_workspace):
     ],
 )
 def test_modifying_general_parameters(test_workspace, tmpdir, parameter_key, new_value):
-    """Tests modifying and writing general parameters.
-    
-    """
+    """Tests modifying and writing general parameters."""
 
     first_dat = DAT(test_workspace / "River_Bridge.dat")
     first_dat.general_parameters[parameter_key] = new_value
