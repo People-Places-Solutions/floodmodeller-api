@@ -1,4 +1,4 @@
-"""This sample script shows how to read and IEF and obtain its properties"""
+"""This sample script shows how to read an IEF and obtain its properties"""
 
 # Import modules
 import sys
@@ -12,7 +12,7 @@ except ImportError:
     sys.exit()
 
 
-# Get list of IEF files using glob function
+# Read in the .ief file
 ief = IEF("floodmodeller_api/test/test_data/modified_parameters.ief")
 
 # We can access a single parameter like this:
