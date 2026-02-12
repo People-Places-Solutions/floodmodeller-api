@@ -479,3 +479,36 @@ def test_duplicate_unit_raises_error(test_workspace):
         DAT(test_workspace / "duplicate_unit_test.dat")
     with pytest.raises(FloodModellerAPIError, match=msg):
         DAT(test_workspace / "duplicate_unit_test_unsupported.dat")
+
+
+@pytest.mark.parametrize(
+    ("parameter_key", "new_value"),
+    [
+        ("Lower Froude", 0.65),
+        ("Upper Froude", 0.95),
+        ("Min Depth", 0.5),
+        ("Convergence Direct", 0.02),
+        ("Units", "US"),
+        ("Water Temperature", 34.0),
+        ("Convergence Flow", 0.1),
+        ("Convergence Head", 0.2),
+        ("Mathematical Damping", 0.7),
+        ("Pivotal Choice", 0.15),
+        ("Under-relaxation", 0.75),
+        ("Matrix Dummy", 0.001),
+        ("RAD File", "roughness.rad"),
+    ],
+)
+def test_modifying_general_parameters(test_workspace, tmpdir, parameter_key, new_value):
+    """Tests modifying and writing general parameters.
+    
+    """
+
+    first_dat = DAT(test_workspace / "River_Bridge.dat")
+    first_dat.general_parameters[parameter_key] = new_value
+
+    second_dat_path = tmpdir / "tmp.dat"
+    first_dat.save(second_dat_path)
+
+    second_dat = DAT(second_dat_path)
+    assert second_dat.general_parameters[parameter_key] == new_value
