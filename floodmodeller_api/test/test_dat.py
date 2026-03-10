@@ -282,12 +282,9 @@ def test_diff_active_data(test_workspace):
     assert dat == dat_copy
 
 
-def test_valid_network(test_workspace: Path):
-    """Test against network derived manually."""
-    dat = DAT(test_workspace / "network.dat")
-    actual_nodes, actual_edges = dat.get_network()
-
-    expected_edges = [
+@pytest.fixture()
+def expected_edges() -> list[tuple[str, str]]:
+    return [
         ("FSSR16BDY_resin", "RIVER_resin"),
         ("QTBDY_CS26", "RIVER_CS26"),
         ("RIVER_CS26", "RIVER_CS25"),
@@ -386,6 +383,12 @@ def test_valid_network(test_workspace: Path):
         ("RIVER_DS3", "RIVER_DS4"),
         ("RIVER_DS4", "QHBDY_DS4"),
     ]
+
+
+def test_valid_network(test_workspace: Path, expected_edges: list[tuple[str, str]]):
+    """Test against network derived manually."""
+    dat = DAT(test_workspace / "network.dat")
+    actual_nodes, actual_edges = dat.get_network()
 
     actual = {tuple(x.unique_name for x in y) for y in actual_edges}
     expected = set(expected_edges)
@@ -577,3 +580,41 @@ def test_modifying_general_parameters(test_workspace, tmpdir, parameter_key, new
 
     second_dat = DAT(second_dat_path)
     assert second_dat.general_parameters[parameter_key] == new_value
+
+
+def test_units_with_spaces(
+    dat_fp: Path,
+    data_before: str,
+    expected_edges: list[tuple[str, str]],
+    tmp_path: Path,
+):
+    dat = DAT(dat_fp)
+    with pytest.warns(UserWarning, match="contains spaces"):
+        dat.boundaries["CS26"].name = "test 1"
+        dat.sections["CS26"].name = "test 1"
+    actual_dat = dat._write()
+
+    expected_dat = (
+        data_before.replace("QTBDY\nCS26", "QTBDY\ntest 1")
+        .replace("QTBDY CS26", "QTBDY test 1")
+        .replace("RIVER\nSECTION\nCS26  ", "RIVER\nSECTION\ntest 1")
+        .replace("CS26         y", "test 1       y")
+        .replace("RIVER SECTION CS26", "RIVER SECTION test 1")
+        .replace("CS26 0 0 0 0 0", "test 1 0 0 0 0 0")
+    )
+    assert expected_dat == actual_dat
+    assert "test 1" in dat.boundaries
+    assert "test 1" in dat.sections
+    assert "CS26" not in dat.boundaries
+    assert "CS26" not in dat.sections
+
+    actual_edges = dat.get_network()[1]
+    expected_edges[1] = ("QTBDY_test 1", "RIVER_test 1")
+    expected_edges[2] = ("RIVER_test 1", "RIVER_CS25")
+    assert set(expected_edges) == {tuple(x.unique_name for x in y) for y in actual_edges}
+
+    roundtrip_path = tmp_path / "network_spaces.dat"
+    dat.save(roundtrip_path)
+    with pytest.warns(UserWarning, match="contains spaces"):
+        dat_roundtrip = DAT(roundtrip_path)
+    assert dat_roundtrip._write() == actual_dat

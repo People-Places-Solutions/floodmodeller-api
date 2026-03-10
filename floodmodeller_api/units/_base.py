@@ -21,6 +21,7 @@ from __future__ import annotations
 import contextlib
 import logging
 import re
+import warnings
 from itertools import chain
 from typing import Any
 
@@ -59,8 +60,8 @@ class Unit(Jsonable):
         try:
             new_name = str(new_name)
             if " " in new_name:
-                msg = f'Cannot set unit name to "{new_name}" as it contains one or more spaces'
-                raise Exception(msg)
+                msg = f'Unit name "{new_name}" contains spaces and may cause unexpected behaviour'
+                warnings.warn(msg, stacklevel=2)
             self._name = new_name
         except Exception as e:
             msg = f'Failed to set unit name to "{new_name}" due to error: {e}'
