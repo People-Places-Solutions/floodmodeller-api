@@ -25,38 +25,28 @@
       "python_set": [
         "boundary",
         "domain",
-        "file",
-        "fmfile",
         "link",
-        "link1d",
-        "network",
         "output",
-        "processorid",
         "roughness",
-        "sediment_property_file",
         "series",
         "single",
         "source",
-        "topography",
-        "topography_2",
-        "variable"
+        "topography"
       ]
     },
     "_raw_data": {
       "name": "River 10m linked ADI",
-      "link1d": [
-        {
-          "link_to_model": "ISIS1D",
-          "link": [
-            "GIS\\Link.shp"
-          ],
-          "ief": "Linked1D2D.ief",
-          "mb": {
-            "frequency": "60",
-            "value": "Linked1D2D_MB1D.csv"
-          }
+      "link1d": {
+        "link_to_model": "ISIS1D",
+        "link": [
+          "GIS\\Link.shp"
+        ],
+        "ief": "Linked1D2D.ief",
+        "mb": {
+          "frequency": "60",
+          "value": "Linked1D2D_MB1D.csv"
         }
-      ],
+      },
       "logfile": "Linked1D2D_ADI.log",
       "domain": [
         {
@@ -132,19 +122,17 @@
     },
     "_data": {
       "name": "River 10m linked ADI",
-      "link1d": [
-        {
-          "link_to_model": "ISIS1D",
-          "link": [
-            "GIS\\Link.shp"
-          ],
-          "ief": "Linked1D2D.ief",
-          "mb": {
-            "frequency": "60",
-            "value": "Linked1D2D_MB1D.csv"
-          }
+      "link1d": {
+        "link_to_model": "ISIS1D",
+        "link": [
+          "GIS\\Link.shp"
+        ],
+        "ief": "Linked1D2D.ief",
+        "mb": {
+          "frequency": "60",
+          "value": "Linked1D2D_MB1D.csv"
         }
-      ],
+      },
       "logfile": "Linked1D2D_ADI.log",
       "domain": [
         {
@@ -219,19 +207,17 @@
       }
     },
     "name": "River 10m linked ADI",
-    "link1d": [
-      {
-        "link_to_model": "ISIS1D",
-        "link": [
-          "GIS\\Link.shp"
-        ],
-        "ief": "Linked1D2D.ief",
-        "mb": {
-          "frequency": "60",
-          "value": "Linked1D2D_MB1D.csv"
-        }
+    "link1d": {
+      "link_to_model": "ISIS1D",
+      "link": [
+        "GIS\\Link.shp"
+      ],
+      "ief": "Linked1D2D.ief",
+      "mb": {
+        "frequency": "60",
+        "value": "Linked1D2D_MB1D.csv"
       }
-    ],
+    },
     "logfile": "Linked1D2D_ADI.log",
     "domains": {
       "River 10m": {
@@ -308,6 +294,7 @@
     "processor": null,
     "unit_system": null,
     "description": null,
+    "_xsd_loc": "http://schema.floodmodeller.com/4.0/2d.xsd",
     "_log_path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.lf2"
   }
 }

@@ -14,8 +14,10 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
-xml2d_template = """<?xml version="1.0" standalone="yes"?>
-<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/7.3/2d.xsd" name="2d_simulation_blank" description="">
+DEFAULT_VERSION = 7.3
+
+xml2d_template = f"""<?xml version="1.0" standalone="yes"?>
+<ISIS2Dproject xmlns="https://www.floodmodeller.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://www.floodmodeller.com http://schema.floodmodeller.com/{DEFAULT_VERSION}/2d.xsd" name="2d_simulation_blank" description="">
     <domain domain_id="Domain 1">
         <topography>0</topography>
     <time>

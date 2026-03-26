@@ -25,34 +25,24 @@
       "python_set": [
         "boundary",
         "domain",
-        "file",
-        "fmfile",
         "link",
-        "link1d",
-        "network",
         "output",
-        "processorid",
         "roughness",
-        "sediment_property_file",
         "series",
         "single",
         "source",
-        "topography",
-        "topography_2",
-        "variable"
+        "topography"
       ]
     },
     "_raw_data": {
       "name": "H 20m 6.8m Tide Q link",
-      "link1d": [
-        {
-          "link": [
-            "GIS\\Link1_Q.shp"
-          ],
-          "ief": "Domain1_Q.ief",
-          "mb": "Domain1_Q_MB1D.csv"
-        }
-      ],
+      "link1d": {
+        "link": [
+          "GIS\\Link1_Q.shp"
+        ],
+        "ief": "Domain1_Q.ief",
+        "mb": "Domain1_Q_MB1D.csv"
+      },
       "logfile": "Domain1_Q.log",
       "domain": [
         {
@@ -115,15 +105,13 @@
     },
     "_data": {
       "name": "H 20m 6.8m Tide Q link",
-      "link1d": [
-        {
-          "link": [
-            "GIS\\Link1_Q.shp"
-          ],
-          "ief": "Domain1_Q.ief",
-          "mb": "Domain1_Q_MB1D.csv"
-        }
-      ],
+      "link1d": {
+        "link": [
+          "GIS\\Link1_Q.shp"
+        ],
+        "ief": "Domain1_Q.ief",
+        "mb": "Domain1_Q_MB1D.csv"
+      },
       "logfile": "Domain1_Q.log",
       "domain": [
         {
@@ -185,15 +173,13 @@
       ]
     },
     "name": "H 20m 6.8m Tide Q link",
-    "link1d": [
-      {
-        "link": [
-          "GIS\\Link1_Q.shp"
-        ],
-        "ief": "Domain1_Q.ief",
-        "mb": "Domain1_Q_MB1D.csv"
-      }
-    ],
+    "link1d": {
+      "link": [
+        "GIS\\Link1_Q.shp"
+      ],
+      "ief": "Domain1_Q.ief",
+      "mb": "Domain1_Q_MB1D.csv"
+    },
     "logfile": "Domain1_Q.log",
     "domains": {
       "Domain1 20m H": {
@@ -258,6 +244,7 @@
     "processor": null,
     "unit_system": null,
     "description": null,
+    "_xsd_loc": "http://schema.floodmodeller.com/4.0/2d.xsd",
     "_log_path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Domain1_Q.lf2"
   }
 }

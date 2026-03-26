@@ -26,15 +26,15 @@ def test_xml2d_str_representation(xml_fp, data_before):
 def test_xml2d_link_dtm_changes(xml_fp, data_before):
     """XML2D: Test changing and reverting link1d file and dtm makes no changes"""
     x2d = XML2D(xml_fp)
-    prev_link = x2d.link1d[0]["link"]
+    prev_link = x2d.link1d["link"]
     domain = next(iter(x2d.domains))
     prev_dtm = x2d.domains[domain]["topography"]
 
-    x2d.link1d[0]["link"] = ["new_link"]
+    x2d.link1d["link"] = ["new_link"]
     x2d.domains[domain]["topography"] = ["new_dtm"]
     assert x2d._write() != data_before
 
-    x2d.link1d[0]["link"] = prev_link
+    x2d.link1d["link"] = prev_link
     x2d.domains[domain]["topography"] = prev_dtm
     assert x2d._write() == data_before
 

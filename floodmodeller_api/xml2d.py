@@ -32,7 +32,7 @@ from floodmodeller_api._base import FMFile
 
 from .logs import LF2, create_lf, error_2d_dict
 from .util import handle_exception
-from .xml2d_template import xml2d_template
+from .xml2d_template import DEFAULT_VERSION, xml2d_template
 
 
 def value_from_string(value: str | list[str]):
@@ -67,7 +67,7 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    _xsd_loc: str = "https://schema.floodmodeller.com/7.1/2d.xsd"
+    _xsd_loc: str = f"https://schema.floodmodeller.com/{DEFAULT_VERSION}/2d.xsd"
     _w3_schema: str = "{http://www.w3.org/2001/XMLSchema}"
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
@@ -90,6 +90,12 @@ class XML2D(FMFile):
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
             self._xmltree = etree.parse(self._filepath)
+
+        root = self._xmltree.getroot()
+        self._xsd_loc = root.attrib.get(
+            "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation",
+        ).split()[1]
+
         try:
             xsd_bin = requests.get(self._xsd_loc).content
             self._xsd = etree.parse(io.BytesIO(xsd_bin))
