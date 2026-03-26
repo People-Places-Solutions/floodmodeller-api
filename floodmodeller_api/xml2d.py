@@ -32,7 +32,7 @@ from floodmodeller_api._base import FMFile
 
 from .logs import LF2, create_lf, error_2d_dict
 from .util import handle_exception
-from .xml2d_template import DEFAULT_VERSION, xml2d_template
+from .xml2d_template import xml2d_template
 
 
 def value_from_string(value: str | list[str]):
@@ -67,7 +67,6 @@ class XML2D(FMFile):
 
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
-    _xsd_loc: str = f"https://schema.floodmodeller.com/{DEFAULT_VERSION}/2d.xsd"
     _w3_schema: str = "{http://www.w3.org/2001/XMLSchema}"
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
