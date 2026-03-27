@@ -221,27 +221,40 @@ class XML2D(FMFile):
         orig_dict,
         parent_key,
         list_idx=None,
+        parent=None,
     ):
         for key, item in new_dict.items():
             if key in self._multi_value_keys and not isinstance(item, list):
                 msg = f"Element: '{key}' must be added as list"
                 raise Exception(msg)
-            if parent_key == "ROOT":
-                parent = self._xmltree.getroot()
-            else:
-                parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
+            if parent is None:
+                if parent_key == "ROOT":
+                    parent = self._xmltree.getroot()
+                else:
+                    parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
 
             if key not in orig_dict:
                 # New key added, add recursively
                 self._recursive_add_element(parent=parent, add_item=item, add_key=key)
 
             elif isinstance(item, dict):
-                self._recursive_update_xml(item, orig_dict[key], key, list_idx)
+                self._recursive_update_xml(
+                    item,
+                    orig_dict[key],
+                    key,
+                    parent=parent.findall(f"{self._ns}{key}")[0],
+                )
             elif isinstance(item, list) and isinstance(item[0], dict):
+                child_elems = parent.findall(f"{self._ns}{key}")
                 for i, _item in enumerate(item):
                     if isinstance(_item, dict):
                         try:
-                            self._recursive_update_xml(_item, orig_dict[key][i], key, list_idx=i)
+                            self._recursive_update_xml(
+                                _item,
+                                orig_dict[key][i],
+                                key,
+                                parent=child_elems[i],
+                            )
                         except IndexError:
                             # New thing added, Add it all recursively
                             self._recursive_add_element(

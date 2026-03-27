@@ -147,3 +147,36 @@ def test_xml2d_update_value(xml_fp, data_before):
     x2d.domains[domain]["run_data"]["scheme"] = "TVD"
 
     assert x2d._write()
+
+
+def test_xml2d_nested_multivalue_update_keeps_topography_2_entries_separate():
+    original_raster_path = "a.tif"
+    original_shape_path = "b.shp"
+    updated_raster_path = "c.tif"
+    updated_shape_path = "d.shp"
+
+    x2d = XML2D()
+    domain = next(iter(x2d.domains))
+    x2d.domains[domain]["topography_2"] = [
+        {
+            "type": "standard",
+            "filelist": {"fmfile": [{"type": "tif", "value": original_raster_path}]},
+        },
+        {
+            "type": "standard",
+            "filelist": {"fmfile": [{"type": "shp", "value": original_shape_path}]},
+        },
+    ]
+
+    first_xml = x2d._write()
+    assert original_raster_path in first_xml
+    assert original_shape_path in first_xml
+
+    x2d.domains[domain]["topography_2"][0]["filelist"]["fmfile"][0]["value"] = updated_raster_path
+    x2d.domains[domain]["topography_2"][1]["filelist"]["fmfile"][0]["value"] = updated_shape_path
+    updated_xml = x2d._write()
+
+    assert updated_raster_path in updated_xml
+    assert updated_shape_path in updated_xml
+    assert updated_xml.count(updated_raster_path) == 1
+    assert updated_xml.count(updated_shape_path) == 1
