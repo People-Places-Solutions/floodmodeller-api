@@ -33,15 +33,25 @@ from floodmodeller_api._base import FMFile
 from .logs import LF2, create_lf, error_2d_dict
 from .util import handle_exception
 from .xml2d_template import xml2d_template
+from .regexs import int_re, float_re, version_re
+from .constants import LATEST_SCHEMA_VERSION
 
 
 def value_from_string(value: str | list[str]):
-    try:
-        if isinstance(value, list):
-            return value
-        return float(value) if "." in value else int(value)
-    except ValueError:
+    if isinstance(value, list):
         return value
+
+    str_value = None
+    if value is not None:
+        str_value = str(value).strip()
+
+        if float_re.match(str_value):
+            return float(str_value)
+
+        if int_re.match(str_value):
+            return int(str_value)
+
+    return str_value
 
 
 def categorical_sort(itm, order, ns):
@@ -68,6 +78,8 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _w3_schema: str = "{http://www.w3.org/2001/XMLSchema}"
+    _w3_schema_loc_key:str = r"{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
+    _w3_schema_loc_value_tpl: str = r"https://www.floodmodeller.com http://schema.floodmodeller.com/{0}/2d.xsd"
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
@@ -84,25 +96,19 @@ class XML2D(FMFile):
 
     def _read(self, from_blank=False):
         # Read xml data
-        self._ns = "{https://www.floodmodeller.com}"
+        
         if from_blank:
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
             self._xmltree = etree.parse(self._filepath)
 
-        root = self._xmltree.getroot()
-        self._xsd_loc = root.attrib.get(
-            "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation",
-        ).split()[1]
+        self._ns = "{" + self._xmltree.getroot().nsmap[None] + "}"
 
-        try:
-            xsd_bin = requests.get(self._xsd_loc).content
-            self._xsd = etree.parse(io.BytesIO(xsd_bin))
-            self._xsdschema = etree.XMLSchema(self._xsd)
-        except Exception:
-            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
-            self._xsdschema = etree.XMLSchema(self._xsd)
-        self._get_multi_value_keys()
+        version = LATEST_SCHEMA_VERSION
+        version_matches = version_re.findall(self._xmltree.getroot().attrib.get(self._w3_schema_loc_key))
+        if version_matches:
+            version = version_matches[0]        
+        self.update_schema_version(version)
 
         self._create_dict()
         for key, data in self._data.items():
@@ -123,6 +129,19 @@ class XML2D(FMFile):
         ]:
             if attr not in self.__dict__:
                 setattr(self, attr, None)
+
+    def update_schema_version(self, version: str = LATEST_SCHEMA_VERSION):
+        self.schema_version = str(version)
+        val = self._w3_schema_loc_value_tpl.format(self.schema_version)
+        self._xsd_loc = val.split()[1]
+        try:
+            xsd_bin = requests.get(self._xsd_loc).content
+            self._xsd = etree.parse(io.BytesIO(xsd_bin))
+            self._xsdschema = etree.XMLSchema(self._xsd)
+        except Exception:
+            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsdschema = etree.XMLSchema(self._xsd)
+        self._get_multi_value_keys()
 
     def _create_dict(self):
         """Iterate through XML Tree to add all elements as class attributes"""
@@ -189,12 +208,13 @@ class XML2D(FMFile):
         schema_elem = self._xsd.find(
             f".//{self._w3_schema}*[@name='{parent_name}']",
         )
-        if "type" in schema_elem.attrib:
-            schema_elem = self._xsd.find(
-                f".//{self._w3_schema}*[@name='{schema_elem.attrib['type']}']",
-            )
-        else:
-            schema_elem = schema_elem.find(f"{self._w3_schema}complexType")
+        if schema_elem is not None:
+            if "type" in schema_elem.attrib:
+                schema_elem = self._xsd.find(
+                    f".//{self._w3_schema}*[@name='{schema_elem.attrib['type']}']",
+                )
+            else:
+                schema_elem = schema_elem.find(f"{self._w3_schema}complexType")
         if schema_elem is None:
             return parent.getchildren()
 
@@ -212,7 +232,8 @@ class XML2D(FMFile):
         try:
             self._xsdschema.assert_(self._xmltree)  # noqa: PT009
         except AssertionError as err:
-            msg = f"XML Validation Error for {self!r}:\n     {err.args[0].replace(self._ns, '')}"
+            schema = self._xmltree.getroot().attrib[r'{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
+            msg = f"XML Validation Error for {self!r} using schema version {schema}:\n     {err.args[0].replace(self._ns, '')}"
             raise ValueError(msg) from err
 
     def _recursive_update_xml(  # noqa: C901, PLR0912
@@ -233,9 +254,12 @@ class XML2D(FMFile):
                 else:
                     parent = self._xmltree.findall(f".//{self._ns}{parent_key}")[list_idx or 0]
 
-            if key not in orig_dict:
+            if parent.attrib and key in parent.attrib and key in [self._w3_schema_loc_key]:
+                parent.attrib[key] = item
+
+            elif key not in orig_dict:
                 # New key added, add recursively
-                self._recursive_add_element(parent=parent, add_item=item, add_key=key)
+                self._recursive_add_element(parent=parent, add_item=item, add_key=key.replace(' ', '_'))
 
             elif isinstance(item, dict):
                 self._recursive_update_xml(
@@ -260,7 +284,7 @@ class XML2D(FMFile):
                             self._recursive_add_element(
                                 parent=parent,
                                 add_item=_item,
-                                add_key=key,
+                                add_key=key.replace(' ', '_'),
                                 from_list=True,
                             )
 
@@ -298,7 +322,7 @@ class XML2D(FMFile):
                                 parent.set(key, str(item))
                 except KeyError:
                     # New value/attribute added
-                    self._recursive_add_element(parent=parent, add_item=item, add_key=key)
+                    self._recursive_add_element(parent=parent, add_item=item, add_key=key.replace(' ', '_'))
 
     def _recursive_add_element(  # noqa: C901, PLR0912
         self,
@@ -313,7 +337,7 @@ class XML2D(FMFile):
         if isinstance(add_item, dict):
             new_element = etree.SubElement(parent, f"{self._ns}{add_key}")
             for key, item in add_item.items():
-                self._recursive_add_element(parent=new_element, add_item=item, add_key=key)
+                self._recursive_add_element(parent=new_element, add_item=item, add_key=key.replace(' ', '_'))
         elif isinstance(add_item, list):
             if add_key == "variables":
                 # Variables is special case where we have list but add to one element
@@ -324,7 +348,7 @@ class XML2D(FMFile):
                     self._recursive_add_element(
                         parent=parent,
                         add_item=item,
-                        add_key=add_key,
+                        add_key=add_key.replace(' ', '_'),
                         from_list=True,
                     )
         elif add_key == "value":  # Value has been added
@@ -400,10 +424,13 @@ class XML2D(FMFile):
             "processor",
             "unit_system",
             "description",
+            "schema_version",
         ]:
             if getattr(self, attr) is not None:
                 if attr == "domains":
                     self._data["domain"] = [domain for _, domain in self.domains.items()]
+                elif attr == "schema_version":
+                    self._data[self._w3_schema_loc_key] = self._w3_schema_loc_value_tpl.format(getattr(self, attr))
                 else:
                     try:
                         self._data[attr] = getattr(self, attr)
