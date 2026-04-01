@@ -551,7 +551,7 @@ Fm2dXmlSchemaVersions for all available versions.
         """
         self._diff(other, force_print=force_print)
 
-    def update(self, version: str | Fm2dXmlSchemaVersions = None) -> None:
+    def update(self, version: str | Fm2dXmlSchemaVersions | None = None) -> None:
         if version:
             ver = str(version)
             if isinstance(version, Fm2dXmlSchemaVersions):
