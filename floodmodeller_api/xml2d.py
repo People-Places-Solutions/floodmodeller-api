@@ -53,11 +53,11 @@ def value_from_string(value: str | list[str]):
     if value is not None:
         str_value = str(value).strip()
 
-        if float_re.match(str_value):
-            return float(str_value)
-
         if int_re.match(str_value):
             return int(str_value)
+
+        if float_re.match(str_value):
+            return float(str_value)
 
     return str_value
 
