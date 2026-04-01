@@ -17,7 +17,8 @@
         "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
       }
     },
-    "_ns": "{https://www.floodmodeller.com}",
+    "_ns": "https://www.floodmodeller.com",
+    "_ns_key": "{https://www.floodmodeller.com}",
     "_xmltree": null,
     "_xsd": null,
     "_xsdschema": null,
@@ -294,7 +295,8 @@
     "processor": null,
     "unit_system": null,
     "description": null,
-    "_xsd_loc": "http://schema.floodmodeller.com/4.0/2d.xsd",
-    "_log_path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.lf2"
+    "_log_path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\Linked1D2D.lf2",
+    "_schema_version": "4.0",
+    "_xsi": "http://www.w3.org/2001/XMLSchema-instance"
   }
 }
