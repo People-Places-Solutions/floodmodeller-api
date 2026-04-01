@@ -154,15 +154,15 @@ def test_xml2d_change_schema_versions(tmp_path: Path):
     x2d.domains[domain]["topography_2"] = [  # valid in v7.3 but not v6.1
         {"type": "standard", "filelist": {"fmfile": [{"type": "tif", "value": "hi.tif"}]}},
     ]
-    assert x2d.schema_version == "7.3"
+    assert x2d._schema_version == "7.3"
     x2d.update()  # includes validate
 
-    x2d.update_schema_version("7.2")
-    assert x2d.schema_version == "7.2"
+    x2d._update_schema_version("7.2")
+    assert x2d._schema_version == "7.2"
     x2d.update()  # includes validate
 
-    x2d.update_schema_version("6.1")
-    assert x2d.schema_version == "6.1"
+    x2d._update_schema_version("6.1")
+    assert x2d._schema_version == "6.1"
     with pytest.raises(FloodModellerAPIError, match="XML Validation Error"):
         x2d.update()  # includes validate
 
