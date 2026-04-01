@@ -13,10 +13,11 @@ def copy_tree_with_new_namespace(original_root, root_ns_map: dict, root_attrib_m
     new_root = etree.Element(
         f"{{{default_namespace}}}{etree.QName(original_root).localname}",
         nsmap=root_ns_map,
-        attrib={k: v for k, v in original_root.attrib.items()})
+        attrib=dict(original_root.attrib.items()),
+    )
 
-    for k1, _ in new_root.attrib.items():
-        for k2, v2 in root_attrib_map.items():            
+    for k1 in new_root.attrib:
+        for k2, v2 in root_attrib_map.items():
             k1_key = etree.QName(k1).localname
             k2_key = etree.QName(k2).localname
             if k1_key == k2_key:
@@ -33,7 +34,7 @@ def copy_tree_with_new_namespace(original_root, root_ns_map: dict, root_attrib_m
                 new_child = etree.SubElement(
                     dst_parent,
                     f"{{{default_namespace}}}{etree.QName(child).localname}",
-                    attrib={k: v for k, v in child.attrib.items()}
+                    attrib=dict(child.attrib.items()),
                 )
                 # Copy text and tail
                 new_child.text = child.text

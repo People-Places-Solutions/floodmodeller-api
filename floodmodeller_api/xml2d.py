@@ -31,18 +31,18 @@ from tqdm import trange
 from floodmodeller_api._base import FMFile
 from floodmodeller_api.enums import Fm2dXmlSchemaVersions
 
-from .xml_utilities import copy_tree_with_new_namespace
-from .logs import LF2, create_lf, error_2d_dict
-from .util import handle_exception
-from .xml2d_template import xml2d_template
-from .regexs import int_re, float_re, version_re
 from .constants import (
     DEFAULT_NAMESPACE,
+    LATEST_SCHEMA_VERSION,
+    SCHEMA_LOCATION_TPL,
     XSI_NAMESPACE,
     XSI_SCHEMA_LOCATION_KEY,
-    SCHEMA_LOCATION_TPL,
-    LATEST_SCHEMA_VERSION,
 )
+from .logs import LF2, create_lf, error_2d_dict
+from .regexs import float_re, int_re, version_re
+from .util import handle_exception
+from .xml2d_template import xml2d_template
+from .xml_utilities import copy_tree_with_new_namespace
 
 
 def value_from_string(value: str | list[str]):
@@ -102,7 +102,7 @@ class XML2D(FMFile):
 
     def _read(self, from_blank=False):
         # Read xml data
-        
+
         if from_blank:
             self._xmltree = etree.parse(io.StringIO(xml2d_template))
         else:
@@ -113,18 +113,18 @@ class XML2D(FMFile):
         if schema_location:
             version_matches = version_re.findall(schema_location)
             if version_matches:
-                version = version_matches[0]                
-        
+                version = version_matches[0]
+
         if version is None:
             msg = rf"""
 WARNING:
-This FloodModeller 2D XML document was consumed as Schema Version {LATEST_SCHEMA_VERSION} 
+This FloodModeller 2D XML document was consumed as Schema Version {LATEST_SCHEMA_VERSION}
 because the document root uses either an incorrect xsi:schemaLocation
-attribute or it doesn't exist. Later if a call to update() fails 
-consider stating a specific version. See enumeration 
+attribute or it doesn't exist. Later if a call to update() fails
+consider stating a specific version. See enumeration
 Fm2dXmlSchemaVersions for all available versions.
 """
-            print(msg)
+            logging.warning(msg)
 
         self._update_schema_version(version)
 
@@ -148,8 +148,8 @@ Fm2dXmlSchemaVersions for all available versions.
             if attr not in self.__dict__:
                 setattr(self, attr, None)
 
-    def _update_schema_version(self, version: str = None):
-        str_version = str(LATEST_SCHEMA_VERSION if version is None else version)        
+    def _update_schema_version(self, version: str | None = None):
+        str_version = str(LATEST_SCHEMA_VERSION if version is None else version)
         self._schema_version = str(str_version)
         self._ns = DEFAULT_NAMESPACE
         self._xsi = XSI_NAMESPACE
@@ -158,20 +158,15 @@ Fm2dXmlSchemaVersions for all available versions.
         default_nsmap = self._xmltree.getroot().nsmap
 
         no_version_detected = version is None
-        using_wrong_namespace = None not in default_nsmap or default_nsmap.get('None') != self._ns
-        using_wrong_xsi = 'xsi' not in default_nsmap or default_nsmap.get('xsi') != self._xsi
+        using_wrong_namespace = None not in default_nsmap or default_nsmap.get("None") != self._ns
+        using_wrong_xsi = "xsi" not in default_nsmap or default_nsmap.get("xsi") != self._xsi
         if no_version_detected or using_wrong_namespace or using_wrong_xsi:
-            default_nsmap = {
-                None: DEFAULT_NAMESPACE,
-                'xsi': XSI_NAMESPACE
-            }
-            default_attribs = {
-                XSI_SCHEMA_LOCATION_KEY: SCHEMA_LOCATION_TPL.format(str_version)
-            }
+            default_nsmap = {None: DEFAULT_NAMESPACE, "xsi": XSI_NAMESPACE}
+            default_attribs = {XSI_SCHEMA_LOCATION_KEY: SCHEMA_LOCATION_TPL.format(str_version)}
             new_root = copy_tree_with_new_namespace(
                 self._xmltree.getroot(),
                 default_nsmap,
-                default_attribs
+                default_attribs,
             )
             self._xmltree._setroot(new_root)
 
@@ -276,11 +271,13 @@ Fm2dXmlSchemaVersions for all available versions.
         try:
             self._xsdschema.assert_(self._xmltree)  # noqa: PT009
         except AssertionError as err:
-            schema = self._xmltree.getroot().attrib[r'{http://www.w3.org/2001/XMLSchema-instance}schemaLocation']
+            schema = self._xmltree.getroot().attrib[
+                r"{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
+            ]
             msg = f"XML Validation Error for {self!r} using schema version {schema}:\n     {err.args[0].replace(self._ns_key, '')}"
             raise ValueError(msg) from err
 
-    def _recursive_update_xml(  # noqa: C901, PLR0912
+    def _recursive_update_xml(  # noqa: C901, PLR0912, PLR0915
         self,
         new_dict,
         orig_dict,
@@ -290,20 +287,21 @@ Fm2dXmlSchemaVersions for all available versions.
     ):
         # Transform Model - depending on the schema, keys might be consumed as lists or dictionarys.
         # Some schema versions differ in that a given key, might be consumed as a dictionary in one
-        # version and a list as another. And then, we the user might want to save the XML as a completely 
-        # different schema version altogether. So we have to do some semblance of transformation of the original 
+        # version and a list as another. And then, we the user might want to save the XML as a completely
+        # different schema version altogether. So we have to do some semblance of transformation of the original
         # dictionary and the new dictionary to attempt to save potential multi-value keys as particular node types.
         # this loop performs that transformation.
-        key_checks = [k for k in self._multi_value_keys if k in new_dict.keys()]
+        key_checks = [k for k in self._multi_value_keys if k in new_dict]
         for key in key_checks:
-            item = new_dict[key]            
+            item = new_dict[key]
             if key in self._multi_value_keys and not isinstance(item, list):
                 new_dict[key] = [item]
                 orig_dict[key] = [orig_dict[key]]
             elif key not in self._multi_value_keys and isinstance(item, list):
                 if len(item) > 1:
                     if not isinstance(item[0], str):
-                        raise Exception('Unable to expand list of elements to a dictionary since there are more then one item')
+                        msg = "Unable to expand list of elements to a dictionary since there are more then one item"
+                        raise Exception(msg)
                 elif len(item) == 1:
                     if not isinstance(item[0], str):
                         new_dict[key] = item[0]
@@ -321,7 +319,11 @@ Fm2dXmlSchemaVersions for all available versions.
 
             if key not in orig_dict:
                 # New key added, add recursively
-                self._recursive_add_element(parent=parent, add_item=item, add_key=key.replace(' ', '_'))
+                self._recursive_add_element(
+                    parent=parent,
+                    add_item=item,
+                    add_key=key.replace(" ", "_"),
+                )
 
             elif isinstance(item, dict):
                 self._recursive_update_xml(
@@ -346,7 +348,7 @@ Fm2dXmlSchemaVersions for all available versions.
                             self._recursive_add_element(
                                 parent=parent,
                                 add_item=_item,
-                                add_key=key.replace(' ', '_'),
+                                add_key=key.replace(" ", "_"),
                                 from_list=True,
                             )
 
@@ -365,7 +367,9 @@ Fm2dXmlSchemaVersions for all available versions.
                                 # Handle multiple similar elements
                                 if len(elems) < len(item):
                                     while len(elems) < len(item):
-                                        elems.append(etree.SubElement(parent, f"{self._ns_key}{key}"))
+                                        elems.append(
+                                            etree.SubElement(parent, f"{self._ns_key}{key}"),
+                                        )
                                 elif len(elems) > len(item):
                                     while len(elems) > len(item):
                                         parent.remove(elems.pop())
@@ -384,7 +388,11 @@ Fm2dXmlSchemaVersions for all available versions.
                                 parent.set(key, str(item))
                 except KeyError:
                     # New value/attribute added
-                    self._recursive_add_element(parent=parent, add_item=item, add_key=key.replace(' ', '_'))
+                    self._recursive_add_element(
+                        parent=parent,
+                        add_item=item,
+                        add_key=key.replace(" ", "_"),
+                    )
 
     def _recursive_add_element(  # noqa: C901, PLR0912
         self,
@@ -399,7 +407,11 @@ Fm2dXmlSchemaVersions for all available versions.
         if isinstance(add_item, dict):
             new_element = etree.SubElement(parent, f"{self._ns_key}{add_key}")
             for key, item in add_item.items():
-                self._recursive_add_element(parent=new_element, add_item=item, add_key=key.replace(' ', '_'))
+                self._recursive_add_element(
+                    parent=new_element,
+                    add_item=item,
+                    add_key=key.replace(" ", "_"),
+                )
         elif isinstance(add_item, list):
             if add_key == "variables":
                 # Variables is special case where we have list but add to one element
@@ -410,7 +422,7 @@ Fm2dXmlSchemaVersions for all available versions.
                     self._recursive_add_element(
                         parent=parent,
                         add_item=item,
-                        add_key=add_key.replace(' ', '_'),
+                        add_key=add_key.replace(" ", "_"),
                         from_list=True,
                     )
         elif add_key == "value":  # Value has been added
@@ -489,7 +501,7 @@ Fm2dXmlSchemaVersions for all available versions.
         ]:
             if getattr(self, attr) is not None:
                 if attr == "domains":
-                    self._data["domain"] = [domain for _, domain in self.domains.items()]                
+                    self._data["domain"] = [domain for _, domain in self.domains.items()]
                 else:
                     try:
                         self._data[attr] = getattr(self, attr)
@@ -543,7 +555,7 @@ Fm2dXmlSchemaVersions for all available versions.
         if version:
             ver = str(version)
             if isinstance(version, Fm2dXmlSchemaVersions):
-                ver = version.value                
+                ver = version.value
             self._update_schema_version(ver)
 
         """Updates the existing XML based on any altered attributes"""

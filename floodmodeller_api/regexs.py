@@ -2,7 +2,8 @@ import re
 
 version_re = re.compile(r"http(?:s)?:\/\/schema\.floodmodeller\.com\/([0-9\.]+)\/2d\.xsd")
 
-float_re = re.compile(r"""
+float_re = re.compile(
+    r"""
     ^[+-]?                # Optional sign
     (                     # Start of number group
         (?:\d+\.\d*)      # Digits before decimal, optional after
@@ -13,6 +14,8 @@ float_re = re.compile(r"""
     )
     (?:[eE][+-]?\d+)?     # Optional exponent part
     $                     # End of string
-""", re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 int_re = re.compile(r"^-?\d+$")

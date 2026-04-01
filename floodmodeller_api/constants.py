@@ -1,4 +1,4 @@
-LATEST_SCHEMA_VERSION = '7.3'
+LATEST_SCHEMA_VERSION = "7.3"
 
 SCHEMA_ORIGIN = r"https://www.floodmodeller.com"
 SCHEMA_URI_TPL = r"http://schema.floodmodeller.com/{0}/2d.xsd"
