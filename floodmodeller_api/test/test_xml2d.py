@@ -167,6 +167,47 @@ def test_xml2d_change_schema_versions(tmp_path: Path):
         x2d.update()  # includes validate
 
 
+def test_xml2d_deals_with_non_fm_schemas(tmp_path: Path):
+    fake_namespace = "https://example.com/not-flood-modeller"
+    fake_schema = "https://example.com/not-flood-modeller/fake.xsd"
+    fake_schema_location = f"{fake_namespace} {fake_schema}"
+    xml_path = tmp_path / "fake_schema.xml"
+
+    x2d = XML2D()
+    domain = next(iter(x2d.domains))
+    x2d.domains[domain]["topography_2"] = [
+        {"type": "standard", "filelist": {"fmfile": [{"type": "tif", "value": "hi.tif"}]}},
+    ]
+    x2d.save(xml_path)
+
+    fake_schema_xml = (
+        xml_path.read_text()
+        .replace("https://www.floodmodeller.com", fake_namespace)
+        .replace("http://schema.floodmodeller.com/7.3/2d.xsd", fake_schema)
+    )
+    xml_path.write_text(fake_schema_xml)
+    assert fake_namespace in xml_path.read_text()
+    assert fake_schema_location in xml_path.read_text()
+
+    x2d = XML2D(xml_path)
+    assert x2d._xmltree.getroot().nsmap[None] == "https://www.floodmodeller.com"
+    assert x2d._schema_version == "7.3"
+    assert xml_path.read_text() == fake_schema_xml
+
+    x2d.update()
+    assert xml_path.read_text() != fake_schema_xml
+    assert fake_namespace not in xml_path.read_text()
+    assert fake_schema_location not in xml_path.read_text()
+
+    x2d.update("7.2")
+    assert x2d._schema_version == "7.2"
+    assert fake_namespace not in xml_path.read_text()
+    assert fake_schema_location not in xml_path.read_text()
+
+    with pytest.raises(FloodModellerAPIError, match="XML Validation Error"):
+        x2d.update("6.1")
+
+
 def test_xml2d_nested_multivalue_update_keeps_topography_2_entries_separate():
     original_raster_path = "a.tif"
     original_shape_path = "b.shp"
