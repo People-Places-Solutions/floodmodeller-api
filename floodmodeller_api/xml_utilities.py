@@ -16,13 +16,8 @@ def copy_tree_with_new_namespace(original_root, root_ns_map: dict, root_attrib_m
         attrib=dict(original_root.attrib.items()),
     )
 
-    for k1 in new_root.attrib:
-        for k2, v2 in root_attrib_map.items():
-            k1_key = etree.QName(k1).localname
-            k2_key = etree.QName(k2).localname
-            if k1_key == k2_key:
-                new_root.attrib[k1] = v2
-                break
+    for k, v in root_attrib_map.items():
+        new_root.attrib[k] = v
 
     def recursive_copy(src_elem, dst_parent):
         """Recursively copy elements into the new namespace."""
