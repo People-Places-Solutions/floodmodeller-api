@@ -86,6 +86,7 @@ class XML2D(FMFile):
     _filetype: str = "XML2D"
     _suffix: str = ".xml"
     _w3_schema: str = r"{http://www.w3.org/2001/XMLSchema}"
+    _schema_version: str | None = None
     OLD_FILE = 5
     GOOD_EXIT_CODE = 100
 
@@ -149,6 +150,7 @@ Fm2dXmlSchemaVersions for all available versions.
                 setattr(self, attr, None)
 
     def _update_schema_version(self, version: str | None = None):
+        update_to_different_version = version != self._schema_version
         str_version = str(LATEST_SCHEMA_VERSION if version is None else version)
         self._schema_version = str(str_version)
         self._ns = DEFAULT_NAMESPACE
@@ -160,9 +162,9 @@ Fm2dXmlSchemaVersions for all available versions.
         no_version_detected = version is None
         using_wrong_namespace = None not in default_nsmap or default_nsmap.get(None) != self._ns
         using_wrong_xsi = "xsi" not in default_nsmap or default_nsmap.get("xsi") != self._xsi
-        if no_version_detected or using_wrong_namespace or using_wrong_xsi:
+        if no_version_detected or update_to_different_version or using_wrong_namespace or using_wrong_xsi:
             default_nsmap = {None: DEFAULT_NAMESPACE, "xsi": XSI_NAMESPACE}
-            default_attribs = {XSI_SCHEMA_LOCATION_KEY: SCHEMA_LOCATION_TPL.format(str_version)}
+            default_attribs = {XSI_SCHEMA_LOCATION_KEY: schema_location}
             new_root = copy_tree_with_new_namespace(
                 self._xmltree.getroot(),
                 default_nsmap,
