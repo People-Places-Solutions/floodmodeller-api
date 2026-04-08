@@ -430,6 +430,7 @@
 							</xs:complexType>
 						</xs:element>
 					</xs:choice>
+					<xs:attribute name="classification_method" type="hazardClassificationMethodType" use="optional"/>
 				</xs:complexType>
 			</xs:element>
 			<xs:element name="output" maxOccurs="unbounded">
@@ -701,6 +702,13 @@
 			<xs:enumeration value="woodland"/>
 			<xs:enumeration value="urban"/>
 			<xs:enumeration value="conservative"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hazardClassificationMethodType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="depthTimesVelocity"/>
+			<xs:enumeration value="FD2320"/>
+			<xs:enumeration value="FD2321"/> <!--default-->
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="link_to_modelType">
