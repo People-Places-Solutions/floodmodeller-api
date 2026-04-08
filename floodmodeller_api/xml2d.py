@@ -162,7 +162,12 @@ Fm2dXmlSchemaVersions for all available versions.
         no_version_detected = version is None
         using_wrong_namespace = None not in default_nsmap or default_nsmap.get(None) != self._ns
         using_wrong_xsi = "xsi" not in default_nsmap or default_nsmap.get("xsi") != self._xsi
-        if no_version_detected or update_to_different_version or using_wrong_namespace or using_wrong_xsi:
+        if (
+            no_version_detected
+            or update_to_different_version
+            or using_wrong_namespace
+            or using_wrong_xsi
+        ):
             default_nsmap = {None: DEFAULT_NAMESPACE, "xsi": XSI_NAMESPACE}
             default_attribs = {XSI_SCHEMA_LOCATION_KEY: schema_location}
             new_root = copy_tree_with_new_namespace(
