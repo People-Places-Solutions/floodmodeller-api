@@ -559,13 +559,13 @@ Fm2dXmlSchemaVersions for all available versions.
         self._diff(other, force_print=force_print)
 
     def update(self, version: str | Fm2dXmlSchemaVersions | None = None) -> None:
+        """Updates the existing XML based on any altered attributes"""
         if version:
             ver = str(version)
             if isinstance(version, Fm2dXmlSchemaVersions):
                 ver = version.value
             self._update_schema_version(ver)
 
-        """Updates the existing XML based on any altered attributes"""
         self._update()
 
         # Update XML dict and tree
