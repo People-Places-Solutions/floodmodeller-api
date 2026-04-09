@@ -10,7 +10,7 @@ setup(
     name="floodmodeller_api",
     version=__version__,  # type: ignore[name-defined]
     author="Jacobs",
-    author_email="joe.pierce@jacobs.com",
+    author_email="support@floodmodeller.com",
     packages=[
         "floodmodeller_api",
         "floodmodeller_api.units",
