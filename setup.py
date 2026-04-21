@@ -48,7 +48,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "pandas>1,<3",
-        "lxml==5.*",
+        "lxml>=5,<7",
         "tqdm==4.*",
         "pytest>4,<10",
         "pytest-mock==3.*",
