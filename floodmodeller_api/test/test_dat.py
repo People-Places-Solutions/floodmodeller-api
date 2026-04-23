@@ -5,7 +5,15 @@ from unittest.mock import patch
 import pytest
 
 from floodmodeller_api import DAT
-from floodmodeller_api.units import JUNCTION, LATERAL, QTBDY, RESERVOIR, UNSUPPORTED
+from floodmodeller_api.units import (
+    JUNCTION,
+    LATERAL,
+    QTBDY,
+    RESERVOIR,
+    RIVER,
+    SPILL,
+    UNSUPPORTED,
+)
 from floodmodeller_api.util import FloodModellerAPIError
 
 from .util import id_from_path, parameterise_glob
@@ -618,3 +626,38 @@ def test_units_with_spaces(
     with pytest.warns(UserWarning, match="contains spaces"):
         dat_roundtrip = DAT(roundtrip_path)
     assert dat_roundtrip._write() == actual_dat
+
+
+def test_gxy_locations_assigned():
+    """
+    GXY coordinates should be assigned across all unit type patterns
+    Blank lines between GXY entries are intentional to cover the stride fix.
+    """
+
+    gxy_data = (
+        "[QTBDY__Goyt]\r\n"
+        "X=390812.3751467\r\n"
+        "Y=390264.566334449\r\n"
+        "\r\n"
+        "[SPILL__RES9-10]\r\n"
+        "X=383759.168084381\r\n"
+        "Y=391263.373665862\r\n"
+        "\r\n"
+        "[RIVER_SECTION_OFSWEET]\r\n"
+        "X=379994.763064794\r\n"
+        "Y=393595.446452357\r\n"
+        "\r\n"
+    )
+
+    dat = DAT()
+    dat._gxy_data = gxy_data
+    dat._all_units = [
+        QTBDY(name="Goyt"),
+        SPILL(name="RES9-10"),
+        RIVER(name="OFSWEET"),
+    ]
+    dat._get_unit_locations()
+
+    assert dat._all_units[0].location == (390812.3751467, 390264.566334449)
+    assert dat._all_units[1].location == (383759.168084381, 391263.373665862)
+    assert dat._all_units[2].location == (379994.763064794, 393595.446452357)

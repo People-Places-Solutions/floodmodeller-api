@@ -538,7 +538,7 @@ class DAT(FMFile):
         gxy_lines = list(filter(None, self._gxy_data.splitlines()))
         line = 0
         gxy_dict = {}
-        while True:
+        while line < len(gxy_lines):
             header = gxy_lines[line][1:-1].split("_", 2)
 
             # header format for a unit is [TYPE_SUBTYPE_NAME], so simple check that our header is a unit is check split length is 3
