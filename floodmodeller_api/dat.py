@@ -533,7 +533,9 @@ class DAT(FMFile):
 
     def _get_unit_locations(self):
         # use gxy data to assign locations to units.
-        gxy_lines = self._gxy_data.splitlines()
+        # gxy files may contain blank lines between entries so strip before parsing
+        assert self._gxy_data is not None
+        gxy_lines = list(filter(None, self._gxy_data.splitlines()))
         line = 0
         gxy_dict = {}
         while True:
@@ -549,11 +551,13 @@ class DAT(FMFile):
             # key should match ._unique_name attributes
             gxy_dict[f"{header[0]}_{header[2]}"] = (x, y)
 
-            line += 4
+            # set stride to 3 to match stripped gxy pattern
+            line += 3
 
         for unit in self._all_units:
-            if unit.unit in ("COMMENT",):
-                break
+            if unit.unit == "COMMENT":
+                # comment units have no location data but should not halt iteration; continue
+                continue
 
             if unit.unique_name in gxy_dict:
                 unit.set_cached_location_from_gxy(gxy_dict.pop(unit.unique_name))
