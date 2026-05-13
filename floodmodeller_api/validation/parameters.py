@@ -115,6 +115,46 @@ parameter_options = {
     },
     "slope": {
         "type": "type-match",
+        "options": (float, int, type(None)),
+    },
+    "bed_elevation": {
+        "type": "type-match",
+        "options": (float, int, type(None)),
+    },
+    "min_subnodes": {
+        "type": "type-match",
+        "options": (int),
+    },
+    "max_subnodes": {
+        "type": "type-match",
+        "options": (int),
+    },
+    "max_flow": {
+        "type": "type-match",
+        "options": (float, int, type(None)),
+    },
+    "low_flow_smoothing_factor": {
+        "type": "type-match",
+        "options": (float, int, type(None)),
+    },
+    "specified_discharge": {
+        "type": "type-match",
+        "options": (float, int, type(None)),
+    },
+    "min_velocity": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "flow_threshold": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "velocity_constant": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "velocity_exponent": {
+        "type": "type-match",
         "options": (float, int),
     },
     "density": {
@@ -580,6 +620,66 @@ parameter_options = {
     "k": {
         "type": "type-match",
         "options": (float, int),
+    },
+    "x": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "channel_roughness": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "floodplain_roughness": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "channel_slope": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "floodplain_slope": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "b1": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "b2": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "b3": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "b4": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "d1": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "d2": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "d3": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "d4": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "vs": {
+        "type": "type-match",
+        "options": (float, int),
+    },
+    "bankfull_proportion": {
+        "type": "type-match",
+        "options": (float, int, type(None)),
     },
     "m": {
         "type": "type-match",

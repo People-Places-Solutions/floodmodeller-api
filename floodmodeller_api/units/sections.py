@@ -30,6 +30,7 @@ from ._helpers import (
     split_n_char,
     to_float,
     to_int,
+    write_dataframe,
 )
 from .conveyance import calculate_cross_section_conveyance_cached
 
@@ -58,7 +59,7 @@ class RIVER(Unit):
     """
 
     _unit = "RIVER"
-    _required_columns = (
+    _section_required_columns = (
         "X",
         "Y",
         "Mannings n",
@@ -69,6 +70,22 @@ class RIVER(Unit):
         "Northing",
         "Deactivation",
         "SP. Marker",
+    )
+    _musk_xsec_required_columns = (
+        "X",
+        "Y",
+        "Mannings n",
+        "Panel",
+        "RPL",
+        "Marker",
+        "Easting",
+        "Northing",
+    )
+    _musk_vpmc_required_columns = (
+        "Flow",
+        "Wavespeed",
+        "Attenuation",
+        "Water Level",
     )
 
     def _create_from_blank(  # noqa: PLR0913
@@ -104,7 +121,7 @@ class RIVER(Unit):
         }.items():
             setattr(self, param, val)
 
-        self._data = self._enforce_dataframe(data, self._required_columns)
+        self._data = self._enforce_dataframe(data, self._section_required_columns)
         self._active_data = None
 
     def _read(self, riv_block):
@@ -114,126 +131,431 @@ class RIVER(Unit):
         # Extends label line to be correct length before splitting to pick up blank labels
         labels = split_n_char(f"{riv_block[2]:<{7 * self._label_len}}", self._label_len)
 
-        # Only supporting 'SECTION' subtype for now
-        if self.subtype == "SECTION":
-            self.name = labels[0]
-            self.spill1 = labels[1]
-            self.spill2 = labels[2]
-            self.lat1 = labels[3]
-            self.lat2 = labels[4]
-            self.lat3 = labels[5]
-            self.lat4 = labels[6]
-            self.comment = self._remove_unit_name(riv_block[0])
+        reader = {
+            "SECTION": self._read_section,
+            "MUSKINGUM": self._read_muskingum,
+            "MUSK-XSEC": self._read_musk_xsec,
+            "MUSK-VPMC": self._read_musk_vpmc,
+            "MUSK-RSEC": self._read_musk_rsec,
+        }.get(self.subtype)
+        if reader is not None:
+            reader(riv_block, labels)
+            self._active_data = None
+            return
 
-            params = split_10_char(f"{riv_block[3]:<40}")
-            self.dist_to_next = to_float(params[0])
-            self.slope = to_float(params[2], 0.0001)
-            self.density = to_float(params[3], 1000.0)
-            self.nrows = int(split_10_char(riv_block[4])[0])
-            data_list = []
-            for row in riv_block[5:]:
-                row_split = split_10_char(f"{row:<100}")
-                x = to_float(row_split[0])  # chainage
-                y = to_float(row_split[1])  # elevation
-                n = to_float(row_split[2])  # Mannings
-                try:
-                    # panel marker
-                    panel = row_split[3][0] == "*"
-                except IndexError:
-                    panel = False
-
-                try:
-                    # relative path length
-                    rpl = to_float(row_split[3][1 if panel else 0 :].strip())
-                except IndexError:
-                    rpl = 0.000
-                marker = row_split[4]  # Marker
-                easting = to_float(row_split[5])  # easting
-                northing = to_float(row_split[6])  # northing
-
-                deactivation = row_split[7]  # deactivation marker
-                sp_marker = to_int(row_split[8])  # special marker
-                data_list.append(
-                    [
-                        x,
-                        y,
-                        n,
-                        panel,
-                        rpl,
-                        marker,
-                        easting,
-                        northing,
-                        deactivation,
-                        sp_marker,
-                    ],
-                )
-            self._data = pd.DataFrame(
-                data_list,
-                columns=self._required_columns,
-            )
-
-        else:
-            # This else block is triggered for river subtypes which aren't yet supported, and just keeps the 'riv_block' in it's raw state to write back.
-            logging.warning(
-                "This River sub-type: '%s' is currently unsupported for reading/editing",
-                self.subtype,
-            )
-            self._raw_block = riv_block
-            self.name = riv_block[2][: self._label_len].strip()
-            self.dist_to_next = to_float(riv_block[3][:10])
-            self.labels = labels
+        # This is triggered for river subtypes which aren't yet supported, and just keeps the 'riv_block' in it's raw state to write back.
+        logging.warning(
+            "This River sub-type: '%s' is currently unsupported for reading/editing",
+            self.subtype,
+        )
+        self._raw_block = riv_block
+        self.name = riv_block[2][: self._label_len].strip()
+        self.dist_to_next = to_float(riv_block[3][:10])
+        self.labels = labels
 
         self._active_data = None
 
     def _write(self):
         """Function to write a valid RIVER block"""
 
-        if self.subtype == "SECTION":
-            # Function to check the params are valid for RIVER SECTION unit
+        writer = {
+            "SECTION": self._write_section,
+            "MUSKINGUM": self._write_muskingum,
+            "MUSK-XSEC": self._write_musk_xsec,
+            "MUSK-VPMC": self._write_musk_vpmc,
+            "MUSK-RSEC": self._write_musk_rsec,
+        }.get(self.subtype)
+        if writer is not None:
             _validate_unit(self)
-            header = self._create_header()
-            labels = join_n_char_ljust(
-                self._label_len,
-                self.name,
-                self.spill1,
-                self.spill2,
-                self.lat1,
-                self.lat2,
-                self.lat3,
-                self.lat4,
-            )
-            # Manual so slope can have more sf
-            params = f"{self.dist_to_next:>10.3f}{'':>10}{self.slope:>10.6f}{self.density:>10.3f}"
-            self.nrows = len(self._data)
-            riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
-
-            riv_data = []
-            for (
-                _,
-                x,
-                y,
-                n,
-                panel,
-                rpl,
-                marker,
-                easting,
-                northing,
-                deactivation,
-                sp_marker,
-            ) in self._data.itertuples():
-                row = join_10_char(x, y, n)
-                if panel:
-                    row += "*"
-                else:
-                    row += " "
-                row += f"{rpl:>9.3f}{join_10_char(marker, easting, northing, deactivation, str(sp_marker))}"
-                riv_data.append(row)
-
-            riv_block.extend(riv_data)
-
-            return riv_block
+            return writer()
 
         return self._raw_block
+
+    def _write_section(self) -> list[str]:
+        header = self._create_header()
+        labels = join_n_char_ljust(
+            self._label_len,
+            self.name,
+            self.spill1,
+            self.spill2,
+            self.lat1,
+            self.lat2,
+            self.lat3,
+            self.lat4,
+        )
+        # Manual so slope can have more sf
+        params = f"{self.dist_to_next:>10.3f}{'':>10}{self.slope:>10.6f}{self.density:>10.3f}"
+        self.nrows = len(self._data)
+        riv_block = [header, self.subtype, labels, params, f"{self.nrows!s:>10}"]
+
+        riv_data = []
+        for (
+            _,
+            x,
+            y,
+            n,
+            panel,
+            rpl,
+            marker,
+            easting,
+            northing,
+            deactivation,
+            sp_marker,
+        ) in self._data.itertuples():
+            row = join_10_char(x, y, n)
+            if panel:
+                row += "*"
+            else:
+                row += " "
+            row += f"{rpl:>9.3f}{join_10_char(marker, easting, northing, deactivation, str(sp_marker))}"
+            riv_data.append(row)
+
+        riv_block.extend(riv_data)
+
+        return riv_block
+
+    def _read_section(self, riv_block: list[str], labels: list[str]) -> None:
+        self.name = labels[0]
+        self.spill1 = labels[1]
+        self.spill2 = labels[2]
+        self.lat1 = labels[3]
+        self.lat2 = labels[4]
+        self.lat3 = labels[5]
+        self.lat4 = labels[6]
+        self.comment = self._remove_unit_name(riv_block[0])
+
+        params = split_10_char(f"{riv_block[3]:<40}")
+        self.dist_to_next = to_float(params[0])
+        self.slope = to_float(params[2], 0.0001)
+        self.density = to_float(params[3], 1000.0)
+        self.nrows = int(split_10_char(riv_block[4])[0])
+        data_list = []
+        for row in riv_block[5:]:
+            row_split = split_10_char(f"{row:<100}")
+            x = to_float(row_split[0])  # chainage
+            y = to_float(row_split[1])  # elevation
+            n = to_float(row_split[2])  # Mannings
+            try:
+                # panel marker
+                panel = row_split[3][0] == "*"
+            except IndexError:
+                panel = False
+
+            try:
+                # relative path length
+                rpl = to_float(row_split[3][1 if panel else 0 :].strip())
+            except IndexError:
+                rpl = 0.000
+            marker = row_split[4]  # Marker
+            easting = to_float(row_split[5])  # easting
+            northing = to_float(row_split[6])  # northing
+
+            deactivation = row_split[7]  # deactivation marker
+            sp_marker = to_int(row_split[8])  # special marker
+            data_list.append(
+                [
+                    x,
+                    y,
+                    n,
+                    panel,
+                    rpl,
+                    marker,
+                    easting,
+                    northing,
+                    deactivation,
+                    sp_marker,
+                ],
+            )
+        self._data = pd.DataFrame(data_list, columns=self._section_required_columns)
+
+    def _read_musk_labels(self, riv_block: list[str], labels: list[str]) -> None:
+        self.name = labels[0]
+        self.first_lateral_inflow_node = labels[1]
+        self.second_lateral_inflow_node = labels[2]
+        self.lat1 = labels[3]
+        self.lat2 = labels[4]
+        self.lat3 = labels[5]
+        self.lat4 = labels[6]
+        self.comment = self._remove_unit_name(riv_block[0])
+
+    def _write_musk_labels(self) -> str:
+        return join_n_char_ljust(
+            self._label_len,
+            self.name,
+            self.first_lateral_inflow_node,
+            self.second_lateral_inflow_node,
+            self.lat1,
+            self.lat2,
+            self.lat3,
+            self.lat4,
+        )
+
+    def _read_muskingum(self, riv_block: list[str], labels: list[str]) -> None:
+        self.name = labels[0]
+        self.comment = self._remove_unit_name(riv_block[0])
+
+        params = split_10_char(f"{riv_block[3]:<20}")
+        self.dist_to_next = to_float(params[0])
+        self.bed_elevation = to_float(params[1])
+
+        params = split_10_char(f"{riv_block[4]:<20}")
+        self.k = to_float(params[0])
+        self.x = to_float(params[1])
+
+        self.vq_method = riv_block[5].strip()
+        self._read_vq_data(riv_block[6:])
+
+    def _write_muskingum(self) -> list[str]:
+        return [
+            self._create_header(),
+            self.subtype,
+            join_n_char_ljust(self._label_len, self.name),
+            join_10_char(self.dist_to_next, self.bed_elevation),
+            join_10_char(self.k, self.x),
+            *self._write_vq_data(),
+        ]
+
+    def _read_musk_xsec(self, riv_block: list[str], labels: list[str]) -> None:
+        self._read_musk_labels(riv_block, labels)
+
+        params = split_10_char(f"{riv_block[3]:<70}")
+        self.dist_to_next = to_float(params[0])
+        self.bed_elevation = to_float(params[1])
+        self.slope = to_float(params[2])
+        self.min_subnodes = to_int(params[3], 2)
+        self.max_subnodes = to_int(params[4], 100)
+        self.max_flow = self._to_optional_float(params[5])
+        self.low_flow_smoothing_factor = self._to_optional_float(params[6])
+
+        self.nrows = to_int(split_10_char(riv_block[5])[0])
+        self._data = self._read_musk_xsec_data(riv_block[6 : 6 + self.nrows])
+
+        vq_start = 6 + self.nrows
+        self.vq_method = riv_block[vq_start].strip()
+        self._read_vq_data(riv_block[vq_start + 1 :])
+
+    def _read_musk_xsec_data(self, rows: list[str]) -> pd.DataFrame:
+        data_list = []
+        for row in rows:
+            row_split = split_10_char(f"{row:<70}")
+            panel = row_split[3][:1] == "*"
+            rpl = to_float(row_split[3][1 if panel else 0 :].strip())
+            data_list.append(
+                [
+                    to_float(row_split[0]),
+                    to_float(row_split[1]),
+                    to_float(row_split[2]),
+                    panel,
+                    rpl,
+                    row_split[4],
+                    to_float(row_split[5]),
+                    to_float(row_split[6]),
+                ],
+            )
+        return pd.DataFrame(data_list, columns=self._musk_xsec_required_columns)
+
+    def _write_musk_xsec(self) -> list[str]:
+        params = (
+            f"{self.dist_to_next:>10.3f}"
+            f"{self.bed_elevation:>10.3f}"
+            f"{self.slope:>10.8f}"
+            f"{self.min_subnodes:>10}"
+            f"{self.max_subnodes:>10}"
+            f"{self._format_optional_float(self.max_flow)}"
+            f"{self._format_optional_float(self.low_flow_smoothing_factor)}"
+        )
+        self.nrows = len(self._data)
+        riv_block = [
+            self._create_header(),
+            self.subtype,
+            self._write_musk_labels(),
+            params,
+            "CROSS SECTION",
+            f"{self.nrows!s:>10}",
+        ]
+        riv_block.extend(self._write_musk_xsec_data())
+        riv_block.extend(self._write_vq_data())
+        return riv_block
+
+    def _write_musk_xsec_data(self) -> list[str]:
+        riv_data = []
+        for _, x, y, n, panel, rpl, marker, easting, northing in self._data.itertuples():
+            row = join_10_char(x, y, n)
+            row += "*" if panel else " "
+            row += f"{rpl:>9.3f}{join_10_char(marker, easting, northing)}"
+            riv_data.append(row)
+        return riv_data
+
+    def _read_musk_vpmc(self, riv_block: list[str], labels: list[str]) -> None:
+        self._read_musk_labels(riv_block, labels)
+
+        params = split_10_char(f"{riv_block[3]:<60}")
+        self.dist_to_next = to_float(params[0])
+        self.bed_elevation = to_float(params[1])
+        self.slope = self._to_optional_float(params[2])
+        self.min_subnodes = to_int(params[3], 2)
+        self.max_subnodes = to_int(params[4], 100)
+        self.specified_discharge = self._to_optional_float(params[5])
+
+        self._wavespeed_keyword = riv_block[4].strip()
+        self.nrows = to_int(split_10_char(riv_block[5])[0])
+        self.wavespeed_data = self._read_musk_vpmc_data(riv_block[6 : 6 + self.nrows])
+
+        vq_start = 6 + self.nrows
+        self.vq_method = riv_block[vq_start].strip()
+        self._read_vq_data(riv_block[vq_start + 1 :])
+
+    def _read_musk_vpmc_data(self, rows: list[str]) -> pd.DataFrame:
+        data_list = []
+        for row in rows:
+            row_split = split_10_char(f"{row:<40}")
+            data_list.append(
+                [
+                    to_float(row_split[0]),
+                    to_float(row_split[1]),
+                    to_float(row_split[2]),
+                    self._to_optional_float(row_split[3]),
+                ],
+            )
+        return pd.DataFrame(data_list, columns=self._musk_vpmc_required_columns)
+
+    def _write_musk_vpmc(self) -> list[str]:
+        params = (
+            f"{self.dist_to_next:>10.3f}"
+            f"{self.bed_elevation:>10.3f}"
+            f"{self._format_optional_float(self.slope)}"
+            f"{self.min_subnodes:>10}"
+            f"{self.max_subnodes:>10}"
+            f"{self._format_optional_float(self.specified_discharge)}"
+        )
+        self.nrows = len(self.wavespeed_data)
+        riv_block = [
+            self._create_header(),
+            self.subtype,
+            self._write_musk_labels(),
+            params,
+            "WAVESPEED ATTENUATION",
+            f"{self.nrows!s:>10}",
+        ]
+        riv_block.extend(self._write_musk_vpmc_data())
+        riv_block.extend(self._write_vq_data())
+        return riv_block
+
+    def _write_musk_vpmc_data(self) -> list[str]:
+        return [
+            join_10_char(flow, wavespeed, attenuation) + self._format_optional_float(water_level)
+            for _, flow, wavespeed, attenuation, water_level in self.wavespeed_data.itertuples()
+        ]
+
+    def _read_musk_rsec(self, riv_block: list[str], labels: list[str]) -> None:
+        self._read_musk_labels(riv_block, labels)
+
+        params = split_10_char(f"{riv_block[3]:<20}")
+        self.dist_to_next = to_float(params[0])
+        self.bed_elevation = self._to_optional_float(params[1])
+
+        self._ribaman_keyword = riv_block[4].strip()
+        self.roughness_type = riv_block[5].strip()
+
+        params = split_10_char(f"{riv_block[6]:<20}")
+        self.channel_roughness = to_float(params[0])
+        self.floodplain_roughness = to_float(params[1])
+
+        params = split_10_char(f"{riv_block[7]:<20}")
+        self.channel_slope = to_float(params[0])
+        self.floodplain_slope = to_float(params[1])
+
+        params = split_10_char(f"{riv_block[8]:<40}")
+        self.b1 = to_float(params[0])
+        self.b2 = to_float(params[1])
+        self.b3 = to_float(params[2])
+        self.b4 = to_float(params[3])
+
+        params = split_10_char(f"{riv_block[9]:<40}")
+        self.d1 = to_float(params[0])
+        self.d2 = to_float(params[1])
+        self.d3 = to_float(params[2])
+        self.d4 = to_float(params[3])
+
+        self.vs = to_float(split_10_char(f"{riv_block[10]:<10}")[0])
+
+        params = split_10_char(f"{riv_block[11]:<20}")
+        self.max_flow = to_float(params[0])
+        self.bankfull_proportion = self._to_optional_float(params[1])
+
+        self.vq_method = riv_block[12].strip()
+        self._read_vq_data(riv_block[13:])
+
+    def _write_musk_rsec(self) -> list[str]:
+        return [
+            self._create_header(),
+            self.subtype,
+            self._write_musk_labels(),
+            join_10_char(self.dist_to_next) + self._format_optional_float(self.bed_elevation),
+            "RIBAMAN",
+            self.roughness_type,
+            f"{self.channel_roughness:>10.5f}{self.floodplain_roughness:>10.5f}",
+            f"{self.channel_slope:>10.8f}{self.floodplain_slope:>10.8f}",
+            join_10_char(self.b1, self.b2, self.b3, self.b4),
+            join_10_char(self.d1, self.d2, self.d3, self.d4),
+            join_10_char(self.vs),
+            join_10_char(self.max_flow) + self._format_optional_float(self.bankfull_proportion),
+            *self._write_vq_data(),
+        ]
+
+    @staticmethod
+    def _to_optional_float(value: str) -> float | None:
+        return None if value.strip() == "" else to_float(value)
+
+    @staticmethod
+    def _format_optional_float(value: float | None) -> str:
+        return f"{'':>10}" if value is None else join_10_char(float(value))
+
+    def _read_vq_data(self, vq_block: list[str]) -> None:
+        if self.vq_method == "VQ SECTION":
+            return
+
+        if self.vq_method == "VQ POWER LAW":
+            params = split_10_char(f"{vq_block[0]:<40}")
+            self.min_velocity = to_float(params[0])
+            self.flow_threshold = to_float(params[1])
+            self.velocity_constant = to_float(params[2])
+            self.velocity_exponent = to_float(params[3])
+            return
+
+        if self.vq_method == "VQ RATING":
+            self.vq_nrows = to_int(split_10_char(vq_block[0])[0])
+            data_list = []
+            for row in vq_block[1 : 1 + self.vq_nrows]:
+                row_split = split_10_char(f"{row:<20}")
+                data_list.append([to_float(row_split[0]), to_float(row_split[1])])
+            self.vq_data = pd.DataFrame(data_list, columns=["Velocity", "Flow"])
+            return
+
+        msg = f"Unsupported {self.subtype} velocity method: {self.vq_method}"
+        raise NotImplementedError(msg)
+
+    def _write_vq_data(self) -> list[str]:
+        if self.vq_method == "VQ SECTION":
+            return [self.vq_method]
+
+        if self.vq_method == "VQ POWER LAW":
+            return [
+                self.vq_method,
+                join_10_char(
+                    self.min_velocity,
+                    self.flow_threshold,
+                    self.velocity_constant,
+                    self.velocity_exponent,
+                ),
+            ]
+
+        if self.vq_method == "VQ RATING":
+            self.vq_nrows = len(self.vq_data)
+            return [self.vq_method, *write_dataframe(f"{self.vq_nrows!s:>10}", self.vq_data)]
+
+        msg = f"Unsupported {self.subtype} velocity method: {self.vq_method}"
+        raise NotImplementedError(msg)
 
     @property
     def location(self) -> tuple[float, float] | None:
@@ -244,6 +566,9 @@ class RIVER(Unit):
         # 4. None
         if self._location is not None:
             return self._location
+
+        if self.subtype == "MUSK-XSEC":
+            return self._musk_xsec_location()
 
         try:
             bed_rows = self.active_data["Marker"] == "BED"
@@ -262,6 +587,27 @@ class RIVER(Unit):
             if location != (0, 0):
                 return location
         except (ValueError, IndexError):
+            pass
+
+        return None
+
+    def _musk_xsec_location(self) -> tuple[float, float] | None:
+        try:
+            bed_points = self._data.loc[self._data["Marker"].str.upper() == "BED"]
+            first_bed = bed_points[["Easting", "Northing"]].iloc[0]
+            location = (float(first_bed["Easting"]), float(first_bed["Northing"]))
+            if location != (0, 0):
+                return location
+        except (AttributeError, ValueError, IndexError):
+            pass
+
+        try:
+            min_idx = self._data.Y.idxmin()
+            min_row = self._data.loc[min_idx]
+            location = (float(min_row["Easting"]), float(min_row["Northing"]))
+            if location != (0, 0):
+                return location
+        except (AttributeError, ValueError, IndexError):
             pass
 
         return None
@@ -296,8 +642,13 @@ class RIVER(Unit):
         if not isinstance(new_df, pd.DataFrame):
             msg = "The updated data table for a cross section must be a pandas DataFrame."
             raise ValueError(msg)
-        if list(map(str.lower, new_df.columns)) != list(map(str.lower, self._required_columns)):
-            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+        required_columns = (
+            self._musk_xsec_required_columns
+            if self.subtype == "MUSK-XSEC"
+            else self._section_required_columns
+        )
+        if list(map(str.lower, new_df.columns)) != list(map(str.lower, required_columns)):
+            msg = f"The DataFrame must only contain columns: {required_columns}"
             raise ValueError(msg)
         self._data = new_df
 
@@ -364,8 +715,8 @@ class RIVER(Unit):
         if not isinstance(new_df, pd.DataFrame):
             msg = "The updated data table for a cross section must be a pandas DataFrame."
             raise ValueError(msg)
-        if new_df.columns.to_list() != self._required_columns:
-            msg = f"The DataFrame must only contain columns: {self._required_columns}"
+        if new_df.columns.to_list() != self._section_required_columns:
+            msg = f"The DataFrame must only contain columns: {self._section_required_columns}"
             raise ValueError(msg)
 
         # Ensure activation markers are present

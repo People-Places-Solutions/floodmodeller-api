@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
 
+from floodmodeller_api import DAT
 from floodmodeller_api.units.sections import RIVER
 
 river_unit_data_cases = [
@@ -64,6 +65,152 @@ def test_read_write(river_unit_data):
     river_section_1 = RIVER(river_unit_data)
     river_section_2 = RIVER(river_section_1._write())
     assert river_section_1 == river_section_2
+
+
+@pytest.mark.parametrize(
+    ("unit_name", "expected"),
+    [
+        (
+            "UNIT041",
+            {
+                "subtype": "MUSKINGUM",
+                "name": "UNIT041",
+                "comment": "",
+                "dist_to_next": 20,
+                "bed_elevation": 0,
+                "k": 1,
+                "x": 0.5,
+                "vq_method": "VQ POWER LAW",
+                "min_velocity": 0,
+                "flow_threshold": 10,
+                "velocity_constant": 1,
+                "velocity_exponent": 2,
+            },
+        ),
+        (
+            "UNIT042",
+            {
+                "subtype": "MUSK-XSEC",
+                "name": "UNIT042",
+                "comment": "",
+                "first_lateral_inflow_node": "",
+                "second_lateral_inflow_node": "",
+                "lat1": "",
+                "lat2": "",
+                "lat3": "",
+                "lat4": "",
+                "dist_to_next": 100,
+                "bed_elevation": 0,
+                "slope": 0.002,
+                "min_subnodes": 4,
+                "max_subnodes": 98,
+                "max_flow": None,
+                "low_flow_smoothing_factor": 0.2,
+                "nrows": 3,
+                "data": pd.DataFrame(
+                    [
+                        [0.0, 0.0, 0.03, True, 0.0, "left", 1.0, 4.0],
+                        [1.0, -2.0, 0.03, False, 1.0, "", 2.0, 5.0],
+                        [2.0, 0.0, 0.03, True, 1.0, "right", 3.0, 6.0],
+                    ],
+                    columns=[
+                        "X",
+                        "Y",
+                        "Mannings n",
+                        "Panel",
+                        "RPL",
+                        "Marker",
+                        "Easting",
+                        "Northing",
+                    ],
+                ),
+                "location": (2.0, 5.0),
+                "vq_method": "VQ SECTION",
+            },
+        ),
+        (
+            "UNIT043",
+            {
+                "subtype": "MUSK-VPMC",
+                "name": "UNIT043",
+                "comment": "",
+                "first_lateral_inflow_node": "",
+                "second_lateral_inflow_node": "",
+                "lat1": "",
+                "lat2": "",
+                "lat3": "",
+                "lat4": "",
+                "dist_to_next": 100,
+                "bed_elevation": 0,
+                "slope": None,
+                "min_subnodes": 4,
+                "max_subnodes": 98,
+                "specified_discharge": 90,
+                "_wavespeed_keyword": "WAVESPEED ATTENUATION",
+                "nrows": 2,
+                "wavespeed_data": pd.DataFrame(
+                    [[1.0, 1.0, 0.9, 1.0], [10.0, 2.0, 0.8, 2.0]],
+                    columns=["Flow", "Wavespeed", "Attenuation", "Water Level"],
+                ),
+                "vq_method": "VQ POWER LAW",
+                "min_velocity": 0,
+                "flow_threshold": 10,
+                "velocity_constant": 1,
+                "velocity_exponent": 2,
+            },
+        ),
+        (
+            "UNIT044",
+            {
+                "subtype": "MUSK-RSEC",
+                "name": "UNIT044",
+                "comment": "",
+                "first_lateral_inflow_node": "",
+                "second_lateral_inflow_node": "",
+                "lat1": "",
+                "lat2": "",
+                "lat3": "",
+                "lat4": "",
+                "dist_to_next": 100,
+                "bed_elevation": 1,
+                "_ribaman_keyword": "RIBAMAN",
+                "roughness_type": "MANNING",
+                "channel_roughness": 0.02,
+                "floodplain_roughness": 0.1,
+                "channel_slope": 0.001,
+                "floodplain_slope": 0.0001,
+                "b1": 10,
+                "b2": 15,
+                "b3": 100,
+                "b4": 12,
+                "d1": 2,
+                "d2": 1,
+                "d3": 3,
+                "d4": 0.5,
+                "vs": 5,
+                "max_flow": 0,
+                "bankfull_proportion": 0.9,
+                "vq_method": "VQ RATING",
+                "vq_nrows": 3,
+                "vq_data": pd.DataFrame(
+                    [[0.0, 0.0], [1.0, 2.0], [2.0, 4.0]],
+                    columns=["Velocity", "Flow"],
+                ),
+            },
+        ),
+    ],
+)
+def test_musk_read_write_from_dat(test_workspace, unit_name, expected):
+    river_section_1 = DAT(test_workspace / "All Units 4_6.DAT").sections[unit_name]
+    river_section_2 = RIVER(river_section_1._write())
+
+    assert river_section_1 == river_section_2
+    for attr, expected_value in expected.items():
+        if isinstance(expected_value, pd.DataFrame):
+            actual_value = getattr(river_section_1, attr)
+            pd.testing.assert_frame_equal(actual_value, expected_value)
+        else:
+            assert getattr(river_section_1, attr) == expected_value
 
 
 @pytest.mark.parametrize(

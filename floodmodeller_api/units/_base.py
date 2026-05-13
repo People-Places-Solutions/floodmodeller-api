@@ -82,6 +82,8 @@ class Unit(Jsonable):
             "lat3",
             "lat4",
             "ds_label",
+            "first_lateral_inflow_node",
+            "second_lateral_inflow_node",
         ]
         label_list_attrs = ["labels", "lateral_inflow_labels"]
 
