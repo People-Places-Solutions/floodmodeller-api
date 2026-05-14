@@ -137,9 +137,13 @@ class CONDUIT(Unit):
         dist_to_next=0.0,
         subtype="SECTION",
         friction_eq="MANNING",
+        equation="MANNING",
         invert=0.0,
+        elevation_invert=0.0,
         width=0.0,
         height=0.0,
+        height_springing=0.0,
+        height_crown=0.0,
         use_bottom_slot="GLOBAL",
         bottom_slot_dist=0.0,
         bottom_slot_depth=0.0,
@@ -151,6 +155,8 @@ class CONDUIT(Unit):
         friction_on_soffit=0.0,
         diameter=0.0,
         friction_above_axis=0.0,
+        friction_below_axis=0.0,
+        coords: pd.DataFrame | None = None,
     ):
         for param, val in {
             "name": name,
@@ -159,9 +165,13 @@ class CONDUIT(Unit):
             "dist_to_next": dist_to_next,
             "subtype": subtype,
             "friction_eq": friction_eq,
+            "equation": equation,
             "invert": invert,
+            "elevation_invert": elevation_invert,
             "width": width,
             "height": height,
+            "height_springing": height_springing,
+            "height_crown": height_crown,
             "use_bottom_slot": use_bottom_slot,
             "bottom_slot_dist": bottom_slot_dist,
             "bottom_slot_depth": bottom_slot_depth,
@@ -173,9 +183,16 @@ class CONDUIT(Unit):
             "friction_on_soffit": friction_on_soffit,
             "diameter": diameter,
             "friction_above_axis": friction_above_axis,
+            "friction_below_axis": friction_below_axis,
+            "coords": coords,
         }.items():
             if param == "subtype":
                 self._subtype = val
+            elif param == "coords":
+                self.coords = self._enforce_dataframe(
+                    coords,
+                    ("x", "y", "cw_friction"),
+                    )
             else:
                 setattr(self, param, val)
 

@@ -3,9 +3,9 @@ from __future__ import annotations
 import pandas as pd
 import pytest
 
+from floodmodeller_api import units
 from floodmodeller_api.units import QTBDY
 from floodmodeller_api.units._base import Unit  # update this import path to match your repo
-from floodmodeller_api import units
 
 
 class DummyUnit(Unit):
@@ -88,5 +88,9 @@ def test_create_from_blank():
             pass
         except Exception as e:
             errors[unit_type] = e
-            
-    assert errors == {}, f"Units with errors: {errors}"
+
+    messages = ("\n" + "\n".join(
+    f"{unit_type}: {error}"
+    for unit_type, error in errors.items()
+    ) + "\n")
+    assert errors == {}, messages
