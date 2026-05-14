@@ -40,7 +40,6 @@ def folder(test_workspace: Path) -> Path:
         ("network_zzx_max.csv", "zzx"),
     ],
 )
-# TODO: convert this to test extremes, because I dont like that the min case isnt covered here
 def test_max(zzn: ZZN, zzx: ZZX, folder: Path, csv: str, file: str):
     file_obj = zzn if file == "zzn" else zzx
     expected = pd.read_csv(folder / csv, index_col=0)
@@ -157,7 +156,7 @@ def test_meta_is_read_only(zzx: ZZN):
 def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
     ief_filepath = test_workspace / simulation_case / f"{simulation_case}.ief"
     ief = IEF(ief_filepath)
-    
+
     zz_filepath = test_workspace / simulation_case / f"{simulation_case.upper()}.{file_type}"
     zz: ZZN | ZZX = read_file(zz_filepath)
     zz_df = zz.to_dataframe()
@@ -165,4 +164,27 @@ def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
 
     assert zz_df.index[0] == ief.start
     assert zz_df.index[-1] == ief.finish
+
+    # We expect saving to happen on both the first and last timestep, hence the `+1`
+    expected_rows = ((ief.finish-ief.start) * (3600/ief.saveinterval)) + 1
+    assert len(zz_df.index) == expected_rows
+
+
+    # Check the `result_type="max"` case and compare against the main df
+    # In cases where this would produce a false positive, the previous assertions should fail.
+    zz_max_df = zz.to_dataframe(result_type="max",include_time=True)
+    units_to_check = ["M040","M042","M054"]
+    variable = "Flow" if file_type == "zzn" else "Link inflow"
+
+    for label in units_to_check:
+        max_flow = zz_df[variable][label].max()
+        max_flow_time = zz_df[variable][label].idxmax()
+        pass
+        assert round(zz_max_df.loc[label][f"Max {variable}"],3) == pytest.approx(max_flow,0.001)
+        assert zz_max_df.loc[label][f"Max {variable} Time(hrs)"] == max_flow_time
+        
+
+
+
+
 

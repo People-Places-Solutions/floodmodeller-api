@@ -124,8 +124,10 @@ def run_routines(
         check_errstat("get_zz_label", meta["errstat"].value)
 
     # preprocess zzn
-    last_hr = (meta["ltimestep"].value - meta["timestep0"].value) * meta["dt"].value / 3600
-    meta["output_hrs"] = (ct.c_float * 2)(0.0, last_hr)
+    first_hr = (meta["timestep0"].value-1) * (meta["dt"].value / 3600) # -1 to timestep otherwise this wont match the value in the ief
+    last_hr = (meta["ltimestep"].value-1) * (meta["dt"].value / 3600) # -1 to timestep otherwise this wont match the value in the ief
+   
+    meta["output_hrs"] = (ct.c_float * 2)(first_hr, last_hr)
     meta["aitimestep"] = (ct.c_int * 2)(meta["timestep0"].value, meta["ltimestep"].value)
     meta["isavint"] = (ct.c_int * 2)()
     reader.preprocess_zzn(
