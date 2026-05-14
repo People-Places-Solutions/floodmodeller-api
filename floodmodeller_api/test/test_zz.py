@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 
 from floodmodeller_api import IEF, ZZN, ZZX
+from floodmodeller_api.util import read_file
 
 
 @pytest.fixture()
@@ -39,6 +40,7 @@ def folder(test_workspace: Path) -> Path:
         ("network_zzx_max.csv", "zzx"),
     ],
 )
+# TODO: convert this to test extremes, because I dont like that the min case isnt covered here
 def test_max(zzn: ZZN, zzx: ZZX, folder: Path, csv: str, file: str):
     file_obj = zzn if file == "zzn" else zzx
     expected = pd.read_csv(folder / csv, index_col=0)
@@ -65,25 +67,32 @@ def test_max(zzn: ZZN, zzx: ZZX, folder: Path, csv: str, file: str):
         ("Left FP mode", "network_zzx_left_fp_mode.csv", "zzx"),
     ],
 )
+# TODO: add negative results to this?
 def test_all_timesteps(zzn: ZZN, zzx: ZZX, folder: Path, variable: str, csv: str, file: str):
-    file_obj = zzn if file == "zzn" else zzx
+    """
+    This test compares data extracted from ZZN/ZZX files against known values from .csv.
+
+    Multiple assertions used to test various different methods to access variable results
+
+    """
+    zz_obj = zzn if file == "zzn" else zzx
     suffix = f"_{variable}"
     expected = pd.read_csv(folder / csv, index_col=0)
 
-    actual_1 = file_obj.to_dataframe(variable=variable)
+    actual_1 = zz_obj.to_dataframe(variable=variable)
     actual_1.index = actual_1.index.round(3)
     pd.testing.assert_frame_equal(actual_1, expected, atol=1e-3, check_dtype=False)
 
-    actual_2 = file_obj.to_dataframe()[variable]
+    actual_2 = zz_obj.to_dataframe()[variable]
     actual_2.index = actual_2.index.round(3)
     pd.testing.assert_frame_equal(actual_2, expected, atol=1e-3, check_dtype=False)
 
-    actual_3 = file_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
+    actual_3 = zz_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
     actual_3.index = actual_3.index.round(3)
     actual_3.columns = [x.removesuffix(suffix) for x in actual_3.columns]
     pd.testing.assert_frame_equal(actual_3, expected, atol=1e-3, check_dtype=False)
 
-    actual_4 = file_obj.to_dataframe(variable=variable, multilevel_header=False)
+    actual_4 = zz_obj.to_dataframe(variable=variable, multilevel_header=False)
     actual_4.index = actual_4.index.round(3)
     actual_4.columns = [x.removesuffix(suffix) for x in actual_4.columns]
     pd.testing.assert_frame_equal(actual_4, expected, atol=1e-3, check_dtype=False)
@@ -141,3 +150,19 @@ def test_meta_is_read_only(zzx: ZZN):
         zzx.meta["variables"] = "hi"
 
     zzx._meta["variables"] = "hi"
+
+
+@pytest.mark.parametrize("simulation_case", ["zero_start", "negative_start", "positive_start"])
+@pytest.mark.parametrize("file_type", ["zzn", "zzx"])
+def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
+    ief_filepath = test_workspace / simulation_case / f"{simulation_case}.ief"
+    ief = IEF(ief_filepath)
+    
+    zz_filepath = test_workspace / simulation_case / f"{simulation_case.upper()}.{file_type}"
+    zz: ZZN | ZZX = read_file(zz_filepath)
+    zz_df = zz.to_dataframe()
+    pass
+
+    assert zz_df.index[0] == ief.start
+    assert zz_df.index[-1] == ief.finish
+
