@@ -378,13 +378,15 @@ class RIVER(Unit):
         return riv_block
 
     def _write_musk_xsec_data(self) -> list[str]:
-        riv_data = []
-        for _, x, y, n, panel, rpl, marker, easting, northing in self._data.itertuples():
-            row = join_10_char(x, y, n)
-            row += "*" if panel else " "
-            row += f"{rpl:>9.3f}{join_10_char(marker, easting, northing)}"
-            riv_data.append(row)
-        return riv_data
+        data = self._data.copy()
+        data["Panel/RPL"] = [
+            f"{'*' if panel else ' '}{rpl:>9.3f}"
+            for panel, rpl in zip(data["Panel"], data["RPL"], strict=True)
+        ]
+        return write_dataframe(
+            None,
+            data[["X", "Y", "Mannings n", "Panel/RPL", "Marker", "Easting", "Northing"]],
+        )
 
     def _read_musk_vpmc(self, riv_block: list[str], labels: list[str]) -> None:
         self._read_musk_labels(riv_block, labels)
