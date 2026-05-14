@@ -81,6 +81,14 @@ def to_float(itm, default=0.0):
         return default
 
 
+def to_optional_float(value: str) -> float | None:
+    return None if value.strip() == "" else to_float(value)
+
+
+def format_optional_float(value: float | None) -> str:
+    return f"{'':>10}" if value is None else join_10_char(float(value))
+
+
 def to_int(itm, default=0):
     try:
         return int(itm)

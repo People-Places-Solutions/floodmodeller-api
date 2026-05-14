@@ -24,12 +24,14 @@ from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
 from ._helpers import (
+    format_optional_float,
     join_10_char,
     join_n_char_ljust,
     split_10_char,
     split_n_char,
     to_float,
     to_int,
+    to_optional_float,
     write_dataframe,
 )
 from .conveyance import calculate_cross_section_conveyance_cached
@@ -324,8 +326,8 @@ class RIVER(Unit):
         self.slope = to_float(params[2])
         self.min_subnodes = to_int(params[3], 2)
         self.max_subnodes = to_int(params[4], 100)
-        self.max_flow = self._to_optional_float(params[5])
-        self.low_flow_smoothing_factor = self._to_optional_float(params[6])
+        self.max_flow = to_optional_float(params[5])
+        self.low_flow_smoothing_factor = to_optional_float(params[6])
 
         self.nrows = to_int(split_10_char(riv_block[5])[0])
         self._data = self._read_musk_xsec_data(riv_block[6 : 6 + self.nrows])
@@ -361,8 +363,8 @@ class RIVER(Unit):
             f"{self.slope:>10.8f}"
             f"{self.min_subnodes:>10}"
             f"{self.max_subnodes:>10}"
-            f"{self._format_optional_float(self.max_flow)}"
-            f"{self._format_optional_float(self.low_flow_smoothing_factor)}"
+            f"{format_optional_float(self.max_flow)}"
+            f"{format_optional_float(self.low_flow_smoothing_factor)}"
         )
         self.nrows = len(self._data)
         riv_block = [
@@ -392,10 +394,10 @@ class RIVER(Unit):
         params = split_10_char(f"{riv_block[3]:<60}")
         self.dist_to_next = to_float(params[0])
         self.bed_elevation = to_float(params[1])
-        self.slope = self._to_optional_float(params[2])
+        self.slope = to_optional_float(params[2])
         self.min_subnodes = to_int(params[3], 2)
         self.max_subnodes = to_int(params[4], 100)
-        self.specified_discharge = self._to_optional_float(params[5])
+        self.specified_discharge = to_optional_float(params[5])
 
         self._wavespeed_keyword = riv_block[4].strip()
         self.nrows = to_int(split_10_char(riv_block[5])[0])
@@ -414,7 +416,7 @@ class RIVER(Unit):
                     to_float(row_split[0]),
                     to_float(row_split[1]),
                     to_float(row_split[2]),
-                    self._to_optional_float(row_split[3]),
+                    to_optional_float(row_split[3]),
                 ],
             )
         return pd.DataFrame(data_list, columns=self._musk_vpmc_required_columns)
@@ -423,10 +425,10 @@ class RIVER(Unit):
         params = (
             f"{self.dist_to_next:>10.3f}"
             f"{self.bed_elevation:>10.3f}"
-            f"{self._format_optional_float(self.slope)}"
+            f"{format_optional_float(self.slope)}"
             f"{self.min_subnodes:>10}"
             f"{self.max_subnodes:>10}"
-            f"{self._format_optional_float(self.specified_discharge)}"
+            f"{format_optional_float(self.specified_discharge)}"
         )
         self.nrows = len(self.wavespeed_data)
         riv_block = [
@@ -443,7 +445,7 @@ class RIVER(Unit):
 
     def _write_musk_vpmc_data(self) -> list[str]:
         return [
-            join_10_char(flow, wavespeed, attenuation) + self._format_optional_float(water_level)
+            join_10_char(flow, wavespeed, attenuation) + format_optional_float(water_level)
             for _, flow, wavespeed, attenuation, water_level in self.wavespeed_data.itertuples()
         ]
 
@@ -452,7 +454,7 @@ class RIVER(Unit):
 
         params = split_10_char(f"{riv_block[3]:<20}")
         self.dist_to_next = to_float(params[0])
-        self.bed_elevation = self._to_optional_float(params[1])
+        self.bed_elevation = to_optional_float(params[1])
 
         self._ribaman_keyword = riv_block[4].strip()
         self.roughness_type = riv_block[5].strip()
@@ -481,7 +483,7 @@ class RIVER(Unit):
 
         params = split_10_char(f"{riv_block[11]:<20}")
         self.max_flow = to_float(params[0])
-        self.bankfull_proportion = self._to_optional_float(params[1])
+        self.bankfull_proportion = to_optional_float(params[1])
 
         self.vq_method = riv_block[12].strip()
         self._read_vq_data(riv_block[13:])
@@ -491,7 +493,7 @@ class RIVER(Unit):
             self._create_header(),
             self.subtype,
             self._write_musk_labels(),
-            join_10_char(self.dist_to_next) + self._format_optional_float(self.bed_elevation),
+            join_10_char(self.dist_to_next) + format_optional_float(self.bed_elevation),
             "RIBAMAN",
             self.roughness_type,
             f"{self.channel_roughness:>10.5f}{self.floodplain_roughness:>10.5f}",
@@ -499,17 +501,9 @@ class RIVER(Unit):
             join_10_char(self.b1, self.b2, self.b3, self.b4),
             join_10_char(self.d1, self.d2, self.d3, self.d4),
             join_10_char(self.vs),
-            join_10_char(self.max_flow) + self._format_optional_float(self.bankfull_proportion),
+            join_10_char(self.max_flow) + format_optional_float(self.bankfull_proportion),
             *self._write_vq_data(),
         ]
-
-    @staticmethod
-    def _to_optional_float(value: str) -> float | None:
-        return None if value.strip() == "" else to_float(value)
-
-    @staticmethod
-    def _format_optional_float(value: float | None) -> str:
-        return f"{'':>10}" if value is None else join_10_char(float(value))
 
     def _read_vq_data(self, vq_block: list[str]) -> None:
         if self.vq_method == "VQ SECTION":
