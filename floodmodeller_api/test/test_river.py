@@ -104,7 +104,7 @@ def test_read_write(river_unit_data):
                 "slope": 0.002,
                 "min_subnodes": 4,
                 "max_subnodes": 98,
-                "max_flow": None,
+                "max_flow": 0.0,
                 "low_flow_smoothing_factor": 0.2,
                 "nrows": 3,
                 "data": pd.DataFrame(
@@ -142,7 +142,7 @@ def test_read_write(river_unit_data):
                 "lat4": "",
                 "dist_to_next": 100,
                 "bed_elevation": 0,
-                "slope": None,
+                "slope": 0.0,
                 "min_subnodes": 4,
                 "max_subnodes": 98,
                 "specified_discharge": 90,
