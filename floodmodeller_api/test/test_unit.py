@@ -5,6 +5,7 @@ import pytest
 
 from floodmodeller_api.units import QTBDY
 from floodmodeller_api.units._base import Unit  # update this import path to match your repo
+from floodmodeller_api import units
 
 
 class DummyUnit(Unit):
@@ -67,3 +68,25 @@ def test_partially_defined_unit():
         name="Flow",
     )
     pd.testing.assert_series_equal(expected, actual)
+
+def test_create_from_blank():
+    errors = {}
+    for unit_type in units.SUPPORTED_UNIT_TYPES:
+        if unit_type in ["INITIAL CONDITIONS", "VARIABLES"]:
+            continue
+
+        # Changes done to account for unit types with spaces/dashes eg Flat-V Weir
+        unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
+
+        # Get class object from unit type
+        unit = getattr(units, unit_type_safe)
+
+        try:
+            # Create unit from blank and check the raw block can be written
+            unit()._write()
+        except NotImplementedError as e:
+            pass
+        except Exception as e:
+            errors[unit_type] = e
+            
+    assert errors == {}, f"Units with errors: {errors}"
