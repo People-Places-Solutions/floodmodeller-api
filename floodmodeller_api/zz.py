@@ -88,12 +88,12 @@ def run_routines(
     reader.process_zzl(
         ct.byref(meta[zzx_or_zzl_name]),
         ct.byref(meta["model_title"]),
-        ct.byref(meta["nnodes"]),
+        ct.byref(meta["nnodes"]), # Number of Nodes in model
         ct.byref(meta["label_length"]),
-        ct.byref(meta["dt"]),
-        ct.byref(meta["timestep0"]),
-        ct.byref(meta["ltimestep"]),
-        ct.byref(meta["save_int"]),
+        ct.byref(meta["dt"]), # model timestep, in seconds
+        ct.byref(meta["timestep0"]), # start time of results, as timestep relative to zero
+        ct.byref(meta["ltimestep"]), # end time of results, as timestep relative to zero
+        ct.byref(meta["save_int"]), # save interval, in seconds
         ct.byref(meta["is_quality"]),
         ct.byref(meta["nvars"]),
         ct.byref(meta["tzero"]),
