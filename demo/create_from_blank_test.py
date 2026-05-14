@@ -1,34 +1,33 @@
 import pprint
-from floodmodeller_api import DAT
+
 from floodmodeller_api.units import (
-    QTBDY,
-    HTBDY,
-    QHBDY,
-    REFHBDY,
-    RIVER,
-    BRIDGE,
-    CONDUIT,
-    SLUICE,
-    ORIFICE,
-    SPILL,
-    IIC,
-    Variables,
     BLOCKAGE,
-    CULVERT,
-    RNWEIR,
-    WEIR,
-    CRUMP,
-    FLAT_V_WEIR,
-    INTERPOLATE,
-    REPLICATE,
-    OUTFALL,
+    BRIDGE,
     COMMENT,
+    CONDUIT,
+    CRUMP,
+    CULVERT,
+    FLAT_V_WEIR,
+    FLOODPLAIN,
+    HTBDY,
+    IIC,
+    INTERPOLATE,
     JUNCTION,
     LATERAL,
+    ORIFICE,
+    OUTFALL,
+    QHBDY,
+    QTBDY,
+    REFHBDY,
+    REPLICATE,
     RESERVOIR,
-    FLOODPLAIN,
-    )
-
+    RIVER,
+    RNWEIR,
+    SLUICE,
+    SPILL,
+    WEIR,
+    Variables,
+)
 
 unit_classes = {
     QTBDY: {"group": "boundaries", "has_subtype": False},
@@ -76,26 +75,24 @@ errors_subtypes = {}
 not_implemented = []
 for unit_class in unit_classes:
     try:
-        print(unit_class())
-        errors_unit[unit_class.__name__] = None
-    except NotImplementedError as e:
+        unit_class()._write()
+    except NotImplementedError as e:  # noqa: PERF203
         errors_unit[unit_class.__name__] = e
         not_implemented.append(unit_class)
     except Exception as e:
         errors_unit[unit_class.__name__] = e
 
-for unit_class in subtype_units:
+for unit_class, subtypes in subtype_units.items():
 
     if unit_class in not_implemented:
         continue
 
-    errors_subtypes[unit_class.__name__] = {}
-    for subtype in subtype_units[unit_class]:
+    for subtype in subtypes:
         try:
-            print(unit_class(subtype=subtype))
-            errors_subtypes[unit_class.__name__][subtype] = None
-        except Exception as e:
-            errors_subtypes[unit_class.__name__][subtype] = e
+            unit_class(subtype=subtype)._write()
+            errors_subtypes[f"{unit_class.__name__} {subtype}"] = None
+        except Exception as e:  # noqa: PERF203
+            errors_subtypes[f"{unit_class.__name__} {subtype}"] = e
 
 pprint.pprint(errors_unit)
 print("")
