@@ -103,7 +103,7 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-@pytest.mark.parametrize("original_dat_path", parameterise_glob("*.dat"), ids=id_from_path)
+@pytest.mark.parametrize("original_dat_path", parameterise_glob("**/.dat"), ids=id_from_path)
 def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     if original_dat_path.name.startswith("duplicate_unit_test"):

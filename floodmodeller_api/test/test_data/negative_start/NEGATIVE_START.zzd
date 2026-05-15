@@ -1,0 +1,143 @@
+  
+Flood Modeller 1D Solver run using event file negative_start.ief
+  
+ 
+ writing messaging file output to negative_start.lf1
+  
+ Licence module initialised.
+ Licence module validated.
+  ** Licence Settings ** 
+
+  STANDALONE only? no
+
+  DONGLE only? no
+
+  WIBU only? no
+
+  DEFAULT edition only? no
+
+  Max retries:  forever 
+
+  Pause between licence check attempts: 5000 ms
+
+  Container: 0-0
+
+  Scan CM network during initialisation? no
+
+ Number of 1D river nodes in model:        26
+Licence checked: OK
+negative_start                                                     FILE=RIVER_NETWORK.dat Flood Modeller VER=7.2.0.01724
+ Single precision, 64-bit version
+Simulation started at 08:33:31 on 14/05/2026                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ Rules evaluated at time zero = T
+ Rules evaluated on first iteration = F
+ Rules times reset after positional instruction = T
+ Floodplain section area constrained by modular limit = T
+ Use flow from culvert outlet remote node = T
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Solve dh = 0 at t0 in reservoirs.
+
+ Using default initial conditions (from *.dat file)
+ 
+ Reading main data file RIVER_NETWORK.dat...
+ Right Levee marker at (   111.000,    12.320) in Section: M031
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   -16.00000      hours
+     end time          =    30.00000      hours
+     timestep          =    20.00000      seconds
+     save multiple     =           15
+  
+ 
+ 
+ Model time    30.0000 hrs:
+ *** warning W2019 *** at label:
+ 
+ Water level rose beyond the max level of section data
+ Solution computed assuming extra   3.0m wall for non-CES sections, or max depth x 1.5 for CES sections, at max breadth
+  Full details in 1D diagnostics file...
+
+  *************************************************
+
+  Sections at which water level rose above  
+  the maximum level of data (W2019)
+  Note: A solution was computed assuming an 
+ extra   3.0m wall for non-CES sections, or
+  max depth x 1.5 for CES sections, 
+  at the maximum breadth.
+  You should extend your data for the       
+  following sections:
+  
+               Label/s involved
+  
+                M029   - NO SPILL ATTACHED                  
+                M031   - NO SPILL ATTACHED                  
+                M032   - NO SPILL ATTACHED                  
+                M033   - NO SPILL ATTACHED                  
+                M034   - NO SPILL ATTACHED                  
+                M035   - NO SPILL ATTACHED                  
+                M036   - NO SPILL ATTACHED                  
+                M037   - NO SPILL ATTACHED                  
+                M038   - NO SPILL ATTACHED                  
+                M039   - NO SPILL ATTACHED                  
+                M040   - NO SPILL ATTACHED                  
+                M041   - NO SPILL ATTACHED                  
+                M042   - NO SPILL ATTACHED                  
+                M043   - NO SPILL ATTACHED                  
+                M044   - NO SPILL ATTACHED                  
+                M045   - NO SPILL ATTACHED                  
+                M046   - NO SPILL ATTACHED                  
+                M047   - NO SPILL ATTACHED                  
+                M048   - NO SPILL ATTACHED                  
+                M049   - NO SPILL ATTACHED                  
+                M050   - NO SPILL ATTACHED                  
+                M051   - NO SPILL ATTACHED                  
+                M052   - NO SPILL ATTACHED                  
+                M053   - NO SPILL ATTACHED                  
+                M054   - NO SPILL ATTACHED                  
+
+  *************************************************
+
+Simulation time elapsed (s):             4
+ 
+run completed
+ 
+ Number of unconverged timesteps:         0
+ Proportion of simulation unconverged:   0.00%
+ 
+ ********* Mass balance summary *********
+ Mass balance calculated every    300.0s
+ 
+ Initial volume:           0.206995E+07m3
+ Final volume:             0.207004E+07m3
+-----------------------
+ Total boundary inflow  :  0.689540E+08m3
+ Total boundary outflow :  0.689592E+08m3
+ Total lat. link inflow :   0.00000    m3
+ Total lat. link outflow:   0.00000    m3
+-----------------------
+ Max. system volume:       0.697217E+07m3
+ Max. |volume| increase:   0.490222E+07m3
+ Max. boundary inflow:      1000.00    m3/s
+ Max. boundary outflow:     980.999    m3/s
+-----------------------
+ Net increase in volume:    87.7500    m3
+ Net inflow volume:        -5128.00    m3
+ Volume discrepancy:       -5215.75    m3
+ Mass balance error:           0.07% (of peak system volume)
+ Mass balance error [2]:       0.01% (of boundary inflow volume)
+ 
+ ******* End mass balance summary *******
+ 
+ Writing binary results to C:\Users\TOLLERJ\Downloads\zzn_sample_data\negative_start\NEGATIVE_START.zzn
+ outputting max/min/means to C:\Users\TOLLERJ\Downloads\zzn_sample_data\negative_start\NEGATIVE_START.mmm
+ Convergence plot saved to C:\Users\TOLLERJ\Downloads\zzn_sample_data\negative_start\NEGATIVE_START.bmp
