@@ -153,6 +153,12 @@ def test_meta_is_read_only(zzx: ZZN):
 @pytest.mark.parametrize("simulation_case", ["zero_start", "negative_start", "positive_start"])
 @pytest.mark.parametrize("file_type", ["zzn", "zzx"])
 def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
+    """
+    This test compares that the dataframe produced by _ZZ classes matches what we expect from the corresponding IEF that produced the results.
+
+    Compares start and finish times to first and last indecies of df,
+    Also checks that the number of rows matches what we expect based on the save interval.
+    """
     ief_filepath = test_workspace / simulation_case / f"{simulation_case}.ief"
     ief = IEF(ief_filepath)
 
@@ -167,14 +173,25 @@ def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
     expected_rows = ((ief.finish - ief.start) * (3600 / ief.saveinterval)) + 1
     assert len(zz_df.index) == expected_rows
 
-    # Check the `result_type="max"` case and compare against the main df
-    # In cases where this would produce a false positive, the previous assertions should fail.
+
+@pytest.mark.parametrize("simulation_case", ["zero_start", "negative_start", "positive_start"])
+@pytest.mark.parametrize(("file_type", "variable"), [("zzn", "Flow"), ("zzx", "Link inflow")])
+def test_result_type_max_matches_full_df(test_workspace, simulation_case, file_type, variable):
+    """
+    Tests `result_type="max"` option of `to_dataframe()` for consistency with main dataframe output.
+
+    This should catch any issues where the time is not picked up properly in the max output here.
+    """
+
+    zz_filepath = test_workspace / simulation_case / f"{simulation_case.upper()}.{file_type}"
+    zz: ZZN | ZZX = read_file(zz_filepath)
+    zz_df = zz.to_dataframe()
+
     zz_max_df = zz.to_dataframe(result_type="max", include_time=True)
     units_to_check = ["M040", "M042", "M054"]
-    variable = "Flow" if file_type == "zzn" else "Link inflow"
 
     for label in units_to_check:
         max_flow = zz_df[variable][label].max()
         max_flow_time = zz_df[variable][label].idxmax()
-        assert round(zz_max_df.loc[label][f"Max {variable}"], 3) == pytest.approx(max_flow, 0.001)
-        assert zz_max_df.loc[label][f"Max {variable} Time(hrs)"] == max_flow_time
+        assert zz_max_df.loc[label, f"Max {variable}"] == pytest.approx(max_flow, 0.001)
+        assert zz_max_df.loc[label, f"Max {variable} Time(hrs)"] == max_flow_time
