@@ -172,7 +172,6 @@ def test_read_write(river_unit_data):
                 "lat4": "",
                 "dist_to_next": 100,
                 "bed_elevation": 1,
-                "_ribaman_keyword": "RIBAMAN",
                 "roughness_type": "MANNING",
                 "channel_roughness": 0.02,
                 "floodplain_roughness": 0.1,

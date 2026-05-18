@@ -455,7 +455,6 @@ class RIVER(Unit):
         self.dist_to_next = to_float(params[0])
         self.bed_elevation = to_float(params[1])
 
-        self._ribaman_keyword = riv_block[4].strip()
         self.roughness_type = riv_block[5].strip()
 
         params = split_10_char(f"{riv_block[6]:<20}")
