@@ -37,7 +37,7 @@ def test_section_name_and_snow_catch_factor_changes(inp_fp, data_before):
     assert inp._write() == data_before
 
 
-@pytest.mark.parametrize("inpfile", parameterise_glob("*.inp"), ids=id_from_path)
+@pytest.mark.parametrize("inpfile", parameterise_glob("**/*.inp"), ids=id_from_path)
 def test_all_inp_files_in_folder_have_same_output(tmpdir, inpfile):
     """INP: Check all '.inp' files in folder by reading the _write() output into a new INP instance and checking it stays the same."""
     inp = INP(inpfile)
