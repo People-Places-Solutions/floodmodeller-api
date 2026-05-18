@@ -399,7 +399,6 @@ class RIVER(Unit):
         self.max_subnodes = to_int(params[4], 100)
         self.specified_discharge = to_float(params[5])
 
-        self._wavespeed_keyword = riv_block[4].strip()
         self.nrows = to_int(split_10_char(riv_block[5])[0])
         self.wavespeed_data = self._read_musk_vpmc_data(riv_block[6 : 6 + self.nrows])
 

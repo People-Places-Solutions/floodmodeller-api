@@ -146,7 +146,6 @@ def test_read_write(river_unit_data):
                 "min_subnodes": 4,
                 "max_subnodes": 98,
                 "specified_discharge": 90,
-                "_wavespeed_keyword": "WAVESPEED ATTENUATION",
                 "nrows": 2,
                 "wavespeed_data": pd.DataFrame(
                     [[1.0, 1.0, 0.9, 1.0], [10.0, 2.0, 0.8, 2.0]],
