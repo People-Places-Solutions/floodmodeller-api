@@ -54,7 +54,7 @@ class JUNCTION(Unit):
         self.comment = comment
         self._subtype = subtype
         self.labels = labels if labels is not None else []
-        self.name = self.labels[0]
+        self.name = self.labels[0] if labels is not None else "new_junction"
 
 
 class LATERAL(Unit):

@@ -1109,7 +1109,7 @@ class RNWEIR(Unit):
             "upstream_crest_height": upstream_crest_height,
             "downstream_crest_height": downstream_crest_height,
             "weir_length": weir_length,
-            "wier_breadth": weir_breadth,
+            "weir_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
         }.items():
             setattr(self, param, val)
@@ -1183,7 +1183,7 @@ class WEIR(Unit):
         comment="",
         ds_label="",
         exponent=1.5,
-        discharge_coefficeient=1.0,
+        discharge_coefficient=1.0,
         velocity_coefficient=1.0,
         modular_limit=0.7,
         weir_length=0.0,
@@ -1195,11 +1195,11 @@ class WEIR(Unit):
             "comment": comment,
             "ds_label": ds_label,
             "exponent": exponent,
-            "discharge_coefficeient": discharge_coefficeient,
+            "discharge_coefficient": discharge_coefficient,
             "velocity_coefficient": velocity_coefficient,
             "modular_limit": modular_limit,
             "weir_length": weir_length,
-            "wier_breadth": weir_breadth,
+            "weir_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
         }.items():
             setattr(self, param, val)
@@ -1640,7 +1640,7 @@ class FLOODPLAIN(Unit):
 
     def _create_from_blank(  # noqa: PLR0913
         self,
-        name="new_floodplain",
+        name="new_floodp",
         comment="",
         ds_label="",
         data=None,

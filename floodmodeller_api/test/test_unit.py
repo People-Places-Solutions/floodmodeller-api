@@ -69,7 +69,9 @@ def test_partially_defined_unit():
     )
     pd.testing.assert_series_equal(expected, actual)
 
-def test_create_from_blank():
+def test_create_unit_from_blank():
+    """Test to create units with no parameters or subtype specified."""
+
     errors = {}
     for unit_type in units.SUPPORTED_UNIT_TYPES:
         if unit_type in ["INITIAL CONDITIONS", "VARIABLES"]:
@@ -84,7 +86,7 @@ def test_create_from_blank():
         try:
             # Create unit from blank and check the raw block can be written
             unit()._write()
-        except NotImplementedError as e:
+        except NotImplementedError:
             pass
         except Exception as e:
             errors[unit_type] = e
