@@ -158,43 +158,81 @@ class CONDUIT(Unit):
         friction_below_axis=0.0,
         coords: pd.DataFrame | None = None,
     ):
+
+        # Set up common attributes
         for param, val in {
-            "name": name,
-            "spill": spill,
-            "comment": comment,
-            "dist_to_next": dist_to_next,
-            "subtype": subtype,
-            "friction_eq": friction_eq,
-            "equation": equation,
-            "invert": invert,
-            "elevation_invert": elevation_invert,
-            "width": width,
-            "height": height,
-            "height_springing": height_springing,
-            "height_crown": height_crown,
-            "use_bottom_slot": use_bottom_slot,
-            "bottom_slot_dist": bottom_slot_dist,
-            "bottom_slot_depth": bottom_slot_depth,
-            "use_top_slot": use_top_slot,
-            "top_slot_dist": top_slot_dist,
-            "top_slot_depth": top_slot_depth,
-            "friction_on_invert": friction_on_invert,
-            "friction_on_walls": friction_on_walls,
-            "friction_on_soffit": friction_on_soffit,
-            "diameter": diameter,
-            "friction_above_axis": friction_above_axis,
-            "friction_below_axis": friction_below_axis,
-            "coords": coords,
+                "name": name,
+                "spill": spill,
+                "comment": comment,
+                "dist_to_next": dist_to_next,
+                "subtype": subtype,
         }.items():
             if param == "subtype":
-                self._subtype = val
-            elif param == "coords":
-                self.coords = self._enforce_dataframe(
-                    coords,
-                    ("x", "y", "cw_friction"),
-                    )
+                    self._subtype = val
             else:
                 setattr(self, param, val)
+
+        if self._subtype == "CIRCULAR":
+            for param, val in {
+                "friction_eq": friction_eq,
+                "equation": equation,
+                "invert": invert,
+                "use_bottom_slot": use_bottom_slot,
+                "bottom_slot_dist": bottom_slot_dist,
+                "bottom_slot_depth": bottom_slot_depth,
+                "use_top_slot": use_top_slot,
+                "top_slot_dist": top_slot_dist,
+                "top_slot_depth": top_slot_depth,
+                "diameter": diameter,
+                "friction_above_axis": friction_above_axis,
+                "friction_below_axis": friction_below_axis,
+            }.items():
+                setattr(self, param, val)
+
+        elif self._subtype == "RECTANGULAR":
+            for param, val in {
+                "friction_eq": friction_eq,
+                "invert": invert,
+                "width": width,
+                "height": height,
+                "use_bottom_slot": use_bottom_slot,
+                "bottom_slot_dist": bottom_slot_dist,
+                "bottom_slot_depth": bottom_slot_depth,
+                "use_top_slot": use_top_slot,
+                "top_slot_dist": top_slot_dist,
+                "top_slot_depth": top_slot_depth,
+                "friction_on_invert": friction_on_invert,
+                "friction_on_walls": friction_on_walls,
+                "friction_on_soffit": friction_on_soffit,
+            }.items():
+                setattr(self, param, val)
+
+        elif self._subtype in ("SPRUNG", "SPRUNGARCH"):
+            for param, val in {
+                "equation": equation,
+                "elevation_invert": elevation_invert,
+                "width": width,
+                "height_springing": height_springing,
+                "height_crown": height_crown,
+                "use_bottom_slot": use_bottom_slot,
+                "bottom_slot_dist": bottom_slot_dist,
+                "bottom_slot_depth": bottom_slot_depth,
+                "use_top_slot": use_top_slot,
+                "top_slot_dist": top_slot_dist,
+                "top_slot_depth": top_slot_depth,
+                "friction_on_invert": friction_on_invert,
+                "friction_on_walls": friction_on_walls,
+                "friction_on_soffit": friction_on_soffit,
+            }.items():
+                setattr(self, param, val)
+
+        elif self._subtype == "SECTION":
+            self.coords = self._enforce_dataframe(
+                coords,
+                ("x", "y", "cw_friction"),
+                )
+
+
 
     def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
