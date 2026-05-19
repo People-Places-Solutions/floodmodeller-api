@@ -69,6 +69,7 @@ def test_partially_defined_unit():
     )
     pd.testing.assert_series_equal(expected, actual)
 
+
 def test_create_unit_from_blank():
     """Test to create units with no parameters or subtype specified."""
 
@@ -94,5 +95,38 @@ def test_create_unit_from_blank():
     messages = ("\n" + "\n".join(
     f"{unit_type}: {error}"
     for unit_type, error in errors.items()
+    ) + "\n")
+    assert errors == {}, messages
+
+
+def test_create_subtypes_from_blank():
+    """Test to create units with subtype specified but no parameters specified."""
+
+    errors = {}
+    for unit_type in units.SUPPORTED_UNIT_TYPES:
+
+        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"] is False:
+            continue
+
+        unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
+        unit = getattr(units, unit_type_safe)
+
+        # If the create_from_blank method is not implemented, move onto the next unit
+        try:
+            unit()._write()
+        except NotImplementedError:
+            continue
+
+        # For units with create_from_blank implemented, check through all subtypes
+        subtypes = units.SUPPORTED_UNIT_TYPES[unit_type]["subtypes"]
+        for subtype in subtypes:
+            try:
+                unit(subtype=subtype)._write()
+            except Exception as e:  # noqa: PERF203
+                errors[f"{unit_type} {subtype}"] = e
+
+    messages = ("\n" + "\n".join(
+    f"{unit_subtype}: {error}"
+    for unit_subtype, error in errors.items()
     ) + "\n")
     assert errors == {}, messages
