@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
+
 from __future__ import annotations
 
 import logging
@@ -126,7 +127,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank( # noqa: PLR0913
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_unit",
         spill="",
@@ -155,7 +156,6 @@ class CONDUIT(Unit):
         friction_below_axis=0.0,
         coords: pd.DataFrame | None = None,
     ):
-
         all_params = {
             "name": name,
             "spill": spill,
@@ -187,8 +187,12 @@ class CONDUIT(Unit):
         common_params = ["name", "spill", "comment", "dist_to_next", "subtype"]
 
         slot_params = [
-            "use_bottom_slot", "bottom_slot_dist", "bottom_slot_depth",
-            "use_top_slot", "top_slot_dist","top_slot_depth",
+            "use_bottom_slot",
+            "bottom_slot_dist",
+            "bottom_slot_depth",
+            "use_top_slot",
+            "top_slot_dist",
+            "top_slot_depth",
         ]
 
         subtype_params = {
@@ -199,7 +203,7 @@ class CONDUIT(Unit):
                 "diameter",
                 "friction_above_axis",
                 "friction_below_axis",
-                ],
+            ],
             "RECTANGULAR": [
                 "friction_eq",
                 "invert",
@@ -253,12 +257,11 @@ class CONDUIT(Unit):
                 self._subtype = all_params[param]
             elif param == "coords":
                 self.coords = self._enforce_dataframe(
-                coords,
-                ("x", "y", "cw_friction"),
+                    coords,
+                    ("x", "y", "cw_friction"),
                 )
             else:
                 setattr(self, param, all_params[param])
-
 
     def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""
