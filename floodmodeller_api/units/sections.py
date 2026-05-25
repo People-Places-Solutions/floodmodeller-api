@@ -88,29 +88,30 @@ class RIVER(Unit):
         data=None,
     ):
 
-        for param, val in {
-            "name": name,
-            "comment": comment,
-            "subtype": subtype,
-            "spill1": spill1,
-            "spill2": spill2,
-            "lat1": lat1,
-            "lat2": lat2,
-            "lat3": lat3,
-            "lat4": lat4,
-            "dist_to_next": dist_to_next,
-            "slope": slope,
-            "density": density,
-        }.items():
-            if param == "subtype":
-                    self._subtype = val
-            else:
-                setattr(self, param, val)
+        if subtype == "SECTION":
+            for param, val in {
+                "name": name,
+                "comment": comment,
+                "subtype": subtype,
+                "spill1": spill1,
+                "spill2": spill2,
+                "lat1": lat1,
+                "lat2": lat2,
+                "lat3": lat3,
+                "lat4": lat4,
+                "dist_to_next": dist_to_next,
+                "slope": slope,
+                "density": density,
+            }.items():
+                if param == "subtype":
+                        self._subtype = val
+                else:
+                    setattr(self, param, val)
 
-        self._data = self._enforce_dataframe(data, self._required_columns)
-        self._active_data = None
+            self._data = self._enforce_dataframe(data, self._required_columns)
+            self._active_data = None
 
-        if self._subtype != "SECTION":
+        else:
             # This else block is triggered for River subtypes which aren't yet supported
             logging.warning( 
                 "This River sub-type: '%s' is currently unsupported for reading/editing",

@@ -118,6 +118,9 @@ class CONDUIT(Unit):
 
     Args:
         coords (pd.DataFrame): Dataframe object containing all the conduit cross section data. Columns are ``'x', 'y', 'cw_friction'``
+
+    Returns:
+        CONDUIT: Flood Modeller CONDUIT Unit class object
     """
 
     _unit = "CONDUIT"

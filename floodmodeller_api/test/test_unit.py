@@ -119,8 +119,7 @@ def test_create_subtypes_from_blank():
         for subtype in subtypes:
             try:
                 if unit_type in flapped_units:
-                    unit(flapped=True)._write()
-                    unit(flapped=False)._write()
+                    unit(flapped=subtype=="FLAPPED")._write()
                 else:
                     unit(subtype=subtype)._write()
 

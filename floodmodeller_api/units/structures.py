@@ -1652,27 +1652,27 @@ class FLOODPLAIN(Unit):
         force_friction_flow=False,
         ds_area_constraint=0.1,
     ):
+        if subtype == "SECTION":
+            for param, val in {
+                "name": name,
+                "subtype": subtype,
+                "comment": comment,
+                "ds_label": ds_label,
+                "calibration_coefficient": calibration_coefficient,
+                "modular_limit": modular_limit,
+                "upstream_separation": upstream_separation,
+                "downstream_separation": downstream_separation,
+                "force_friction_flow": force_friction_flow,
+                "ds_area_constraint": ds_area_constraint,
+            }.items():
+                if param == "subtype":
+                        self._subtype = val
+                else:
+                    setattr(self, param, val)
 
-        for param, val in {
-            "name": name,
-            "subtype": subtype,
-            "comment": comment,
-            "ds_label": ds_label,
-            "calibration_coefficient": calibration_coefficient,
-            "modular_limit": modular_limit,
-            "upstream_separation": upstream_separation,
-            "downstream_separation": downstream_separation,
-            "force_friction_flow": force_friction_flow,
-            "ds_area_constraint": ds_area_constraint,
-        }.items():
-            if param == "subtype":
-                    self._subtype = val
-            else:
-                setattr(self, param, val)
+            self._data = self._enforce_dataframe(data, self._required_columns)
 
-        self._data = self._enforce_dataframe(data, self._required_columns)
-
-        if self._subtype != "SECTION":
+        else:
             # This else block is triggered for Floodplain subtypes which aren't yet supported
             logging.warning( 
                 "This River sub-type: '%s' is currently unsupported for reading/editing",
