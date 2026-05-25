@@ -33,9 +33,9 @@ from ._helpers import (
 
 
 class CONDUIT(Unit):
-    """The Conduit class supports two conduit sub-types in Flood Modeller: RECTANGULAR and CIRCULAR. Each of these sub-types forms
-    a unique instance of the class which is differentiated by the `CONDUIT.subtype` attribute. All conduit types have the same common
-    attributes:
+    """The Conduit class supports five conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH and SECTION (which
+    corresponds to Symmetrical Conduits). Each of these sub-types forms a unique instance of the class which is differentiated by the
+    `CONDUIT.subtype` attribute. All conduit types have the same common attributes:
 
     **Common Attributes**
 
@@ -117,14 +117,7 @@ class CONDUIT(Unit):
     **Section Type (``CONDUIT.subtype == 'SECTION'``)**
 
     Args:
-        None - common args attributes only
-
-    Raises:
-        NotImplementedError: Raised if class is initialised without existing Conduit block (i.e. if attempting to create new
-            Conduit unit). This will be an option for future releases
-
-    Returns:
-        CONDUIT: Flood Modeller CONDUIT Unit class object
+        coords (pd.DataFrame): Dataframe object containing all the conduit cross section data. Columns are ``'x', 'y', 'cw_friction'``
     """
 
     _unit = "CONDUIT"
