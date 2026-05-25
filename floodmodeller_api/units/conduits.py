@@ -129,7 +129,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank(  # noqa: PLR0913
+    def _create_from_blank(
         self,
         name="new_unit",
         spill="",
@@ -172,17 +172,22 @@ class CONDUIT(Unit):
             else:
                 setattr(self, param, val)
 
-        if self._subtype == "CIRCULAR":
+        if self._subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH"):
             for param, val in {
-                "friction_eq": friction_eq,
-                "equation": equation,
-                "invert": invert,
                 "use_bottom_slot": use_bottom_slot,
                 "bottom_slot_dist": bottom_slot_dist,
                 "bottom_slot_depth": bottom_slot_depth,
                 "use_top_slot": use_top_slot,
                 "top_slot_dist": top_slot_dist,
                 "top_slot_depth": top_slot_depth,
+            }.items():
+                setattr(self, param, val)
+
+        if self._subtype == "CIRCULAR":
+            for param, val in {
+                "friction_eq": friction_eq,
+                "equation": equation,
+                "invert": invert,
                 "diameter": diameter,
                 "friction_above_axis": friction_above_axis,
                 "friction_below_axis": friction_below_axis,
@@ -195,12 +200,6 @@ class CONDUIT(Unit):
                 "invert": invert,
                 "width": width,
                 "height": height,
-                "use_bottom_slot": use_bottom_slot,
-                "bottom_slot_dist": bottom_slot_dist,
-                "bottom_slot_depth": bottom_slot_depth,
-                "use_top_slot": use_top_slot,
-                "top_slot_dist": top_slot_dist,
-                "top_slot_depth": top_slot_depth,
                 "friction_on_invert": friction_on_invert,
                 "friction_on_walls": friction_on_walls,
                 "friction_on_soffit": friction_on_soffit,
@@ -214,12 +213,6 @@ class CONDUIT(Unit):
                 "width": width,
                 "height_springing": height_springing,
                 "height_crown": height_crown,
-                "use_bottom_slot": use_bottom_slot,
-                "bottom_slot_dist": bottom_slot_dist,
-                "bottom_slot_depth": bottom_slot_depth,
-                "use_top_slot": use_top_slot,
-                "top_slot_dist": top_slot_dist,
-                "top_slot_depth": top_slot_depth,
                 "friction_on_invert": friction_on_invert,
                 "friction_on_walls": friction_on_walls,
                 "friction_on_soffit": friction_on_soffit,
@@ -232,6 +225,12 @@ class CONDUIT(Unit):
                 ("x", "y", "cw_friction"),
                 )
 
+        else:
+            # This else block is triggered for conduit subtypes which aren't yet supported
+            logging.warning( 
+                "This Conduit sub-type: '%s' is currently unsupported for reading/editing",
+                self._subtype,
+            )
 
 
     def _read(self, c_block):  # noqa: PLR0915

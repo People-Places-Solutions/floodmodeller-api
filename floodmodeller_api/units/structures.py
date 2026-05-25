@@ -1673,7 +1673,7 @@ class FLOODPLAIN(Unit):
         self._data = self._enforce_dataframe(data, self._required_columns)
 
         if self._subtype != "SECTION":
-            # This else block is triggered for River subtypes which aren't yet supported
+            # This else block is triggered for Floodplain subtypes which aren't yet supported
             logging.warning( 
                 "This River sub-type: '%s' is currently unsupported for reading/editing",
                 self._subtype,
