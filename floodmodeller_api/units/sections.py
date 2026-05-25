@@ -74,6 +74,7 @@ class RIVER(Unit):
     def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_section",
+        subtype="SECTION",
         comment="",
         spill1="",
         spill2="",
@@ -86,12 +87,11 @@ class RIVER(Unit):
         density=1000.0,
         data=None,
     ):
-        # Initiate new SECTION (currently hardcoding this as default)
-        self._subtype = "SECTION"
 
         for param, val in {
             "name": name,
             "comment": comment,
+            "subtype": subtype,
             "spill1": spill1,
             "spill2": spill2,
             "lat1": lat1,
@@ -102,10 +102,20 @@ class RIVER(Unit):
             "slope": slope,
             "density": density,
         }.items():
-            setattr(self, param, val)
+            if param == "subtype":
+                    self._subtype = val
+            else:
+                setattr(self, param, val)
 
         self._data = self._enforce_dataframe(data, self._required_columns)
         self._active_data = None
+
+        if self._subtype != "SECTION":
+            # This else block is triggered for River subtypes which aren't yet supported
+            logging.warning( 
+                "This River sub-type: '%s' is currently unsupported for reading/editing",
+                self._subtype,
+            )
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""

@@ -1641,6 +1641,7 @@ class FLOODPLAIN(Unit):
     def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_floodp",
+        subtype="SECTION",
         comment="",
         ds_label="",
         data=None,
@@ -1651,11 +1652,10 @@ class FLOODPLAIN(Unit):
         force_friction_flow=False,
         ds_area_constraint=0.1,
     ):
-        # Initiate new FLOODPLAIN (currently hardcoding this as default)
-        self._subtype = "SECTION"
 
         for param, val in {
             "name": name,
+            "subtype": subtype,
             "comment": comment,
             "ds_label": ds_label,
             "calibration_coefficient": calibration_coefficient,
@@ -1665,9 +1665,19 @@ class FLOODPLAIN(Unit):
             "force_friction_flow": force_friction_flow,
             "ds_area_constraint": ds_area_constraint,
         }.items():
-            setattr(self, param, val)
+            if param == "subtype":
+                    self._subtype = val
+            else:
+                setattr(self, param, val)
 
         self._data = self._enforce_dataframe(data, self._required_columns)
+
+        if self._subtype != "SECTION":
+            # This else block is triggered for River subtypes which aren't yet supported
+            logging.warning( 
+                "This River sub-type: '%s' is currently unsupported for reading/editing",
+                self._subtype,
+            )
 
     @property
     def data(self) -> pd.DataFrame:

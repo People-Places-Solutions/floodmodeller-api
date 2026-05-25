@@ -102,6 +102,9 @@ def test_create_unit_from_blank():
 def test_create_subtypes_from_blank():
     """Test to create units with subtype specified but no parameters specified."""
 
+    # Units where the subtype is defined using the boolean argument "flapped"
+    flapped_units = ["ORIFICE", "OUTFALL"]
+
     errors = {}
     for unit_type in units.SUPPORTED_UNIT_TYPES:
 
@@ -111,20 +114,20 @@ def test_create_subtypes_from_blank():
         unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
         unit = getattr(units, unit_type_safe)
 
-        # If the create_from_blank method is not implemented, move onto the next unit
-        try:
-            unit()._write()
-        except NotImplementedError:
-            continue
-        except Exception:
-            pass
-
-        # For units with create_from_blank implemented, check through all subtypes
+        # For units which are supported, check through all subtypes
         subtypes = units.SUPPORTED_UNIT_TYPES[unit_type]["subtypes"]
         for subtype in subtypes:
             try:
-                unit(subtype=subtype)._write()
-            except Exception as e:  # noqa: PERF203
+                if unit_type in flapped_units:
+                    unit(flapped=True)._write()
+                    unit(flapped=False)._write()
+                else:
+                    unit(subtype=subtype)._write()
+
+            except NotImplementedError:  # noqa: PERF203
+                continue
+
+            except Exception as e:
                 errors[f"{unit_type} {subtype}"] = e
 
     messages = ("\n" + "\n".join(
