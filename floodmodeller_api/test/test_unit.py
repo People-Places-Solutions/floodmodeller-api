@@ -88,6 +88,8 @@ def test_create_unit_from_blank():
             # Create unit from blank and check the raw block can be written
             unit()._write()
         except NotImplementedError:
+            # Some unit classes intentionally do not implement blank _write() behavior.
+            # This test skips those and only records unexpected exceptions.
             pass
         except Exception as e:
             errors[unit_type] = e
