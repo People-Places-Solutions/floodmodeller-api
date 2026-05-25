@@ -92,10 +92,9 @@ def test_create_unit_from_blank():
         except Exception as e:
             errors[unit_type] = e
 
-    messages = ("\n" + "\n".join(
-    f"{unit_type}: {error}"
-    for unit_type, error in errors.items()
-    ) + "\n")
+    messages = (
+        "\n" + "\n".join(f"{unit_type}: {error}" for unit_type, error in errors.items()) + "\n"
+    )
     assert errors == {}, messages
 
 
@@ -107,7 +106,6 @@ def test_create_subtypes_from_blank():
 
     errors = {}
     for unit_type in units.SUPPORTED_UNIT_TYPES:
-
         if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"] is False:
             continue
 
@@ -119,7 +117,7 @@ def test_create_subtypes_from_blank():
         for subtype in subtypes:
             try:
                 if unit_type in flapped_units:
-                    unit(flapped=subtype=="FLAPPED")._write()
+                    unit(flapped=subtype == "FLAPPED")._write()
                 else:
                     unit(subtype=subtype)._write()
 
@@ -129,8 +127,9 @@ def test_create_subtypes_from_blank():
             except Exception as e:
                 errors[f"{unit_type} {subtype}"] = e
 
-    messages = ("\n" + "\n".join(
-    f"{unit_subtype}: {error}"
-    for unit_subtype, error in errors.items()
-    ) + "\n")
+    messages = (
+        "\n"
+        + "\n".join(f"{unit_subtype}: {error}" for unit_subtype, error in errors.items())
+        + "\n"
+    )
     assert errors == {}, messages

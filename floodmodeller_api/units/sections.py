@@ -87,7 +87,6 @@ class RIVER(Unit):
         density=1000.0,
         data=None,
     ):
-
         if subtype == "SECTION":
             for param, val in {
                 "name": name,
@@ -104,7 +103,7 @@ class RIVER(Unit):
                 "density": density,
             }.items():
                 if param == "subtype":
-                        self._subtype = val
+                    self._subtype = val
                 else:
                     setattr(self, param, val)
 
@@ -113,7 +112,7 @@ class RIVER(Unit):
 
         else:
             # This else block is triggered for River subtypes which aren't yet supported
-            logging.warning( 
+            logging.warning(
                 "This River sub-type: '%s' is currently unsupported for reading/editing",
                 self._subtype,
             )

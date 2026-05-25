@@ -1666,7 +1666,7 @@ class FLOODPLAIN(Unit):
                 "ds_area_constraint": ds_area_constraint,
             }.items():
                 if param == "subtype":
-                        self._subtype = val
+                    self._subtype = val
                 else:
                     setattr(self, param, val)
 
@@ -1674,7 +1674,7 @@ class FLOODPLAIN(Unit):
 
         else:
             # This else block is triggered for Floodplain subtypes which aren't yet supported
-            logging.warning( 
+            logging.warning(
                 "This River sub-type: '%s' is currently unsupported for reading/editing",
                 self._subtype,
             )

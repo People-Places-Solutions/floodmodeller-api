@@ -24,6 +24,7 @@ class SupportedUnitTypes(TypedDict):
     has_subtype: bool
     subtypes: list[str] | None
 
+
 class UnsupportedUnitTypes(TypedDict):
     group: str | None
     has_subtype: bool
@@ -34,107 +35,133 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "QTBDY": {
         "group": "boundaries",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "HTBDY": {
         "group": "boundaries",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "QHBDY": {
         "group": "boundaries",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "REFHBDY": {
         "group": "boundaries",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "RIVER": {
         "group": "sections",
         "has_subtype": True,
-        "subtypes": ["SECTION"]},
+        "subtypes": ["SECTION"],
+    },
     "BRIDGE": {
         "group": "structures",
         "has_subtype": True,
-        "subtypes": ["ARCH", "USBPR1978", "PIERLOSS", "INTEGRATED"]},
+        "subtypes": ["ARCH", "USBPR1978", "PIERLOSS", "INTEGRATED"],
+    },
     "CONDUIT": {
         "group": "conduits",
         "has_subtype": True,
-        "subtypes": ["CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "SECTION"]},
+        "subtypes": ["CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "SECTION"],
+    },
     "SLUICE": {
         "group": "structures",
         "has_subtype": True,
-        "subtypes": ["RADIAL", "VERTICAL"]},
+        "subtypes": ["RADIAL", "VERTICAL"],
+    },
     "ORIFICE": {
         "group": "structures",
         "has_subtype": True,
-        "subtypes": ["FLAPPED", "OPEN"]},
+        "subtypes": ["FLAPPED", "OPEN"],
+    },
     "SPILL": {
         "group": "structures",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "INITIAL CONDITIONS": {
         "group": "other",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "VARIABLES": {
         "group": "other",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "BLOCKAGE": {
         "group": "losses",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "CULVERT": {
         "group": "losses",
         "has_subtype": True,
-        "subtypes": ["INLET", "OUTLET"]},
+        "subtypes": ["INLET", "OUTLET"],
+    },
     "RNWEIR": {
         "group": "structures",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "WEIR": {
         "group": "structures",
         "has_subtype": False,
-        "subtypes": None},  # general weir
+        "subtypes": None,
+    },  # general weir
     "CRUMP": {
         "group": "structures",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "FLAT-V WEIR": {
         "group": "structures",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "INTERPOLATE": {
         "group": "sections",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "REPLICATE": {
         "group": "sections",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "OUTFALL": {
         "group": "structures",
         "has_subtype": True,
-        "subtypes": ["FLAPPED", "OPEN"]},
+        "subtypes": ["FLAPPED", "OPEN"],
+    },
     "COMMENT": {
         "group": "comments",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "JUNCTION": {
         "group": "connectors",
         "has_subtype": True,
-        "subtypes": ["OPEN"]},
+        "subtypes": ["OPEN"],
+    },
     "LATERAL": {
         "group": "connectors",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "RESERVOIR": {
         "group": "controls",
         "has_subtype": False,
-        "subtypes": None},
+        "subtypes": None,
+    },
     "FLOODPLAIN": {
         "group": "structures",
         "has_subtype": True,
-        "subtypes": ["SECTION"]},
+        "subtypes": ["SECTION"],
+    },
 }
 
 UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
