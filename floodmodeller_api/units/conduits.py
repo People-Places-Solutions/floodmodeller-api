@@ -237,12 +237,9 @@ class CONDUIT(Unit):
         }
 
         if subtype not in subtype_params:
-            # This else block is triggered for conduit subtypes which aren't yet supported
-            logging.warning(
-                "This Conduit sub-type: '%s' is currently unsupported for reading/editing",
-                self._subtype,
-            )
-            return
+            # This block is triggered for conduit subtypes which aren't yet supported
+            msg = f"This Conduit sub-type: '{subtype}' is currently unsupported for reading/editing"
+            raise NotImplementedError(msg)
 
         # Insert common attributes to the subtype parameter list
         subtype_params[subtype].extend(common_params)

@@ -111,11 +111,9 @@ class RIVER(Unit):
             self._active_data = None
 
         else:
-            # This else block is triggered for River subtypes which aren't yet supported
-            logging.warning(
-                "This River sub-type: '%s' is currently unsupported for reading/editing",
-                self._subtype,
-            )
+            # This block is triggered for River subtypes which aren't yet supported
+            msg = f"This River sub-type: '{subtype}' is currently unsupported for reading/editing"
+            raise NotImplementedError(msg)
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
