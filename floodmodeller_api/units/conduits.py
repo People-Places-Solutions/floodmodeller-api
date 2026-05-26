@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import logging
 
 import pandas as pd
@@ -33,9 +35,9 @@ from ._helpers import (
 
 
 class CONDUIT(Unit):
-    """The Conduit class supports two conduit sub-types in Flood Modeller: RECTANGULAR and CIRCULAR. Each of these sub-types forms
-    a unique instance of the class which is differentiated by the `CONDUIT.subtype` attribute. All conduit types have the same common
-    attributes:
+    """The Conduit class supports five conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH and SECTION (which
+    corresponds to Symmetrical Conduits). Each of these sub-types forms a unique instance of the class which is differentiated by the
+    `CONDUIT.subtype` attribute. All conduit types have the same common attributes:
 
     **Common Attributes**
 
@@ -117,11 +119,7 @@ class CONDUIT(Unit):
     **Section Type (``CONDUIT.subtype == 'SECTION'``)**
 
     Args:
-        None - common args attributes only
-
-    Raises:
-        NotImplementedError: Raised if class is initialised without existing Conduit block (i.e. if attempting to create new
-            Conduit unit). This will be an option for future releases
+        coords (pd.DataFrame): Dataframe object containing all the conduit cross section data. Columns are ``'x', 'y', 'cw_friction'``
 
     Returns:
         CONDUIT: Flood Modeller CONDUIT Unit class object
@@ -137,9 +135,13 @@ class CONDUIT(Unit):
         dist_to_next=0.0,
         subtype="SECTION",
         friction_eq="MANNING",
+        equation="MANNING",
         invert=0.0,
+        elevation_invert=0.0,
         width=0.0,
         height=0.0,
+        height_springing=0.0,
+        height_crown=0.0,
         use_bottom_slot="GLOBAL",
         bottom_slot_dist=0.0,
         bottom_slot_depth=0.0,
@@ -151,33 +153,112 @@ class CONDUIT(Unit):
         friction_on_soffit=0.0,
         diameter=0.0,
         friction_above_axis=0.0,
+        friction_below_axis=0.0,
+        coords: pd.DataFrame | None = None,
     ):
-        for param, val in {
+        all_params = {
             "name": name,
             "spill": spill,
             "comment": comment,
             "dist_to_next": dist_to_next,
             "subtype": subtype,
-            "friction_eq": friction_eq,
-            "invert": invert,
-            "width": width,
-            "height": height,
             "use_bottom_slot": use_bottom_slot,
             "bottom_slot_dist": bottom_slot_dist,
             "bottom_slot_depth": bottom_slot_depth,
             "use_top_slot": use_top_slot,
             "top_slot_dist": top_slot_dist,
             "top_slot_depth": top_slot_depth,
+            "friction_eq": friction_eq,
+            "equation": equation,
+            "invert": invert,
+            "diameter": diameter,
+            "friction_above_axis": friction_above_axis,
+            "friction_below_axis": friction_below_axis,
+            "width": width,
+            "height": height,
             "friction_on_invert": friction_on_invert,
             "friction_on_walls": friction_on_walls,
             "friction_on_soffit": friction_on_soffit,
-            "diameter": diameter,
-            "friction_above_axis": friction_above_axis,
-        }.items():
+            "elevation_invert": elevation_invert,
+            "height_springing": height_springing,
+            "height_crown": height_crown,
+        }
+
+        common_params = ["name", "spill", "comment", "dist_to_next", "subtype"]
+
+        slot_params = [
+            "use_bottom_slot",
+            "bottom_slot_dist",
+            "bottom_slot_depth",
+            "use_top_slot",
+            "top_slot_dist",
+            "top_slot_depth",
+        ]
+
+        subtype_params = {
+            "CIRCULAR": [
+                "friction_eq",
+                "equation",
+                "invert",
+                "diameter",
+                "friction_above_axis",
+                "friction_below_axis",
+            ],
+            "RECTANGULAR": [
+                "friction_eq",
+                "invert",
+                "width",
+                "height",
+                "friction_on_invert",
+                "friction_on_walls",
+                "friction_on_soffit",
+            ],
+            "SPRUNG": [
+                "equation",
+                "elevation_invert",
+                "width",
+                "height_springing",
+                "height_crown",
+                "friction_on_invert",
+                "friction_on_walls",
+                "friction_on_soffit",
+            ],
+            "SPRUNGARCH": [
+                "equation",
+                "elevation_invert",
+                "width",
+                "height_springing",
+                "height_crown",
+                "friction_on_invert",
+                "friction_on_walls",
+                "friction_on_soffit",
+            ],
+            "SECTION": ["coords"],
+        }
+
+        if subtype not in subtype_params:
+            # This block is triggered for conduit subtypes which aren't yet supported
+            msg = f"This Conduit sub-type: '{subtype}' is currently unsupported for reading/editing"
+            raise NotImplementedError(msg)
+
+        # Insert common attributes to the subtype parameter list
+        subtype_params[subtype].extend(common_params)
+
+        # Insert slot attributes to the required subtype
+        if subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH"):
+            subtype_params[subtype].extend(slot_params)
+
+        # Set attributes relevant to the specific conduit subtype
+        for param in subtype_params[subtype]:
             if param == "subtype":
-                self._subtype = val
+                self._subtype = all_params[param]
+            elif param == "coords":
+                self.coords = self._enforce_dataframe(
+                    coords,
+                    ("x", "y", "cw_friction"),
+                )
             else:
-                setattr(self, param, val)
+                setattr(self, param, all_params[param])
 
     def _read(self, c_block):  # noqa: PLR0915
         """Function to read a given CONDUIT block and store data as class attributes"""

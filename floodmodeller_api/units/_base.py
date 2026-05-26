@@ -142,7 +142,7 @@ class Unit(Jsonable):
             f"<floodmodeller_api Unit Class: {self._unit}(name={self._name}, type={self._subtype})>"
         )
 
-    def _create_from_blank(self):
+    def _create_from_blank(self, *args, **kwargs):
         msg = f"Creating new {self._unit} units is not yet supported by floodmodeller_api, only existing units can be read"
         raise NotImplementedError(msg)
 

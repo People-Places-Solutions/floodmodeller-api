@@ -81,7 +81,7 @@ class RESERVOIR(Unit):
 
     def _create_from_blank(  # noqa: PLR0913 (need that many)
         self,
-        name: str = "new_reservoir",
+        name: str = "new_res",
         comment: str = "",
         subtype: str = "OPEN",
         labels: list[str] | None = None,
