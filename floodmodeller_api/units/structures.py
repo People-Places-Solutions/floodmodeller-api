@@ -1109,7 +1109,7 @@ class RNWEIR(Unit):
             "upstream_crest_height": upstream_crest_height,
             "downstream_crest_height": downstream_crest_height,
             "weir_length": weir_length,
-            "wier_breadth": weir_breadth,
+            "weir_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
         }.items():
             setattr(self, param, val)
@@ -1183,7 +1183,7 @@ class WEIR(Unit):
         comment="",
         ds_label="",
         exponent=1.5,
-        discharge_coefficeient=1.0,
+        discharge_coefficient=1.0,
         velocity_coefficient=1.0,
         modular_limit=0.7,
         weir_length=0.0,
@@ -1195,11 +1195,11 @@ class WEIR(Unit):
             "comment": comment,
             "ds_label": ds_label,
             "exponent": exponent,
-            "discharge_coefficeient": discharge_coefficeient,
+            "discharge_coefficient": discharge_coefficient,
             "velocity_coefficient": velocity_coefficient,
             "modular_limit": modular_limit,
             "weir_length": weir_length,
-            "wier_breadth": weir_breadth,
+            "weir_breadth": weir_breadth,
             "weir_elevation": weir_elevation,
         }.items():
             setattr(self, param, val)
@@ -1640,7 +1640,8 @@ class FLOODPLAIN(Unit):
 
     def _create_from_blank(  # noqa: PLR0913
         self,
-        name="new_floodplain",
+        name="new_floodp",
+        subtype="SECTION",
         comment="",
         ds_label="",
         data=None,
@@ -1651,23 +1652,30 @@ class FLOODPLAIN(Unit):
         force_friction_flow=False,
         ds_area_constraint=0.1,
     ):
-        # Initiate new FLOODPLAIN (currently hardcoding this as default)
-        self._subtype = "SECTION"
+        if subtype == "SECTION":
+            for param, val in {
+                "name": name,
+                "subtype": subtype,
+                "comment": comment,
+                "ds_label": ds_label,
+                "calibration_coefficient": calibration_coefficient,
+                "modular_limit": modular_limit,
+                "upstream_separation": upstream_separation,
+                "downstream_separation": downstream_separation,
+                "force_friction_flow": force_friction_flow,
+                "ds_area_constraint": ds_area_constraint,
+            }.items():
+                if param == "subtype":
+                    self._subtype = val
+                else:
+                    setattr(self, param, val)
 
-        for param, val in {
-            "name": name,
-            "comment": comment,
-            "ds_label": ds_label,
-            "calibration_coefficient": calibration_coefficient,
-            "modular_limit": modular_limit,
-            "upstream_separation": upstream_separation,
-            "downstream_separation": downstream_separation,
-            "force_friction_flow": force_friction_flow,
-            "ds_area_constraint": ds_area_constraint,
-        }.items():
-            setattr(self, param, val)
+            self._data = self._enforce_dataframe(data, self._required_columns)
 
-        self._data = self._enforce_dataframe(data, self._required_columns)
+        else:
+            # This block is triggered for Floodplain subtypes which aren't yet supported
+            msg = f"This Floodplain sub-type: '{subtype}' is currently unsupported for reading/editing"
+            raise NotImplementedError(msg)
 
     @property
     def data(self) -> pd.DataFrame:
