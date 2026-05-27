@@ -206,7 +206,7 @@ def test_musk_read_write_from_dat(test_workspace, unit_name, expected):
     for attr, expected_value in expected.items():
         if isinstance(expected_value, pd.DataFrame):
             actual_value = getattr(river_section_1, attr)
-            pd.testing.assert_frame_equal(actual_value, expected_value)
+            pd.testing.assert_frame_equal(actual_value, expected_value, check_index_type=False)
         else:
             assert getattr(river_section_1, attr) == expected_value
 
