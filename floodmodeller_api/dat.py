@@ -84,7 +84,7 @@ class DAT(FMFile):
         if refresh:
             self._machine_name_index = {}
         else:
-            units = [unit for unit in units if not hasattr(unit, '_machine_name') or getattr(unit, '_machine_name', None) == None]
+            units = [unit for unit in units if not hasattr(unit, '_machine_name') or getattr(unit, '_machine_name', None) is None]
 
         for unit in units:
             parts = [unit.unit]
