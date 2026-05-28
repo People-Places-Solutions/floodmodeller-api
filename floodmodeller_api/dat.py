@@ -18,14 +18,18 @@ from __future__ import annotations
 
 from collections import defaultdict
 from pathlib import Path
+import re
 from typing import Any
 
 from . import units
 from ._base import FMFile
 from .units._base import Unit
 from .units._helpers import join_10_char, split_10_char, to_float, to_int
+from .units.units import ALL_UNIT_TYPES
 from .util import handle_exception
 from .validation.validation import _validate_unit
+
+_rev_0_general_header_test_re = re.compile(f'^{"|".join(ALL_UNIT_TYPES)}$')
 
 
 class DAT(FMFile):
@@ -326,13 +330,14 @@ class DAT(FMFile):
     def _create_from_blank(self, with_gxy: bool = False) -> None:
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
+        self._dat_revision = 1
         self._dat_struct: list[dict[str, Any]] = [
             {"start": 0, "Type": "GENERAL", "end": 6},
             {"Type": "INITIAL CONDITIONS", "start": 7, "end": 8},
         ]
         self._raw_data = [
             "",
-            "#REVISION#1",
+            f"#REVISION#{self._dat_revision}",
             "         0     0.750     0.900     0.100     0.001        12SI",
             "    10.000     0.010     0.010     0.700     0.100     0.700     0.000",
             "RAD FILE",
@@ -349,15 +354,22 @@ class DAT(FMFile):
             self._gxy_data = None
 
     def _get_general_parameters(self) -> None:
+        settings_line = 1
+        extra_settings_line = 2
+
+        if self._dat_revision > 0:
+            settings_line += 1
+            extra_settings_line += 1
+
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
-        line = f"{self._raw_data[2]:<70}"
+        line = f"{self._raw_data[settings_line]:<70}"
         params = split_10_char(line)
         if params[6] == "":
             # Adds the measurements unit as DEFAULT if not specified
             params[6] = "DEFAULT"
-        line = f"{self._raw_data[3]:<70}"
+        line = f"{self._raw_data[extra_settings_line]:<70}"
         params.extend(split_10_char(line))
 
         self.general_parameters["Node Count"] = to_int(params[0], 0)
@@ -660,18 +672,35 @@ class DAT(FMFile):
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
         unit_block: dict[str, Any] = {}
+        self._dat_revision = 0
+        is_at_end_of_general_header = self._dat_v0_end_general_header_test
+        revision_line_index = 1
 
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
             if in_general:
-                self._process_general_block(line, idx, general_block)
-                in_general = False if line == "END GENERAL" else in_general
-                continue
+                if idx == revision_line_index and line.upper().strip() == "#REVISION#1":
+                    self._dat_revision = 1
+                    is_at_end_of_general_header = self._dat_v1_end_general_header_test
+                    continue
+
+                if is_at_end_of_general_header(line):
+                    in_general = False
+                    self._dat_struct.append(general_block)
+                    if self._dat_revision == 0:
+                        general_block["end"] = idx - 1
+                        # we don't continue, because we're at a unit block's title. Let it proceed...
+                    else:
+                        general_block["end"] = idx
+                        continue
+                else:
+                    continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
+            
             if in_comment and comment_n is not None:
                 comment_n -= 1
                 if comment_n <= 0:
@@ -715,16 +744,11 @@ class DAT(FMFile):
 
         self._finalize_last_block(unit_block)
 
-    def _process_general_block(
-        self,
-        line: str,
-        idx: int,
-        general_block: dict[str, Any],
-    ) -> None:
-        # Deal with 'general' header
-        if line == "END GENERAL":
-            general_block["end"] = idx
-            self._dat_struct.append(general_block)
+    def _dat_v0_end_general_header_test(self, line: str):
+        return True if _rev_0_general_header_test_re.fullmatch(line.upper().strip()) else False
+
+    def _dat_v1_end_general_header_test(self, line: str):
+        return line.upper().strip() == "END GENERAL"
 
     def _identify_unit_type(self, line: str) -> str | None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
