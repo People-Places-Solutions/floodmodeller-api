@@ -56,6 +56,7 @@ class DAT(FMFile):
         with_gxy: bool = False,
         from_json: bool = False,
     ) -> None:
+        self._machine_name_index: dict[str, int] = {}
         if from_json:
             return
         if dat_filepath is not None:
@@ -69,6 +70,35 @@ class DAT(FMFile):
         self._get_unit_definitions()
         if self._gxy_data:
             self._get_unit_locations()
+    
+    
+    def machine_name_index(self):
+        return self._machine_name_index
+
+    def refresh_unit_machine_names(self):
+        self._update_unit_machine_names(True)
+
+    def _update_unit_machine_names(self, refresh: bool = False):
+        units = self._all_units
+        
+        if refresh:
+            self._machine_name_index = {}
+        else:
+            units = [unit for unit in units if not hasattr(unit, '_machine_name') or getattr(unit, '_machine_name', None) == None]
+
+        for unit in units:
+            parts = [unit.unit]
+            subtype = getattr(unit, 'subtype', None)
+            if subtype:
+                parts.append(subtype)
+            type_name = "_".join(parts)
+            
+            id = self._machine_name_index.get(type_name, 0)
+            id += 1
+            self._machine_name_index[type_name] = id
+            if hasattr(unit, "_machine_name"):
+                setattr(unit,  '_machine_name', f"{type_name}_{id}")
+            
 
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
@@ -542,6 +572,7 @@ class DAT(FMFile):
             elif unit_type not in ("GENERAL", "GISINFO"):
                 msg = f"Unexpected unit type encountered: {unit_type}"
                 raise Exception(msg)
+        self._update_unit_machine_names()
 
     def _get_unit_locations(self):
         # use gxy data to assign locations to units.
@@ -895,6 +926,7 @@ class DAT(FMFile):
             self.general_parameters["Node Count"] += 1  # flag no update for comments
 
         self._all_units.insert(insert_index, unit)
+        self._update_unit_machine_names()
         if not defer_update:
             self._update_raw_data()
             self._update_dat_struct()
@@ -1044,49 +1076,43 @@ class DAT(FMFile):
                 - A list of tuples, each containing two `Unit` objects representing
                   a directed edge."""
 
-        # collect all relevant units and labels
-        units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
-        label_lists = [list(unit.all_labels) for unit in units]
+        # collect all relevant units and labels        
+        start_list = [unit for unit in self._all_units if unit._unit != "COMMENT"]
+        end_list = []
+        unit_name_pairs =  set()
 
         # connect units for each label
-        label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
-        for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
-            in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
-            if in_reach:  # has implicit downstream labels
-                next_unit = units[idx + 1]
+        while any(start_list):
+            unit = start_list.pop(0)
+            end_list.append(unit)
 
-                if next_unit.name is None:
-                    msg = "Unit has no name."
-                    raise ValueError(msg)
+            attached_units = list(filter(lambda u: u.machine_name != unit.machine_name and u.all_labels & unit.all_labels, start_list))
 
-                end_of_reach = (
-                    (not hasattr(next_unit, "dist_to_next"))
-                    or (next_unit.dist_to_next == 0)
-                    or (not hasattr(units[idx + 2], "dist_to_next"))
-                )
+            if _is_directional_unit_flowing(unit):
+                directional_unit_list = [x for x in start_list if _is_directional_unit(x)]
+                if len(directional_unit_list) > 0:
+                    attached_units.insert(0, directional_unit_list[0])
 
-                if end_of_reach:
-                    renamed_label = next_unit.name + "_dummy"
-                    label_list.append(renamed_label)
-                    label_lists[idx + 1].append(renamed_label)  # why label_lists is made first
-                else:
-                    label_list.append(next_unit.name)
+            if len(attached_units) > 0:                
+                for attached_unit in attached_units:
+                    new_pair = tuple([unit.machine_name, attached_unit.machine_name])
+                    if new_pair not in unit_name_pairs:
+                        unit_name_pairs.add(new_pair)
+            else:
+                prev_captured = any(unit.machine_name in pair for pair in unit_name_pairs)
+                if not prev_captured:
+                    print(f"{unit.machine_name} ({unit.unit} {unit.subtype} {" ".join(unit.all_labels)}) is an orphan unit and not connected to anything.")
 
-            for label in label_list:
-                label_to_unit_list[label].append(unit)
+        lookup = { unit.machine_name: unit for unit in end_list }
+        unit_pairs = [
+            tuple(lookup[i] for i in pair) 
+            for pair in unit_name_pairs
+        ]
+        return end_list, unit_pairs
 
-        # check validity of network
-        units_per_edge = 2
-        invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
-        no_invalid_labels = len(invalid_labels)
-        no_labels = len(label_to_unit_list)
-        if no_invalid_labels > 0:
-            msg = (
-                "Unable to create a valid network with the current algorithm and/or data."
-                f" {no_invalid_labels}/{no_labels} labels do not join two units: {invalid_labels}."
-            )
-            raise RuntimeError(msg)
 
-        # the labels themselves are no longer needed
-        unit_pairs = [(unit_pair[0], unit_pair[1]) for unit_pair in label_to_unit_list.values()]
-        return units, unit_pairs
+def _is_directional_unit(src: Unit):
+    return hasattr(src, "dist_to_next")
+
+def _is_directional_unit_flowing(src: Unit):
+    return _is_directional_unit(src) and getattr(src, "dist_to_next") > 0.0

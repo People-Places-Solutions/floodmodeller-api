@@ -404,13 +404,6 @@ def test_valid_network(test_workspace: Path, expected_edges: list[tuple[str, str
     assert len(actual_nodes) == 86
 
 
-def test_invalid_network(test_workspace: Path):
-    """Test dat file that cannot be made into a valid network."""
-    dat = DAT(test_workspace / "All Units 4_6.DAT")
-    with pytest.raises(RuntimeError):
-        dat.get_network()
-
-
 def test_create_and_insert_connectors():
     dat = DAT()
     junction = JUNCTION(comment="hi", labels=["A", "B"])
@@ -458,12 +451,13 @@ def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
     assert len(dat._all_units) == 1
 
 
-def test_remove_unsupported_unit(test_workspace, unsupported_dummy_unit):
-    dat = DAT(test_workspace / "remove_dummy_test.dat")
+def test_remove_unsupported_unit(test_workspace):
+    dat = DAT(test_workspace / "remove_dummy_test.dat")    
     assert len(dat._all_units) == 1
     assert len(dat._dat_struct) == 3
     assert len(dat.initial_conditions.data) == 1
     assert "LBL001 (APITESTDUMMY)" in dat._unsupported
+    unsupported_dummy_unit = dat._all_units[0]
     dat.remove_unit(unsupported_dummy_unit)
     assert len(dat._all_units) == 0
     assert len(dat._dat_struct) == 2

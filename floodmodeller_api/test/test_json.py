@@ -97,12 +97,34 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
             json_dict_from_file = json.load(file)["Object Attributes"]
 
         # keys to ignore when testing for equivalence
-        keys_to_remove = ["_filepath", "file", "_log_path", "_gxy_filepath"]
-        for key in keys_to_remove:
-            json_dict_from_obj.pop(key, None)
-            json_dict_from_file.pop(key, None)
+        keys_to_remove = ["_filepath", "file", "_log_path", "_gxy_filepath", "_machine_name", "machine_name", "_machine_name_index", "machine_name_index"]
+        actual = remove_keys(json_dict_from_obj, keys_to_remove)
+        expected = remove_keys(json_dict_from_file, keys_to_remove)
+        
+        #
+        # Keeping to aid debugging
+        #
+        # with open(json_expected.with_stem(json_expected.stem.replace('_expected', '_actual')), 'w', encoding='utf-8') as file:
+        #     file.write(json.dumps(actual, separators=(",", ": "), indent=2, allow_nan=True))
+        # 
+        # with open(json_expected.with_stem(json_expected.stem.replace('_expected', '_revised')), 'w', encoding='utf-8') as file:
+        #     file.write(json.dumps(expected, separators=(",", ": "), indent=2, allow_nan=True))
+        #
 
-        assert json_dict_from_obj == json_dict_from_file, f"object not equal for {obj.filepath!s}"
+        assert actual == expected, f"object not equal for {obj.filepath!s}"
+
+
+def remove_keys(data: any, keys_to_remove: set) -> any:
+    if isinstance(data, dict):
+        new_dict = {}
+        for key, value in data.items():
+            if key not in keys_to_remove:
+                new_dict[key] = remove_keys(value, keys_to_remove)
+        return new_dict
+    elif isinstance(data, list):
+        return [remove_keys(item, keys_to_remove) for item in data]
+    
+    return data
 
 
 @pytest.mark.parametrize(
@@ -123,7 +145,10 @@ def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
         ".inp": INP,
     }[file_path.suffix.lower()]
 
-    assert api_class(file_path) == api_class.from_json(api_class(file_path).to_json())
+    expected = api_class(file_path)
+    result = api_class.from_json(expected.to_json())
+
+    assert result == expected
 
 
 @pytest.mark.parametrize(
