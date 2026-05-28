@@ -316,7 +316,7 @@ class RIVER(Unit):
     def _write_muskingum(self) -> list[str]:
         return [
             self._create_header(),
-            self.subtype,
+            self.subtype,  # type: ignore
             join_n_char_ljust(self._label_len, self.name),
             join_10_char(self.dist_to_next, self.bed_elevation),
             join_10_char(self.k, self.x),
@@ -383,7 +383,7 @@ class RIVER(Unit):
         ]
         riv_block.extend(self._write_musk_xsec_data())
         riv_block.extend(self._write_vq_data())
-        return riv_block
+        return riv_block  # type: ignore
 
     def _write_musk_xsec_data(self) -> list[str]:
         data = self._data.copy()
@@ -448,7 +448,7 @@ class RIVER(Unit):
         ]
         riv_block.extend(self._write_musk_vpmc_data())
         riv_block.extend(self._write_vq_data())
-        return riv_block
+        return riv_block  # type: ignore
 
     def _write_musk_vpmc_data(self) -> list[str]:
         return [
@@ -497,7 +497,7 @@ class RIVER(Unit):
     def _write_musk_rsec(self) -> list[str]:
         return [
             self._create_header(),
-            self.subtype,
+            self.subtype,  # type: ignore
             self._write_musk_labels(),
             join_10_char(self.dist_to_next, self.bed_elevation),
             "RIBAMAN",
@@ -591,6 +591,11 @@ class RIVER(Unit):
 
         return None
 
+    @location.setter
+    def location(self, new_value: tuple[float, float] | None) -> None:
+        msg = "Currently unit location is read-only."
+        raise NotImplementedError(msg)
+
     def _musk_xsec_location(self) -> tuple[float, float] | None:
         try:
             bed_points = self._data.loc[self._data["Marker"].str.upper() == "BED"]
@@ -611,11 +616,6 @@ class RIVER(Unit):
             pass
 
         return None
-
-    @location.setter
-    def location(self, new_value: tuple[float, float] | None) -> None:
-        msg = "Currently unit location is read-only."
-        raise NotImplementedError(msg)
 
     @property
     def data(self) -> pd.DataFrame:
