@@ -1105,7 +1105,8 @@ class DAT(FMFile):
                     if unit.subtype:
                         message += f" {unit.subtype}"
                     if unit.all_labels:
-                        message += f" {" ".join(str(x) for x in unit.all_labels)}"
+                        lbl_str = " ".join(str(x) for x in unit.all_labels)
+                        message += f" {lbl_str}"
                     message += ") is an orphan unit and not connected to anything."
                     print(message)
 
