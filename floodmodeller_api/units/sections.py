@@ -604,7 +604,10 @@ class RIVER(Unit):
             if location != (0, 0):
                 return location
         except (AttributeError, ValueError, IndexError):
-            logging.debug("Unable to derive MUSK-XSEC location from BED marker; falling back to Y-min row.", exc_info=True)
+            logging.debug(
+                "Unable to derive MUSK-XSEC location from BED marker; falling back to Y-min row.",
+                exc_info=True,
+            )
 
         try:
             min_idx = self._data.Y.idxmin()
@@ -614,7 +617,10 @@ class RIVER(Unit):
                 return location
         except (AttributeError, ValueError, IndexError):
             # Missing/invalid cross-section data: no resolvable fallback location from Y-min row.
-            logging.debug("Unable to derive MUSK-XSEC location from Y-min row; returning None.", exc_info=True)
+            logging.debug(
+                "Unable to derive MUSK-XSEC location from Y-min row; returning None.",
+                exc_info=True,
+            )
 
         return None
 
