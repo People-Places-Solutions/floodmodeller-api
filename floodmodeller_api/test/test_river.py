@@ -227,6 +227,22 @@ def test_non_cross_section_routing_location_is_none(test_workspace):
     assert unit.location is None
 
 
+def test_data_rejects_non_cross_section_subtypes(test_workspace):
+    unit = DAT(test_workspace / "All Units 4_6.DAT").sections["UNIT041"]
+
+    with pytest.raises(
+        NotImplementedError,
+        match="data is only available for RIVER SECTION and MUSK-XSEC units, not MUSKINGUM.",
+    ):
+        unit.data  # noqa: B018 (it's a property)
+
+    with pytest.raises(
+        NotImplementedError,
+        match="data is only available for RIVER SECTION and MUSK-XSEC units, not MUSKINGUM.",
+    ):
+        unit.data = pd.DataFrame()
+
+
 @pytest.mark.parametrize(
     ("river_unit_data", "expected_len"),
     river_unit_data_cases,

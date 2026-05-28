@@ -617,6 +617,12 @@ class RIVER(Unit):
             'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation',
             'SP. Marker'
         """
+        if self.subtype not in {"SECTION", "MUSK-XSEC"}:
+            msg = (
+                f"data is only available for RIVER SECTION and MUSK-XSEC units, not {self.subtype}."
+            )
+            raise NotImplementedError(msg)
+
         if self._active_data is None:
             return self._data
 
@@ -630,6 +636,12 @@ class RIVER(Unit):
 
     @data.setter
     def data(self, new_df: pd.DataFrame) -> None:
+        if self.subtype not in {"SECTION", "MUSK-XSEC"}:
+            msg = (
+                f"data is only available for RIVER SECTION and MUSK-XSEC units, not {self.subtype}."
+            )
+            raise NotImplementedError(msg)
+
         if not isinstance(new_df, pd.DataFrame):
             msg = "The updated data table for a cross section must be a pandas DataFrame."
             raise ValueError(msg)
