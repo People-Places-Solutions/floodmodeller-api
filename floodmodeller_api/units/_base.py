@@ -174,7 +174,7 @@ class Unit(Jsonable):
         result = True
         diff = []
         # Reset data attributes before checking equivalent
-        with contextlib.suppress(AttributeError):
+        with contextlib.suppress(AttributeError, NotImplementedError):
             _ = self.data, other.data
 
         result, diff = check_item_with_dataframe_equal(
