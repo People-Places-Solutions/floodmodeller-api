@@ -1101,7 +1101,13 @@ class DAT(FMFile):
             else:
                 prev_captured = any(unit.machine_name in pair for pair in unit_name_pairs)
                 if not prev_captured:
-                    print(f"{unit.machine_name} ({unit.unit} {unit.subtype} {" ".join(unit.all_labels)}) is an orphan unit and not connected to anything.")
+                    message = f"{unit.machine_name} ({unit.unit}"
+                    if unit.subtype:
+                        message += f" {unit.subtype}"
+                    if unit.all_labels:
+                        message += f" {" ".join(str(x) for x in unit.all_labels)}"
+                    message += ") is an orphan unit and not connected to anything."
+                    print(message)
 
         lookup = { unit.machine_name: unit for unit in end_list }
         unit_pairs = [
