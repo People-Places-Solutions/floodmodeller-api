@@ -211,6 +211,22 @@ def test_musk_read_write_from_dat(test_workspace, unit_name, expected):
             assert getattr(river_section_1, attr) == expected_value
 
 
+def test_active_data_rejects_non_section_subtypes(test_workspace):
+    unit = DAT(test_workspace / "All Units 4_6.DAT").sections["UNIT042"]
+
+    with pytest.raises(
+        NotImplementedError,
+        match="active_data is only available for RIVER SECTION units, not MUSK-XSEC.",
+    ):
+        unit.active_data  # noqa: B018 (it's a property)
+
+
+def test_non_cross_section_routing_location_is_none(test_workspace):
+    unit = DAT(test_workspace / "All Units 4_6.DAT").sections["UNIT041"]
+
+    assert unit.location is None
+
+
 @pytest.mark.parametrize(
     ("river_unit_data", "expected_len"),
     river_unit_data_cases,

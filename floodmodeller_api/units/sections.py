@@ -567,27 +567,11 @@ class RIVER(Unit):
         if self._location is not None:
             return self._location
 
+        if self.subtype == "SECTION":
+            return self._cross_section_location(self.active_data)
+
         if self.subtype == "MUSK-XSEC":
-            return self._musk_xsec_location()
-
-        try:
-            bed_rows = self.active_data["Marker"] == "BED"
-            bed_points = self.active_data.loc[bed_rows]
-            first_bed = bed_points[["Easting", "Northing"]].iloc[0]
-            location = (float(first_bed["Easting"]), float(first_bed["Northing"]))
-            if location != (0, 0):
-                return location
-        except (ValueError, IndexError):
-            pass
-
-        try:
-            min_idx = self.active_data.Y.idxmin()
-            min_row = self.active_data.loc[min_idx]
-            location = (float(min_row["Easting"]), float(min_row["Northing"]))
-            if location != (0, 0):
-                return location
-        except (ValueError, IndexError):
-            pass
+            return self._cross_section_location(self._data)
 
         return None
 
@@ -596,29 +580,29 @@ class RIVER(Unit):
         msg = "Currently unit location is read-only."
         raise NotImplementedError(msg)
 
-    def _musk_xsec_location(self) -> tuple[float, float] | None:
+    def _cross_section_location(self, data: pd.DataFrame) -> tuple[float, float] | None:
         try:
-            bed_points = self._data.loc[self._data["Marker"].str.upper() == "BED"]
+            bed_rows = data["Marker"].str.upper() == "BED"
+            bed_points = data.loc[bed_rows]
             first_bed = bed_points[["Easting", "Northing"]].iloc[0]
             location = (float(first_bed["Easting"]), float(first_bed["Northing"]))
             if location != (0, 0):
                 return location
         except (AttributeError, ValueError, IndexError):
             logging.debug(
-                "Unable to derive MUSK-XSEC location from BED marker; falling back to Y-min row.",
+                "Unable to derive RIVER location from BED marker; falling back to Y-min row.",
                 exc_info=True,
             )
 
         try:
-            min_idx = self._data.Y.idxmin()
-            min_row = self._data.loc[min_idx]
+            min_idx = data.Y.idxmin()
+            min_row = data.loc[min_idx]
             location = (float(min_row["Easting"]), float(min_row["Northing"]))
             if location != (0, 0):
                 return location
         except (AttributeError, ValueError, IndexError):
-            # Missing/invalid cross-section data: no resolvable fallback location from Y-min row.
             logging.debug(
-                "Unable to derive MUSK-XSEC location from Y-min row; returning None.",
+                "Unable to derive RIVER location from Y-min row; returning None.",
                 exc_info=True,
             )
 
@@ -711,6 +695,10 @@ class RIVER(Unit):
                 river_unit.data
                 river_unit.active_data
         """
+        if self.subtype != "SECTION":
+            msg = f"active_data is only available for RIVER SECTION units, not {self.subtype}."
+            raise NotImplementedError(msg)
+
         if self._active_data is not None:
             return self._active_data
         left_bank_idx, right_bank_idx = self._get_left_right_active_index()
@@ -719,6 +707,10 @@ class RIVER(Unit):
 
     @active_data.setter
     def active_data(self, new_df: pd.DataFrame) -> None:
+        if self.subtype != "SECTION":
+            msg = f"active_data is only available for RIVER SECTION units, not {self.subtype}."
+            raise NotImplementedError(msg)
+
         if not isinstance(new_df, pd.DataFrame):
             msg = "The updated data table for a cross section must be a pandas DataFrame."
             raise ValueError(msg)
