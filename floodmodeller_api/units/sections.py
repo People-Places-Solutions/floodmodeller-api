@@ -55,6 +55,7 @@ class RIVER(Unit):
         lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label.
         slope (float, optional): Slope used in normal depth calculations.
         density (float, optional): Density in kg/m3
+        nrows (int): Number of cross section data rows.
         data (pandas.Dataframe): Dataframe object containing the cross section data. Columns are ``'X'``, ``'Y'``,
             ``'Mannings n'``, ``'Panel'``, ``'RPL'``, ``'Marker'``, ``'Easting'``, ``'Northing'``,
             ``'Deactivation'`` and ``'SP. Marker'``.
@@ -77,6 +78,7 @@ class RIVER(Unit):
         min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
         max_flow (float): Maximum flow.
         low_flow_smoothing_factor (float): Low flow smoothing factor.
+        nrows (int): Number of cross section data rows.
         data (pandas.Dataframe): Dataframe object containing the cross section data. Columns are ``'X'``, ``'Y'``,
             ``'Mannings n'``, ``'Panel'``, ``'RPL'``, ``'Marker'``, ``'Easting'`` and ``'Northing'``.
 
@@ -89,6 +91,7 @@ class RIVER(Unit):
         slope (float): Slope.
         min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
         specified_discharge (float): Specified discharge.
+        nrows (int): Number of wavespeed data rows.
         wavespeed_data (pandas.Dataframe): Dataframe object containing the VPMC data. Columns are ``'Flow'``,
             ``'Wavespeed'``, ``'Attenuation'`` and ``'Water Level'``.
 
