@@ -116,16 +116,16 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path
     second_dat = DAT(second_dat_path)
 
     # compare that dat objects are equivalent
-    assert first_dat == second_dat, (
-        f"dat objects not equal for {original_dat_path=}\n{first_dat.diff(second_dat)}"
-    )
+    assert (
+        first_dat == second_dat
+    ), f"dat objects not equal for {original_dat_path=}\n{first_dat.diff(second_dat)}"
 
     second_write_output = second_dat._write()
 
     # compare that dat ._write() method outputs are equivalent
-    assert first_write_output == second_write_output, (
-        f"dat outputs not equal for {original_dat_path=}"
-    )
+    assert (
+        first_write_output == second_write_output
+    ), f"dat outputs not equal for {original_dat_path=}"
 
     # evaluate gxy if its there.
     gxy_path = original_dat_path.with_suffix(".gxy")
@@ -134,9 +134,9 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path
         assert second_gxy_path.exists(), f"updated .gxy not found when testing {original_dat_path=}"
 
         # note filecmp.cmp() doesnt work here because input/output data has different eol sequences.
-        assert gxy_path.read_text() == second_gxy_path.read_text(), (
-            f".gxy file content not identical for  {original_dat_path=}"
-        )
+        assert (
+            gxy_path.read_text() == second_gxy_path.read_text()
+        ), f".gxy file content not identical for  {original_dat_path=}"
 
     second_dat_path.unlink()
     if gxy_path.exists():
