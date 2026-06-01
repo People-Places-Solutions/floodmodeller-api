@@ -45,7 +45,6 @@ class RIVER(Unit):
     Args:
         name (str, optional): River unit name
         comment (str, optional): Comment included in unit
-        lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label
         dist_to_next (float, optional): Distance to next section in metres
         subtype (str): Defines the type of river unit (*Should not be changed*)
 
@@ -53,6 +52,7 @@ class RIVER(Unit):
 
     Args:
         spill1, spill2 (str, optional): Spill label
+        lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label.
         slope (float, optional): Slope used in normal depth calculations.
         density (float, optional): Density in kg/m3
         data (pandas.Dataframe): Dataframe object containing the cross section data. Columns are ``'X'``, ``'Y'``,
@@ -64,15 +64,16 @@ class RIVER(Unit):
 
     Args:
         bed_elevation (float): Bed elevation.
-        k (float): Muskingum travel time parameter.
-        x (float): Muskingum weighting factor.
+        k (float): Muskingum ``K`` parameter.
+        x (float): Muskingum ``X`` parameter.
 
     **Muskingum Cross Section Type (``RIVER.subtype == 'MUSK-XSEC'``)**
 
     Args:
         first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label.
         bed_elevation (float): Bed elevation.
-        slope (float): Channel slope.
+        slope (float): Slope.
         min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
         max_flow (float): Maximum flow.
         low_flow_smoothing_factor (float): Low flow smoothing factor.
@@ -83,8 +84,9 @@ class RIVER(Unit):
 
     Args:
         first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label.
         bed_elevation (float): Bed elevation.
-        slope (float): Channel slope.
+        slope (float): Slope.
         min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
         specified_discharge (float): Specified discharge.
         wavespeed_data (pandas.Dataframe): Dataframe object containing the VPMC data. Columns are ``'Flow'``,
@@ -94,13 +96,14 @@ class RIVER(Unit):
 
     Args:
         first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label.
         bed_elevation (float): Bed elevation.
         roughness_type (str): Roughness type.
         channel_roughness, floodplain_roughness (float): Channel and floodplain roughness values.
         channel_slope, floodplain_slope (float): Channel and floodplain slopes.
-        b1, b2, b3, b4 (float): Width parameters.
-        d1, d2, d3, d4 (float): Depth parameters.
-        vs (float): Section velocity.
+        b1, b2, b3, b4 (float): ``b`` parameters.
+        d1, d2, d3, d4 (float): ``d`` parameters.
+        vs (float): ``vs`` parameter.
         max_flow (float): Maximum flow.
         bankfull_proportion (float): Bankfull proportion.
 
@@ -110,6 +113,7 @@ class RIVER(Unit):
         vq_method (str): Velocity calculation method for Muskingum routing subtypes.
         min_velocity, flow_threshold, velocity_constant, velocity_exponent (float): Parameters used when
             ``vq_method == 'VQ POWER LAW'``.
+        vq_nrows (int): Number of velocity-flow rating rows used when ``vq_method == 'VQ RATING'``.
         vq_data (pandas.Dataframe): Velocity-flow rating data used when ``vq_method == 'VQ RATING'``. Columns are
             ``'Velocity'`` and ``'Flow'``.
 
