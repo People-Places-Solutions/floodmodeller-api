@@ -115,11 +115,11 @@ parameter_options = {
     },
     "slope": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "bed_elevation": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "min_subnodes": {
         "type": "type-match",
@@ -131,15 +131,15 @@ parameter_options = {
     },
     "max_flow": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "low_flow_smoothing_factor": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "specified_discharge": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "min_velocity": {
         "type": "type-match",
@@ -679,7 +679,7 @@ parameter_options = {
     },
     "bankfull_proportion": {
         "type": "type-match",
-        "options": (float, int, type(None)),
+        "options": (float, int),
     },
     "m": {
         "type": "type-match",
