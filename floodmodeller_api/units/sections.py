@@ -36,23 +36,85 @@ from .conveyance import calculate_cross_section_conveyance_cached
 
 
 class RIVER(Unit):
-    """Class to hold and process RIVER unit type. Currently only river units that are 'SECTION' types are supported.
-    Other river unit types such as Muskingham will be included in a future release.
+    """Class to hold and process RIVER unit type. The RIVER class supports five river sub-types in Flood Modeller:
+    SECTION, MUSKINGUM, MUSK-XSEC, MUSK-VPMC and MUSK-RSEC. Each of these sub-types forms a unique instance of the
+    class which is differentiated by the ``RIVER.subtype`` attribute.
+
+    **Common Attributes**
 
     Args:
-        name (str, optional): River section name
+        name (str, optional): River unit name
         comment (str, optional): Comment included in unit
-        data (pandas.Dataframe): Dataframe object containing all the cross section data as well as all other relevant data.
-            Columns are ``'X', 'Y', 'Mannings n', 'Panel', 'RPL', 'Marker', 'Easting', 'Northing', 'Deactivation', 'SP. Marker'``
-        spill1, spill2 (str, optional): Spill label
         lat1, lat2, lat3, lat4 (str, optional): Lateral inflow label
         dist_to_next (float, optional): Distance to next section in metres
-        slope (float, optional): Slope used in normal depth calculations
+        subtype (str): Defines the type of river unit (*Should not be changed*)
+
+    **Section Type (``RIVER.subtype == 'SECTION'``)**
+
+    Args:
+        spill1, spill2 (str, optional): Spill label
+        slope (float, optional): Slope used in normal depth calculations.
         density (float, optional): Density in kg/m3
+        data (pandas.Dataframe): Dataframe object containing the cross section data. Columns are ``'X'``, ``'Y'``,
+            ``'Mannings n'``, ``'Panel'``, ``'RPL'``, ``'Marker'``, ``'Easting'``, ``'Northing'``,
+            ``'Deactivation'`` and ``'SP. Marker'``.
+        active_data (pandas.Dataframe): Active subset of ``data`` between deactivation markers.
+
+    **Muskingum Type (``RIVER.subtype == 'MUSKINGUM'``)**
+
+    Args:
+        bed_elevation (float): Bed elevation.
+        k (float): Muskingum travel time parameter.
+        x (float): Muskingum weighting factor.
+
+    **Muskingum Cross Section Type (``RIVER.subtype == 'MUSK-XSEC'``)**
+
+    Args:
+        first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        bed_elevation (float): Bed elevation.
+        slope (float): Channel slope.
+        min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
+        max_flow (float): Maximum flow.
+        low_flow_smoothing_factor (float): Low flow smoothing factor.
+        data (pandas.Dataframe): Dataframe object containing the cross section data. Columns are ``'X'``, ``'Y'``,
+            ``'Mannings n'``, ``'Panel'``, ``'RPL'``, ``'Marker'``, ``'Easting'`` and ``'Northing'``.
+
+    **Muskingum VPMC Type (``RIVER.subtype == 'MUSK-VPMC'``)**
+
+    Args:
+        first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        bed_elevation (float): Bed elevation.
+        slope (float): Channel slope.
+        min_subnodes, max_subnodes (int): Minimum and maximum number of subnodes.
+        specified_discharge (float): Specified discharge.
+        wavespeed_data (pandas.Dataframe): Dataframe object containing the VPMC data. Columns are ``'Flow'``,
+            ``'Wavespeed'``, ``'Attenuation'`` and ``'Water Level'``.
+
+    **Muskingum RSEC Type (``RIVER.subtype == 'MUSK-RSEC'``)**
+
+    Args:
+        first_lateral_inflow_node, second_lateral_inflow_node (str, optional): Lateral inflow node labels.
+        bed_elevation (float): Bed elevation.
+        roughness_type (str): Roughness type.
+        channel_roughness, floodplain_roughness (float): Channel and floodplain roughness values.
+        channel_slope, floodplain_slope (float): Channel and floodplain slopes.
+        b1, b2, b3, b4 (float): Width parameters.
+        d1, d2, d3, d4 (float): Depth parameters.
+        vs (float): Section velocity.
+        max_flow (float): Maximum flow.
+        bankfull_proportion (float): Bankfull proportion.
+
+    **Velocity Method Attributes**
+
+    Args:
+        vq_method (str): Velocity calculation method for Muskingum routing subtypes.
+        min_velocity, flow_threshold, velocity_constant, velocity_exponent (float): Parameters used when
+            ``vq_method == 'VQ POWER LAW'``.
+        vq_data (pandas.Dataframe): Velocity-flow rating data used when ``vq_method == 'VQ RATING'``. Columns are
+            ``'Velocity'`` and ``'Flow'``.
 
     Raises:
-        NotImplementedError: Raised if class is initialised without existing river block (i.e. if attempting to create new River unit).
-            This will be an option for future releases
+        NotImplementedError: Raised if class is initialised from blank for unsupported river subtypes.
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object
