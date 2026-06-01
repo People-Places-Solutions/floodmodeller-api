@@ -97,16 +97,25 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
             json_dict_from_file = json.load(file)["Object Attributes"]
 
         # keys to ignore when testing for equivalence
-        keys_to_remove = ["_filepath", "file", "_log_path", "_gxy_filepath", "_machine_name", "machine_name", "_machine_name_index", "machine_name_index"]
+        keys_to_remove = [
+            "_filepath",
+            "file",
+            "_log_path",
+            "_gxy_filepath",
+            "_machine_name",
+            "machine_name",
+            "_machine_name_index",
+            "machine_name_index",
+        ]
         actual = remove_keys(json_dict_from_obj, keys_to_remove)
         expected = remove_keys(json_dict_from_file, keys_to_remove)
-        
+
         #
         # Keeping to aid debugging
         #
         # with open(json_expected.with_stem(json_expected.stem.replace('_expected', '_actual')), 'w', encoding='utf-8') as file:
         #     file.write(json.dumps(actual, separators=(",", ": "), indent=2, allow_nan=True))
-        # 
+        #
         # with open(json_expected.with_stem(json_expected.stem.replace('_expected', '_revised')), 'w', encoding='utf-8') as file:
         #     file.write(json.dumps(expected, separators=(",", ": "), indent=2, allow_nan=True))
         #
@@ -123,7 +132,7 @@ def remove_keys(data: any, keys_to_remove: set) -> any:
         return new_dict
     elif isinstance(data, list):
         return [remove_keys(item, keys_to_remove) for item in data]
-    
+
     return data
 
 

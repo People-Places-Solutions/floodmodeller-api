@@ -90,27 +90,27 @@ class Unit(Jsonable):
         label_lists = [getattr(self, x) for x in label_list_attrs if hasattr(self, x)]
 
         return (labels | set(chain(*label_lists))) - {""}
-    
+
     @property
     def machine_name(self) -> str:
         """
-        This is a unique name attributed to a unit by the encapsulating DAT class. 
-        As of Flood Modeller 7.4, unit specification written in .dat files don't specify 
-        unique names for unit instance; the DAT class takes responsibility for this job. 
-        Future versions of Flood Modeller may introduce a units unique name field but 
-        this disassociation with that work makes this machine_name property backwards 
-        compatible with older versions of Flood Modeller, and earlier revisions of the 
+        This is a unique name attributed to a unit by the encapsulating DAT class.
+        As of Flood Modeller 7.4, unit specification written in .dat files don't specify
+        unique names for unit instance; the DAT class takes responsibility for this job.
+        Future versions of Flood Modeller may introduce a units unique name field but
+        this disassociation with that work makes this machine_name property backwards
+        compatible with older versions of Flood Modeller, and earlier revisions of the
         DAT files.
 
         The Machine name is in a convenient format for legibility consisting
-        of the Unit's unit name, it's subtype, and the nth found of its type e.g. 
-        RIVER_SECTION_58 meaning the 58th river section in the dat file. Programatically 
-        adding or removing units does not effect the machine names of existing units, 
-        but new machine names will be applied as neccessary. It is possible to refresh 
-        the names by calling refresh_machines_name() from the DAT file. 
-        
-        The machine name is uniquely useful in identifying a node and is best used 
-        in scenarios where identifying nodes is key. Internally, it's used in building the 
+        of the Unit's unit name, it's subtype, and the nth found of its type e.g.
+        RIVER_SECTION_58 meaning the 58th river section in the dat file. Programatically
+        adding or removing units does not effect the machine names of existing units,
+        but new machine names will be applied as neccessary. It is possible to refresh
+        the names by calling refresh_machines_name() from the DAT file.
+
+        The machine name is uniquely useful in identifying a node and is best used
+        in scenarios where identifying nodes is key. Internally, it's used in building the
         graph network and identifying relationships (edges) between graph nodes.
         """
         return self._machine_name

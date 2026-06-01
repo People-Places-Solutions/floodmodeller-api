@@ -29,7 +29,7 @@ from .units.units import ALL_UNIT_TYPES
 from .util import handle_exception
 from .validation.validation import _validate_unit
 
-_rev_0_general_header_test_re = re.compile(f'^{"|".join(ALL_UNIT_TYPES)}$')
+_rev_0_general_header_test_re = re.compile(f"^{'|'.join(ALL_UNIT_TYPES)}$")
 
 
 class DAT(FMFile):
@@ -70,8 +70,7 @@ class DAT(FMFile):
         self._get_unit_definitions()
         if self._gxy_data:
             self._get_unit_locations()
-    
-    
+
     def machine_name_index(self):
         return self._machine_name_index
 
@@ -80,25 +79,29 @@ class DAT(FMFile):
 
     def _update_unit_machine_names(self, refresh: bool = False):
         units = self._all_units
-        
+
         if refresh:
             self._machine_name_index = {}
         else:
-            units = [unit for unit in units if not hasattr(unit, '_machine_name') or getattr(unit, '_machine_name', None) is None]
+            units = [
+                unit
+                for unit in units
+                if not hasattr(unit, "_machine_name")
+                or getattr(unit, "_machine_name", None) is None
+            ]
 
         for unit in units:
             parts = [unit.unit]
-            subtype = getattr(unit, 'subtype', None)
+            subtype = getattr(unit, "subtype", None)
             if subtype:
                 parts.append(subtype)
             type_name = "_".join(parts)
-            
+
             id = self._machine_name_index.get(type_name, 0)
             id += 1
             self._machine_name_index[type_name] = id
             if hasattr(unit, "_machine_name"):
-                setattr(unit,  '_machine_name', f"{type_name}_{id}")
-            
+                setattr(unit, "_machine_name", f"{type_name}_{id}")
 
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
@@ -731,7 +734,7 @@ class DAT(FMFile):
             if in_comment and comment_n is None:
                 comment_n = int(line.strip())
                 continue
-            
+
             if in_comment and comment_n is not None:
                 comment_n -= 1
                 if comment_n <= 0:
@@ -1076,24 +1079,30 @@ class DAT(FMFile):
                 - A list of tuples, each containing two `Unit` objects representing
                   a directed edge."""
 
-        # collect all relevant units and labels        
+        # collect all relevant units and labels
         start_list = [unit for unit in self._all_units if unit._unit != "COMMENT"]
         end_list = []
-        unit_name_pairs =  set()
+        unit_name_pairs = set()
 
         # connect units for each label
         while any(start_list):
             unit = start_list.pop(0)
             end_list.append(unit)
 
-            attached_units = list(filter(lambda u: u.machine_name != unit.machine_name and u.all_labels & unit.all_labels, start_list))
+            attached_units = list(
+                filter(
+                    lambda u: u.machine_name != unit.machine_name
+                    and u.all_labels & unit.all_labels,
+                    start_list,
+                )
+            )
 
             if _is_directional_unit_flowing(unit):
                 directional_unit_list = [x for x in start_list if _is_directional_unit(x)]
                 if len(directional_unit_list) > 0:
                     attached_units.insert(0, directional_unit_list[0])
 
-            if len(attached_units) > 0:                
+            if len(attached_units) > 0:
                 for attached_unit in attached_units:
                     new_pair = tuple([unit.machine_name, attached_unit.machine_name])
                     if new_pair not in unit_name_pairs:
@@ -1110,16 +1119,14 @@ class DAT(FMFile):
                     message += ") is an orphan unit and not connected to anything."
                     print(message)
 
-        lookup = { unit.machine_name: unit for unit in end_list }
-        unit_pairs = [
-            tuple(lookup[i] for i in pair) 
-            for pair in unit_name_pairs
-        ]
+        lookup = {unit.machine_name: unit for unit in end_list}
+        unit_pairs = [tuple(lookup[i] for i in pair) for pair in unit_name_pairs]
         return end_list, unit_pairs
 
 
 def _is_directional_unit(src: Unit):
     return hasattr(src, "dist_to_next")
+
 
 def _is_directional_unit_flowing(src: Unit):
     return _is_directional_unit(src) and getattr(src, "dist_to_next") > 0.0
