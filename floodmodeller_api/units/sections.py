@@ -104,9 +104,9 @@ class RIVER(Unit):
         roughness_type (str): Roughness type.
         channel_roughness, floodplain_roughness (float): Channel and floodplain roughness values.
         channel_slope, floodplain_slope (float): Channel and floodplain slopes.
-        b1, b2, b3, b4 (float): ``b`` parameters.
-        d1, d2, d3, d4 (float): ``d`` parameters.
-        vs (float): ``vs`` parameter.
+        b1, b2, b3, b4 (float): width parameters.
+        d1, d2, d3, d4 (float): depth parameters.
+        vs (float): valley side slope parameter.
         max_flow (float): Maximum flow.
         bankfull_proportion (float): Bankfull proportion.
 
