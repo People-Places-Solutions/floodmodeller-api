@@ -16,9 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from collections import defaultdict
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Any
 
 from . import units
@@ -90,6 +89,7 @@ class DAT(FMFile):
                 or getattr(unit, "_machine_name", None) is None
             ]
 
+        index = 0
         for unit in units:
             parts = [unit.unit]
             subtype = getattr(unit, "subtype", None)
@@ -97,11 +97,11 @@ class DAT(FMFile):
                 parts.append(subtype)
             type_name = "_".join(parts)
 
-            id = self._machine_name_index.get(type_name, 0)
-            id += 1
-            self._machine_name_index[type_name] = id
+            index = self._machine_name_index.get(type_name, 0)
+            index += 1
+            self._machine_name_index[type_name] = index
             if hasattr(unit, "_machine_name"):
-                setattr(unit, "_machine_name", f"{type_name}_{id}")
+                unit._machine_name = f"{type_name}_{index}"
 
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
@@ -694,7 +694,7 @@ class DAT(FMFile):
             return unit_data[2][: self._label_len].strip(), True
         return unit_data[1][: self._label_len].strip(), False
 
-    def _update_dat_struct(self) -> None:
+    def _update_dat_struct(self) -> None:  # noqa: C901, PLR0912, PLR0915
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
         """
@@ -709,6 +709,7 @@ class DAT(FMFile):
         self._dat_revision = 0
         is_at_end_of_general_header = self._dat_v0_end_general_header_test
         revision_line_index = 1
+        self._dat_struct.append(general_block)
 
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
@@ -718,33 +719,31 @@ class DAT(FMFile):
                     is_at_end_of_general_header = self._dat_v1_end_general_header_test
                     continue
 
-                if is_at_end_of_general_header(line):
-                    in_general = False
-                    self._dat_struct.append(general_block)
-                    if self._dat_revision == 0:
-                        general_block["end"] = idx - 1
-                        # we don't continue, because we're at a unit block's title. Let it proceed...
-                    else:
-                        general_block["end"] = idx
-                        continue
+                if not is_at_end_of_general_header(line):
+                    continue
+
+                in_general = False
+                if self._dat_revision == 0:
+                    general_block["end"] = idx - 1
+                    # we don't continue, because we're at a unit block's title. Let it proceed...
                 else:
+                    general_block["end"] = idx
                     continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
-            if in_comment and comment_n is None:
-                comment_n = int(line.strip())
-                continue
-
-            if in_comment and comment_n is not None:
-                comment_n -= 1
-                if comment_n <= 0:
-                    unit_block["end"] = idx + comment_n  # add ending index
-                    # append existing block to the dat_struct
-                    self._dat_struct.append(unit_block)
-                    unit_block = {}  # reset block
-                    in_comment = False
-                    in_block = False
-                    comment_n = None
+            if in_comment:
+                if comment_n is None:
+                    comment_n = int(line.strip())
+                else:
+                    comment_n -= 1
+                    if comment_n <= 0:
+                        unit_block["end"] = idx + comment_n  # add ending index
+                        # append existing block to the dat_struct
+                        self._dat_struct.append(unit_block)
+                        unit_block = {}  # reset block
+                        in_comment = False
+                        in_block = False
+                        comment_n = None
                 continue  # move onto next line as still in comment block
 
             if line == "COMMENT":
@@ -779,7 +778,7 @@ class DAT(FMFile):
         self._finalize_last_block(unit_block)
 
     def _dat_v0_end_general_header_test(self, line: str):
-        return True if _rev_0_general_header_test_re.fullmatch(line.upper().strip()) else False
+        return bool(_rev_0_general_header_test_re.fullmatch(line.upper().strip()))
 
     def _dat_v1_end_general_header_test(self, line: str):
         return line.upper().strip() == "END GENERAL"
@@ -1094,7 +1093,7 @@ class DAT(FMFile):
                     lambda u: u.machine_name != unit.machine_name
                     and u.all_labels & unit.all_labels,
                     start_list,
-                )
+                ),
             )
 
             if _is_directional_unit_flowing(unit):
@@ -1104,7 +1103,7 @@ class DAT(FMFile):
 
             if len(attached_units) > 0:
                 for attached_unit in attached_units:
-                    new_pair = tuple([unit.machine_name, attached_unit.machine_name])
+                    new_pair = (unit.machine_name, attached_unit.machine_name)
                     if new_pair not in unit_name_pairs:
                         unit_name_pairs.add(new_pair)
             else:
@@ -1117,7 +1116,6 @@ class DAT(FMFile):
                         lbl_str = " ".join(str(x) for x in unit.all_labels)
                         message += f" {lbl_str}"
                     message += ") is an orphan unit and not connected to anything."
-                    print(message)
 
         lookup = {unit.machine_name: unit for unit in end_list}
         unit_pairs = [tuple(lookup[i] for i in pair) for pair in unit_name_pairs]
@@ -1129,4 +1127,4 @@ def _is_directional_unit(src: Unit):
 
 
 def _is_directional_unit_flowing(src: Unit):
-    return _is_directional_unit(src) and getattr(src, "dist_to_next") > 0.0
+    return _is_directional_unit(src) and src.dist_to_next > 0.0
