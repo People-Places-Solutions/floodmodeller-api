@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
@@ -113,7 +113,7 @@ def test_to_json_matches_expected(parameterised_objs_and_expected: list[tuple[FM
         assert actual == expected, f"object not equal for {obj.filepath!s}"
 
 
-def _remove_keys(data: any, keys_to_remove: set) -> any:
+def _remove_keys(data: Any, keys_to_remove: list[str]) -> Any:
     if isinstance(data, dict):
         new_dict = {}
         for key, value in data.items():

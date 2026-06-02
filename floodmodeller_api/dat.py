@@ -1060,7 +1060,7 @@ class DAT(FMFile):
 
             self._gxy_data = self._gxy_data.replace(old, new)
 
-    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
+    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, ...]]]:
         """Generates a network representation of units and their connections.
 
         This method creates a directed network where nodes represent units
@@ -1080,7 +1080,7 @@ class DAT(FMFile):
 
         # collect all relevant units and labels
         start_list = [unit for unit in self._all_units if unit._unit != "COMMENT"]
-        end_list = []
+        end_list: list[Unit] = []
         unit_name_pairs = set()
 
         # connect units for each label
@@ -1127,4 +1127,4 @@ def _is_directional_unit(src: Unit):
 
 
 def _is_directional_unit_flowing(src: Unit):
-    return _is_directional_unit(src) and src.dist_to_next > 0.0
+    return hasattr(src, "dist_to_next") and src.dist_to_next > 0.0

@@ -92,7 +92,7 @@ class Unit(Jsonable):
         return (labels | set(chain(*label_lists))) - {""}
 
     @property
-    def machine_name(self) -> str:
+    def machine_name(self) -> str | None:
         """
         This is a unique name attributed to a unit by the encapsulating DAT class.
         As of Flood Modeller 7.4, unit specification written in .dat files don't specify
