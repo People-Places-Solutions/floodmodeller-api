@@ -16,6 +16,7 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -1067,13 +1068,13 @@ class DAT(FMFile):
         and edges represent labeled connections between them. The edges are
         directional, determined by the order of appearance in the `.dat` file.
 
-        Raises:
-            ValueError: If a unit has no name when an implicit label is assigned.
-            RuntimeError: If the constructed network contains labels that do not
-                form valid two-unit connections.
+        It's possible that the relationships defined by the edges define multiple
+        networks since it is possible for a dat file to define multiple networks.
+        Such models might have a 2D model which joins them together, but the 2D
+        model is not represented as a unit in the network graph.
 
         Returns:
-            tuple[list[Unit], list[tuple[Unit, Unit]]]:
+            tuple[list[Unit], list[tuple[Unit, ...]]]:
                 - A list of `Unit` objects representing the nodes.
                 - A list of tuples, each containing two `Unit` objects representing
                   a directed edge."""
@@ -1116,6 +1117,7 @@ class DAT(FMFile):
                         lbl_str = " ".join(str(x) for x in unit.all_labels)
                         message += f" {lbl_str}"
                     message += ") is an orphan unit and not connected to anything."
+                    logging.warning(message)
 
         lookup = {unit.machine_name: unit for unit in end_list}
         unit_pairs = [tuple(lookup[i] for i in pair) for pair in unit_name_pairs]
