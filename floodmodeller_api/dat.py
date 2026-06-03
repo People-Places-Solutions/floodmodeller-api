@@ -71,9 +71,6 @@ class DAT(FMFile):
         if self._gxy_data:
             self._get_unit_locations()
 
-    def machine_name_index(self):
-        return self._machine_name_index
-
     def refresh_unit_machine_names(self):
         self._update_unit_machine_names(True)
 
