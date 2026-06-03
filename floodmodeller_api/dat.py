@@ -368,7 +368,7 @@ class DAT(FMFile):
         ]
         self._raw_data = [
             "",
-            f"#REVISION#{self._dat_revision}",
+            f"#REVISION#{self._dat_revision}",  # this would not be valid with revision 0
             "         0     0.750     0.900     0.100     0.001        12SI",
             "    10.000     0.010     0.010     0.700     0.100     0.700     0.000",
             "RAD FILE",
