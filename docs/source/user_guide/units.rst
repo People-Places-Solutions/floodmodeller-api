@@ -114,6 +114,11 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.FLOODPLAIN
 
+``WEIR()``
+~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.WEIR
+
 .. _loss_units:
 
 Loss units
@@ -148,3 +153,20 @@ Control units
 ~~~~~~~~~~~~~~~
 
 .. autoclass:: floodmodeller_api.units.RESERVOIR
+
+Other units
+---------------
+``COMMENT()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.COMMENT
+
+``IIC()``
+~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.IIC
+
+``Variables()``
+~~~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.Variables
