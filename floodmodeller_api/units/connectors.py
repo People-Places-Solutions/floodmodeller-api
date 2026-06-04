@@ -6,9 +6,9 @@ from floodmodeller_api.validation import _validate_unit
 
 from ._base import Unit
 from ._helpers import (
-    join_12_char_ljust,
+    join_n_char_ljust,
     read_lateral_data,
-    split_12_char,
+    split_n_char,
     to_int,
     write_dataframe,
 )
@@ -33,8 +33,7 @@ class JUNCTION(Unit):
     def _read(self, block: list[str]) -> None:
         self.comment = self._remove_unit_name(block[0])
         self._subtype = self._get_first_word(block[1])
-        self.labels = split_12_char(block[2])
-
+        self.labels = split_n_char(block[2], self._label_len)
         self.name = self.labels[0]
 
     def _write(self) -> list[str]:
@@ -42,7 +41,7 @@ class JUNCTION(Unit):
         return [
             self._create_header(),
             self.subtype,  # type: ignore
-            join_12_char_ljust(*self.labels).rstrip(),
+            join_n_char_ljust(self._label_len, *self.labels).rstrip(),
         ]
 
     def _create_from_blank(

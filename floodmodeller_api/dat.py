@@ -16,7 +16,8 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 
 from __future__ import annotations
 
-from collections import defaultdict
+import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -24,8 +25,11 @@ from . import units
 from ._base import FMFile
 from .units._base import Unit
 from .units._helpers import join_10_char, split_10_char, to_float, to_int
+from .units.units import ALL_UNIT_TYPES
 from .util import handle_exception
 from .validation.validation import _validate_unit
+
+_rev_0_general_header_test_re = re.compile(f"^{'|'.join(ALL_UNIT_TYPES)}$")
 
 
 class DAT(FMFile):
@@ -52,6 +56,7 @@ class DAT(FMFile):
         with_gxy: bool = False,
         from_json: bool = False,
     ) -> None:
+        self._machine_name_index: dict[str, int] = {}
         if from_json:
             return
         if dat_filepath is not None:
@@ -65,6 +70,36 @@ class DAT(FMFile):
         self._get_unit_definitions()
         if self._gxy_data:
             self._get_unit_locations()
+
+    def refresh_unit_machine_names(self):
+        self._update_unit_machine_names(True)
+
+    def _update_unit_machine_names(self, refresh: bool = False):
+        units = self._all_units
+
+        if refresh:
+            self._machine_name_index = {}
+        else:
+            units = [
+                unit
+                for unit in units
+                if not hasattr(unit, "_machine_name")
+                or getattr(unit, "_machine_name", None) is None
+            ]
+
+        index = 0
+        for unit in units:
+            parts = [unit.unit]
+            subtype = getattr(unit, "subtype", None)
+            if subtype:
+                parts.append(subtype)
+            type_name = "_".join(parts)
+
+            index = self._machine_name_index.get(type_name, 0)
+            index += 1
+            self._machine_name_index[type_name] = index
+            if hasattr(unit, "_machine_name"):
+                unit._machine_name = f"{type_name}_{index}"
 
     def update(self) -> None:
         """Updates the existing DAT based on any altered attributes"""
@@ -326,13 +361,14 @@ class DAT(FMFile):
     def _create_from_blank(self, with_gxy: bool = False) -> None:
         # No filepath specified, create new 'blank' DAT in memory
         # ** Update these to have minimal data needed (general header, empty IC header)
+        self._dat_revision = 1
         self._dat_struct: list[dict[str, Any]] = [
             {"start": 0, "Type": "GENERAL", "end": 6},
             {"Type": "INITIAL CONDITIONS", "start": 7, "end": 8},
         ]
         self._raw_data = [
             "",
-            "#REVISION#1",
+            f"#REVISION#{self._dat_revision}",  # this would not be valid with revision 0
             "         0     0.750     0.900     0.100     0.001        12SI",
             "    10.000     0.010     0.010     0.700     0.100     0.700     0.000",
             "RAD FILE",
@@ -349,15 +385,22 @@ class DAT(FMFile):
             self._gxy_data = None
 
     def _get_general_parameters(self) -> None:
+        settings_line = 1
+        extra_settings_line = 2
+
+        if self._dat_revision > 0:
+            settings_line += 1
+            extra_settings_line += 1
+
         # ** Get general parameters here
         self.title = self._raw_data[0]
         self.general_parameters = {}
-        line = f"{self._raw_data[2]:<70}"
+        line = f"{self._raw_data[settings_line]:<70}"
         params = split_10_char(line)
         if params[6] == "":
             # Adds the measurements unit as DEFAULT if not specified
             params[6] = "DEFAULT"
-        line = f"{self._raw_data[3]:<70}"
+        line = f"{self._raw_data[extra_settings_line]:<70}"
         params.extend(split_10_char(line))
 
         self.general_parameters["Node Count"] = to_int(params[0], 0)
@@ -374,11 +417,19 @@ class DAT(FMFile):
         self.general_parameters["Pivotal Choice"] = to_float(params[11], 0.1)
         self.general_parameters["Under-relaxation"] = to_float(params[12], 0.7)
         self.general_parameters["Matrix Dummy"] = to_float(params[13], 0.0)
-        self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
+        self.general_parameters["RAD File"] = self._raw_data[5] if self._dat_revision > 0 else ""
 
     def _update_general_parameters(self) -> None:
+        settings_line = 1
+        extra_settings_line = 2
+
+        if self._dat_revision > 0:
+            settings_line += 1
+            extra_settings_line += 1
+
         self._raw_data[0] = self.title
-        self._raw_data[5] = self.general_parameters["RAD File"]
+        if self._dat_revision > 0:
+            self._raw_data[5] = self.general_parameters["RAD File"]
         general_params_1 = join_10_char(
             self.general_parameters["Node Count"],
             self.general_parameters["Lower Froude"],
@@ -388,7 +439,7 @@ class DAT(FMFile):
             self._label_len,
         )
         general_params_1 += self.general_parameters["Units"]
-        self._raw_data[2] = general_params_1
+        self._raw_data[settings_line] = general_params_1
 
         general_params_2 = join_10_char(
             self.general_parameters["Water Temperature"],
@@ -399,7 +450,7 @@ class DAT(FMFile):
             self.general_parameters["Under-relaxation"],
             self.general_parameters["Matrix Dummy"],
         )
-        self._raw_data[3] = general_params_2
+        self._raw_data[extra_settings_line] = general_params_2
 
     def _update_unit_names(self):
         for unit_group, unit_group_name in [
@@ -530,6 +581,7 @@ class DAT(FMFile):
             elif unit_type not in ("GENERAL", "GISINFO"):
                 msg = f"Unexpected unit type encountered: {unit_type}"
                 raise Exception(msg)
+        self._update_unit_machine_names()
 
     def _get_unit_locations(self):
         # use gxy data to assign locations to units.
@@ -648,7 +700,7 @@ class DAT(FMFile):
             return unit_data[2][: self._label_len].strip(), True
         return unit_data[1][: self._label_len].strip(), False
 
-    def _update_dat_struct(self) -> None:
+    def _update_dat_struct(self) -> None:  # noqa: C901, PLR0912, PLR0915
         """Internal method used to update self._dat_struct which details the overall structure of the dat file as a list of blocks, each of which
         are a dictionary containing the 'start', 'end' and 'type' of the block.
         """
@@ -660,28 +712,44 @@ class DAT(FMFile):
         gisinfo_block = False
         general_block = {"start": 0, "Type": "GENERAL"}
         unit_block: dict[str, Any] = {}
+        self._dat_revision = 0
+        is_at_end_of_general_header = self._dat_v0_end_general_header_test
+        revision_line_index = 1
+        self._dat_struct.append(general_block)
 
         for idx, line in enumerate(self._raw_data):
             # Deal with 'general' header
             if in_general:
-                self._process_general_block(line, idx, general_block)
-                in_general = False if line == "END GENERAL" else in_general
-                continue
+                if idx == revision_line_index and line.upper().strip() == "#REVISION#1":
+                    self._dat_revision = 1
+                    is_at_end_of_general_header = self._dat_v1_end_general_header_test
+                    continue
+
+                if not is_at_end_of_general_header(line):
+                    continue
+
+                in_general = False
+                if self._dat_revision == 0:
+                    general_block["end"] = idx - 1
+                    # we don't continue, because we're at a unit block's title. Let it proceed...
+                else:
+                    general_block["end"] = idx
+                    continue
 
             # Deal with comment blocks explicitly as they could contain unit keywords
-            if in_comment and comment_n is None:
-                comment_n = int(line.strip())
-                continue
-            if in_comment and comment_n is not None:
-                comment_n -= 1
-                if comment_n <= 0:
-                    unit_block["end"] = idx + comment_n  # add ending index
-                    # append existing block to the dat_struct
-                    self._dat_struct.append(unit_block)
-                    unit_block = {}  # reset block
-                    in_comment = False
-                    in_block = False
-                    comment_n = None
+            if in_comment:
+                if comment_n is None:
+                    comment_n = int(line.strip())
+                else:
+                    comment_n -= 1
+                    if comment_n <= 0:
+                        unit_block["end"] = idx + comment_n  # add ending index
+                        # append existing block to the dat_struct
+                        self._dat_struct.append(unit_block)
+                        unit_block = {}  # reset block
+                        in_comment = False
+                        in_block = False
+                        comment_n = None
                 continue  # move onto next line as still in comment block
 
             if line == "COMMENT":
@@ -715,16 +783,11 @@ class DAT(FMFile):
 
         self._finalize_last_block(unit_block)
 
-    def _process_general_block(
-        self,
-        line: str,
-        idx: int,
-        general_block: dict[str, Any],
-    ) -> None:
-        # Deal with 'general' header
-        if line == "END GENERAL":
-            general_block["end"] = idx
-            self._dat_struct.append(general_block)
+    def _dat_v0_end_general_header_test(self, line: str):
+        return bool(_rev_0_general_header_test_re.fullmatch(line.upper().strip()))
+
+    def _dat_v1_end_general_header_test(self, line: str):
+        return line.upper().strip() == "END GENERAL"
 
     def _identify_unit_type(self, line: str) -> str | None:
         # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
@@ -871,6 +934,7 @@ class DAT(FMFile):
             self.general_parameters["Node Count"] += 1  # flag no update for comments
 
         self._all_units.insert(insert_index, unit)
+        self._update_unit_machine_names()
         if not defer_update:
             self._update_raw_data()
             self._update_dat_struct()
@@ -1002,67 +1066,72 @@ class DAT(FMFile):
 
             self._gxy_data = self._gxy_data.replace(old, new)
 
-    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, Unit]]]:
+    def get_network(self) -> tuple[list[Unit], list[tuple[Unit, ...]]]:
         """Generates a network representation of units and their connections.
 
         This method creates a directed network where nodes represent units
         and edges represent labeled connections between them. The edges are
         directional, determined by the order of appearance in the `.dat` file.
 
-        Raises:
-            ValueError: If a unit has no name when an implicit label is assigned.
-            RuntimeError: If the constructed network contains labels that do not
-                form valid two-unit connections.
+        It's possible that the relationships defined by the edges define multiple
+        networks since it is possible for a dat file to define multiple networks.
+        Such models might have a 2D model which joins them together, but the 2D
+        model is not represented as a unit in the network graph.
 
         Returns:
-            tuple[list[Unit], list[tuple[Unit, Unit]]]:
+            tuple[list[Unit], list[tuple[Unit, ...]]]:
                 - A list of `Unit` objects representing the nodes.
                 - A list of tuples, each containing two `Unit` objects representing
                   a directed edge."""
 
         # collect all relevant units and labels
-        units = [unit for unit in self._all_units if unit._unit != "COMMENT"]
-        label_lists = [list(unit.all_labels) for unit in units]
+        start_list = [unit for unit in self._all_units if unit._unit != "COMMENT"]
+        end_list: list[Unit] = []
+        unit_name_pairs = set()
 
         # connect units for each label
-        label_to_unit_list: dict[str, list[Unit]] = defaultdict(list)
-        for idx, (unit, label_list) in enumerate(zip(units, label_lists)):
-            in_reach = hasattr(unit, "dist_to_next") and unit.dist_to_next > 0
-            if in_reach:  # has implicit downstream labels
-                next_unit = units[idx + 1]
+        while any(start_list):
+            unit = start_list.pop(0)
+            end_list.append(unit)
 
-                if next_unit.name is None:
-                    msg = "Unit has no name."
-                    raise ValueError(msg)
-
-                end_of_reach = (
-                    (not hasattr(next_unit, "dist_to_next"))
-                    or (next_unit.dist_to_next == 0)
-                    or (not hasattr(units[idx + 2], "dist_to_next"))
-                )
-
-                if end_of_reach:
-                    renamed_label = next_unit.name + "_dummy"
-                    label_list.append(renamed_label)
-                    label_lists[idx + 1].append(renamed_label)  # why label_lists is made first
-                else:
-                    label_list.append(next_unit.name)
-
-            for label in label_list:
-                label_to_unit_list[label].append(unit)
-
-        # check validity of network
-        units_per_edge = 2
-        invalid_labels = [k for k, v in label_to_unit_list.items() if len(v) != units_per_edge]
-        no_invalid_labels = len(invalid_labels)
-        no_labels = len(label_to_unit_list)
-        if no_invalid_labels > 0:
-            msg = (
-                "Unable to create a valid network with the current algorithm and/or data."
-                f" {no_invalid_labels}/{no_labels} labels do not join two units: {invalid_labels}."
+            attached_units = list(
+                filter(
+                    lambda u: u.machine_name != unit.machine_name
+                    and u.all_labels & unit.all_labels,
+                    start_list,
+                ),
             )
-            raise RuntimeError(msg)
 
-        # the labels themselves are no longer needed
-        unit_pairs = [(unit_pair[0], unit_pair[1]) for unit_pair in label_to_unit_list.values()]
-        return units, unit_pairs
+            if _is_directional_unit_flowing(unit):
+                directional_unit_list = [x for x in start_list if _is_directional_unit(x)]
+                if len(directional_unit_list) > 0:
+                    attached_units.insert(0, directional_unit_list[0])
+
+            if len(attached_units) > 0:
+                for attached_unit in attached_units:
+                    new_pair = (unit.machine_name, attached_unit.machine_name)
+                    if new_pair not in unit_name_pairs:
+                        unit_name_pairs.add(new_pair)
+            else:
+                prev_captured = any(unit.machine_name in pair for pair in unit_name_pairs)
+                if not prev_captured:
+                    message = f"{unit.machine_name} ({unit.unit}"
+                    if unit.subtype:
+                        message += f" {unit.subtype}"
+                    if unit.all_labels:
+                        lbl_str = " ".join(str(x) for x in unit.all_labels)
+                        message += f" {lbl_str}"
+                    message += ") is an orphan unit and not connected to anything."
+                    logging.warning(message)
+
+        lookup = {unit.machine_name: unit for unit in end_list}
+        unit_pairs = [tuple(lookup[i] for i in pair) for pair in unit_name_pairs]
+        return end_list, unit_pairs
+
+
+def _is_directional_unit(src: Unit):
+    return hasattr(src, "dist_to_next")
+
+
+def _is_directional_unit_flowing(src: Unit):
+    return hasattr(src, "dist_to_next") and src.dist_to_next > 0.0

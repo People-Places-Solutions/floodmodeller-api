@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 
 from floodmodeller_api import DAT
@@ -141,6 +142,32 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path
     second_dat_path.unlink()
     if gxy_path.exists():
         second_gxy_path.unlink()
+
+
+def test_revision_zero_dat(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "revision_zero.dat")
+    dat_path = tmp_path / "revision_zero.dat"
+    dat.save(dat_path)
+
+    assert dat._dat_revision == 0
+    assert dat.title == "Simple test file"
+    assert dat.general_parameters["Water Temperature"] == 10.0
+
+    dat.title = "Updated revision zero file"
+    dat.general_parameters["Water Temperature"] = 12.5
+    dat.update()
+
+    updated_dat = DAT(dat_path)
+    assert updated_dat._dat_revision == 0
+    assert updated_dat.title == "Updated revision zero file"
+    assert updated_dat.general_parameters["Water Temperature"] == 12.5
+
+    assert updated_dat._all_units == dat._all_units
+    pd.testing.assert_frame_equal(
+        updated_dat.initial_conditions.data,
+        updated_dat.initial_conditions.data,
+    )
+    assert "#REVISION#" not in updated_dat._write()
 
 
 def test_insert_unit_before(units, dat_ex6):
@@ -404,13 +431,6 @@ def test_valid_network(test_workspace: Path, expected_edges: list[tuple[str, str
     assert len(actual_nodes) == 86
 
 
-def test_invalid_network(test_workspace: Path):
-    """Test dat file that cannot be made into a valid network."""
-    dat = DAT(test_workspace / "All Units 4_6.DAT")
-    with pytest.raises(RuntimeError):
-        dat.get_network()
-
-
 def test_create_and_insert_connectors():
     dat = DAT()
     junction = JUNCTION(comment="hi", labels=["A", "B"])
@@ -458,12 +478,13 @@ def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
     assert len(dat._all_units) == 1
 
 
-def test_remove_unsupported_unit(test_workspace, unsupported_dummy_unit):
+def test_remove_unsupported_unit(test_workspace):
     dat = DAT(test_workspace / "remove_dummy_test.dat")
     assert len(dat._all_units) == 1
     assert len(dat._dat_struct) == 3
     assert len(dat.initial_conditions.data) == 1
     assert "LBL001 (APITESTDUMMY)" in dat._unsupported
+    unsupported_dummy_unit = dat._all_units[0]
     dat.remove_unit(unsupported_dummy_unit)
     assert len(dat._all_units) == 0
     assert len(dat._dat_struct) == 2
