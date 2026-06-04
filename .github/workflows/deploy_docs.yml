@@ -20,7 +20,7 @@ jobs:
     - name: Check out the repository
       uses: actions/checkout@v2
       with:
-        ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+        ref: main
 
     - name: Set up Python ${{ env.PYTHON_VERSION }}
       uses: actions/setup-python@v5
