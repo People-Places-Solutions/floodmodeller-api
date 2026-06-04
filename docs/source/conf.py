@@ -15,17 +15,17 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path("..\\..").resolve()))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 
 # -- Project information -----------------------------------------------------
 
 project = "Flood Modeller Python API"
 project_copyright = "2025, Jacobs"
-author = "Joe Pierce"
+author = "Jacobs"
 
 # The full version, including alpha/beta/rc tags
-release = "0.5.0"
+release = "0.5.7"
 
 
 # -- General configuration ---------------------------------------------------
@@ -61,6 +61,7 @@ html_theme = "pydata_sphinx_theme"
 html_logo = "_static/flood-modeller-logo-hero-image.png"
 html_theme_options = {
     "navbar_end": ["search-field.html"],  # ["navbar-icon-links.html", "search-field.html"],
+    "navigation_with_keys": False,
     "icon_links": [
         {
             "name": "GitHub",
@@ -88,7 +89,9 @@ html_theme_options = {
             "icon": "fab fa-linkedin",
         },
     ],
-    "footer_items": ["footer_links", "icon-links", "copyright", "sphinx-version"],
+    "footer_start": ["footer_links"],
+    "footer_center": ["icon-links"],
+    "footer_end": ["copyright", "sphinx-version"],
 }
 
 html_favicon = "_static/fm_fav.png"
