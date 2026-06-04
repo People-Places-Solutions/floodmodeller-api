@@ -33,10 +33,12 @@ _rev_0_general_header_test_re = re.compile(f"^{'|'.join(ALL_UNIT_TYPES)}$")
 
 
 class DAT(FMFile):
-    """Reads and write Flood Modeller datafile format '.dat'
+    """Reads and writes Flood Modeller datafile format '.dat'
 
     Args:
         dat_filepath (str, optional): Full filepath to dat file. If not specified, a new DAT class will be created. Defaults to None.
+        with_gxy (bool, optional): Create an empty GXY when creating a new DAT in memory. Defaults to False.
+        from_json (bool, optional): Internal flag used when rebuilding a DAT from JSON. Defaults to False.
 
     Output:
         Initiates 'DAT' class object
@@ -896,6 +898,7 @@ class DAT(FMFile):
             add_after (Unit): FloodModeller unit to add after.
             add_at (integer): Positional argument (starting at 0) of where to add in
                 the dat file. To add at the end of the network you can use -1.
+            defer_update (bool): If True, defer rebuilding the DAT structure until a later update.
 
         Raises:
             SyntaxError: Raised if no positional argument is given.
