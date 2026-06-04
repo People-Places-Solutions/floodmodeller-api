@@ -511,7 +511,7 @@ class ZZX(_ZZ):
         Args:
             save_location (str, optional): {default} | folder or file path
                 Full or relative path to folder or csv file to save output csv,
-                if no argument given or if set to 'default' then CSV will be saved in same location as ZZN file.
+                if no argument given or if set to 'default' then CSV will be saved in same location as ZZX file.
                 Defaults to 'default'.
             result_type (str, optional): {all} | max | min
                 Define whether to output all timesteps or just max/min results. Defaults to 'all'.
