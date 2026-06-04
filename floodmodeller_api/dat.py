@@ -417,11 +417,19 @@ class DAT(FMFile):
         self.general_parameters["Pivotal Choice"] = to_float(params[11], 0.1)
         self.general_parameters["Under-relaxation"] = to_float(params[12], 0.7)
         self.general_parameters["Matrix Dummy"] = to_float(params[13], 0.0)
-        self.general_parameters["RAD File"] = self._raw_data[5]  # No default, optional
+        self.general_parameters["RAD File"] = self._raw_data[5] if self._dat_revision > 0 else ""
 
     def _update_general_parameters(self) -> None:
+        settings_line = 1
+        extra_settings_line = 2
+
+        if self._dat_revision > 0:
+            settings_line += 1
+            extra_settings_line += 1
+
         self._raw_data[0] = self.title
-        self._raw_data[5] = self.general_parameters["RAD File"]
+        if self._dat_revision > 0:
+            self._raw_data[5] = self.general_parameters["RAD File"]
         general_params_1 = join_10_char(
             self.general_parameters["Node Count"],
             self.general_parameters["Lower Froude"],
@@ -431,7 +439,7 @@ class DAT(FMFile):
             self._label_len,
         )
         general_params_1 += self.general_parameters["Units"]
-        self._raw_data[2] = general_params_1
+        self._raw_data[settings_line] = general_params_1
 
         general_params_2 = join_10_char(
             self.general_parameters["Water Temperature"],
@@ -442,7 +450,7 @@ class DAT(FMFile):
             self.general_parameters["Under-relaxation"],
             self.general_parameters["Matrix Dummy"],
         )
-        self._raw_data[3] = general_params_2
+        self._raw_data[extra_settings_line] = general_params_2
 
     def _update_unit_names(self):
         for unit_group, unit_group_name in [

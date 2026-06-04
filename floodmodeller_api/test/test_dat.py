@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 
 from floodmodeller_api import DAT
@@ -141,6 +142,32 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path
     second_dat_path.unlink()
     if gxy_path.exists():
         second_gxy_path.unlink()
+
+
+def test_revision_zero_dat(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "revision_zero.dat")
+    dat_path = tmp_path / "revision_zero.dat"
+    dat.save(dat_path)
+
+    assert dat._dat_revision == 0
+    assert dat.title == "Simple test file"
+    assert dat.general_parameters["Water Temperature"] == 10.0
+
+    dat.title = "Updated revision zero file"
+    dat.general_parameters["Water Temperature"] = 12.5
+    dat.update()
+
+    updated_dat = DAT(dat_path)
+    assert updated_dat._dat_revision == 0
+    assert updated_dat.title == "Updated revision zero file"
+    assert updated_dat.general_parameters["Water Temperature"] == 12.5
+
+    assert updated_dat._all_units == dat._all_units
+    pd.testing.assert_frame_equal(
+        updated_dat.initial_conditions.data,
+        updated_dat.initial_conditions.data,
+    )
+    assert "#REVISION#" not in updated_dat._write()
 
 
 def test_insert_unit_before(units, dat_ex6):
