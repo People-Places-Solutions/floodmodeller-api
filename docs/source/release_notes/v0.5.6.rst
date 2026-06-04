@@ -1,0 +1,23 @@
+**********************************
+What's new in 0.5.6 (April 2026)
+**********************************
+
+This page details the changes for version 0.5.6 of Flood Modeller API
+
+New features
+---------------
+- `Add functionality to parse IEF parameters <https://github.com/People-Places-Solutions/floodmodeller-api/pull/231>`_
+- `Implement ability to change schema version on the fly <https://github.com/People-Places-Solutions/floodmodeller-api/pull/241>`_
+
+Updates
+-----------
+- `Test parameterisation update <https://github.com/People-Places-Solutions/floodmodeller-api/pull/227>`_
+- `Upload test data with all non-default general system parameters <https://github.com/People-Places-Solutions/floodmodeller-api/pull/232>`_
+- `Update XML schema version in xml2d_template.py <https://github.com/People-Places-Solutions/floodmodeller-api/pull/239>`_
+- `Update email <https://github.com/People-Places-Solutions/floodmodeller-api/pull/243>`_
+
+Bug fixes
+------------
+- `Fix typo <https://github.com/People-Places-Solutions/floodmodeller-api/pull/226>`_
+- `Initial attempt at fix <https://github.com/People-Places-Solutions/floodmodeller-api/pull/240>`_
+- `Fix GXY data parsing in _get_unit_locations method <https://github.com/People-Places-Solutions/floodmodeller-api/pull/247>`_
