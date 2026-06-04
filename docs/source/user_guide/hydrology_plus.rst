@@ -1,3 +1,11 @@
+.. ifconfig:: internal
+
+   .. ipython:: python
+
+      import os
+      os.chdir("floodmodeller_api/test/test_data")
+      import floodmodeller_api
+
 .. _hplus:
 
 Hydrology+ 
