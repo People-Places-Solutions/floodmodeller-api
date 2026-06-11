@@ -54,11 +54,11 @@ updating the '2DFLOW' setting in this way is:
     setattr(ief, '2DFLOW', 1) # Sets the IEF's '2DFLOW' setting to 1
 
 IEF files can also be simulated directly by calling the :meth:`~floodmodeller_api.IEF.simulate()` 
-method on an active IEF class object. This method assumes that Flood Modeller is installedat the default location 
+method on an active IEF class object. This method assumes that Flood Modeller is installed at the default location 
 ('C:\\Program Files\\Flood Modeller\\bin'). An optional argument ``'method'`` is used to control 
 whether the python code should pause until the simulation has completed, or to return the simulation
 as a ``subprocess.Popen()`` instance and continue code execution. By default, the 'WAIT' method is 
-used to providea simple way to know when the simulation has completed. Using the option to return 
+used to provide a simple way to know when the simulation has completed. Using the option to return 
 the process as an object would mostly be used for more complex scripts where you are wanting to have
 more control over checking simulation progress and performing any tasks whilst the simulation is 
 running. Subprocess is a package included in the Python Standard Library which allows for spawning 
@@ -233,8 +233,9 @@ the title, results and filepath updated to 'v2'
 .. code:: python
 
     # Import modules
-    import od
+    import os
     from glob import glob
+    from pathlib import Path
     from floodmodeller_api import IEF
 
     # Point to folder of interest
@@ -267,7 +268,7 @@ access the 1D results directly once it has completed.
     # Import modules
     from floodmodeller_api import IEF
 
-    ief_file = r'path\to\simualtion.ief'
+    ief_file = r'path\to\simulation.ief'
 
     # Instantiate IEF Class object 
     ief = IEF(ief_file)
@@ -291,7 +292,7 @@ access the log file directly once it has completed.
     # Import modules
     from floodmodeller_api import IEF
 
-    ief_file = r'path\to\simualtion.ief'
+    ief_file = r'path\to\simulation.ief'
 
     # Instantiate IEF Class object 
     ief = IEF(ief_file)
@@ -304,4 +305,3 @@ access the log file directly once it has completed.
 
     # Get dataframe from log file
     my_log = lf1.to_dataframe()
-

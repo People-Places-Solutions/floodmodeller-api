@@ -70,10 +70,11 @@ def categorical_sort(itm, order, ns):
 
 
 class XML2D(FMFile):
-    """Reads and write Flood Modeller 2D XML format '.xml'
+    """Reads and writes Flood Modeller 2D XML format '.xml'
 
     Args:
         xml_filepath (str, optional): Full filepath to xml file.
+        from_json (bool, optional): Internal flag used when rebuilding an XML2D from JSON. Defaults to False.
 
     Output:
         Initiates 'XML2D' class object
@@ -559,7 +560,11 @@ Fm2dXmlSchemaVersions for all available versions.
         self._diff(other, force_print=force_print)
 
     def update(self, version: str | Fm2dXmlSchemaVersions | None = None) -> None:
-        """Updates the existing XML based on any altered attributes"""
+        """Updates the existing XML based on any altered attributes.
+
+        Args:
+            version (str | Fm2dXmlSchemaVersions, optional): XML schema version to write before saving.
+        """
         if version:
             ver = str(version)
             if isinstance(version, Fm2dXmlSchemaVersions):
@@ -611,7 +616,7 @@ Fm2dXmlSchemaVersions for all available versions.
                 If set to False, then the script will continue to run even if the simulation fails. If 'method' is set to 'RETURN_PROCESS'
                 then this argument is ignored. Defaults to True.
             precision (str, optional): {'DEFAULT'} | 'SINGLE' | 'DOUBLE'
-                Define which engine to use for simulation, if set to 'DEFAULT' it will use the precision specified in the IEF. Alternatively,
+                Define which engine to use for simulation, if set to 'DEFAULT' it will use the precision specified in the XML. Alternatively,
                 this can be overwritten using 'SINGLE' or 'DOUBLE'.
             enginespath (str, optional): {''} | '/absolute/path/to/engine/executables'
                 Define where the engine executables are located. This replaces the default location (usual installation folder) if set to
@@ -620,11 +625,13 @@ Fm2dXmlSchemaVersions for all available versions.
                 'simple' - A simple progress bar for the simulation is presented in the console
                 'standard' - The standard Flood Modeller 2D output is presented in the console
                 'detailed' - The most detailed Flood Modeller 2D output is presented in the console
-                Defaults to 'WAIT'.
+                Defaults to 'simple'.
+            range_function (Callable, optional): Function used to create the progress iterator. Defaults to tqdm.trange.
+            range_settings (dict, optional): Keyword arguments passed to range_function. Defaults to None.
 
 
         Raises:
-            UserWarning: Raised if ief filepath not already specified
+            UserWarning: Raised if XML filepath not already specified
 
         Returns:
             subprocess.Popen(): If method == 'RETURN_PROCESS', the Popen() instance of the process is returned.

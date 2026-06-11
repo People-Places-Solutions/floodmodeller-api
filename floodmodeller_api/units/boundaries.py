@@ -34,16 +34,16 @@ class QTBDY(Unit):
     """Class to hold and process QTBDY boundary type
 
     Args:
-        name (str, optional): Unit name. Defaults to None.
-        comment (str, optional): Comment included in unit. Defaults to None.
-        timeoffset (float, optional): Defaults to None.
-        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to None.
-        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
-        flowmultiplier (float, optional): Multiplier applied to all flow values at runtime. Defaults to None.
-        minflow (Float, optional): Minimum flow value applied to the boundary at runtime. Defaults to None.
+        name (str, optional): Unit name. Defaults to 'new_qtbdy'.
+        comment (str, optional): Comment included in unit. Defaults to ''.
+        timeoffset (float, optional): Defaults to 0.0.
+        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to 'HOURS'.
+        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to 'EXTEND'.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to 'LINEAR'.
+        flowmultiplier (float, optional): Multiplier applied to all flow values at runtime. Defaults to 0.0.
+        minflow (float, optional): Minimum flow value applied to the boundary at runtime. Defaults to 0.0.
         data (pandas.Series, optional): Series object with variable ``'Flow'`` and index ``'Time'``. Defaults to None.
-        allow_override (str): Allow event parameters to be overridden from simulation file: ''/'OVERRIDE' or 'NOOVERRIDE'
+        allow_override (str): Allow event parameters to be overridden from simulation file: ''/'OVERRIDE' or 'NOOVERRIDE'. Defaults to 'OVERRIDE'.
 
     Returns:
         QTBDY: Flood Modeller QTBDY Unit class object
@@ -145,11 +145,11 @@ class HTBDY(Unit):
     """Class to hold and process HTBDY boundary type
 
     Args:
-        name (str, optional): Unit name. Defaults to None.
-        comment (str, optional): Comment included in unit. Defaults to None.
-        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to None.
-        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
+        name (str, optional): Unit name. Defaults to 'new_htbdy'.
+        comment (str, optional): Comment included in unit. Defaults to ''.
+        timeunit (str, optional): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options. Defaults to 'HOURS'.
+        extendmethod (str, optional): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to 'EXTEND'.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to 'LINEAR'.
         data (pandas.Series, optional): Series object with columns ``'Time'`` and ``'Stage'``. Defaults to None.
 
     Returns:
@@ -241,9 +241,9 @@ class QHBDY(Unit):
     """Class to hold and process QHBDY boundary type
 
     Args:
-        name (str, optional): Unit name. Defaults to None.
-        comment (str, optional): Comment included in unit. Defaults to None.
-        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to None.
+        name (str, optional): Unit name. Defaults to 'new_qhbdy'.
+        comment (str, optional): Comment included in unit. Defaults to ''.
+        interpmethod (str, optional): Data interpolation method: 'LINEAR' or 'SPLINE'. Defaults to 'LINEAR'.
         data (pandas.Series, optional): Series object with columns ``'Flow'`` and ``'Stage'``. Defaults to None.
     Returns:
         QHBDY: Flood Modeller QHBDY Unit class object

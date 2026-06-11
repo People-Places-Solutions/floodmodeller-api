@@ -50,8 +50,7 @@ class RIVER(Unit):
         density (float, optional): Density in kg/m3
 
     Raises:
-        NotImplementedError: Raised if class is initialised without existing river block (i.e. if attempting to create new River unit).
-            This will be an option for future releases
+        NotImplementedError: Raised if class is initialised with an unsupported river subtype.
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object

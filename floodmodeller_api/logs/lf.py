@@ -44,7 +44,7 @@ class LF(FMFile):
     """Reads and processes Flood Modeller log file
 
     Args:
-        lf1_filepath (str): Full filepath to model log file
+        lf_filepath (str): Full filepath to model log file
         data_to_extract (dict): Dictionary defining each line type to parse
         steady (bool): True if for a steady-state simulation
 
@@ -187,6 +187,7 @@ class LF(FMFile):
         """Collects parameter values that change throughout simulation into a dataframe
 
         Args:
+            variable (str): Variable to return, or 'all' for all available variables.
             include_tuflow (bool): Include diagnostics for linked TUFLOW models
 
         Returns:
@@ -288,7 +289,7 @@ class LF1(LF):
 
 
 class LF2(LF):
-    """Reads and processes Flood Modeller 1D log file '.lf2'
+    """Reads and processes Flood Modeller 2D log file '.lf2'
 
     Args:
         lf2_filepath (str): Full filepath to model lf2 file

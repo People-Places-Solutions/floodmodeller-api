@@ -27,9 +27,10 @@ if TYPE_CHECKING:
 
 
 class IED(FMFile):
-    """Reads and write Flood Modeller event data format '.ied'
+    """Reads and writes Flood Modeller event data format '.ied'
     Args:
         ied_filepath (str, optional): Full filepath to ied file. If not specified, a new IED class will be created.
+        from_json (bool, optional): Internal flag used when rebuilding an IED from JSON. Defaults to False.
 
     Output:
         Initiates 'IED' class object
@@ -298,6 +299,10 @@ class IED(FMFile):
     def save(self, filepath: str | Path) -> None:
         """Saves the IED to the given location, if pointing to an existing file it will be overwritten.
         Once saved, the IED() class will continue working from the saved location, therefore any further calls to IED.update() will update in the latest saved location
-        rather than the original source IED used to construct the class"""
+        rather than the original source IED used to construct the class
+
+        Args:
+            filepath (str | Path): Filepath to new save location including the name and '.ied' extension.
+        """
 
         self._save(filepath)

@@ -32,6 +32,7 @@ class INP(FMFile):
 
     Args:
         inp_filepath (str, optional): Full filepath to inp file. If not specified, a new INP class will be created. Defaults to None.
+        from_json (bool, optional): Internal flag used when rebuilding an INP from JSON. Defaults to False.
 
     Output:
         Initiates 'INP' class object

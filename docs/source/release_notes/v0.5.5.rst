@@ -1,0 +1,24 @@
+************************************
+What's new in 0.5.5 (January 2026)
+************************************
+
+This page details the changes for version 0.5.5 of Flood Modeller API
+
+New features
+---------------
+- `Flood Modeller API on a page <https://github.com/People-Places-Solutions/floodmodeller-api/pull/198>`_
+- `Support GXY file read/write <https://github.com/People-Places-Solutions/floodmodeller-api/pull/220>`_
+
+Updates
+-----------
+- `Replace use of eval inside IED and DAT classes <https://github.com/People-Places-Solutions/floodmodeller-api/pull/188>`_
+- `Improve IEF EventData handling where dictionary keys need to be unique <https://github.com/People-Places-Solutions/floodmodeller-api/pull/192>`_
+- `Codespaces debug updates <https://github.com/People-Places-Solutions/floodmodeller-api/pull/208>`_
+- `Update PyPI build workflow <https://github.com/People-Places-Solutions/floodmodeller-api/pull/209>`_
+
+Bug fixes
+------------
+- `Hotfix <https://github.com/People-Places-Solutions/floodmodeller-api/pull/201>`_
+- `Fix insert/remove unsupported unit handling <https://github.com/People-Places-Solutions/floodmodeller-api/pull/205>`_
+- `Fix issues in examples and docs <https://github.com/People-Places-Solutions/floodmodeller-api/pull/207>`_
+- `Capture time series edge case <https://github.com/People-Places-Solutions/floodmodeller-api/pull/215>`_

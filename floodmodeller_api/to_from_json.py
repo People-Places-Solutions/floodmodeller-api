@@ -135,7 +135,7 @@ def from_json(obj: str | dict) -> dict:
     Function to convert a JSON string back into Python objects
 
     Args:
-        json_str (str): A JSON string
+        obj (str | dict): A JSON string or dictionary created by ``to_json``.
 
     Returns:
         A FMP object

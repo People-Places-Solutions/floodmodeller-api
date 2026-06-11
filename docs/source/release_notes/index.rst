@@ -6,6 +6,9 @@ This sections contains notes on the changes between each release of Flood Modell
 .. toctree::
    :maxdepth: 1
 
+   v0.5.7
+   v0.5.6
+   v0.5.5
    v0.5.3
    v0.5.2
    v0.5.1
