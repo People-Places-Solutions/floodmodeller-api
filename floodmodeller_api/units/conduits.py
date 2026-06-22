@@ -418,9 +418,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = (
-                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
-            )
+            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -510,10 +508,7 @@ class CONDUIT(Unit):
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [
-                        join_10_char(coord.x, coord.y)
-                        + join_10_char(coord.cw_friction, dp=6)
-                    ],
+                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
                 )
         else:
             c_block = self._raw_block
