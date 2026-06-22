@@ -101,7 +101,7 @@ class CONDUIT(Unit):
     **Sprungarch Type (``CONDUIT.subtype == 'SPRUNGARCH'``)**
 
     Args:
-        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        equation (str): Choose between the Manning's formulation and the Colebrook-White's formulation
         elevation_invert (float): Height of the conduit above datum (m)
         width (float): Width of conduit (m)
         height_springing (float): Height of conduit's springing (m)
@@ -119,7 +119,7 @@ class CONDUIT(Unit):
     **Fullarch Type (``CONDUIT.subtype == 'FULLARCH'``)**
 
     Args:
-        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        equation (str): Choose between the Manning's formulation and the Colebrook-White's formulation
         elevation_invert (float): Height of the conduit above datum (m)
         width (float): Width of conduit (m)
         height_crown (float): Height of conduit's crown (m)
@@ -418,7 +418,9 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            friction_params = (
+                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            )
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -450,32 +452,7 @@ class CONDUIT(Unit):
                 ],
             )
 
-        elif self._subtype == "SPRUNG":
-            c_block.extend(
-                [
-                    str(self.dist_to_next),
-                    self.equation,
-                    join_10_char(
-                        self.elevation_invert,
-                        self.width,
-                        self.height_springing,
-                        self.height_crown,
-                        self.use_bottom_slot,
-                        self.bottom_slot_dist,
-                        self.bottom_slot_depth,
-                        self.use_top_slot,
-                        self.top_slot_dist,
-                        self.top_slot_depth,
-                    ),
-                    join_10_char(
-                        self.friction_on_invert,
-                        self.friction_on_walls,
-                        self.friction_on_soffit,
-                    ),
-                ],
-            )
-
-        elif self._subtype == "SPRUNGARCH":
+        elif self._subtype in {"SPRUNG", "SPRUNGARCH"}:
             c_block.extend(
                 [
                     str(self.dist_to_next),
@@ -533,7 +510,10 @@ class CONDUIT(Unit):
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
+                    [
+                        join_10_char(coord.x, coord.y)
+                        + join_10_char(coord.cw_friction, dp=6)
+                    ],
                 )
         else:
             c_block = self._raw_block
