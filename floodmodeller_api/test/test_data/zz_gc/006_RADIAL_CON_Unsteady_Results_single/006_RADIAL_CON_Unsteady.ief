@@ -1,0 +1,19 @@
+[ISIS Event Header]
+Title=006_RADIAL_CON
+Datafile=..\RADIAL_CON.dat
+Results=006_RADIAL_CON_Unsteady_Results
+[ISIS Event Details]
+RunType=Unsteady
+Start=0
+ICsFrom=1
+Finish=5
+Timestep=1.0
+ControlUnitOutputs=1.0
+Dflood=3
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=1
+RulesAtTimeZero=1
+RulesOnFirstIteration=0
+ResetTimesAfterPos=1
+UseFPSModularLimit=1
+UseRemoteQ=1

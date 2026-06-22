@@ -1,0 +1,191 @@
+!!output1
+!!output1  writing messaging file output to C:\FMTests\Results\1D\7.3.1\006_RADIAL_CON_Steady_Results_double\006_RADIAL_CON_Steady.lf1
+!!Info1 zzd = C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_STEADY_RESULTS_DOUBLE\006_RADIAL_CON_STEADY_RESULTS.zzd
+!!output1  Licence module initialised.
+!!output1  Licence module validated.
+!!output1   ** Licence Settings ** 
+
+!!output1   STANDALONE only? no
+
+!!output1   DONGLE only? no
+
+!!output1   WIBU only? no
+
+!!output1   DEFAULT edition only? no
+
+!!output1   Max retries:  forever 
+
+!!output1   Pause between licence check attempts: 5000 ms
+
+!!output1   Container: 0-0
+
+!!output1   Scan CM network during initialisation? no
+
+!!Info1 version1d 7.3.1.01994
+!!output1  Number of 1D river nodes in model:         8
+!!output1 Licence checked: OK
+!!output1 006_RADIAL_CON                                                        FILE=RADIAL_CON.dat Flood Modeller VER=7.3.1.01994
+!!output1  Double precision, 64-bit version
+!!output1  Using default initial conditions (from *.dat file)
+!!output1
+!!output1  Reading main data file RADIAL_CON.dat...
+!!output1
+!!output1  No errors found in node labels
+!!output1
+!!output1 Control module licence taken
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  1.53     at A4           HRATIO= 0.106     at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  9.34     at A8           HRATIO= 0.109     at A2
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  4.97     at A6           HRATIO= 0.473E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  1.10     at A6           HRATIO= 0.469E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  2.31     at A7           HRATIO= 0.780E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.415     at A3           HRATIO= 0.828E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.764     at A7           HRATIO= 0.671E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  6.25     at A7           HRATIO= 0.408E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  1.34     at A7           HRATIO= 0.134E-01 at A6
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  1.16     at A8           HRATIO= 0.275E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  4.17     at A8           HRATIO= 0.407E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.207     at A8           HRATIO= 0.411E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.258     at A2           HRATIO= 0.349E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.449     at A8           HRATIO= 0.301E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.966     at A8           HRATIO= 0.251E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO=  28.6     at A8           HRATIO= 0.208E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.995     at A8           HRATIO= 0.175E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.472     at A8           HRATIO= 0.150E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.310     at A8           HRATIO= 0.132E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.237     at A8           HRATIO= 0.119E-01 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.199     at A8           HRATIO= 0.118E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.176     at A8           HRATIO= 0.114E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.158     at A8           HRATIO= 0.104E-01 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.146     at A8           HRATIO= 0.872E-02 at A5
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.135     at A8           HRATIO= 0.772E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.125     at A8           HRATIO= 0.750E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.113     at A8           HRATIO= 0.698E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.100     at A8           HRATIO= 0.623E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.850E-01 at A8           HRATIO= 0.606E-02 at A4
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.702E-01 at A8           HRATIO= 0.674E-02 at A4
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.564E-01 at A8           HRATIO= 0.695E-02 at A4
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.435E-01 at A8           HRATIO= 0.737E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.319E-01 at A8           HRATIO= 0.853E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.222E-01 at A8           HRATIO= 0.930E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.178E-01 at A3           HRATIO= 0.976E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.236E-01 at A3           HRATIO= 0.996E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.281E-01 at A3           HRATIO= 0.990E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.310E-01 at A3           HRATIO= 0.959E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.325E-01 at A3           HRATIO= 0.906E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.326E-01 at A3           HRATIO= 0.833E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.316E-01 at A3           HRATIO= 0.745E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.298E-01 at A3           HRATIO= 0.649E-02 at A7
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.274E-01 at A3           HRATIO= 0.682E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.248E-01 at A3           HRATIO= 0.724E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.223E-01 at A3           HRATIO= 0.746E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.232E-01 at A2           HRATIO= 0.748E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.273E-01 at A2           HRATIO= 0.730E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.309E-01 at A2           HRATIO= 0.694E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.338E-01 at A2           HRATIO= 0.643E-02 at A1
+!!output1
+!!output1  dt =      1.000
+!!output1 Time= 0.000    hrs  QRATIO= 0.361E-01 at A2           HRATIO= 0.582E-02 at A1
+!!output1
+!!output1  ** steady flows are in: C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_STEADY_RESULTS_DOUBLE\006_RADIAL_CON_STEADY_RESULTS.zzs **
+!!output1
+!!output1
+!!output1 run terminated by user
+!!output1  outputting max/min/means to C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_STEADY_RESULTS_DOUBLE\006_RADIAL_CON_STEADY_RESULTS.mmm

@@ -58,7 +58,7 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
-def run_routines(
+def run_routines(  # noqa: PLR0915
     reader: ct.CDLL,
     zzl: Path,
     zzn_or_zzx: Path,
@@ -128,10 +128,10 @@ def run_routines(
     # Allocate individual buffers for each label instead of a 2D array
     # The DLL expects separate allocations, not a multi-dimensional array
     meta["labels"] = []
-    
+
     logging.debug("        Starting reader.get_zz_label routine loop...")
     for i in range(meta["nnodes"].value):
-        logging.debug(f"        Processing node {i + 1}/{meta['nnodes'].value}")
+        logging.debug("        Processing node %d/%d", i + 1, meta["nnodes"].value)
         meta["errstat"].value = 0  # Reset errstat for each iteration
         node_id = ct.c_int(i + 1)  # Keep temporary alive during DLL call
         # Allocate a separate buffer for this label
@@ -141,7 +141,7 @@ def run_routines(
             ct.byref(label_buffer),
             ct.byref(meta["errstat"]),
         )
-        logging.debug(f"        Node {i + 1} errstat: {meta['errstat'].value}")
+        logging.debug("        Node %d errstat: %d", i + 1, meta["errstat"].value)
         check_errstat("get_zz_label", meta["errstat"].value)
         # Store the decoded label
         meta["labels"].append(label_buffer.value.decode().strip())
@@ -154,7 +154,7 @@ def run_routines(
     last_hr = (meta["ltimestep"].value - 1) * (
         meta["dt"].value / 3600
     )  # -1 to timestep otherwise this wont match the value in the ief
-    logging.debug(f"        First hr: {first_hr}, Last hr: {last_hr}")
+    logging.debug("        First hr: %f, Last hr: %f", first_hr, last_hr)
     meta["output_hrs"] = (ct.c_float * 2)(first_hr, last_hr)
     meta["aitimestep"] = (ct.c_int * 2)(meta["timestep0"].value, meta["ltimestep"].value)
     meta["isavint"] = (ct.c_int * 2)()
@@ -185,9 +185,9 @@ def run_routines(
     logging.debug("        Starting reader.get_zz_variable_name routine loop...")
     meta["variables"] = []
     # Allocate individual buffers for each variable name instead of a 2D array
-    
+
     for i in range(meta["nvars"].value):
-        logging.debug(f"        Processing variable {i + 1}/{meta['nvars'].value}")
+        logging.debug("        Processing variable %d/%d", i + 1, meta["nvars"].value)
         meta["errstat"].value = 0  # Reset errstat for each iteration
         var_index = ct.c_int(i + 1)  # Keep temporary alive during DLL call
         # Allocate a separate buffer for this variable name (fixed size of 32)
@@ -197,28 +197,28 @@ def run_routines(
             ct.byref(var_buffer),
             ct.byref(meta["errstat"]),
         )
-        logging.debug(f"        Variable {i + 1} errstat: {meta['errstat'].value}")
+        logging.debug("        Variable %d errstat: %d", i + 1, meta["errstat"].value)
         check_errstat("get_zz_variable_name", meta["errstat"].value)
         # Store the decoded variable name
         meta["variables"].append(var_buffer.value.decode().strip())
-    
+
     logging.debug("        Finished reader.get_zz_variable_name routine loop...")
     logging.debug("        Setting up metadata for process_zzn")
     # process zzn
     meta["node_ID"] = ct.c_int(-1)
-    logging.debug(f"            node_ID: {meta['node_ID'].value}")
+    logging.debug("            node_ID: %d", meta["node_ID"].value)
     meta["savint_skip"] = ct.c_int(1)
-    logging.debug(f"            save_int_skip: {meta['savint_skip'].value}")
+    logging.debug("            save_int_skip: %d", meta["savint_skip"].value)
     meta["savint_range"] = ct.c_int(
         int((meta["isavint"][1] - meta["isavint"][0]) / meta["savint_skip"].value),
     )
-    logging.debug(f"            save_int_range: {meta['savint_range'].value}")
+    logging.debug("            save_int_range: %d", meta["savint_range"].value)
     nx = meta["nnodes"].value
-    logging.debug(f"            nnodes: {nx}")
+    logging.debug("            nnodes: %d", nx)
     ny = meta["nvars"].value
-    logging.debug(f"            nvars: {ny}")
+    logging.debug("            nvars: %d", ny)
     nz = meta["savint_range"].value + 1
-    logging.debug(f"            nz: {nz}")
+    logging.debug("            nz: %d", nz)
     data["all_results"] = (ct.c_float * nx * ny * nz)()
     data["max_results"] = (ct.c_float * nx * ny)()
     data["min_results"] = (ct.c_float * nx * ny)()
@@ -303,7 +303,7 @@ class _ZZ(FMFile):
         reader = get_reader()
         logging.debug("    Successfully got reader")
         zzl = get_associated_file(self._filepath, ".zzl")
-        logging.debug(f"    Found .zzl file: {zzl.stem}")
+        logging.debug("    Found .zzl file: %s", zzl.stem)
 
         is_quality = self._suffix == ".zzx"
 

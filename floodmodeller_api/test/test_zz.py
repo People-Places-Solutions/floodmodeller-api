@@ -1,12 +1,15 @@
 # type: ignore
 # ignored because the output from _ZZ.to_dataframe() is only a series in special cases
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from floodmodeller_api import IEF, ZZN, ZZX
+from floodmodeller_api.test.util import parameterise_glob
 from floodmodeller_api.util import read_file
 
 
@@ -195,3 +198,31 @@ def test_result_type_max_matches_full_df(test_workspace, simulation_case, file_t
         max_flow_time = zz_df[variable][label].idxmax()
         assert zz_max_df.loc[label, f"Max {variable}"] == pytest.approx(max_flow, 0.001)
         assert zz_max_df.loc[label, f"Max {variable} Time(hrs)"] == max_flow_time
+
+
+@pytest.mark.parametrize(
+    "zz_path",
+    parameterise_glob("zz_gc/**/*.zzn") + parameterise_glob("zz_gc/**/*.zzx"),
+    ids=lambda zz_path: zz_path.parent.name + zz_path.suffix,
+)
+def test_zz_gc_fatal_error(test_workspace, zz_path):
+    """
+    Test whether ZZ classes can load results without causing the fatal error attributed to Python garbage collection.
+
+    Manifests as 'Windows fatal exception: access violation' on Windows and
+    'Fatal Python error: Segmentation fault' on Linux.
+
+    This test runs in subprocess as running it directly in the test suite will crash all other ongoing tests
+    and is repeated to attempt to trigger the error if it is intermittent."""
+    zz_type = "ZZN" if zz_path.suffix == ".zzn" else "ZZX"
+    for _ in range(10):
+        code = f"""
+from floodmodeller_api import {zz_type}
+zz_type = {zz_type}
+zz_obj = zz_type(r'{test_workspace / zz_path}')
+assert isinstance(zz_obj, zz_type)
+"""
+        result = subprocess.run([sys.executable, "-c", code], capture_output=True)
+        assert (
+            result.returncode == 0
+        ), f"Process crashed with return code {result.returncode}\nstderr: {result.stderr.decode()}"
