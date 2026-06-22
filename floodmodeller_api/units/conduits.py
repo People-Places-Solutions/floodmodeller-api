@@ -122,8 +122,8 @@ class CONDUIT(Unit):
         equation (str): Choose between the Manning's formulation and the Colebrook-White's formulation
         elevation_invert (float): Height of the conduit above datum (m)
         width (float): Width of conduit (m)
-        height_crown (float): Height of conduit's crown (m)
         height_springing (float): Height of conduit's springing (m). For FULLARCH this is always ``0.0``.
+        height_crown (float): Height of conduit's crown (m)
         use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
         bottom_slot_dist (float): Distance of slot top above invert (m)
         bottom_slot_depth (float): Total depth of bottom slot (m)
@@ -418,7 +418,9 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            friction_params = (
+                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            )
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -508,7 +510,10 @@ class CONDUIT(Unit):
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
+                    [
+                        join_10_char(coord.x, coord.y)
+                        + join_10_char(coord.cw_friction, dp=6)
+                    ],
                 )
         else:
             c_block = self._raw_block

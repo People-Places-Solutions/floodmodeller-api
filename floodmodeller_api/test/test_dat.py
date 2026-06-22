@@ -187,6 +187,35 @@ def test_fullarch_conduit_reads_geometry(test_workspace: Path):
     assert conduit.friction_on_soffit == pytest.approx(0.003)
 
 
+def test_fullarch_conduit_write_roundtrip(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "fullarch.dat")
+    conduit = dat.conduits["A2"]
+
+    assert conduit._write() == [
+        "CONDUIT",
+        "FULLARCH",
+        "A2                      ",
+        "100.0",
+        "COLEBROOK-WHITE",
+        "     1.000     2.000     0.800    GLOBAL     0.000     0.000    GLOBAL     0.000     0.000",
+        "     0.003     0.003     0.003",
+    ]
+
+    dat_path = tmp_path / "fullarch_roundtrip.dat"
+    dat.save(dat_path)
+
+    roundtripped = DAT(dat_path).conduits["A2"]
+    assert roundtripped.subtype == conduit.subtype
+    assert roundtripped.equation == conduit.equation
+    assert roundtripped.elevation_invert == conduit.elevation_invert
+    assert roundtripped.width == conduit.width
+    assert roundtripped.height_springing == conduit.height_springing
+    assert roundtripped.height_crown == conduit.height_crown
+    assert roundtripped.friction_on_invert == conduit.friction_on_invert
+    assert roundtripped.friction_on_walls == conduit.friction_on_walls
+    assert roundtripped.friction_on_soffit == conduit.friction_on_soffit
+
+
 def test_insert_unit_before(units, dat_ex6):
     dat_ex6.insert_unit(units[0], add_before=dat_ex6.sections["P4000"])
     assert "20" in dat_ex6.sections
