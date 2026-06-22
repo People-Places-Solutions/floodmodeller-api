@@ -172,6 +172,21 @@ def test_revision_zero_dat(test_workspace: Path, tmp_path: Path):
     assert "#REVISION#" not in updated_dat._write()
 
 
+def test_fullarch_conduit_reads_geometry(test_workspace: Path):
+    dat = DAT(test_workspace / "fullarch.dat")
+    conduit = dat.conduits["A2"]
+
+    assert conduit.subtype == "FULLARCH"
+    assert conduit.equation == "COLEBROOK-WHITE"
+    assert conduit.elevation_invert == 1.0
+    assert conduit.width == 2.0
+    assert conduit.height_springing == 0.0
+    assert conduit.height_crown == 0.8
+    assert conduit.friction_on_invert == pytest.approx(0.003)
+    assert conduit.friction_on_walls == pytest.approx(0.003)
+    assert conduit.friction_on_soffit == pytest.approx(0.003)
+
+
 def test_insert_unit_before(units, dat_ex6):
     dat_ex6.insert_unit(units[0], add_before=dat_ex6.sections["P4000"])
     assert "20" in dat_ex6.sections

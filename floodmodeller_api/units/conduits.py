@@ -35,7 +35,7 @@ from ._helpers import (
 
 
 class CONDUIT(Unit):
-    """The Conduit class supports five conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH and SECTION (which
+    """The Conduit class supports six conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH, FULLARCH and SECTION (which
     corresponds to Symmetrical Conduits). Each of these sub-types forms a unique instance of the class which is differentiated by the
     `CONDUIT.subtype` attribute. All conduit types have the same common attributes:
 
@@ -106,6 +106,24 @@ class CONDUIT(Unit):
         width (float): Width of conduit (m)
         height_springing (float): Height of conduit's springing (m)
         height_crown (float): Height of conduit's crown (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_walls (float): Friction value for conduit walls
+        friction_on_soffit (float): Friction value for conduit soffit
+
+    **Fullarch Type (``CONDUIT.subtype == 'FULLARCH'``)**
+
+    Args:
+        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        elevation_invert (float): Height of the conduit above datum (m)
+        width (float): Width of conduit (m)
+        height_crown (float): Height of conduit's crown (m)
+        height_springing (float): Height of conduit's springing (m). For FULLARCH this is always ``0.0``.
         use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
         bottom_slot_dist (float): Distance of slot top above invert (m)
         bottom_slot_depth (float): Total depth of bottom slot (m)
@@ -233,6 +251,16 @@ class CONDUIT(Unit):
                 "friction_on_walls",
                 "friction_on_soffit",
             ],
+            "FULLARCH": [
+                "equation",
+                "elevation_invert",
+                "width",
+                "height_springing",
+                "height_crown",
+                "friction_on_invert",
+                "friction_on_walls",
+                "friction_on_soffit",
+            ],
             "SECTION": ["coords"],
         }
 
@@ -245,7 +273,7 @@ class CONDUIT(Unit):
         subtype_params[subtype].extend(common_params)
 
         # Insert slot attributes to the required subtype
-        if subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH"):
+        if subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "FULLARCH"):
             subtype_params[subtype].extend(slot_params)
 
         # Set attributes relevant to the specific conduit subtype
@@ -324,6 +352,29 @@ class CONDUIT(Unit):
             self.friction_on_invert = to_float(friction_params[0])
             self.friction_on_walls = to_float(friction_params[1])
             self.friction_on_soffit = to_float(friction_params[2])
+
+        elif self._subtype == "FULLARCH":
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
+            self.equation = to_str(c_block[4], "MANNING")
+            params = split_10_char(f"{c_block[5]:<90}")
+            self.elevation_invert = to_float(params[0])
+            self.width = to_float(params[1])
+            self.height_springing = 0.0
+            self.height_crown = to_float(params[2])
+            self.use_bottom_slot = to_str(params[3], "GLOBAL")
+            self.bottom_slot_dist = to_float(params[4])
+            self.bottom_slot_depth = to_float(params[5])
+            self.use_top_slot = to_str(params[6], "GLOBAL")
+            self.top_slot_dist = to_float(params[7])
+            self.top_slot_depth = to_float(params[8])
+            friction_params = split_10_char(f"{c_block[6]:<30}")
+            self.friction_on_invert = to_float(friction_params[0])
+            self.friction_on_walls = to_float(friction_params[1])
+            self.friction_on_soffit = (
+                to_float(friction_params[2])
+                if friction_params[2].strip()
+                else self.friction_on_walls
+            )
 
         elif self._subtype == "SECTION":
             self.dist_to_next = to_float(split_10_char(c_block[3])[0])
@@ -433,6 +484,31 @@ class CONDUIT(Unit):
                         self.elevation_invert,
                         self.width,
                         self.height_springing,
+                        self.height_crown,
+                        self.use_bottom_slot,
+                        self.bottom_slot_dist,
+                        self.bottom_slot_depth,
+                        self.use_top_slot,
+                        self.top_slot_dist,
+                        self.top_slot_depth,
+                    ),
+                    join_10_char(
+                        self.friction_on_invert,
+                        self.friction_on_walls,
+                        self.friction_on_soffit,
+                    ),
+                ],
+            )
+            return c_block
+
+        if self._subtype == "FULLARCH":
+            c_block.extend(
+                [
+                    str(self.dist_to_next),
+                    self.equation,
+                    join_10_char(
+                        self.elevation_invert,
+                        self.width,
                         self.height_crown,
                         self.use_bottom_slot,
                         self.bottom_slot_dist,

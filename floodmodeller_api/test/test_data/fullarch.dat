@@ -1,0 +1,16 @@
+Fullarch conduit regression
+#REVISION#1
+        86     0.750     0.900     0.100     0.001        12
+      10.0
+CONDUIT
+FULLARCH
+A2
+     100.000
+COLEBROOK-WHITE
+      1.00       2.0       0.8
+     0.003     0.003     0.003
+INITIAL CONDITIONS
+ label   ?      flow     stage froude no  velocity     umode    ustate         z
+A2           y     0.000     0.800     0.000     0.000     0.000     0.000     0.800
+GISINFO
+CONDUIT FULLARCH A2 0 0 0 0 0

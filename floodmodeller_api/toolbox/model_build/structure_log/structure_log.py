@@ -240,6 +240,7 @@ class StructureLogBuilder:
             if (conduit._unit, conduit.subtype) not in [
                 ("CONDUIT", "CIRCULAR"),
                 ("CONDUIT", "SPRUNGARCH"),
+                ("CONDUIT", "FULLARCH"),
                 ("CONDUIT", "RECTANGULAR"),
                 ("CONDUIT", "SECTION"),
                 ("CONDUIT", "SPRUNG"),
@@ -257,6 +258,8 @@ class StructureLogBuilder:
                 case ("CONDUIT", "CIRCULAR"):
                     self.unit_store[(conduit.name, conduit._unit)] |= self._circular_data(conduit)
                 case ("CONDUIT", "SPRUNGARCH"):
+                    self.unit_store[(conduit.name, conduit._unit)] |= self._sprungarch_data(conduit)
+                case ("CONDUIT", "FULLARCH"):
                     self.unit_store[(conduit.name, conduit._unit)] |= self._sprungarch_data(conduit)
                 case ("CONDUIT", "RECTANGULAR"):
                     self.unit_store[(conduit.name, conduit._unit)] |= self._rectangular_data(conduit)  # fmt: skip
@@ -481,7 +484,7 @@ class StructureLogBuilder:
         match unit_dict["subtype"]:
             case "CIRCULAR":
                 text += f"dia: {unit_dict['dimensions']['diameter']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
-            case "SPRUNGARCH" | "SPRUNG":
+            case "SPRUNGARCH" | "SPRUNG" | "FULLARCH":
                 text += f"(Springing: {unit_dict['dimensions']['height_springing']:.2f}, Crown: {unit_dict['dimensions']['height_crown']:.2f}) x w: {unit_dict['dimensions']['width']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
             case "RECTANGULAR":
                 text += f"h: {unit_dict['dimensions']['height']:.2f} x w: {unit_dict['dimensions']['width']:.2f} x l: {unit_dict['conduit_data']['length']:.2f}"
