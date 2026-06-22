@@ -1,29 +1,22 @@
 from __future__ import annotations
 
-import importlib.util
+import importlib
+import sys
+import types
 from io import StringIO
-from pathlib import Path
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units import CONDUIT
 
-_STRUCTURE_LOG_PATH = (
-    Path(__file__).resolve().parents[1]
-    / "toolbox"
-    / "model_build"
-    / "structure_log"
-    / "structure_log.py"
-)
-_SPEC = importlib.util.spec_from_file_location("structure_log_module", _STRUCTURE_LOG_PATH)
-assert _SPEC is not None
-assert _SPEC.loader is not None
-_STRUCTURE_LOG_MODULE = importlib.util.module_from_spec(_SPEC)
-_SPEC.loader.exec_module(_STRUCTURE_LOG_MODULE)
-StructureLogBuilder = _STRUCTURE_LOG_MODULE.StructureLogBuilder
-serialise_keys = _STRUCTURE_LOG_MODULE.serialise_keys
-
 
 def test_fullarch_structure_log_output():
+    sys.modules.setdefault("tkinter", types.ModuleType("tkinter"))
+    structure_log_module = importlib.import_module(
+        "floodmodeller_api.toolbox.model_build.structure_log.structure_log",
+    )
+    structure_log_builder = structure_log_module.StructureLogBuilder
+    serialise_keys = structure_log_module.serialise_keys
+
     dat = DAT()
     conduit = CONDUIT(
         name="A2",
@@ -40,7 +33,7 @@ def test_fullarch_structure_log_output():
     dat.conduits[conduit.name] = conduit
     dat._all_units.append(conduit)
 
-    slb = StructureLogBuilder("", "")
+    slb = structure_log_builder("", "")
     slb.dat = dat
     slb.add_conduits()
 
