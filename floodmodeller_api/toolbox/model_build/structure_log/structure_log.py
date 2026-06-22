@@ -51,13 +51,13 @@ class StructureLogBuilder:
         self.unit_store: dict[(str, str)] = {}
         self._replicate_mimics: dict[str | None, str | None] = {}
         self._conduit_data_handlers = {
-            ("CONDUIT", "CIRCULAR"): self._circular_data,
-            ("CONDUIT", "SPRUNGARCH"): self._sprungarch_data,
-            ("CONDUIT", "FULLARCH"): self._sprungarch_data,
-            ("CONDUIT", "RECTANGULAR"): self._rectangular_data,
-            ("CONDUIT", "SECTION"): self._section_data,
-            ("CONDUIT", "SPRUNG"): self._sprung_data,
-            ("REPLICATE", None): self._replicate_data,
+            ("CONDUIT", "CIRCULAR"): "_circular_data",
+            ("CONDUIT", "SPRUNGARCH"): "_sprungarch_data",
+            ("CONDUIT", "FULLARCH"): "_sprungarch_data",
+            ("CONDUIT", "RECTANGULAR"): "_rectangular_data",
+            ("CONDUIT", "SECTION"): "_section_data",
+            ("CONDUIT", "SPRUNG"): "_sprung_data",
+            ("REPLICATE", None): "_replicate_data",
         }
 
     def _add_fields(self, writer) -> None:
@@ -235,7 +235,10 @@ class StructureLogBuilder:
         return {"dimensions": dimensions}
 
     def _supported_conduit_data(self, conduit):
-        return self._conduit_data_handlers.get((conduit._unit, conduit.subtype))
+        handler_name = self._conduit_data_handlers.get((conduit._unit, conduit.subtype))
+        if handler_name is None:
+            return None
+        return getattr(self, handler_name)
 
     def add_conduits(self):
         conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
