@@ -583,11 +583,13 @@ class IEF(FMFile):
 
         # Get zzn location
         result_path = self._get_result_filepath(suffix="zzn")
+        logging.debug("    Result path exists: %s", result_path.exists())
 
         if not result_path.exists():
             msg = "Simulation results file (zzn) not found"
             raise FileNotFoundError(msg)
 
+        logging.debug("    Calling ZZN with path: %s", result_path)
         return ZZN(result_path)
 
     def get_log(self) -> LF1:

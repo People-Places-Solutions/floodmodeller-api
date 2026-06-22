@@ -58,21 +58,25 @@ def check_errstat(routine: str, errstat: int) -> None:
         raise RuntimeError(msg)
 
 
-def run_routines(
+def run_routines(  # noqa: PLR0915
     reader: ct.CDLL,
     zzl: Path,
     zzn_or_zzx: Path,
     is_quality: bool,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    logging.debug("        Starting to run routines...")
     data: dict[str, Any] = {}
     meta: dict[str, Any] = {}
 
     zzx_or_zzn_name = "zzx_name" if is_quality else "zzn_name"
     zzx_or_zzl_name = "zzx_name" if is_quality else "zzl_name"
+    logging.debug("        Finding zzx/n and zzl names...")
     meta[zzx_or_zzn_name] = ct.create_string_buffer(bytes(str(zzn_or_zzx), "utf-8"), 255)
     meta["zzl_name"] = ct.create_string_buffer(bytes(str(zzl), "utf-8"), 255)
+    logging.debug("        Successfully found zzx/n and zzl names")
 
     # process zzl
+    logging.debug("        Doing funny ctypes stuff...")
     meta["model_title"] = ct.create_string_buffer(b"", 128)
     meta["nnodes"] = ct.c_int(0)
     meta["label_length"] = ct.c_int(0)
@@ -85,6 +89,7 @@ def run_routines(
     meta["tzero"] = (ct.c_int * 5)()
     meta["errstat"] = ct.c_int(0)
 
+    logging.debug("        Starting reader.process_zzl routine...")
     reader.process_zzl(
         ct.byref(meta[zzx_or_zzl_name]),
         ct.byref(meta["model_title"]),
@@ -99,12 +104,17 @@ def run_routines(
         ct.byref(meta["tzero"]),
         ct.byref(meta["errstat"]),
     )
+    logging.debug("        Finished reader.process_zzl routine")
+
+    logging.debug("        Checking errstat...")
     check_errstat("process_zzl", meta["errstat"].value)
+    logging.debug("        Successfully checked errstat")
 
     # process labels
     if meta["label_length"].value == 0:  # means that we are probably running quality data
         meta["label_length"].value = 12  # 12 is the max expected from dll
 
+    logging.debug("        Starting reader.process_labels routine...")
     reader.process_labels(
         ct.byref(meta["zzl_name"]),
         ct.byref(meta["nnodes"]),
@@ -112,16 +122,30 @@ def run_routines(
         ct.byref(meta["errstat"]),
     )
     check_errstat("process_labels", meta["errstat"].value)
+    logging.debug("        Finished reader.process_labels routine")
 
     # get zz labels
-    meta["labels"] = (ct.c_char * meta["label_length"].value * meta["nnodes"].value)()
+    # Allocate individual buffers for each label instead of a 2D array
+    # The DLL expects separate allocations, not a multi-dimensional array
+    meta["labels"] = []
+
+    logging.debug("        Starting reader.get_zz_label routine loop...")
     for i in range(meta["nnodes"].value):
+        logging.debug("        Processing node %d/%d", i + 1, meta["nnodes"].value)
+        meta["errstat"].value = 0  # Reset errstat for each iteration
+        node_id = ct.c_int(i + 1)  # Keep temporary alive during DLL call
+        # Allocate a separate buffer for this label
+        label_buffer = ct.create_string_buffer(meta["label_length"].value)
         reader.get_zz_label(
-            ct.byref(ct.c_int(i + 1)),
-            ct.byref(meta["labels"][i]),
+            ct.byref(node_id),
+            ct.byref(label_buffer),
             ct.byref(meta["errstat"]),
         )
+        logging.debug("        Node %d errstat: %d", i + 1, meta["errstat"].value)
         check_errstat("get_zz_label", meta["errstat"].value)
+        # Store the decoded label
+        meta["labels"].append(label_buffer.value.decode().strip())
+    logging.debug("        Finished reader.get_zz_label routine loop...")
 
     # preprocess zzn
     first_hr = (meta["timestep0"].value - 1) * (
@@ -130,10 +154,11 @@ def run_routines(
     last_hr = (meta["ltimestep"].value - 1) * (
         meta["dt"].value / 3600
     )  # -1 to timestep otherwise this wont match the value in the ief
-
+    logging.debug("        First hr: %f, Last hr: %f", first_hr, last_hr)
     meta["output_hrs"] = (ct.c_float * 2)(first_hr, last_hr)
     meta["aitimestep"] = (ct.c_int * 2)(meta["timestep0"].value, meta["ltimestep"].value)
     meta["isavint"] = (ct.c_int * 2)()
+    logging.debug("        Starting reader.preprocess_zzn routine...")
     reader.preprocess_zzn(
         ct.byref(meta["output_hrs"]),
         ct.byref(meta["aitimestep"]),
@@ -143,40 +168,63 @@ def run_routines(
         ct.byref(meta["save_int"]),
         ct.byref(meta["isavint"]),
     )
+    logging.debug("        Finished reader.preprocess_zzn routine...")
 
     # process vars
+    logging.debug("        Starting reader.process_vars routine...")
     reader.process_vars(
         ct.byref(meta[zzx_or_zzl_name]),
         ct.byref(meta["nvars"]),
         ct.byref(meta["is_quality"]),
         ct.byref(meta["errstat"]),
     )
+    logging.debug("        Finished reader.process_vars routine...")
     check_errstat("process_vars", meta["errstat"].value)
 
     # get var names
-    meta["variables"] = (ct.c_char * 32 * meta["nvars"].value)()
+    logging.debug("        Starting reader.get_zz_variable_name routine loop...")
+    meta["variables"] = []
+    # Allocate individual buffers for each variable name instead of a 2D array
+
     for i in range(meta["nvars"].value):
+        logging.debug("        Processing variable %d/%d", i + 1, meta["nvars"].value)
+        meta["errstat"].value = 0  # Reset errstat for each iteration
+        var_index = ct.c_int(i + 1)  # Keep temporary alive during DLL call
+        # Allocate a separate buffer for this variable name (fixed size of 32)
+        var_buffer = ct.create_string_buffer(32)
         reader.get_zz_variable_name(
-            ct.byref(ct.c_int(i + 1)),
-            ct.byref(meta["variables"][i]),
+            ct.byref(var_index),
+            ct.byref(var_buffer),
             ct.byref(meta["errstat"]),
         )
+        logging.debug("        Variable %d errstat: %d", i + 1, meta["errstat"].value)
         check_errstat("get_zz_variable_name", meta["errstat"].value)
+        # Store the decoded variable name
+        meta["variables"].append(var_buffer.value.decode().strip())
 
+    logging.debug("        Finished reader.get_zz_variable_name routine loop...")
+    logging.debug("        Setting up metadata for process_zzn")
     # process zzn
     meta["node_ID"] = ct.c_int(-1)
+    logging.debug("            node_ID: %d", meta["node_ID"].value)
     meta["savint_skip"] = ct.c_int(1)
+    logging.debug("            save_int_skip: %d", meta["savint_skip"].value)
     meta["savint_range"] = ct.c_int(
         int((meta["isavint"][1] - meta["isavint"][0]) / meta["savint_skip"].value),
     )
+    logging.debug("            save_int_range: %d", meta["savint_range"].value)
     nx = meta["nnodes"].value
+    logging.debug("            nnodes: %d", nx)
     ny = meta["nvars"].value
+    logging.debug("            nvars: %d", ny)
     nz = meta["savint_range"].value + 1
+    logging.debug("            nz: %d", nz)
     data["all_results"] = (ct.c_float * nx * ny * nz)()
     data["max_results"] = (ct.c_float * nx * ny)()
     data["min_results"] = (ct.c_float * nx * ny)()
     data["max_times"] = (ct.c_int * nx * ny)()
     data["min_times"] = (ct.c_int * nx * ny)()
+    logging.debug("        Starting reader.process_zzn routine...")
     reader.process_zzn(
         ct.byref(meta[zzx_or_zzn_name]),
         ct.byref(meta["node_ID"]),
@@ -193,6 +241,7 @@ def run_routines(
         ct.byref(meta["errstat"]),
         ct.byref(meta["isavint"]),
     )
+    logging.debug("        Finished reader.process_zzn routine...")
     check_errstat("process_zzn", meta["errstat"].value)
 
     return data, meta
@@ -221,7 +270,7 @@ def convert_meta(meta: dict[str, Any]) -> None:
     for key in to_get_value:
         meta[key] = meta[key].value
 
-    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero", "variables")
+    to_get_list = ("aitimestep", "isavint", "output_hrs", "tzero")
     for key in to_get_list:
         meta[key] = list(meta[key])
 
@@ -231,9 +280,8 @@ def convert_meta(meta: dict[str, Any]) -> None:
             continue
         meta[key] = meta[key].value.decode()
 
-    to_get_decoded_value_list = ("labels", "variables")
-    for key in to_get_decoded_value_list:
-        meta[key] = [x.value.decode().strip() for x in list(meta[key])]
+    # labels and variables are already decoded strings from the loop in run_routines
+    # No further conversion needed
 
 
 class _ZZ(FMFile):
@@ -245,19 +293,28 @@ class _ZZ(FMFile):
         zzn_filepath: str | Path | None = None,
         from_json: bool = False,
     ):
+        logging.debug("    Initialising _ZZ class")
         if from_json:
             return
 
         FMFile.__init__(self, zzn_filepath)
-
+        logging.debug("        Successfully initialised base FMFile class")
+        logging.debug("    Getting reader...")
         reader = get_reader()
+        logging.debug("    Successfully got reader")
         zzl = get_associated_file(self._filepath, ".zzl")
+        logging.debug("    Found .zzl file: %s", zzl.stem)
 
         is_quality = self._suffix == ".zzx"
 
+        logging.debug("    Running routines...")
         self._data, self._meta = run_routines(reader, zzl, self._filepath, is_quality)
+        logging.debug("    Successfully ran routines")
+
         convert_data(self._data)
+        logging.debug("    Successfully converted data")
         convert_meta(self._meta)
+        logging.debug("    Successfully converted metadata")
 
         self._nx = self._meta["nnodes"]
         self._ny = self._meta["nvars"]
@@ -268,6 +325,7 @@ class _ZZ(FMFile):
             else ["Flow", "Stage", "Froude", "Velocity", "Mode", "State"]
         )
         self._index_name = "Label" if is_quality else "Node Label"
+        logging.debug("    Finished initialisation of _ZZ class")
 
     @property
     def meta(self) -> Mapping[str, Any]:

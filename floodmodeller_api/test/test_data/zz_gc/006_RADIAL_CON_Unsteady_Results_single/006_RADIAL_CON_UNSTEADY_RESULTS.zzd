@@ -1,0 +1,119 @@
+  
+Flood Modeller 1D Solver run using event file C:\FMTests\Results\1D\7.3.1\006_RADIAL_CON_Unsteady_Results_single\006_RADIAL_CON_Unsteady.ief
+  
+ 
+ writing messaging file output to C:\FMTests\Results\1D\7.3.1\006_RADIAL_CON_Unsteady_Results_single\006_RADIAL_CON_Unsteady.lf1
+  
+ Licence module initialised.
+ Licence module validated.
+  ** Licence Settings ** 
+
+  STANDALONE only? no
+
+  DONGLE only? no
+
+  WIBU only? no
+
+  DEFAULT edition only? no
+
+  Max retries:  forever 
+
+  Pause between licence check attempts: 5000 ms
+
+  Container: 0-0
+
+  Scan CM network during initialisation? no
+
+ Number of 1D river nodes in model:         8
+Licence checked: OK
+ pivotal choice parameter reset to     0.1000
+006_RADIAL_CON                                                        FILE=RADIAL_CON.dat Flood Modeller VER=7.3.1.01994
+ Single precision, 64-bit version
+Simulation started at 13:40:20 on 11/06/2026                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ dflood set to          3.0000m 
+ Rules evaluated at time zero = T
+ Rules evaluated on first iteration = F
+ Rules times reset after positional instruction = T
+ Floodplain section area constrained by modular limit = T
+ Use flow from culvert outlet remote node = T
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Solve dh = 0 at t0 in reservoirs.
+
+ Using default initial conditions (from *.dat file)
+ 
+ Reading main data file RADIAL_CON.dat...
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   0.0000000E+00  hours
+     end time          =    5.000000      hours
+     timestep          =    1.000000      seconds
+     save multiple     =            1
+  
+Control module licence taken
+ 
+ 
+ Model time     5.0000 hrs:
+ *** note    N3010 *** at label:
+ 
+ Simplified method used to compute solution at one or more sections
+  Full details in 1D diagnostics file...
+
+  *************************************************
+
+            Time Step Method (N3010)
+  
+  Simplified method has been used to compute 
+  the solution at the following sections:
+  Note: This may result in a loss of accuracy
+  
+               Label/s involved
+  
+                      A5
+                      A6
+                      A7
+
+  *************************************************
+
+Simulation time elapsed (s):            14
+ 
+run completed
+ 
+ Number of unconverged timesteps:         0
+ Proportion of simulation unconverged:   0.00%
+ 
+ ********* Mass balance summary *********
+ Mass balance calculated every     -1.0s
+ 
+ Initial volume:            4950.49    m3
+ Final volume:              4517.92    m3
+-----------------------
+ Total boundary inflow  :   211513.    m3
+ Total boundary outflow :   211960.    m3
+ Total lat. link inflow :   0.00000    m3
+ Total lat. link outflow:   0.00000    m3
+-----------------------
+ Max. system volume:        5133.97    m3
+ Max. |volume| increase:   -1104.37    m3
+ Max. boundary inflow:      15.2635    m3/s
+ Max. boundary outflow:     27.9293    m3/s
+-----------------------
+ Net increase in volume:   -432.567    m3
+ Net inflow volume:        -446.719    m3
+ Volume discrepancy:       -14.1519    m3
+ Mass balance error:           0.28% (of peak system volume)
+ Mass balance error [2]:       0.01% (of boundary inflow volume)
+ 
+ ******* End mass balance summary *******
+ 
+ Writing binary results to C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_UNSTEADY_RESULTS_SINGLE\006_RADIAL_CON_UNSTEADY_RESULTS.zzn
+ outputting max/min/means to C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_UNSTEADY_RESULTS_SINGLE\006_RADIAL_CON_UNSTEADY_RESULTS.mmm
+ Convergence plot saved to C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_UNSTEADY_RESULTS_SINGLE\006_RADIAL_CON_UNSTEADY_RESULTS_001.bmp

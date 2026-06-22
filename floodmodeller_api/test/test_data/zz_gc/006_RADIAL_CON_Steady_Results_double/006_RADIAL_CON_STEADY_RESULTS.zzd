@@ -1,0 +1,313 @@
+  
+Flood Modeller 1D Solver run using event file C:\FMTests\Results\1D\7.3.1\006_RADIAL_CON_Steady_Results_double\006_RADIAL_CON_Steady.ief
+  
+ 
+ writing messaging file output to C:\FMTests\Results\1D\7.3.1\006_RADIAL_CON_Steady_Results_double\006_RADIAL_CON_Steady.lf1
+  
+ Licence module initialised.
+ Licence module validated.
+  ** Licence Settings ** 
+
+  STANDALONE only? no
+
+  DONGLE only? no
+
+  WIBU only? no
+
+  DEFAULT edition only? no
+
+  Max retries:  forever 
+
+  Pause between licence check attempts: 5000 ms
+
+  Container: 0-0
+
+  Scan CM network during initialisation? no
+
+ Number of 1D river nodes in model:         8
+Licence checked: OK
+ pivotal choice parameter reset to     0.1000
+006_RADIAL_CON                                                        FILE=RADIAL_CON.dat Flood Modeller VER=7.3.1.01994
+ Double precision, 64-bit version
+Simulation started at 14:04:45 on 11/06/2026                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ Rules evaluated at time zero = T
+ Rules evaluated on first iteration = F
+ Rules times reset after positional instruction = T
+ Floodplain section area constrained by modular limit = T
+ Use flow from culvert outlet remote node = T
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Solve dh = 0 at t0 in reservoirs.
+
+ Using default initial conditions (from *.dat file)
+ 
+ Reading main data file RADIAL_CON.dat...
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   0.000000000000000E+000  hours
+  
+Control module licence taken
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  1.53     at A4           HRATIO= 0.106     at A5
+Time= 0.000    hrs  QRATIO=  1.53     at A4 HRATIO= 0.106     at A5
+MAX DQ=  5.08     at A4 MAX DH= 0.205     at A4
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  9.34     at A8           HRATIO= 0.109     at A2
+Time= 0.000    hrs  QRATIO=  9.34     at A8 HRATIO= 0.109     at A2
+MAX DQ= 0.178     at A8 MAX DH= 0.206     at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  4.97     at A6           HRATIO= 0.473E-01 at A5
+Time= 0.000    hrs  QRATIO=  4.97     at A6 HRATIO= 0.473E-01 at A5
+MAX DQ= 0.276     at A8 MAX DH= 0.552E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  1.10     at A6           HRATIO= 0.469E-01 at A6
+Time= 0.000    hrs  QRATIO=  1.10     at A6 HRATIO= 0.469E-01 at A6
+MAX DQ= 0.205     at A7 MAX DH= 0.426E-01 at A6
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  2.31     at A7           HRATIO= 0.780E-01 at A6
+Time= 0.000    hrs  QRATIO=  2.31     at A7 HRATIO= 0.780E-01 at A6
+MAX DQ= 0.145     at A6 MAX DH= 0.748E-01 at A6
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.415     at A3           HRATIO= 0.828E-01 at A6
+Time= 0.000    hrs  QRATIO= 0.415     at A3 HRATIO= 0.828E-01 at A6
+MAX DQ= 0.895E-01 at A6 MAX DH= 0.830E-01 at A6
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.764     at A7           HRATIO= 0.671E-01 at A6
+Time= 0.000    hrs  QRATIO= 0.764     at A7 HRATIO= 0.671E-01 at A6
+MAX DQ= 0.127     at A8 MAX DH= 0.691E-01 at A6
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  6.25     at A7           HRATIO= 0.408E-01 at A6
+Time= 0.000    hrs  QRATIO=  6.25     at A7 HRATIO= 0.408E-01 at A6
+MAX DQ= 0.171     at A8 MAX DH= 0.439E-01 at A6
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  1.34     at A7           HRATIO= 0.134E-01 at A6
+Time= 0.000    hrs  QRATIO=  1.34     at A7 HRATIO= 0.134E-01 at A6
+MAX DQ= 0.165     at A8 MAX DH= 0.173E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  1.16     at A8           HRATIO= 0.275E-01 at A5
+Time= 0.000    hrs  QRATIO=  1.16     at A8 HRATIO= 0.275E-01 at A5
+MAX DQ= 0.123     at A8 MAX DH= 0.288E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  4.17     at A8           HRATIO= 0.407E-01 at A5
+Time= 0.000    hrs  QRATIO=  4.17     at A8 HRATIO= 0.407E-01 at A5
+MAX DQ= 0.689E-01 at A8 MAX DH= 0.441E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.207     at A8           HRATIO= 0.411E-01 at A5
+Time= 0.000    hrs  QRATIO= 0.207     at A8 HRATIO= 0.411E-01 at A5
+MAX DQ= 0.396E-01 at A6 MAX DH= 0.452E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.258     at A2           HRATIO= 0.349E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.258     at A2 HRATIO= 0.349E-01 at A7
+MAX DQ= 0.490E-01 at A6 MAX DH= 0.392E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.449     at A8           HRATIO= 0.301E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.449     at A8 HRATIO= 0.301E-01 at A7
+MAX DQ= 0.433E-01 at A6 MAX DH= 0.303E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.966     at A8           HRATIO= 0.251E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.966     at A8 HRATIO= 0.251E-01 at A7
+MAX DQ= 0.483E-01 at A2 MAX DH= 0.260E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO=  28.6     at A8           HRATIO= 0.208E-01 at A7
+Time= 0.000    hrs  QRATIO=  28.6     at A8 HRATIO= 0.208E-01 at A7
+MAX DQ= 0.528E-01 at A2 MAX DH= 0.219E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.995     at A8           HRATIO= 0.175E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.995     at A8 HRATIO= 0.175E-01 at A7
+MAX DQ= 0.539E-01 at A2 MAX DH= 0.186E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.472     at A8           HRATIO= 0.150E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.472     at A8 HRATIO= 0.150E-01 at A7
+MAX DQ= 0.518E-01 at A2 MAX DH= 0.161E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.310     at A8           HRATIO= 0.132E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.310     at A8 HRATIO= 0.132E-01 at A7
+MAX DQ= 0.470E-01 at A2 MAX DH= 0.143E-01 at A7
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.237     at A8           HRATIO= 0.119E-01 at A7
+Time= 0.000    hrs  QRATIO= 0.237     at A8 HRATIO= 0.119E-01 at A7
+MAX DQ= 0.403E-01 at A2 MAX DH= 0.153E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.199     at A8           HRATIO= 0.118E-01 at A5
+Time= 0.000    hrs  QRATIO= 0.199     at A8 HRATIO= 0.118E-01 at A5
+MAX DQ= 0.350E-01 at A8 MAX DH= 0.157E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.176     at A8           HRATIO= 0.114E-01 at A5
+Time= 0.000    hrs  QRATIO= 0.176     at A8 HRATIO= 0.114E-01 at A5
+MAX DQ= 0.347E-01 at A8 MAX DH= 0.146E-01 at A5
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.158     at A8           HRATIO= 0.104E-01 at A5
+Time= 0.000    hrs  QRATIO= 0.158     at A8 HRATIO= 0.104E-01 at A5
+MAX DQ= 0.344E-01 at A8 MAX DH= 0.152E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.146     at A8           HRATIO= 0.872E-02 at A5
+Time= 0.000    hrs  QRATIO= 0.146     at A8 HRATIO= 0.872E-02 at A5
+MAX DQ= 0.348E-01 at A8 MAX DH= 0.162E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.135     at A8           HRATIO= 0.772E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.135     at A8 HRATIO= 0.772E-02 at A1
+MAX DQ= 0.355E-01 at A8 MAX DH= 0.165E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.125     at A8           HRATIO= 0.750E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.125     at A8 HRATIO= 0.750E-02 at A1
+MAX DQ= 0.361E-01 at A8 MAX DH= 0.160E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.113     at A8           HRATIO= 0.698E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.113     at A8 HRATIO= 0.698E-02 at A1
+MAX DQ= 0.357E-01 at A8 MAX DH= 0.149E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.100     at A8           HRATIO= 0.623E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.100     at A8 HRATIO= 0.623E-02 at A1
+MAX DQ= 0.340E-01 at A8 MAX DH= 0.132E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.850E-01 at A8           HRATIO= 0.606E-02 at A4
+Time= 0.000    hrs  QRATIO= 0.850E-01 at A8 HRATIO= 0.606E-02 at A4
+MAX DQ= 0.311E-01 at A8 MAX DH= 0.114E-01 at A4
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.702E-01 at A8           HRATIO= 0.674E-02 at A4
+Time= 0.000    hrs  QRATIO= 0.702E-01 at A8 HRATIO= 0.674E-02 at A4
+MAX DQ= 0.273E-01 at A8 MAX DH= 0.127E-01 at A4
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.564E-01 at A8           HRATIO= 0.695E-02 at A4
+Time= 0.000    hrs  QRATIO= 0.564E-01 at A8 HRATIO= 0.695E-02 at A4
+MAX DQ= 0.235E-01 at A8 MAX DH= 0.130E-01 at A4
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.435E-01 at A8           HRATIO= 0.737E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.435E-01 at A8 HRATIO= 0.737E-02 at A7
+MAX DQ= 0.188E-01 at A8 MAX DH= 0.125E-01 at A4
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.319E-01 at A8           HRATIO= 0.853E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.319E-01 at A8 HRATIO= 0.853E-02 at A7
+MAX DQ= 0.143E-01 at A8 MAX DH= 0.129E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.222E-01 at A8           HRATIO= 0.930E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.222E-01 at A8 HRATIO= 0.930E-02 at A7
+MAX DQ= 0.104E-01 at A8 MAX DH= 0.139E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.178E-01 at A3           HRATIO= 0.976E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.178E-01 at A3 HRATIO= 0.976E-02 at A7
+MAX DQ= 0.841E-02 at A3 MAX DH= 0.144E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.236E-01 at A3           HRATIO= 0.996E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.236E-01 at A3 HRATIO= 0.996E-02 at A7
+MAX DQ= 0.108E-01 at A3 MAX DH= 0.143E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.281E-01 at A3           HRATIO= 0.990E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.281E-01 at A3 HRATIO= 0.990E-02 at A7
+MAX DQ= 0.123E-01 at A3 MAX DH= 0.138E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.310E-01 at A3           HRATIO= 0.959E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.310E-01 at A3 HRATIO= 0.959E-02 at A7
+MAX DQ= 0.131E-01 at A3 MAX DH= 0.128E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.325E-01 at A3           HRATIO= 0.906E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.325E-01 at A3 HRATIO= 0.906E-02 at A7
+MAX DQ= 0.131E-01 at A3 MAX DH= 0.114E-01 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.326E-01 at A3           HRATIO= 0.833E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.326E-01 at A3 HRATIO= 0.833E-02 at A7
+MAX DQ= 0.127E-01 at A3 MAX DH= 0.973E-02 at A2
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.316E-01 at A3           HRATIO= 0.745E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.316E-01 at A3 HRATIO= 0.745E-02 at A7
+MAX DQ= 0.118E-01 at A3 MAX DH= 0.104E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.298E-01 at A3           HRATIO= 0.649E-02 at A7
+Time= 0.000    hrs  QRATIO= 0.298E-01 at A3 HRATIO= 0.649E-02 at A7
+MAX DQ= 0.108E-01 at A3 MAX DH= 0.121E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.274E-01 at A3           HRATIO= 0.682E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.274E-01 at A3 HRATIO= 0.682E-02 at A1
+MAX DQ= 0.964E-02 at A3 MAX DH= 0.135E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.248E-01 at A3           HRATIO= 0.724E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.248E-01 at A3 HRATIO= 0.724E-02 at A1
+MAX DQ= 0.864E-02 at A6 MAX DH= 0.145E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.223E-01 at A3           HRATIO= 0.746E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.223E-01 at A3 HRATIO= 0.746E-02 at A1
+MAX DQ= 0.748E-02 at A3 MAX DH= 0.150E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.232E-01 at A2           HRATIO= 0.748E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.232E-01 at A2 HRATIO= 0.748E-02 at A1
+MAX DQ= 0.719E-02 at A2 MAX DH= 0.151E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.273E-01 at A2           HRATIO= 0.730E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.273E-01 at A2 HRATIO= 0.730E-02 at A1
+MAX DQ= 0.822E-02 at A2 MAX DH= 0.147E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.309E-01 at A2           HRATIO= 0.694E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.309E-01 at A2 HRATIO= 0.694E-02 at A1
+MAX DQ= 0.901E-02 at A2 MAX DH= 0.139E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.338E-01 at A2           HRATIO= 0.643E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.338E-01 at A2 HRATIO= 0.643E-02 at A1
+MAX DQ= 0.956E-02 at A2 MAX DH= 0.129E-01 at A1
+ 
+ dt =      1.000
+Time= 0.000    hrs  QRATIO= 0.361E-01 at A2           HRATIO= 0.582E-02 at A1
+Time= 0.000    hrs  QRATIO= 0.361E-01 at A2 HRATIO= 0.582E-02 at A1
+MAX DQ= 0.987E-02 at A2 MAX DH= 0.116E-01 at A1
+ 
+ ** steady flows are in: C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_STEADY_RESULTS_DOUBLE\006_RADIAL_CON_STEADY_RESULTS.zzs **
+ 
+ 
+run terminated by user
+ outputting max/min/means to C:\FMTESTS\RESULTS\1D\7.3.1\006_RADIAL_CON_STEADY_RESULTS_DOUBLE\006_RADIAL_CON_STEADY_RESULTS.mmm
