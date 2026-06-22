@@ -2,6 +2,7 @@ Fullarch conduit regression
 #REVISION#1
         86     0.750     0.900     0.100     0.001        12
       10.0
+END GENERAL
 CONDUIT
 FULLARCH
 A2

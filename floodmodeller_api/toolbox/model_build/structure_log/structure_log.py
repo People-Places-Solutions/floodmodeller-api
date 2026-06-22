@@ -225,6 +225,18 @@ class StructureLogBuilder:
 
         return {"dimensions": dimensions}
 
+    def _supported_conduit_data(self, conduit):
+        conduit_data = {
+            ("CONDUIT", "CIRCULAR"): self._circular_data,
+            ("CONDUIT", "SPRUNGARCH"): self._sprungarch_data,
+            ("CONDUIT", "FULLARCH"): self._sprungarch_data,
+            ("CONDUIT", "RECTANGULAR"): self._rectangular_data,
+            ("CONDUIT", "SECTION"): self._section_data,
+            ("CONDUIT", "SPRUNG"): self._sprung_data,
+            ("REPLICATE", None): self._replicate_data,
+        }
+        return conduit_data.get((conduit._unit, conduit.subtype))
+
     def add_conduits(self):
         conduit_stack = copy.deepcopy(list(self.dat.conduits.values()))
 
@@ -237,15 +249,8 @@ class StructureLogBuilder:
                 "subtype": conduit.subtype,
                 "comment": conduit.comment,
             }
-            if (conduit._unit, conduit.subtype) not in [
-                ("CONDUIT", "CIRCULAR"),
-                ("CONDUIT", "SPRUNGARCH"),
-                ("CONDUIT", "FULLARCH"),
-                ("CONDUIT", "RECTANGULAR"),
-                ("CONDUIT", "SECTION"),
-                ("CONDUIT", "SPRUNG"),
-                ("REPLICATE", None),
-            ]:
+            conduit_specific_data = self._supported_conduit_data(conduit)
+            if conduit_specific_data is None:
                 logging.warning(
                     "Conduit subtype: %s not currently supported in structure log",
                     conduit.subtype,
@@ -254,23 +259,7 @@ class StructureLogBuilder:
             conduit_dict, add_to_conduit_stack = self._conduit_data(conduit)
             self.unit_store[(conduit.name, conduit._unit)]["conduit_data"] = conduit_dict
             # now use individual functions to get friction and dimensional data in a way that is appropriate for each conduit type
-            match (conduit._unit, conduit.subtype):
-                case ("CONDUIT", "CIRCULAR"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._circular_data(conduit)
-                case ("CONDUIT", "SPRUNGARCH"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._sprungarch_data(conduit)
-                case ("CONDUIT", "FULLARCH"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._sprungarch_data(conduit)
-                case ("CONDUIT", "RECTANGULAR"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._rectangular_data(conduit)  # fmt: skip
-                case ("CONDUIT", "SECTION"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._section_data(conduit)
-                case ("CONDUIT", "SPRUNG"):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._sprung_data(conduit)
-                case ("REPLICATE", None):
-                    self.unit_store[(conduit.name, conduit._unit)] |= self._replicate_data(conduit)
-                case _:
-                    pass
+            self.unit_store[(conduit.name, conduit._unit)] |= conduit_specific_data(conduit)
 
             if add_to_conduit_stack is not None:
                 conduit_stack.insert(0, add_to_conduit_stack)
