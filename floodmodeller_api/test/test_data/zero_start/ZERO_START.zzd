@@ -1,0 +1,94 @@
+  
+Flood Modeller 1D Solver run using event file zero_start.ief
+  
+ 
+ writing messaging file output to zero_start.lf1
+  
+ Licence module initialised.
+ Licence module validated.
+  ** Licence Settings ** 
+
+  STANDALONE only? no
+
+  DONGLE only? no
+
+  WIBU only? no
+
+  DEFAULT edition only? no
+
+  Max retries:  forever 
+
+  Pause between licence check attempts: 5000 ms
+
+  Container: 0-0
+
+  Scan CM network during initialisation? no
+
+ Number of 1D river nodes in model:        26
+Licence checked: OK
+zero_start                                                         FILE=RIVER_NETWORK.dat Flood Modeller VER=7.2.0.01724
+ Single precision, 64-bit version
+Simulation started at 08:30:18 on 14/05/2026                            
+  
+                  Diagnostic File
+  
+
+Flood Modeller 1D Solver run parameters modified as follows:
+ Rules evaluated at time zero = T
+ Rules evaluated on first iteration = F
+ Rules times reset after positional instruction = T
+ Floodplain section area constrained by modular limit = T
+ Use flow from culvert outlet remote node = T
+
+ Bridge section properties refined every  2.0% of (max section height +       10.0m )
+
+ Solve dh = 0 at t0 in reservoirs.
+
+ Using default initial conditions (from *.dat file)
+ 
+ Reading main data file RIVER_NETWORK.dat...
+ Right Levee marker at (   111.000,    12.320) in Section: M031
+ 
+ No errors found in node labels
+ 
+ Summary of run time information:
+     start time        =   0.0000000E+00  hours
+     end time          =    30.00000      hours
+     timestep          =    20.00000      seconds
+     save multiple     =           15
+  
+ 
+Simulation time elapsed (s):             3
+ 
+run completed
+ 
+ Number of unconverged timesteps:         0
+ Proportion of simulation unconverged:   0.00%
+ 
+ ********* Mass balance summary *********
+ Mass balance calculated every    300.0s
+ 
+ Initial volume:           0.206995E+07m3
+ Final volume:             0.207003E+07m3
+-----------------------
+ Total boundary inflow  :  0.274830E+08m3
+ Total boundary outflow :  0.274861E+08m3
+ Total lat. link inflow :   0.00000    m3
+ Total lat. link outflow:   0.00000    m3
+-----------------------
+ Max. system volume:       0.366599E+07m3
+ Max. |volume| increase:   0.159605E+07m3
+ Max. boundary inflow:      627.583    m3/s
+ Max. boundary outflow:     455.573    m3/s
+-----------------------
+ Net increase in volume:    85.5000    m3
+ Net inflow volume:        -3134.00    m3
+ Volume discrepancy:       -3219.50    m3
+ Mass balance error:           0.09% (of peak system volume)
+ Mass balance error [2]:       0.01% (of boundary inflow volume)
+ 
+ ******* End mass balance summary *******
+ 
+ Writing binary results to C:\Users\TOLLERJ\Downloads\zzn_sample_data\zero_start\ZERO_START.zzn
+ outputting max/min/means to C:\Users\TOLLERJ\Downloads\zzn_sample_data\zero_start\ZERO_START.mmm
+ Convergence plot saved to C:\Users\TOLLERJ\Downloads\zzn_sample_data\zero_start\ZERO_START_001.bmp

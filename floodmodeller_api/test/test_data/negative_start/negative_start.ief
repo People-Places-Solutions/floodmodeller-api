@@ -1,0 +1,19 @@
+[ISIS Event Header]
+Title=negative_start
+Datafile=..\River_Network.dat
+Results=negative_start
+[ISIS Event Details]
+RunType=Unsteady
+Start=-16
+Finish=30
+Timestep=20
+SaveInterval=300
+ICsFrom=1
+RefineBridgeSecProps=0
+SolveDHEqualsZeroAtStart=1
+RulesAtTimeZero=1
+RulesOnFirstIteration=0
+ResetTimesAfterPos=1
+UseFPSModularLimit=1
+UseRemoteQ=1
+2DFLOW=1

@@ -59,14 +59,15 @@ def try_converting(value: str) -> str | int | float:
 
 
 class IEF(FMFile):
-    """Reads and write Flood Modeller event file format '.ief'
+    """Reads and writes Flood Modeller event file format '.ief'
 
     Args:
         ief_filepath (str, optional): Full filepath to ief file. If not specified, a new IEF class
             will be created.. Defaults to None.
+        from_json (bool, optional): Internal flag used when rebuilding an IEF from JSON. Defaults to False.
 
     Raises:
-        TypeError: Raised if ief_filepath not pointing to valide IEF file
+        TypeError: Raised if ief_filepath does not point to a valid IEF file
         FileNotFoundError: Raised if ief_filepath points to a non-existent location
 
     Output:
@@ -491,6 +492,8 @@ class IEF(FMFile):
             enginespath (str, optional): {''} | '/absolute/path/to/engine/executables'
                 Define where the engine executables are located. This replaces the default location (usual installation folder) if set to
                 anything other than ''.
+            range_function (Callable, optional): Function used to create the progress iterator. Defaults to tqdm.trange.
+            range_settings (dict, optional): Keyword arguments passed to range_function. Defaults to None.
 
         Raises:
             UserWarning: Raised if ief filepath not already specified
@@ -580,11 +583,13 @@ class IEF(FMFile):
 
         # Get zzn location
         result_path = self._get_result_filepath(suffix="zzn")
+        logging.debug("    Result path exists: %s", result_path.exists())
 
         if not result_path.exists():
             msg = "Simulation results file (zzn) not found"
             raise FileNotFoundError(msg)
 
+        logging.debug("    Calling ZZN with path: %s", result_path)
         return ZZN(result_path)
 
     def get_log(self) -> LF1:

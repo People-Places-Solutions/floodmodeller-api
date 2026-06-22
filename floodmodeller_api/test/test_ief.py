@@ -44,7 +44,7 @@ def sleep():
         yield sleep
 
 
-@pytest.mark.parametrize("ief_file", parameterise_glob("*.ief"), ids=id_from_path)
+@pytest.mark.parametrize("ief_file", parameterise_glob(r"**/*.ief"), ids=id_from_path)
 def test_ief_read_doesnt_change_data(tmpdir, ief_file):
     """IEF: Check all '.ief' files in folder by reading the _write() output into a new IEF instance and checking it stays the same."""
     ief = IEF(ief_file)

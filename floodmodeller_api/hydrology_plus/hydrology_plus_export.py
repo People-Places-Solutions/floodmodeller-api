@@ -31,6 +31,7 @@ class HydrologyPlusExport(FMFile):
 
     Args:
         csv_file_path (str | Path): produced by Hydrology + in Flood Modeller
+        from_json (bool, optional): Internal flag used when rebuilding from JSON. Defaults to False.
 
     Output:
         Initiates 'HydrologyPlusExport' object

@@ -178,12 +178,12 @@ class BLOCKAGE(Unit):
         outlet_loss (float): Outlet loss coefficient
         timeoffset (float): Time Datum Adjustment
         timeunit_blockage (str): Unit of time, e.g. 'HOURS', 'MINUTES' or 'SECONDS'. See Flood Modeller documentation for all available options.
-        extendmethod (str): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to None.
+        extendmethod (str): Data extending method: 'EXTEND', 'NOEXTEND' or 'REPEAT'. Defaults to 'NOEXTEND'.
         data (pandas.Series): Series object with variable ``'blockage'`` and index ``'Time'``. Defaults to None.
 
 
     Returns:
-        BLOCKAGE: Flood Modeller BLOCAKGE Unit class object
+        BLOCKAGE: Flood Modeller BLOCKAGE Unit class object
     """
 
     _unit = "BLOCKAGE"

@@ -1,12 +1,16 @@
 # type: ignore
 # ignored because the output from _ZZ.to_dataframe() is only a series in special cases
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
 from floodmodeller_api import IEF, ZZN, ZZX
+from floodmodeller_api.test.util import parameterise_glob
+from floodmodeller_api.util import read_file
 
 
 @pytest.fixture()
@@ -66,24 +70,30 @@ def test_max(zzn: ZZN, zzx: ZZX, folder: Path, csv: str, file: str):
     ],
 )
 def test_all_timesteps(zzn: ZZN, zzx: ZZX, folder: Path, variable: str, csv: str, file: str):
-    file_obj = zzn if file == "zzn" else zzx
+    """
+    This test compares data extracted from ZZN/ZZX files against known values from .csv.
+
+    Multiple assertions used to test various different methods to access variable results
+
+    """
+    zz_obj = zzn if file == "zzn" else zzx
     suffix = f"_{variable}"
     expected = pd.read_csv(folder / csv, index_col=0)
 
-    actual_1 = file_obj.to_dataframe(variable=variable)
+    actual_1 = zz_obj.to_dataframe(variable=variable)
     actual_1.index = actual_1.index.round(3)
     pd.testing.assert_frame_equal(actual_1, expected, atol=1e-3, check_dtype=False)
 
-    actual_2 = file_obj.to_dataframe()[variable]
+    actual_2 = zz_obj.to_dataframe()[variable]
     actual_2.index = actual_2.index.round(3)
     pd.testing.assert_frame_equal(actual_2, expected, atol=1e-3, check_dtype=False)
 
-    actual_3 = file_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
+    actual_3 = zz_obj.to_dataframe(multilevel_header=False).filter(like=suffix, axis=1)
     actual_3.index = actual_3.index.round(3)
     actual_3.columns = [x.removesuffix(suffix) for x in actual_3.columns]
     pd.testing.assert_frame_equal(actual_3, expected, atol=1e-3, check_dtype=False)
 
-    actual_4 = file_obj.to_dataframe(variable=variable, multilevel_header=False)
+    actual_4 = zz_obj.to_dataframe(variable=variable, multilevel_header=False)
     actual_4.index = actual_4.index.round(3)
     actual_4.columns = [x.removesuffix(suffix) for x in actual_4.columns]
     pd.testing.assert_frame_equal(actual_4, expected, atol=1e-3, check_dtype=False)
@@ -141,3 +151,78 @@ def test_meta_is_read_only(zzx: ZZN):
         zzx.meta["variables"] = "hi"
 
     zzx._meta["variables"] = "hi"
+
+
+@pytest.mark.parametrize("simulation_case", ["zero_start", "negative_start", "positive_start"])
+@pytest.mark.parametrize("file_type", ["zzn", "zzx"])
+def test_zz_reads_correct_start_end(test_workspace, simulation_case, file_type):
+    """
+    This test compares that the dataframe produced by _ZZ classes matches what we expect from the corresponding IEF that produced the results.
+
+    Compares start and finish times to first and last indecies of df,
+    Also checks that the number of rows matches what we expect based on the save interval.
+    """
+    ief_filepath = test_workspace / simulation_case / f"{simulation_case}.ief"
+    ief = IEF(ief_filepath)
+
+    zz_filepath = test_workspace / simulation_case / f"{simulation_case.upper()}.{file_type}"
+    zz: ZZN | ZZX = read_file(zz_filepath)
+    zz_df = zz.to_dataframe()
+
+    assert zz_df.index[0] == ief.start
+    assert zz_df.index[-1] == ief.finish
+
+    # We expect saving to happen on both the first and last timestep, hence the `+1`
+    expected_rows = ((ief.finish - ief.start) * (3600 / ief.saveinterval)) + 1
+    assert len(zz_df.index) == expected_rows
+
+
+@pytest.mark.parametrize("simulation_case", ["zero_start", "negative_start", "positive_start"])
+@pytest.mark.parametrize(("file_type", "variable"), [("zzn", "Flow"), ("zzx", "Link inflow")])
+def test_result_type_max_matches_full_df(test_workspace, simulation_case, file_type, variable):
+    """
+    Tests `result_type="max"` option of `to_dataframe()` for consistency with main dataframe output.
+
+    This should catch any issues where the time is not picked up properly in the max output here.
+    """
+
+    zz_filepath = test_workspace / simulation_case / f"{simulation_case.upper()}.{file_type}"
+    zz: ZZN | ZZX = read_file(zz_filepath)
+    zz_df = zz.to_dataframe()
+
+    zz_max_df = zz.to_dataframe(result_type="max", include_time=True)
+    units_to_check = ["M040", "M042", "M054"]
+
+    for label in units_to_check:
+        max_flow = zz_df[variable][label].max()
+        max_flow_time = zz_df[variable][label].idxmax()
+        assert zz_max_df.loc[label, f"Max {variable}"] == pytest.approx(max_flow, 0.001)
+        assert zz_max_df.loc[label, f"Max {variable} Time(hrs)"] == max_flow_time
+
+
+@pytest.mark.parametrize(
+    "zz_path",
+    parameterise_glob("zz_gc/**/*.zzn") + parameterise_glob("zz_gc/**/*.zzx"),
+    ids=lambda zz_path: zz_path.parent.name + zz_path.suffix,
+)
+def test_zz_gc_fatal_error(test_workspace, zz_path):
+    """
+    Test whether ZZ classes can load results without causing the fatal error attributed to Python garbage collection.
+
+    Manifests as 'Windows fatal exception: access violation' on Windows and
+    'Fatal Python error: Segmentation fault' on Linux.
+
+    This test runs in subprocess as running it directly in the test suite will crash all other ongoing tests
+    and is repeated to attempt to trigger the error if it is intermittent."""
+    zz_type = "ZZN" if zz_path.suffix == ".zzn" else "ZZX"
+    for _ in range(10):
+        code = f"""
+from floodmodeller_api import {zz_type}
+zz_type = {zz_type}
+zz_obj = zz_type(r'{test_workspace / zz_path}')
+assert isinstance(zz_obj, zz_type)
+"""
+        result = subprocess.run([sys.executable, "-c", code], capture_output=True)
+        assert (
+            result.returncode == 0
+        ), f"Process crashed with return code {result.returncode}\nstderr: {result.stderr.decode()}"

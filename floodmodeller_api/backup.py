@@ -46,16 +46,12 @@ class BackupControl(Jsonable):
         clear_backup(): Removes all backup files in the backup directory.
 
     Usage:
-        The BackUp class can be used to create backups of files and directories. The backups are stored in a temporary
-        directory and are logged in a CSV file. The backups can be cleared using the clear_backup method.
+        The BackupControl class manages the temporary backup directory and log file. Backups can be cleared
+        using the clear_backup method.
 
     Example:
-        # Create a new BackUp object
-        backup = BackUp(backup_directory_name='my_backups')
-
-        # Create a backup of a file
-        backup_file_path = '/path/to/my/file.txt'
-        backup.backup_file(backup_file_path)
+        # Create a new BackupControl object
+        backup = BackupControl()
 
         # Clear all backups
         backup.clear_backup()
@@ -66,9 +62,6 @@ class BackupControl(Jsonable):
     def __init__(self):
         """
         Initialises a new BackUp object.
-
-        Args:
-            backup_directory_name (str): The name of the backup directory. Defaults to "floodmodeller_api_backup".
         """
         self.temp_dir = tempfile.gettempdir()
         self.backup_dirname = "floodmodeller_api_backup"
@@ -185,7 +178,7 @@ class File(BackupControl):
             Makes a backup of the file. This function copies the file to the backup directory with a unique filename.
             It also logs a row in the backup csv file to help find a particular backup when inspecting the file system.
 
-        list_backups(self) -> List[str]:
+        list_backups(self) -> list[BackupFile]:
             Lists backed up versions of the File, ordered from newest to oldest.
 
     Note:

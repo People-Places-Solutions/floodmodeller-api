@@ -7,10 +7,10 @@ from floodmodeller_api.validation import _validate_unit
 from ._base import Unit
 from ._helpers import (
     join_10_char,
-    join_12_char_ljust,
+    join_n_char_ljust,
     read_reservoir_data,
     split_10_char,
-    split_12_char,
+    split_n_char,
     to_float,
     to_int,
     write_dataframe,
@@ -42,11 +42,11 @@ class RESERVOIR(Unit):
     def _read(self, block: list[str]) -> None:
         self._revision, self.comment = self._get_revision_and_comment(block[0])
 
-        self.labels = split_12_char(block[1])
+        self.labels = split_n_char(block[1], self._label_len)
         self.name = self.labels[0]
 
         if self._revision == 1:
-            self.lateral_inflow_labels = split_12_char(block[2])
+            self.lateral_inflow_labels = split_n_char(block[2], self._label_len)
             idx = 3
 
             lines = split_10_char(f"{block[-1]:<30}")
@@ -64,7 +64,7 @@ class RESERVOIR(Unit):
     def _write(self) -> list[str]:
         _validate_unit(self)
         rev1_a = (
-            [join_12_char_ljust(*self.lateral_inflow_labels).rstrip()]
+            [join_n_char_ljust(self._label_len, *self.lateral_inflow_labels).rstrip()]
             if self._revision == 1
             else []
         )
@@ -73,7 +73,7 @@ class RESERVOIR(Unit):
         )
         return [
             self._create_header(include_revision=self._revision is not None),
-            join_12_char_ljust(*self.labels).rstrip(),
+            join_n_char_ljust(self._label_len, *self.labels).rstrip(),
             *rev1_a,
             *write_dataframe(self.no_rows, self.data),
             *rev1_b,
@@ -81,7 +81,7 @@ class RESERVOIR(Unit):
 
     def _create_from_blank(  # noqa: PLR0913 (need that many)
         self,
-        name: str = "new_reservoir",
+        name: str = "new_res",
         comment: str = "",
         subtype: str = "OPEN",
         labels: list[str] | None = None,

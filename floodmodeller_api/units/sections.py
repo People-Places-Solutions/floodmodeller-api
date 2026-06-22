@@ -50,8 +50,7 @@ class RIVER(Unit):
         density (float, optional): Density in kg/m3
 
     Raises:
-        NotImplementedError: Raised if class is initialised without existing river block (i.e. if attempting to create new River unit).
-            This will be an option for future releases
+        NotImplementedError: Raised if class is initialised with an unsupported river subtype.
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object
@@ -74,6 +73,7 @@ class RIVER(Unit):
     def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_section",
+        subtype="SECTION",
         comment="",
         spill1="",
         spill2="",
@@ -86,26 +86,33 @@ class RIVER(Unit):
         density=1000.0,
         data=None,
     ):
-        # Initiate new SECTION (currently hardcoding this as default)
-        self._subtype = "SECTION"
+        if subtype == "SECTION":
+            for param, val in {
+                "name": name,
+                "comment": comment,
+                "subtype": subtype,
+                "spill1": spill1,
+                "spill2": spill2,
+                "lat1": lat1,
+                "lat2": lat2,
+                "lat3": lat3,
+                "lat4": lat4,
+                "dist_to_next": dist_to_next,
+                "slope": slope,
+                "density": density,
+            }.items():
+                if param == "subtype":
+                    self._subtype = val
+                else:
+                    setattr(self, param, val)
 
-        for param, val in {
-            "name": name,
-            "comment": comment,
-            "spill1": spill1,
-            "spill2": spill2,
-            "lat1": lat1,
-            "lat2": lat2,
-            "lat3": lat3,
-            "lat4": lat4,
-            "dist_to_next": dist_to_next,
-            "slope": slope,
-            "density": density,
-        }.items():
-            setattr(self, param, val)
+            self._data = self._enforce_dataframe(data, self._required_columns)
+            self._active_data = None
 
-        self._data = self._enforce_dataframe(data, self._required_columns)
-        self._active_data = None
+        else:
+            # This block is triggered for River subtypes which aren't yet supported
+            msg = f"This River sub-type: '{subtype}' is currently unsupported for reading/editing"
+            raise NotImplementedError(msg)
 
     def _read(self, riv_block):
         """Function to read a given RIVER block and store data as class attributes."""
