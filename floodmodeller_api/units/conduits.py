@@ -83,7 +83,7 @@ class CONDUIT(Unit):
     **Sprung Type (``CONDUIT.subtype == 'SPRUNG'``)**
 
     Args:
-        equation (str): Choose between the Manning's formulation and the Colbrook-White's formulation
+        equation (str): Choose between the Manning's formulation and the Colebrook-White's formulation
         elevation_invert (float): Height of the conduit above datum (m)
         width (float): Width of conduit (m)
         height_springing (float): Height of conduit's springing (m)
@@ -268,6 +268,9 @@ class CONDUIT(Unit):
             # This block is triggered for conduit subtypes which aren't yet supported
             msg = f"This Conduit sub-type: '{subtype}' is currently unsupported for reading/editing"
             raise NotImplementedError(msg)
+
+        if subtype == "FULLARCH":
+            all_params["height_springing"] = 0.0
 
         # Insert common attributes to the subtype parameter list
         subtype_params[subtype].extend(common_params)

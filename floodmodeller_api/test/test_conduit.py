@@ -33,3 +33,15 @@ def test_create_from_blank_with_params_conduit_section():
         "     1.000     0.500  1.500000",
         "     2.000     2.000  1.500000",
     ]
+
+
+def test_create_from_blank_fullarch_forces_zero_height_springing():
+    unit = CONDUIT(
+        subtype="FULLARCH",
+        height_springing=9.9,
+        elevation_invert=1.0,
+        width=2.0,
+        height_crown=0.8,
+    )
+
+    assert unit.height_springing == 0.0
