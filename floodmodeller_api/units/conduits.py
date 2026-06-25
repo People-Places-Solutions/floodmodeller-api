@@ -268,6 +268,9 @@ class CONDUIT(Unit):
             msg = f"This Conduit sub-type: '{subtype}' is currently unsupported for reading/editing"
             raise NotImplementedError(msg)
 
+        if subtype == "FULLARCH":
+            all_params["height_springing"] = 0.0
+
         # Insert common attributes to the subtype parameter list
         subtype_params[subtype].extend(common_params)
 
