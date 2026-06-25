@@ -1099,8 +1099,9 @@ class DAT(FMFile):
 
             attached_units = list(
                 filter(
-                    lambda u: u.machine_name != unit.machine_name
-                    and u.all_labels & unit.all_labels,
+                    lambda u: (
+                        u.machine_name != unit.machine_name and u.all_labels & unit.all_labels
+                    ),
                     start_list,
                 ),
             )

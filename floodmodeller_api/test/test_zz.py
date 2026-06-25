@@ -223,6 +223,6 @@ zz_obj = zz_type(r'{test_workspace / zz_path}')
 assert isinstance(zz_obj, zz_type)
 """
         result = subprocess.run([sys.executable, "-c", code], capture_output=True)
-        assert (
-            result.returncode == 0
-        ), f"Process crashed with return code {result.returncode}\nstderr: {result.stderr.decode()}"
+        assert result.returncode == 0, (
+            f"Process crashed with return code {result.returncode}\nstderr: {result.stderr.decode()}"
+        )
