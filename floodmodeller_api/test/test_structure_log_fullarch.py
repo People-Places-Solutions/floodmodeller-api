@@ -49,7 +49,6 @@ def test_fullarch_structure_log_output():
             },
             "dimensions": {
                 "width": 2.0,
-                "height_springing": 0.0,
                 "height_crown": 0.8,
                 "invert": 1.0,
             },
