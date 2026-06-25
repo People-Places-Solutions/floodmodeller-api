@@ -255,7 +255,6 @@ class CONDUIT(Unit):
                 "equation",
                 "elevation_invert",
                 "width",
-                "height_springing",
                 "height_crown",
                 "friction_on_invert",
                 "friction_on_walls",
@@ -268,9 +267,6 @@ class CONDUIT(Unit):
             # This block is triggered for conduit subtypes which aren't yet supported
             msg = f"This Conduit sub-type: '{subtype}' is currently unsupported for reading/editing"
             raise NotImplementedError(msg)
-
-        if subtype == "FULLARCH":
-            all_params["height_springing"] = 0.0
 
         # Insert common attributes to the subtype parameter list
         subtype_params[subtype].extend(common_params)
@@ -418,7 +414,9 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            friction_params = (
+                f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            )
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -508,7 +506,10 @@ class CONDUIT(Unit):
             )
             for _, coord in self.coords.iterrows():
                 c_block.extend(
-                    [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
+                    [
+                        join_10_char(coord.x, coord.y)
+                        + join_10_char(coord.cw_friction, dp=6)
+                    ],
                 )
         else:
             c_block = self._raw_block
