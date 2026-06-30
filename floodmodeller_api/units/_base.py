@@ -207,9 +207,12 @@ class Unit(Jsonable):
         with contextlib.suppress(AttributeError, NotImplementedError):
             _ = self.data, other.data
 
+        comparable_self = {k: v for k, v in self.__dict__.items() if k != "_machine_name"}
+        comparable_other = {k: v for k, v in other.__dict__.items() if k != "_machine_name"}
+
         result, diff = check_item_with_dataframe_equal(
-            self.__dict__,
-            other.__dict__,
+            comparable_self,
+            comparable_other,
             name=f"{self._unit}.{self._subtype or ''}.{self._name}",
             diff=diff,
         )
