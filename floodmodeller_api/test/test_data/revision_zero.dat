@@ -1,0 +1,12 @@
+Simple test file
+        86     0.750     0.900     0.100     0.001        12
+      10.0
+FSSR16BDY
+resin
+    66.000                    
+       0.0     1.000          SCALEFACT      1.000HYDROGRAPH      1.00      FULL
+INITIAL CONDITIONS
+ label   ?      flow     stage froude no  velocity     umode    ustate         z
+resin        y   200.000    10.014     0.149     0.933     0.000     0.000     3.620
+GISINFO
+FSSR16BDY resin 0 0 0 0 0

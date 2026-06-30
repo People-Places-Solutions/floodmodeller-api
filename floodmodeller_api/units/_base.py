@@ -37,6 +37,7 @@ class Unit(Jsonable):
     _subtype: str | None = None
     _name: str | None = None
     _location: tuple[float, float] | None = None
+    _machine_name: str | None = None
 
     def __init__(self, unit_block=None, n=12, from_json: bool = False, **kwargs):
         if from_json:
@@ -93,6 +94,35 @@ class Unit(Jsonable):
         return (labels | set(chain(*label_lists))) - {""}
 
     @property
+    def machine_name(self) -> str | None:
+        """
+        This is a unique name attributed to a unit by the encapsulating DAT class.
+        As of Flood Modeller 7.4, unit specification written in .dat files don't specify
+        unique names for unit instance; the DAT class takes responsibility for this job.
+        Future versions of Flood Modeller may introduce a units unique name field but
+        this disassociation with that work makes this machine_name property backwards
+        compatible with older versions of Flood Modeller, and earlier revisions of the
+        DAT files.
+
+        The Machine name is in a convenient format for legibility consisting
+        of the Unit's unit name, it's subtype, and the nth found of its type e.g.
+        RIVER_SECTION_58 meaning the 58th river section in the dat file. Programatically
+        adding or removing units does not effect the machine names of existing units,
+        but new machine names will be applied as neccessary. It is possible to refresh
+        the names by calling refresh_machines_name() from the DAT file.
+
+        The machine name is uniquely useful in identifying a node and is best used
+        in scenarios where identifying nodes is key. Internally, it's used in building the
+        graph network and identifying relationships (edges) between graph nodes.
+        """
+        return self._machine_name
+
+    @machine_name.setter
+    def machine_name(self, _):
+        msg = "The machine_name is an automatically generated property and not intended to be updated by clients."
+        raise ValueError(msg)
+
+    @property
     def unique_name(self) -> str:
         if self._name is None:
             msg = "No unique name available."
@@ -104,7 +134,7 @@ class Unit(Jsonable):
         return self._subtype
 
     @subtype.setter
-    def subtype(self, new_value):
+    def subtype(self, _):
         msg = "You cannot change the subtype of a unit once it has been instantiated"
         raise ValueError(msg)
 

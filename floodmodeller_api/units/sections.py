@@ -121,7 +121,7 @@ class RIVER(Unit):
             ``'Velocity'`` and ``'Flow'``.
 
     Raises:
-        NotImplementedError: Raised if class is initialised from blank for unsupported river subtypes.
+        NotImplementedError: Raised if class is initialised with an unsupported river subtype.
 
     Returns:
         RIVER: Flood Modeller RIVER Unit class object

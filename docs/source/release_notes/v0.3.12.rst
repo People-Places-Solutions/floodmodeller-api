@@ -9,7 +9,7 @@ New features
 
 Updates
 --------------
-- New method added to ZZN Class :func:`~floodmodeller_api.ZZN.to_dict_of_dataframes`
+- New method added to ZZN Class ``to_dict_of_dataframes``.
 - New argument ``enginespath`` added to :class:`~floodmodeller_api.ZZN` to allow specifying a non-default path
 - Improved support for relative filepaths 
 

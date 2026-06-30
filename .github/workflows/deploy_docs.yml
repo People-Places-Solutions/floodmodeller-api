@@ -1,0 +1,56 @@
+name: Deploy Docs
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [ "Build (PyPI)" ]
+    types: [ completed ]
+
+env:
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  deploy-docs:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install the latest version of uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        activate-environment: true
+
+    - name: Install reqs
+      run: |
+        uv pip install .
+        uv pip install -r requirements.txt
+
+    - name: Create documentation
+      run: sphinx-build -b html docs/source docs/build/html -W
+
+    - name: Stage documentation
+      run: |
+        mkdir -p dist/api
+        cp -R docs/build/html/. dist/api/
+        cp docs/static_site_root/index.html dist/index.html
+
+    - name: Deploy documentation to Azure Static Web Apps
+      uses: Azure/static-web-apps-deploy@v1
+      with:
+        action: upload
+        azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+        app_location: dist
+        skip_app_build: true
