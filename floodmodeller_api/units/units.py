@@ -55,7 +55,7 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "RIVER": {
         "group": "sections",
         "has_subtype": True,
-        "subtypes": ["SECTION"],
+        "subtypes": ["SECTION", "MUSKINGUM", "MUSK-XSEC", "MUSK-VPMC", "MUSK-RSEC"],
     },
     "BRIDGE": {
         "group": "structures",

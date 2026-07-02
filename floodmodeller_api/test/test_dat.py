@@ -21,6 +21,8 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 from .util import id_from_path, parameterise_glob
 
+DAT_FILE_PATHS = parameterise_glob("**/*.dat") + parameterise_glob("**/*.DAT")
+
 
 @pytest.fixture()
 def dat_fp(test_workspace):
@@ -106,8 +108,8 @@ def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-@pytest.mark.parametrize("original_dat_path", parameterise_glob("**/.dat"), ids=id_from_path)
-def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path):
+@pytest.mark.parametrize("original_dat_path", DAT_FILE_PATHS, ids=id_from_path)
+def test_dat_read_doesnt_change_data(tmp_path, original_dat_path):
     """DAT: Check all '.dat' files in folder by reading the _write() output into a new DAT instance and checking it stays the same."""
     if original_dat_path.name.startswith("duplicate_unit_test"):
         pytest.skip("Skipping as invalid DAT (duplicate units)")
@@ -144,6 +146,41 @@ def test_dat_read_doesnt_change_data(test_workspace, tmp_path, original_dat_path
     second_dat_path.unlink()
     if gxy_path.exists():
         second_gxy_path.unlink()
+
+
+@pytest.mark.parametrize("original_dat_path", DAT_FILE_PATHS, ids=id_from_path)
+def test_dat_units_write_from_dat(original_dat_path):
+    """DAT: Check every unit can be re-instantiated from its own _write() block."""
+    if original_dat_path.name.startswith("duplicate_unit_test"):
+        pytest.skip("Skipping as invalid DAT (duplicate units)")
+
+    dat = DAT(original_dat_path)
+    failures = []
+
+    for idx, unit in enumerate(dat._all_units):
+        unit_block = unit._write()
+        if isinstance(unit, UNSUPPORTED):
+            roundtripped_unit = UNSUPPORTED(
+                unit_block,
+                n=unit._label_len,
+                unit_name=unit.name,
+                unit_type=unit.unit,
+                subtype=unit.subtype is not False,
+            )
+        else:
+            roundtripped_unit = unit.__class__(unit_block, n=unit._label_len)
+
+        if "_location" in unit.__dict__:
+            roundtripped_unit.set_cached_location_from_gxy(unit._location)
+
+        if unit != roundtripped_unit:
+            try:
+                unit_label = unit.unique_name
+            except ValueError:
+                unit_label = f"{unit.unit}[{idx}]"
+            failures.append(f"{unit_label}: {unit._get_diff(roundtripped_unit)[1]}")
+
+    assert not failures, "\n".join(failures)
 
 
 def test_revision_zero_dat(test_workspace: Path, tmp_path: Path):
