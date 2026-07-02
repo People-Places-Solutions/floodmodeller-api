@@ -777,8 +777,11 @@ class RIVER(Unit):
                 river_unit.active_data
         """
         if self.subtype != "SECTION":
-            msg = f"active_data is only available for RIVER SECTION units, not {self.subtype}."
-            raise NotImplementedError(msg)
+            logging.warning(
+                "active_data is only different from data for RIVER SECTION units, not %s.",
+                self.subtype,
+            )
+            return self.data
 
         if self._active_data is not None:
             return self._active_data
