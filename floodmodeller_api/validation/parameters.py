@@ -237,9 +237,10 @@ parameter_options = {
         "type": "type-match",
         "options": (float, int),
     },
+    # Pier_shape is an optional parameter for npier == 1
     "pier_shape": {
         "type": "value-match",
-        "options": ["RECTANGLE", "CYLINDER", "SQUARE", "I-BEAM"],
+        "options": ["", "RECTANGLE", "CYLINDER", "SQUARE", "I-BEAM"],
     },
     # Pier_faces is an optional parameter
     "pier_faces": {
