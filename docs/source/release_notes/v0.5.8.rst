@@ -1,0 +1,20 @@
+********************************
+What's new in 0.5.8 (July 2026)
+********************************
+
+This page details the changes for version 0.5.8 of Flood Modeller API
+
+New features
+---------------
+- `Add class support for symmetrical culverts <https://github.com/People-Places-Solutions/floodmodeller-api/pull/257>`_
+- `Add routing functionality <https://github.com/People-Places-Solutions/floodmodeller-api/pull/254>`_
+
+Updates
+-----------
+- `Improve network graph functionality <https://github.com/People-Places-Solutions/floodmodeller-api/pull/263>`_
+- `Update documentation <https://github.com/People-Places-Solutions/floodmodeller-api/pull/267>`_
+- `Bump version to 0.5.8 <https://github.com/People-Places-Solutions/floodmodeller-api/pull/274>`_
+
+Bug fixes
+------------
+- `Fix ZZ reader silently failing <https://github.com/People-Places-Solutions/floodmodeller-api/pull/270>`_
