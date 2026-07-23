@@ -1,0 +1,48 @@
+Test file for fullarch
+#REVISION#1
+         4     0.750     0.900     0.100     0.001        12SI
+    10.000     0.010     0.010     0.700     0.100     0.700     0.000
+RAD FILE
+
+END GENERAL
+QTBDY
+INFLOW
+         1     0.000     0.000     HOURS                                   0.000
+     0.000     0.000
+JUNCTION
+OPEN
+INFLOW      FULLARCH_01
+CONDUIT Comment with text!
+FULLARCH
+FULLARCH_01
+    20.000
+MANNING
+    50.000     6.000     3.000        ON     0.001     1.000        ON     0.002     0.750
+   0.03500   0.04000
+CONDUIT Comment with text! Note CW friction on this one
+FULLARCH
+FULLARCH_02
+     0.000
+COLEBROOK-WHITE
+    50.000     6.000     3.000       OFF     0.000     0.000    GLOBAL     0.000     0.000
+   0.02000   0.20000
+JUNCTION
+OPEN
+FULLARCH_02 OUTFLOW
+HTBDY
+OUTFLOW
+         1               HOURS
+     0.000     0.000
+INITIAL CONDITIONS
+ label   ?      flow     stage froude no  velocity     umode    ustate         z
+INFLOW       y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+FULLARCH_01  y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+FULLARCH_02  y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+OUTFLOW      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+GISINFO
+QTBDY INFLOW 0 0 0 0 0
+JUNCTION OPEN INFLOW 0 0 0 0 0
+CONDUIT FULLARCH FULLARCH_01 0 0 0 0 0
+CONDUIT FULLARCH FULLARCH_02 0 0 0 0 0
+JUNCTION OPEN FULLARCH_02 0 0 0 0 0
+HTBDY OUTFLOW 0 0 0 0 0
