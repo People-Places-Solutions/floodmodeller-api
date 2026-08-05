@@ -33,6 +33,7 @@ from ._helpers import (
     to_str,
 )
 
+logger = logging.getLogger(__name__)
 
 class CONDUIT(Unit):
     """The Conduit class supports six conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH, SECTION (which
@@ -144,7 +145,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank(  # noqa: PLR0913
+    def _create_from_blank(  # noqa: PLR0913, PLR0917
         self,
         name="new_unit",
         spill="",
@@ -384,13 +385,13 @@ class CONDUIT(Unit):
 
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
-            logging.warning(
+            logger.warning(
                 "This Conduit sub-type: '%s' is currently unsupported for reading/editing",
                 self._subtype,
             )
             self._raw_block = c_block
 
-    def _write(self):
+    def _write(self): #noqa: PLR0911
         """Function to write a valid CONDUIT block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = self._create_header()
