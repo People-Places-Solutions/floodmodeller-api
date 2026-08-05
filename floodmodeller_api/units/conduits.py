@@ -33,10 +33,12 @@ from ._helpers import (
     to_str,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class CONDUIT(Unit):
-    """The Conduit class supports five conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH and SECTION (which
-    corresponds to Symmetrical Conduits). Each of these sub-types forms a unique instance of the class which is differentiated by the
+    """The Conduit class supports six conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH, SECTION (which
+    corresponds to Symmetrical Conduits) and FULLARCH . Each of these sub-types forms a unique instance of the class which is differentiated by the
     `CONDUIT.subtype` attribute. All conduit types have the same common attributes:
 
     **Common Attributes**
@@ -121,6 +123,23 @@ class CONDUIT(Unit):
     Args:
         coords (pd.DataFrame): Dataframe object containing all the conduit cross section data. Columns are ``'x', 'y', 'cw_friction'``
 
+    **Fullarch Typr (``CONDUIT.subtype == 'FULLARCH'``)**
+
+    Args:
+        friction_eq (str): Friction equation to use (``'MANNING'`` or ``'COLEBROOK-WHITE'``)
+        invert (float): Elevation of invert above datum (m)
+        use_bottom_slot (str): Whether to include bottom slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        bottom_slot_dist (float): Distance of slot top above invert (m)
+        bottom_slot_depth (float): Total depth of bottom slot (m)
+        use_top_slot (str): Whether to include top slot (``'ON'``, ``'OFF'`` or ``'GLOBAL'``). Setting it to 'GLOBAL' will use the default option specified in IEF.
+        top_slot_dist (float): Distance of slot bottom below soffit (m)
+        top_slot_depth (float): Total depth of top slot (m)
+        width (float): Width of conduit (at invert level) (m)
+        height (float): Height of conduit (above invert) (m)
+        friction_on_invert (float): Friction value for conduit invert
+        friction_on_arch (float): Friction value for conduit arch
+
+
     Returns:
         CONDUIT: Flood Modeller CONDUIT Unit class object
     """
@@ -149,6 +168,7 @@ class CONDUIT(Unit):
         top_slot_dist=0.0,
         top_slot_depth=0.0,
         friction_on_invert=0.0,
+        friction_on_arch=0.0,
         friction_on_walls=0.0,
         friction_on_soffit=0.0,
         diameter=0.0,
@@ -177,6 +197,7 @@ class CONDUIT(Unit):
             "width": width,
             "height": height,
             "friction_on_invert": friction_on_invert,
+            "friction_on_arch": friction_on_arch,
             "friction_on_walls": friction_on_walls,
             "friction_on_soffit": friction_on_soffit,
             "elevation_invert": elevation_invert,
@@ -234,6 +255,14 @@ class CONDUIT(Unit):
                 "friction_on_soffit",
             ],
             "SECTION": ["coords"],
+            "FULLARCH": [
+                "friction_eq",
+                "invert",
+                "width",
+                "height",
+                "friction_on_invert",
+                "friction_on_arch",
+            ],
         }
 
         if subtype not in subtype_params:
@@ -245,7 +274,7 @@ class CONDUIT(Unit):
         subtype_params[subtype].extend(common_params)
 
         # Insert slot attributes to the required subtype
-        if subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH"):
+        if subtype in ("CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "FULLARCH"):
             subtype_params[subtype].extend(slot_params)
 
         # Set attributes relevant to the specific conduit subtype
@@ -338,15 +367,32 @@ class CONDUIT(Unit):
                 friction.append(to_float(row_data[2]))
             self.coords = pd.DataFrame({"x": x, "y": y, "cw_friction": friction})
 
+        elif self._subtype == "FULLARCH":
+            self.dist_to_next = to_float(split_10_char(c_block[3])[0])
+            self.friction_eq = c_block[4].strip()
+            params = split_10_char(f"{c_block[5]:<90}")
+            self.invert = to_float(params[0])
+            self.width = to_float(params[1])
+            self.height = to_float(params[2])
+            self.use_bottom_slot = to_str(params[3], "GLOBAL")
+            self.top_slot_dist = to_float(params[7])
+            self.bottom_slot_depth = to_float(params[5])
+            self.use_top_slot = to_str(params[6], "GLOBAL")
+            self.bottom_slot_dist = to_float(params[4])
+            self.top_slot_depth = to_float(params[8])
+            next_params = split_10_char(f"{c_block[6]:<90}")
+            self.friction_on_invert = to_float(next_params[0])
+            self.friction_on_arch = to_float(next_params[1])
+
         else:
             # This else block is triggered for conduit subtypes which aren't yet supported, and just keeps the '_block' in it's raw state to write back.
-            logging.warning(
+            logger.warning(
                 "This Conduit sub-type: '%s' is currently unsupported for reading/editing",
                 self._subtype,
             )
             self._raw_block = c_block
 
-    def _write(self):
+    def _write(self):  # noqa: PLR0911
         """Function to write a valid CONDUIT block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = self._create_header()
@@ -461,6 +507,29 @@ class CONDUIT(Unit):
                 c_block.extend(
                     [join_10_char(coord.x, coord.y) + join_10_char(coord.cw_friction, dp=6)],
                 )
+            return c_block
+
+        if self._subtype == "FULLARCH":
+            params = join_10_char(
+                self.invert,
+                self.width,
+                self.height,
+                self.use_bottom_slot,
+                self.bottom_slot_dist,
+                self.bottom_slot_depth,
+                self.use_top_slot,
+                self.top_slot_dist,
+                self.top_slot_depth,
+            )
+            friction_params = f"{self.friction_on_invert:>10.4f}{self.friction_on_arch:>10.4f}"
+            c_block.extend(
+                [
+                    f"{self.dist_to_next:>10.3f}",
+                    self.friction_eq,
+                    params,
+                    friction_params,
+                ],
+            )
             return c_block
 
         return self._raw_block

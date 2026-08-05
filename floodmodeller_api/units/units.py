@@ -65,7 +65,7 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
     "CONDUIT": {
         "group": "conduits",
         "has_subtype": True,
-        "subtypes": ["CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "SECTION"],
+        "subtypes": ["CIRCULAR", "RECTANGULAR", "SPRUNG", "SPRUNGARCH", "SECTION", "FULLARCH"],
     },
     "SLUICE": {
         "group": "structures",
