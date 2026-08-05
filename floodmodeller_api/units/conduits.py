@@ -146,7 +146,7 @@ class CONDUIT(Unit):
 
     _unit = "CONDUIT"
 
-    def _create_from_blank(  # noqa: PLR0913, PLR0917
+    def _create_from_blank(  # noqa: PLR0913
         self,
         name="new_unit",
         spill="",
