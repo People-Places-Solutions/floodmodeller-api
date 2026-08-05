@@ -35,6 +35,7 @@ from ._helpers import (
 
 logger = logging.getLogger(__name__)
 
+
 class CONDUIT(Unit):
     """The Conduit class supports six conduit sub-types in Flood Modeller: RECTANGULAR, CIRCULAR, SPRUNG, SPRUNGARCH, SECTION (which
     corresponds to Symmetrical Conduits) and FULLARCH . Each of these sub-types forms a unique instance of the class which is differentiated by the
@@ -391,7 +392,7 @@ class CONDUIT(Unit):
             )
             self._raw_block = c_block
 
-    def _write(self): #noqa: PLR0911
+    def _write(self):  # noqa: PLR0911
         """Function to write a valid CONDUIT block"""
         _validate_unit(self)  # Function to check the params are valid for CONDUIT unit
         header = self._create_header()
