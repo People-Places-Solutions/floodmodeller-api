@@ -37,7 +37,6 @@ def test_create_from_blank_with_params_conduit_section():
     ]
 
 
-
 FULLARCH_DAT_FILE = "repeated_FULLARCH.DAT"
 
 FULLARCH_EXPECTED_CASES = [
@@ -85,10 +84,7 @@ FULLARCH_EXPECTED_CASES = [
     ),
 ]
 
-FULLARCH_UNIT_NAMES = [
-    unit_name
-    for unit_name, _ in FULLARCH_EXPECTED_CASES
-]
+FULLARCH_UNIT_NAMES = [unit_name for unit_name, _ in FULLARCH_EXPECTED_CASES]
 
 
 @pytest.fixture()
@@ -141,8 +137,7 @@ def test_fullarch_unit_count(fullarch_conduits):
     fullarch_units = [
         unit
         for unit in fullarch_conduits.values()
-        if isinstance(unit, CONDUIT)
-        and unit.subtype == "FULLARCH"
+        if isinstance(unit, CONDUIT) and unit.subtype == "FULLARCH"
     ]
 
     assert len(fullarch_units) == 2

@@ -531,4 +531,3 @@ class CONDUIT(Unit):
             return c_block
 
         return self._raw_block
-
