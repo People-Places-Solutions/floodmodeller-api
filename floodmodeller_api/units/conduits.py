@@ -515,10 +515,10 @@ class CONDUIT(Unit):
                 self.width,
                 self.height,
                 self.use_bottom_slot,
-                self.top_slot_dist,
+                self.bottom_slot_dist,
                 self.bottom_slot_depth,
                 self.use_top_slot,
-                self.bottom_slot_dist,
+                self.top_slot_dist,
                 self.top_slot_depth,
             )
             friction_params = f"{self.friction_on_invert:>10.4f}{self.friction_on_arch:>10.4f}"
