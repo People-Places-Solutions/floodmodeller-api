@@ -410,7 +410,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_below_axis:>10.4f}{self.friction_above_axis:>10.4f}"
+            friction_params = f"{self.friction_below_axis:>10.5f}{self.friction_above_axis:>10.5f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -433,7 +433,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_on_invert:>10.4f}{self.friction_on_walls:>10.4f}{self.friction_on_soffit:>10.4f}"
+            friction_params = f"{self.friction_on_invert:>10.5f}{self.friction_on_walls:>10.5f}{self.friction_on_soffit:>10.5f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
@@ -521,7 +521,7 @@ class CONDUIT(Unit):
                 self.top_slot_dist,
                 self.top_slot_depth,
             )
-            friction_params = f"{self.friction_on_invert:>10.4f}{self.friction_on_arch:>10.4f}"
+            friction_params = f"{self.friction_on_invert:>10.5f}{self.friction_on_arch:>10.5f}"
             c_block.extend(
                 [
                     f"{self.dist_to_next:>10.3f}",
