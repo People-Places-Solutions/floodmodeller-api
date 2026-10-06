@@ -137,12 +137,15 @@ Fm2dXmlSchemaVersions for all available versions.
             else:
                 setattr(self, key, data)
         for attr in [
+            "metadata",
             "name",
             "link1d",
             "logfile",
+            "resultsfolder"
             "domains",
             "restart_options",
             "advanced_options",
+            "roughness_codes",
             "processor",
             "unit_system",
             "description",
