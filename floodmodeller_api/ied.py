@@ -25,6 +25,8 @@ from .util import handle_exception
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from .units._base import Unit
+
 
 class IED(FMFile):
     """Reads and writes Flood Modeller event data format '.ied'
@@ -42,6 +44,7 @@ class IED(FMFile):
 
     _filetype: str = "IED"
     _suffix: str = ".ied"
+    _label_len: int = 12
 
     @handle_exception(when="read")
     def __init__(self, ied_filepath: str | Path | None = None, from_json: bool = False):
@@ -154,58 +157,119 @@ class IED(FMFile):
                     # Ensure that the 'name' attribute matches name key in boundaries
                     self._raw_data.extend(unit._write())
 
+    def _initialize_collections(self) -> None:
+        self.sections: dict[str, units.TSections] = {}
+        self.boundaries: dict[str, units.TBoundaries] = {}
+        self.structures: dict[str, units.TStructures] = {}
+        self.conduits: dict[str, units.TConduits] = {}
+        self.losses: dict[str, units.TLosses] = {}
+        self.connectors: dict[str, units.TConnectors] = {}
+        self.controls: dict[str, units.TControls] = {}
+        self._unsupported: dict[str, units.TUnsupported] = {}
+        self._all_units: list[Unit] = []
+
+    def _process_supported_unit(self, unit_type, unit_data) -> None:
+        if unit_type == "COMMENT":
+            self._all_units.append(
+                units.COMMENT(unit_data, n=self._label_len)
+            )
+            return
+
+        unit_name = self._get_unit_name(unit_type, unit_data)
+
+        unit_group = getattr(
+            self,
+            units.SUPPORTED_UNIT_TYPES[unit_type]["group"],
+        )
+
+        self._add_unit_to_group(
+            unit_group,
+            unit_type,
+            unit_name,
+            unit_data,
+        )
+
+    def _get_unit_name(self, unit_type, unit_data):
+        if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip()
+
+        return unit_data[1][: self._label_len].strip()
+
+    def _get_unsupported_unit_name(
+        self,
+        unit_type: str,
+        unit_data: list[str],
+    ) -> tuple[str, bool]:
+
+        if units.UNSUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
+            return unit_data[2][: self._label_len].strip(), True
+
+        return unit_data[1][: self._label_len].strip(), False
+
+    def _add_unit_to_group(
+        self,
+        unit_group,
+        unit_type: str,
+        unit_name: str,
+        unit_data: list[str],
+    ) -> None:
+
+        if unit_name in unit_group:
+            msg = (
+                f"Duplicate label ({unit_name}) encountered within category: "
+                f"{units.SUPPORTED_UNIT_TYPES[unit_type]['group']}"
+            )
+            raise Exception(msg)
+
+        unit_type_safe = unit_type.replace(" ", "_").replace("-", "_")
+
+        unit = getattr(units, unit_type_safe)(
+            unit_data,
+            self._label_len,
+        )
+
+        unit_group[unit_name] = unit
+        self._all_units.append(unit)
+
+    def _process_unsupported_unit(self, unit_type, unit_data) -> None:
+        unit_name, subtype = self._get_unsupported_unit_name(
+            unit_type,
+            unit_data,
+        )
+
+        unit_name_and_type = f"{unit_name} ({unit_type})"
+
+        if unit_name_and_type in self._unsupported:
+            msg = (
+                f"Duplicate label ({unit_name_and_type}) encountered "
+                f"within category: _unsupported"
+            )
+            raise Exception(msg)
+
+        self._unsupported[unit_name_and_type] = units.UNSUPPORTED(
+            unit_data,
+            self._label_len,
+            unit_name=unit_name,
+            unit_type=unit_type,
+            subtype=subtype,
+        )
+
+        self._all_units.append(
+            self._unsupported[unit_name_and_type]
+        )
+
     def _get_unit_definitions(self):
-        # Get unit definitions
-        self.sections = {}
-        self.boundaries = {}
-        self.structures = {}
-        self.conduits = {}
-        self.losses = {}
-        self._unsupported = {}
-        self._all_units = []
+        self._initialize_collections()
+
         for block in self._ied_struct:
             unit_data = self._raw_data[block["start"] : block["end"] + 1]
-            # Check for all supported boundary types, starting just with QTBDY type
-            if block["Type"] in units.SUPPORTED_UNIT_TYPES:
-                # Handle comments
-                if block["Type"] == "COMMENT":
-                    self._all_units.append(units.COMMENT(unit_data, n=12))
-                    continue
+            unit_type = block["Type"]
 
-                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                    # Takes first 12 characters as name
-                    unit_name = unit_data[2][:12].strip()
-                else:
-                    unit_name = unit_data[1][:12].strip()
+            if unit_type in units.SUPPORTED_UNIT_TYPES:
+                self._process_supported_unit(unit_type, unit_data)
+            elif unit_type in units.UNSUPPORTED_UNIT_TYPES:
+                self._process_unsupported_unit(unit_type, unit_data)
 
-                # Create instance of unit and add to relevant group
-                unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
-                if unit_name in unit_group:
-                    msg = f"Duplicate label ({unit_name}) encountered within category: {units.SUPPORTED_UNIT_TYPES[block['Type']]['group']}"
-                    raise Exception(msg)
-                unit_group[unit_name] = getattr(units, block["Type"])(unit_data)
-
-                self._all_units.append(unit_group[unit_name])
-
-            elif block["Type"] in units.UNSUPPORTED_UNIT_TYPES:
-                # Check to see whether unit type has associated subtypes so that unit name can be correctly assigned
-                if units.UNSUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                    # Takes first 12 characters as name
-                    unit_name = unit_data[2][:12].strip()
-                    subtype = True
-                else:
-                    unit_name = unit_data[1][:12].strip()
-                    subtype = False
-
-                self._unsupported[f"{unit_name} ({block['Type']})"] = units.UNSUPPORTED(
-                    unit_data,
-                    12,
-                    unit_name=unit_name,
-                    unit_type=block["Type"],
-                    subtype=subtype,
-                )
-                self._all_units.append(self._unsupported[f"{unit_name} ({block['Type']})"])
 
     def _update_ied_struct(self):  # noqa: C901, PLR0912
         # Generate IED structure
