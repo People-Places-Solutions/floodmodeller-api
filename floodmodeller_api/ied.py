@@ -170,9 +170,7 @@ class IED(FMFile):
 
     def _process_supported_unit(self, unit_type, unit_data) -> None:
         if unit_type == "COMMENT":
-            self._all_units.append(
-                units.COMMENT(unit_data, n=self._label_len)
-            )
+            self._all_units.append(units.COMMENT(unit_data, n=self._label_len))
             return
 
         unit_name = self._get_unit_name(unit_type, unit_data)
@@ -254,9 +252,7 @@ class IED(FMFile):
             subtype=subtype,
         )
 
-        self._all_units.append(
-            self._unsupported[unit_name_and_type]
-        )
+        self._all_units.append(self._unsupported[unit_name_and_type])
 
     def _get_unit_definitions(self):
         self._initialize_collections()
@@ -269,7 +265,6 @@ class IED(FMFile):
                 self._process_supported_unit(unit_type, unit_data)
             elif unit_type in units.UNSUPPORTED_UNIT_TYPES:
                 self._process_unsupported_unit(unit_type, unit_data)
-
 
     def _update_ied_struct(self):  # noqa: C901, PLR0912
         # Generate IED structure
