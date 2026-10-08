@@ -1,20 +1,20 @@
 {
   "API Class": "floodmodeller_api.ied.IED",
-  "API Version": "0.4.4.post1",
+  "API Version": "0.5.8.post1",
   "Object Attributes": {
-    "_filepath": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\network.ied",
+    "_filepath": "C:\\Users\\caballva\\OneDrive - Jacobs\\Documents\\PROJECTS\\FM_API\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\network.ied",
     "file": {
       "API Class": "floodmodeller_api.backup.File",
       "Object Attributes": {
-        "path": "c:\\Users\\PIERCEJA\\OneDrive - Jacobs\\Documents\\Projects\\Flood Modeller API\\development\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\network.ied",
+        "path": "C:\\Users\\caballva\\OneDrive - Jacobs\\Documents\\PROJECTS\\FM_API\\floodmodeller-api\\floodmodeller_api\\test\\test_data\\network.ied",
         "ext": ".ied",
-        "dttm_str": "2024-09-10-16-49-49",
-        "file_id": "b54eee4697704dd5fd29f9faa79728e67f517e26",
-        "backup_filename": "b54eee4697704dd5fd29f9faa79728e67f517e26_2024-09-10-16-49-49.ied",
-        "temp_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp",
+        "dttm_str": "2026-10-07-15-24-33",
+        "file_id": "9a5fdb76e4f03a124e485c8dfc0db12dade56773",
+        "backup_filename": "9a5fdb76e4f03a124e485c8dfc0db12dade56773_2026-10-07-15-24-33.ied",
+        "temp_dir": "C:\\Users\\caballva\\AppData\\Local\\Temp",
         "backup_dirname": "floodmodeller_api_backup",
-        "backup_dir": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup",
-        "backup_csv_path": "C:\\Users\\PIERCEJA\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
+        "backup_dir": "C:\\Users\\caballva\\AppData\\Local\\Temp\\floodmodeller_api_backup",
+        "backup_csv_path": "C:\\Users\\caballva\\AppData\\Local\\Temp\\floodmodeller_api_backup\\file-backups.csv"
       }
     },
     "_raw_data": [
@@ -138,6 +138,8 @@
     "structures": {},
     "conduits": {},
     "losses": {},
+    "connectors": {},
+    "controls": {},
     "_unsupported": {
       "resin (FSSR16BDY)": {
         "API Class": "floodmodeller_api.units.unsupported.UNSUPPORTED",
