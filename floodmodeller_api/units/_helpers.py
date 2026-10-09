@@ -121,6 +121,22 @@ def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | 
     return data_list
 
 
+def validate_timeunit_data(timeunit: str | float, data: pd.Series, unit_name: str) -> None:
+    """Ensure time-series index values match the selected time unit format."""
+    has_numeric_index = pd.api.types.is_numeric_dtype(data.index.dtype)
+    expects_dates = timeunit == "DATES"
+
+    if has_numeric_index == expects_dates:
+        expected = "date/time strings" if expects_dates else "numeric elapsed times"
+        actual = "numeric values" if has_numeric_index else "non-numeric values"
+        msg = (
+            f"Invalid time data for {unit_name} {data.name!r}: timeunit is {timeunit!r}, "
+            f"but the data index contains {actual}. Expected {expected}. "
+            "Changing timeunit does not convert the data index."
+        )
+        raise ValueError(msg)
+
+
 def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None:
     params = split_10_char(f"{line:<90}")
     obj.calibration_coefficient = to_float(params[0], 1.0)

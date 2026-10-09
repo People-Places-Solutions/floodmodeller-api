@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from floodmodeller_api import units
-from floodmodeller_api.units import QTBDY
+from floodmodeller_api.units import BLOCKAGE, HTBDY, QTBDY
 from floodmodeller_api.units._base import Unit  # update this import path to match your repo
 
 
@@ -68,6 +68,44 @@ def test_partially_defined_unit():
         name="Flow",
     )
     pd.testing.assert_series_equal(expected, actual)
+
+
+@pytest.mark.parametrize(
+    ("unit_type", "series_name"),
+    [(QTBDY, "Flow"), (HTBDY, "Stage"), (BLOCKAGE, "Blockage")],
+)
+def test_date_timeunit_requires_date_index(unit_type, series_name):
+    unit = unit_type(
+        timeunit="DATES",
+        data=pd.Series([0.5], index=["01/01/2000 00:00"], name=series_name),
+    )
+
+    assert len(unit._write()) == (4 if unit_type is not BLOCKAGE else 5)
+
+
+@pytest.mark.parametrize(
+    ("unit_type", "series_name"),
+    [(QTBDY, "Flow"), (HTBDY, "Stage"), (BLOCKAGE, "Blockage")],
+)
+def test_date_timeunit_rejects_numeric_index(unit_type, series_name):
+    unit = unit_type(timeunit="DATES", data=pd.Series([0.5], index=[1.0], name=series_name))
+
+    with pytest.raises(ValueError, match="Changing timeunit does not convert"):
+        unit._write()
+
+
+@pytest.mark.parametrize(
+    ("unit_type", "series_name"),
+    [(QTBDY, "Flow"), (HTBDY, "Stage"), (BLOCKAGE, "Blockage")],
+)
+def test_numeric_timeunit_rejects_date_index(unit_type, series_name):
+    unit = unit_type(
+        timeunit="HOURS",
+        data=pd.Series([0.5], index=["01/01/2000 00:00"], name=series_name),
+    )
+
+    with pytest.raises(ValueError, match="Changing timeunit does not convert"):
+        unit._write()
 
 
 def test_create_unit_from_blank():
