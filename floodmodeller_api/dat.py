@@ -473,7 +473,7 @@ class DAT(FMFile):
                     unit_group[unit.name] = unit
                     del unit_group[name]
                     # Update label in ICs
-                    if unit_group_name not in ["boundaries", "losses"]:
+                    if unit_group_name not in ["boundaries", "losses", "connectors"]:
                         self.initial_conditions.update_label(name, unit.name)
 
                     # Update label in GISINFO and GXY data
