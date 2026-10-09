@@ -102,7 +102,6 @@ if __name__ == "__main__":
 
     zzt_filepath = Path(r"floodmodeller_api/test/test_data/network.zzt")
     network = get_network_zzt(zzt_filepath=zzt_filepath)
-    # network.to_csv(Path("demo/network_map.csv"))
 
     dat = DAT(r"floodmodeller_api/test/test_data/network.dat")
     nodes, edges = dat.get_network()
@@ -110,4 +109,3 @@ if __name__ == "__main__":
     unzip_edges = list(zip(*edges))
     edges_df = pd.DataFrame({"edge1": unzip_edges[0], "edge2": unzip_edges[1]})
     pprint.pp(nodes)
-    # edges_df.to_csv(Path("demo/edges.csv"))
