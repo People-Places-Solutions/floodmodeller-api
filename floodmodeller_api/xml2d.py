@@ -128,7 +128,11 @@ Fm2dXmlSchemaVersions for all available versions.
 """
             logging.warning(msg)
 
-        self._update_schema_version(version)
+        # Temporary condition to be deleted
+        if version == "8.0":
+            self._update_schema_version()
+        else:
+            self._update_schema_version(version)
 
         self._create_dict()
         for key, data in self._data.items():
@@ -184,6 +188,14 @@ Fm2dXmlSchemaVersions for all available versions.
         self._ns_key = "{" + self._xmltree.getroot().nsmap[None] + "}"
 
         xsi_loc = schema_location.split()[1]
+
+        # Temporary code to be deleted
+        if version is None:
+            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsdschema = etree.XMLSchema(self._xsd)
+            self._get_multi_value_keys()
+            return
+
         try:
             xsd_bin = requests.get(xsi_loc).content
             self._xsd = etree.parse(io.BytesIO(xsd_bin))

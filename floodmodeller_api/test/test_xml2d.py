@@ -171,7 +171,7 @@ def test_xml2d_v7_4_attributes(tmp_path: Path):
     """Test setting attributes new to version 7.4+."""
     x2d = XML2D()
     x2d.save(tmp_path / "test.xml")
-    assert x2d._schema_version == "7.4"
+    assert x2d._schema_version == "7.4" # Ensure it is set to latest schema version
 
     x2d.metadata = {
     "modelinfo": {
