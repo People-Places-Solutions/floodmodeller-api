@@ -141,7 +141,7 @@ Fm2dXmlSchemaVersions for all available versions.
             "name",
             "link1d",
             "logfile",
-            "resultsfolder"
+            "resultsfolder",
             "domains",
             "restart_options",
             "advanced_options",
@@ -500,12 +500,15 @@ Fm2dXmlSchemaVersions for all available versions.
     def _update_dict(self):
         self._data = {}
         for attr in [
+            "metadata",
             "name",
             "link1d",
             "logfile",
+            "resultsfolder",
             "domains",
             "restart_options",
             "advanced_options",
+            "roughness_codes",
             "processor",
             "unit_system",
             "description",

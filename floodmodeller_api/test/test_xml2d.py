@@ -167,6 +167,39 @@ def test_xml2d_change_schema_versions(tmp_path: Path):
         x2d.update()  # includes validate
 
 
+def test_xml2d_v7_4_attributes(tmp_path: Path):
+    """Test setting attributes new to version 7.4+."""
+    x2d = XML2D()
+    x2d.save(tmp_path / "test.xml")
+    assert x2d._schema_version == "7.4"
+
+    x2d.metadata = {
+    "modelinfo": {
+        "CreatedBy": "JDOE",
+        "CreatedOn": "2026-09-06T08:30:40.1520756+01:00",
+        "LastUpdatedBy": "JDOE",
+        "LastUpdated": "2026-09-06T08:30:42.7025715+01:00",
+        "ProjectID": {},
+        "Comments": {},
+        },
+    }
+
+    x2d.resultsfolder = {"folder"}
+
+    x2d.roughness_codes = {
+        "item":[
+            {"ID": "100", "description": "Buildings", "value": 0.19},
+            {"ID": "200", "description": "Roads", "value": 0.017},
+            ],
+        }
+
+    x2d.update() # includes validate
+
+    x2d._update_schema_version("7.3")
+    with pytest.raises(FloodModellerAPIError, match="XML Validation Error"):
+        x2d.update()  # includes validate
+
+
 def test_xml2d_deals_with_non_fm_schemas(tmp_path: Path):
     fake_namespace = "https://example.com/not-flood-modeller"
     fake_schema = "https://example.com/not-flood-modeller/fake.xsd"
