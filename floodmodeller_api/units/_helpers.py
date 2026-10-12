@@ -123,6 +123,12 @@ def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | 
 
 def validate_timeunit_data(timeunit: str | float, data: pd.Series, unit_name: str) -> None:
     """Ensure time-series index values match the selected time unit format."""
+
+    # Added to handle the test made bfore this function
+    # There is an empty BLOCKAGE that makes some test fail as it is empty data
+    if data.empty:
+        return
+
     has_numeric_index = pd.api.types.is_numeric_dtype(data.index.dtype)
     expects_dates = timeunit == "DATES"
 
