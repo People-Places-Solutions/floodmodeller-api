@@ -487,6 +487,20 @@ def test_create_and_insert_connectors():
     assert dat.controls == {"res": reservoir}
 
 
+def test_update_connector_name_does_not_update_initial_conditions(test_workspace):
+    dat = DAT(test_workspace / "network.dat")
+    old_name, connector = next(iter(dat.connectors.items()))
+    new_name = f"{old_name}_renamed"
+    connector.name = new_name
+
+    with patch.object(dat.initial_conditions, "update_label") as update_label:
+        dat._update_unit_names()
+
+    assert dat.connectors[new_name] is connector
+    assert old_name not in dat.connectors
+    update_label.assert_not_called()
+
+
 @pytest.mark.parametrize(
     ("dat_str", "label"),
     [
