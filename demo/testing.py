@@ -1,4 +1,5 @@
 import pprint
+import numpy as np
 from pathlib import Path
 
 import numpy as np
@@ -91,7 +92,6 @@ ZZT_TYPES = {
     70: "SUPERWEIR",
 }
 
-
 def _read_ztt(filepath: Path) -> list[str]:
     with open(zzt_filepath, encoding="cp1252") as zzt_file:
         raw_data: list[str] = [line.rstrip("\n") for line in zzt_file]
@@ -101,11 +101,9 @@ def _update_zzt_structure(raw_data):
 
     title_block_length: int = 4
     in_node_label = False
-    in_label_map = False
     in_network_map = False
 
     node_label: list[dict] = []
-    label_map: list[dict] = []
     network_map: list[dict] = []
 
     # Dummy values
@@ -142,35 +140,113 @@ def _update_zzt_structure(raw_data):
 
     return node_label, network_map
 
+def _set_general_nodes(network: pd.DataFrame, node_cols: list[str]) -> pd.DataFrame:
+    for ni in node_cols:
+        # Checking whether the label in nx exists in n1, meaning the type can be inferred
+        network[f"{ni}_in_n1"] = network[ni].map(network["n1"].value_counts())
+
+        # Removing unnecessary rows from n1, and setting to a pd.Series for mapping
+        trimmed_network = network[network["n1"].isin(network[ni])]
+        n1_type_lookup = trimmed_network.set_index("n1")["type"]
+
+        # Infer the type in column nx, based on the type set in column n1
+        network[f"type_{ni}"] = np.where(
+            network[f"{ni}_in_n1"] == 1,
+            network[ni].map(n1_type_lookup),
+            0,
+        )
+
+        # Drop temporary column
+        network = network.drop(columns=f"{ni}_in_n1")
+
+    return network
+
+def _set_boundary_nodes(network: pd.DataFrame) -> pd.DataFrame:
+
+    # If there is no label in n2 (i.e. no downstream element), the row represents a boundary
+    network["is_boundary"] = ~network["n2"].astype(bool)
+
+    for idx in network[network["is_boundary"]].index:
+
+        # Removing the row in question for searching the rest of the dataframe
+        nw_with_row_omitted = network.drop(index=idx)
+
+        # If the node label from the row in question doesn't appear elsewhere in the dataframe,
+        # this is an outflow boundary and can be removed (it is covered in the unit upstream)
+        if network["n1"][idx] not in nw_with_row_omitted["n1"].to_numpy():
+            network = network.drop(index=idx)
+            continue
+
+        # Set the downstream label and type using the other same-name node, for inflows
+        network["n2"][idx] = network["n1"][idx]
+        network["type_n2"][idx] = nw_with_row_omitted[
+            nw_with_row_omitted["n1"] == network["n1"][idx]
+            ]["type"]
+
+    # Drop temporary column
+    network = network.drop(columns="is_boundary")
+
+    return network
+
+def _set_ghost_nodes(network: pd.DataFrame, node_cols: list[str]) -> pd.DataFrame:
+    for ni in node_cols:
+        network[f"type_{ni}_missing"] = ~network[f"type_{ni}"].astype(bool)
+
+        for idx in network[network[f"type_{ni}_missing"]].index:
+            # Removing the row in question for searching the rest of the dataframe
+            nw_with_row_omitted = network.drop(index=idx)
+
+            for nx in node_cols:
+                print(network[ni][idx])
+
+                # TODO: Fix these lines (currently setting a series to a signe value)
+                network[ni][idx] = nw_with_row_omitted[
+                    nw_with_row_omitted[nx] == network[ni][idx]
+                    ]["n1"]
+
+                network[f"type_{ni}"][idx] = nw_with_row_omitted[
+                    nw_with_row_omitted[nx] == network[f"type_{ni}"i][idx]
+                    ]["type"]
+
+                if network[ni][idx] != 0 and network[f"type_{ni}"][idx] != 0:
+                    break
+
+    # TODO: Delete spill lines
+
+    return network
+
+# TODO: Set up function to spread the rows i.e. (a, b, c) to (a, b), (a, c)
+# TODO: Convert result to written text
+
 def get_network_zzt(zzt_filepath: Path):
     """Provide results in same format as DAT.get_network()"""
     raw_data = _read_ztt(zzt_filepath)
     node_label, network_map = _update_zzt_structure(raw_data=raw_data)
 
-    node_cols = ["n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10"]
+    network_original = pd.DataFrame(network_map)
+    network = network_original.copy()
 
-    network_map = pd.DataFrame(network_map)
-    print(network_map.tail(25))
-    node_type = pd.Series(network_map["type"], index=network_map["n1"]).to_dict()
-    pprint.pp(node_type)
-
+    # Remove empty columns
+    node_cols = ["n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10"]
     for col in node_cols:
-        if not network_map[col].any(): # Skip if the column is all zeros
-            continue
-        network_map[f"{col}_type"] = network_map[col].replace(node_type).astype(int)
+        if not network[col].any():
+            network = network.drop(columns=col)
+    node_cols = [col for col in network.columns if col in node_cols]
 
-    # node_label["type"] = node_label[].replace()
+    network = _set_general_nodes(network, node_cols)
+    network = _set_boundary_nodes(network)
+    network = _set_ghost_nodes(network, node_cols)
 
-    # network_map[node_cols] = network_map[node_cols].replace(node_label)
-    # network_map["type"] = network_map["type"].replace(ZZT_TYPES)
+    print(network.head(20)) 
 
-    return network_map
+    return network
 
 if __name__ == "__main__":
 
     zzt_filepath = Path(r"floodmodeller_api/test/test_data/network.zzt")
     network = get_network_zzt(zzt_filepath=zzt_filepath)
-    print(network)
+    # print(network_df.head())
+    # network_df.to_csv(r"demo\network_map2.csv")
 
     # dat = DAT(r"floodmodeller_api/test/test_data/network.dat")
     # nodes, edges = dat.get_network()
