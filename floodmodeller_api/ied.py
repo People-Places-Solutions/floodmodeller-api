@@ -197,7 +197,6 @@ class IED(FMFile):
         unit_type: str,
         unit_data: list[str],
     ) -> tuple[str, bool]:
-
         if units.UNSUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
             return unit_data[2][: self._label_len].strip(), True
 
@@ -210,7 +209,6 @@ class IED(FMFile):
         unit_name: str,
         unit_data: list[str],
     ) -> None:
-
         if unit_name in unit_group:
             msg = (
                 f"Duplicate label ({unit_name}) encountered within category: "
