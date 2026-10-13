@@ -107,6 +107,8 @@ class IED(FMFile):
             "sections": [],
             "conduits": [],
             "losses": [],
+            "connectors": [],
+            "controls": [],
         }
         comment_tracker = 0
         comment_units = [unit for unit in self._all_units if unit._unit == "COMMENT"]
@@ -125,10 +127,7 @@ class IED(FMFile):
                     comment_tracker += 1
 
                 else:
-                    if units.SUPPORTED_UNIT_TYPES[block["Type"]]["has_subtype"]:
-                        unit_name = unit_data[2][:12].strip()
-                    else:
-                        unit_name = unit_data[1][:12].strip()
+                    unit_name = self._get_unit_name(block["Type"], unit_data)
 
                     # Get unit object
                     unit_group = getattr(self, units.SUPPORTED_UNIT_TYPES[block["Type"]]["group"])
