@@ -14,15 +14,11 @@ Requires matplotlib (already used by the repository's documentation/examples).
 
 from __future__ import annotations
 
-import argparse
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import FancyBboxPatch
-from matplotlib.path import Path as MatplotlibPath
-from matplotlib.patches import PathPatch
-from matplotlib.textpath import TextPath
 from matplotlib import font_manager
 
 FONT_DIR = Path(r"C:\Windows\Fonts")
@@ -71,9 +67,18 @@ COLORS = DARK_COLORS
 # Coordinates are in a 0..100 by 0..50 design space.  Each card is
 # (title, description); descriptions can contain a newline.
 USER_FEATURES = [
-    ("Interoperable with common\nPython data formats", "Pandas, GeoPandas and standard\nPython data workflows"),
-    ("Simple scripting syntax", "Use familiar Python objects to\nread, edit, validate and save models"),
-    ("Community-driven\ndevelopment", "Share scripts, tools and ideas\nthrough the open-source project"),
+    (
+        "Interoperable with common\nPython data formats",
+        "Pandas, GeoPandas and standard\nPython data workflows",
+    ),
+    (
+        "Simple scripting syntax",
+        "Use familiar Python objects to\nread, edit, validate and save models",
+    ),
+    (
+        "Community-driven\ndevelopment",
+        "Share scripts, tools and ideas\nthrough the open-source project",
+    ),
 ]
 
 FILE_FORMATS = [
@@ -109,7 +114,9 @@ FUTURE = [
 def rounded_box(ax, x, y, width, height, color, radius=0.8, edgecolor=None, linewidth=0.8):
     """Add a rounded rectangle in design-space coordinates."""
     patch = FancyBboxPatch(
-        (x, y), width, height,
+        (x, y),
+        width,
+        height,
         boxstyle=f"round,pad=0.18,rounding_size={radius}",
         facecolor=color,
         edgecolor=edgecolor or color,
@@ -121,18 +128,45 @@ def rounded_box(ax, x, y, width, height, color, radius=0.8, edgecolor=None, line
 
 def card(ax, x, y, width, height, title, description, color, title_size=10.5):
     rounded_box(ax, x, y, width, height, color)
-    ax.text(x + width / 2, y + height * 0.61, title, ha="center", va="center",
-            color=COLORS["text"], fontsize=title_size, fontproperties=CHRONOS_BOLD, linespacing=1.1)
-    ax.text(x + width / 2, y + height * 0.25, description, ha="center", va="center",
-            color=COLORS["card_text"], fontsize=6.2, fontproperties=CHRONOS_REGULAR, linespacing=1.05,
-            wrap=True)
+    ax.text(
+        x + width / 2,
+        y + height * 0.61,
+        title,
+        ha="center",
+        va="center",
+        color=COLORS["text"],
+        fontsize=title_size,
+        fontproperties=CHRONOS_BOLD,
+        linespacing=1.1,
+    )
+    ax.text(
+        x + width / 2,
+        y + height * 0.25,
+        description,
+        ha="center",
+        va="center",
+        color=COLORS["card_text"],
+        fontsize=6.2,
+        fontproperties=CHRONOS_REGULAR,
+        linespacing=1.05,
+        wrap=True,
+    )
 
 
 def section_label(ax, label, top, bottom):
     """Draw the old diagram's left-hand grouping brace and label."""
     y = (top + bottom) / 2
-    ax.text(8.0, y, label, ha="right", va="center", color=COLORS["text"],
-            fontsize=8.2, fontproperties=CHRONOS_BOLD, linespacing=1.05)
+    ax.text(
+        8.0,
+        y,
+        label,
+        ha="right",
+        va="center",
+        color=COLORS["text"],
+        fontsize=8.2,
+        fontproperties=CHRONOS_BOLD,
+        linespacing=1.05,
+    )
     ax.plot(
         [10.8, 10.8],
         [bottom + 0.4, top - 0.4],
@@ -153,16 +187,41 @@ def build_figure(theme: str = "dark") -> plt.Figure:
     ax.axis("off")
 
     # Outer frame and title tab, matching the supplied overview's visual language.
-    rounded_box(ax, 0.5, 0.5, 99, 49, "none", radius=1.0,
-                edgecolor=COLORS["frame"], linewidth=1.6)
-    ax.text(5, 49.1, "Flood Modeller API", color=COLORS["text"], fontsize=17, fontproperties=CHRONOS_BOLD,
-             va="center", bbox={"facecolor": COLORS["background"], "pad": 4, "edgecolor": "none"})
+    rounded_box(ax, 0.5, 0.5, 99, 49, "none", radius=1.0, edgecolor=COLORS["frame"], linewidth=1.6)
+    ax.text(
+        5,
+        49.1,
+        "Flood Modeller API",
+        color=COLORS["text"],
+        fontsize=17,
+        fontproperties=CHRONOS_BOLD,
+        va="center",
+        bbox={"facecolor": COLORS["background"], "pad": 4, "edgecolor": "none"},
+    )
 
     # Main overview panel and future panel.
     rounded_box(ax, 15, 1.3, 66.5, 46.8, COLORS["overview"], radius=1.3)
     rounded_box(ax, 82.5, 1.3, 16.0, 46.8, COLORS["coming_soon"], radius=1.3)
-    ax.text(48.25, 45.8, "Overview", ha="center", va="center", color=COLORS["text"], fontsize=14, fontproperties=CHRONOS_BOLD)
-    ax.text(90.5, 45.8, "Coming soon", ha="center", va="center", color=COLORS["text"], fontsize=12, fontproperties=CHRONOS_BOLD)
+    ax.text(
+        48.25,
+        45.8,
+        "Overview",
+        ha="center",
+        va="center",
+        color=COLORS["text"],
+        fontsize=14,
+        fontproperties=CHRONOS_BOLD,
+    )
+    ax.text(
+        90.5,
+        45.8,
+        "Coming soon",
+        ha="center",
+        va="center",
+        color=COLORS["text"],
+        fontsize=12,
+        fontproperties=CHRONOS_BOLD,
+    )
 
     section_label(ax, "User\nfacing", 43.8, 31.9)
     card(ax, 15.8, 38.0, 31.4, 5.8, *USER_FEATURES[0], COLORS["feature"], title_size=10.5)
@@ -172,23 +231,55 @@ def build_figure(theme: str = "dark") -> plt.Figure:
     section_label(ax, "Core\nclasses", 28.5, 23.1)
     format_width = 10.05
     for index, (title, description) in enumerate(FILE_FORMATS):
-        card(ax, 15.8 + index * 10.75, 23.1, format_width, 5.4, title, description, COLORS["format"], title_size=8.5)
+        card(
+            ax,
+            15.8 + index * 10.75,
+            23.1,
+            format_width,
+            5.4,
+            title,
+            description,
+            COLORS["format"],
+            title_size=8.5,
+        )
 
     section_label(ax, "Extensive\nfunctionality", 22.2, 2.2)
     for index, (title, description) in enumerate(CAPABILITIES):
         row, column = divmod(index, 4)
-        card(ax, 15.8 + column * 16.1, 16.2 - row * 7.0, 15.0, 6.0,
-             title, description, COLORS["capability"], title_size=8.2)
+        card(
+            ax,
+            15.8 + column * 16.1,
+            16.2 - row * 7.0,
+            15.0,
+            6.0,
+            title,
+            description,
+            COLORS["capability"],
+            title_size=8.2,
+        )
 
     for index, (title, description) in enumerate(FUTURE):
-        card(ax, 83.2, 37.0 - index * 7.7, 14.6, 6.3, title, description, COLORS["future"], title_size=9.0)
+        card(
+            ax,
+            83.2,
+            37.0 - index * 7.7,
+            14.6,
+            6.3,
+            title,
+            description,
+            COLORS["future"],
+            title_size=9.0,
+        )
     # rounded_box(ax, 83.2, 5.0, 14.6, 8.4, "none", radius=0.8,
     #             edgecolor=COLORS["text"], linewidth=1.4)
     # ax.text(90.5, 10.3, "Have your say", ha="center", va="center", color=COLORS["text"], fontsize=9.5, fontproperties=CHRONOS_BOLD)
     # ax.text(90.5, 7.8, "Suggest features, report issues\nand help shape the API", ha="center", va="center", color=COLORS["card_text"], fontsize=7.2, fontproperties=CHRONOS_REGULAR)
     card(
         ax,
-        83.2, 5.0, 14.6, 8.4,
+        83.2,
+        5.0,
+        14.6,
+        8.4,
         "Have your say",
         "Suggest features, report issues\nand help shape the API",
         COLORS["future"],

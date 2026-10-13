@@ -3,7 +3,6 @@ import pytest
 from docs.source.getting_started.generate_api_overview import build_figure, main
 
 
-
 def test_build_figure_dark_theme():
     figure = build_figure("dark")
     try:
