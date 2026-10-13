@@ -74,6 +74,20 @@ def test_partially_defined_unit():
     ("unit_type", "series_name"),
     [(QTBDY, "Flow"), (HTBDY, "Stage"), (BLOCKAGE, "Blockage")],
 )
+def test_numeric_timeunit_accepts_numeric_string_index(unit_type, series_name):
+    unit = unit_type(
+        timeunit="HOURS",
+        data=pd.Series([0.5], index=["1.0"], name=series_name),
+    )
+
+    # Should write successfully because "1.0" is numerically coercible
+    unit._write()
+
+
+@pytest.mark.parametrize(
+    ("unit_type", "series_name"),
+    [(QTBDY, "Flow"), (HTBDY, "Stage"), (BLOCKAGE, "Blockage")],
+)
 def test_date_timeunit_requires_date_index(unit_type, series_name):
     unit = unit_type(
         timeunit="DATES",
