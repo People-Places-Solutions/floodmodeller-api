@@ -650,6 +650,12 @@ class DAT(FMFile):
         # Check if the unit type has associated subtypes
         if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
             return unit_data[2][: self._label_len].strip()
+        # assuming len(unit_data)<2 is always correct.
+        # I assume any unit needs data, there should always be at least two rows
+        if 0 < len(unit_data) < 2 and unit_data[0].split()[0] in units.SUPPORTED_UNIT_TYPES:
+            # first_word = unit_data[0].split()[0]
+            msg=f"A unit {unit_type} is using a TYPE UNIT name.  This is not allowed and it must be changed."
+            raise IndexError(msg)
         return unit_data[1][: self._label_len].strip()
 
     def _add_unit_to_group(
