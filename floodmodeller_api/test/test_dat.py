@@ -9,6 +9,7 @@ import pytest
 
 from floodmodeller_api import DAT
 from floodmodeller_api.units import (
+    COMMENT,
     JUNCTION,
     LATERAL,
     QTBDY,
@@ -468,6 +469,103 @@ def test_valid_network(test_workspace: Path, expected_edges: list[tuple[str, str
     expected = set(expected_edges)
     assert expected == actual
     assert len(actual_nodes) == 86
+
+
+def test_network_2_matches_manual_network(test_workspace, expected_edges):
+    """Solver reaches must preserve terminal sections, junctions and spills."""
+    dat = DAT(test_workspace / "network.dat")
+    nodes, edges = dat.get_network_2(test_workspace / "network.zzt")
+    original_nodes, original_edges = dat.get_network()
+
+    assert len(nodes) == 86
+    assert len(edges) == len(expected_edges)
+    assert {tuple(unit.unique_name for unit in edge) for edge in edges} == set(expected_edges)
+    assert {tuple(unit.machine_name for unit in edge) for edge in edges} == {
+        tuple(unit.machine_name for unit in edge) for edge in original_edges
+    }
+    assert all(actual is original for actual, original in zip(nodes, original_nodes))
+    assert all(any(unit is node for node in nodes) for edge in edges for unit in edge)
+
+
+def test_network_2_uses_zzt_reaches(test_workspace):
+    """Reach connections come from ZZT n2, even without a DAT distance hint."""
+    dat = DAT(test_workspace / "network.dat")
+    dat.sections["CS26"].dist_to_next = 0
+
+    edges = dat.get_network_2()[1]
+    pairs = {(a.unique_name, b.unique_name) for a, b in edges}
+    assert ("RIVER_CS26", "RIVER_CS25") in pairs
+    assert ("RIVER_CS26", "RIVER_CS25") not in {
+        (a.unique_name, b.unique_name) for a, b in dat.get_network()[1]
+    }
+
+
+def test_network_2_default_uppercase_path_and_comments(test_workspace, tmp_path):
+    (tmp_path / "network.dat").write_bytes((test_workspace / "network.dat").read_bytes())
+    (tmp_path / "network.ZZT").write_bytes((test_workspace / "network.zzt").read_bytes())
+    dat = DAT(tmp_path / "network.dat")
+    dat.insert_unit(COMMENT(text="Not a network node"), add_at=0)
+
+    nodes, edges = dat.get_network_2()
+    assert len(nodes) == 86
+    assert len(edges) == 97
+    assert all(node.unit != "COMMENT" for node in nodes)
+
+
+def test_network_2_in_memory_dat_with_explicit_path(test_workspace):
+    dat = DAT(test_workspace / "network.dat")
+    del dat._filepath
+    nodes, edges = dat.get_network_2(str(test_workspace / "network.zzt"))
+    assert len(nodes) == 86
+    assert len(edges) == 97
+
+
+def test_network_2_requires_path_for_in_memory_dat():
+    with pytest.raises(ValueError, match="Provide zzt_filepath"):
+        DAT().get_network_2()
+
+
+def test_network_2_missing_file(tmp_path):
+    with pytest.raises(FileNotFoundError):
+        DAT().get_network_2(tmp_path / "missing.zzt")
+
+
+def test_network_2_rejects_stale_zzt(test_workspace):
+    dat = DAT(test_workspace / "network.dat")
+    dat.sections["CS26"].name = "RENAMED"
+    with pytest.raises(ValueError, match="does not match exactly one DAT unit"):
+        dat.get_network_2()
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("node number assignment of labels", "missing assignments", "missing.*table"),
+        ("network map", "missing network", "missing.*table"),
+        (
+            "        30         0         1         1",
+            "        30         0         1       999",
+            "unassigned node",
+        ),
+        (
+            "        30         0         1         1",
+            "        30         0        11         1",
+            "Invalid node count",
+        ),
+        (
+            "         1         1         1         2",
+            "         3         1         1         2",
+            "does not match exactly one DAT unit",
+        ),
+    ],
+)
+def test_network_2_rejects_invalid_maps(test_workspace, tmp_path, old, new, message):
+    zzt = (test_workspace / "network.zzt").read_text()
+    assert old in zzt
+    filepath = tmp_path / "invalid.zzt"
+    filepath.write_text(zzt.replace(old, new, 1))
+    with pytest.raises(ValueError, match=message):
+        DAT(test_workspace / "network.dat").get_network_2(filepath)
 
 
 def test_create_and_insert_connectors():

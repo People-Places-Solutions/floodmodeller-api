@@ -203,6 +203,49 @@ in the DAT file as well.
             1: array(["DumVar", "integer", "", "n/a"], dtype=object)
         }
         
+Getting a network from a ZZT file
+---------------------------------
+
+``get_network_2()`` returns the same kind of result as ``get_network()``:
+a list of existing DAT ``Unit`` objects and a list of directed pairs of those
+objects. It reads connections from a ZZT file generated for the DAT.
+
+.. code:: python
+
+    dat = DAT("network.dat")
+    nodes, edges = dat.get_network_2("network.zzt")
+
+    # With no argument, looks beside the DAT for network.zzt or network.ZZT.
+    nodes, edges = dat.get_network_2()
+
+The ZZT's ``node number assignment of labels`` table translates numeric node
+IDs into labels. Its ``network map`` gives each solver unit's type, subtype,
+node count and node IDs. Numeric unit types and the first node's label identify
+the corresponding DAT objects; for example, code 19 covers river sections,
+conduits, interpolates and replicates. The ``label map`` repeats the node labels
+and is not needed for this translation. The store and elevation maps are also
+not needed to build the graph.
+
+River and conduit rows describe reaches, so they need special handling. Their
+``n1`` identifies the starting section, ``n2`` identifies the next section, and
+any remaining nodes describe side connections. The method adds an edge between
+the two section objects and uses the other nodes to find shared connections.
+End sections without a solver row are retained using their labels in the node
+assignment table. For example, in the sample network, the reach from
+``RESOUT2a`` ends at ``RESOUT2b``; the graph retains ``RIVER_RESOUT2b`` between
+``RIVER_RESOUT2a`` and ``JUNCTION_RESOUT2b``.
+
+As with ``get_network()``, graph nodes exclude comments and each edge points
+from the earlier unit to the later unit in DAT order. This convention also
+applies to side connections and does not describe the direction of simulated
+flow. Connections are deduplicated and returned in a stable order.
+
+The method checks node references and unit matches and raises ``ValueError``
+for malformed maps, unknown DAT unit codes, or ambiguous or missing matches.
+Regenerate the ZZT after changing DAT units or labels. The translation has been
+checked against the supplied sample ZZT; other solver unit layouts may need
+additional mappings. For a DAT created in memory, provide the ZZT path explicitly.
+
 Reference
 --------------
 .. autoclass:: floodmodeller_api.DAT
@@ -228,6 +271,8 @@ Reference
    .. automethod:: from_json
 
    .. automethod:: get_network
+
+   .. automethod:: get_network_2
 
 
 Examples

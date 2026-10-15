@@ -23,6 +23,7 @@ from typing import Any
 
 from . import units
 from ._base import FMFile
+from ._zzt import get_network_from_zzt
 from .units._base import Unit
 from .units._helpers import join_10_char, split_10_char, to_float, to_int
 from .units.units import ALL_UNIT_TYPES
@@ -1130,6 +1131,50 @@ class DAT(FMFile):
         lookup = {unit.machine_name: unit for unit in end_list}
         unit_pairs = [tuple(lookup[i] for i in pair) for pair in unit_name_pairs]
         return end_list, unit_pairs
+
+    def get_network_2(
+        self,
+        zzt_filepath: str | Path | None = None,
+    ) -> tuple[list[Unit], list[tuple[Unit, ...]]]:
+        """Return a network of this DAT's units using a ZZT network map.
+
+        The ZZT's node assignments and network map supply the connections.
+        Numeric unit types and labels identify the corresponding existing DAT
+        objects. River and conduit rows describe reaches between sections, so
+        their downstream sections are retained as separate graph nodes even
+        when they have no row of their own in the ZZT.
+
+        As in :meth:`get_network`, comments are excluded and edges point from
+        the earlier unit to the later unit in DAT order. This ordering does not
+        indicate the direction of simulated flow. Duplicate edges are removed.
+        The DAT and its units are not modified.
+
+        Args:
+            zzt_filepath (str | Path, optional): ZZT generated from this DAT.
+                Defaults to the DAT filepath with a ``.zzt`` suffix (also
+                checks ``.ZZT``). Required for an in-memory DAT.
+
+        Returns:
+            tuple[list[Unit], list[tuple[Unit, ...]]]: Existing DAT units in file
+            order and directed pairs of those same objects, as in get_network.
+
+        Raises:
+            FileNotFoundError: The ZZT file does not exist.
+            ValueError: No path is available, the maps are malformed, or units
+                cannot be matched unambiguously to this DAT. Regenerate the ZZT
+                after changing the DAT's units or labels.
+
+        """
+        if zzt_filepath is None:
+            if not hasattr(self, "_filepath"):
+                msg = "Provide zzt_filepath when calling get_network_2 on an in-memory DAT."
+                raise ValueError(msg)
+            zzt_filepath = self._filepath.with_suffix(".zzt")
+            if not zzt_filepath.exists() and zzt_filepath.with_suffix(".ZZT").exists():
+                zzt_filepath = zzt_filepath.with_suffix(".ZZT")
+
+        graph_units = [unit for unit in self._all_units if unit.unit != "COMMENT"]
+        return get_network_from_zzt(graph_units, Path(zzt_filepath), self.ENCODING)
 
 
 def _is_directional_unit(src: Unit):
