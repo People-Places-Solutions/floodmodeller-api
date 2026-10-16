@@ -80,23 +80,27 @@ class IED(FMFile):
         return "\n".join(self._raw_data) + "\n"
 
     def _update_unit_names(self) -> None:
-        for unit_group, unit_group_name in [
-            (self.boundaries, "boundaries"),
-            (self.sections, "sections"),
-            (self.structures, "structures"),
-            (self.conduits, "conduits"),
-            (self.losses, "losses"),
-        ]:
-            for name, unit in unit_group.copy().items():
-                if name != unit.name:
+        for unit_group_name in (
+            "boundaries",
+            "sections",
+            "structures",
+            "conduits",
+            "losses",
+            "connectors",
+            "controls",
+        ):
+            unit_group = getattr(self, unit_group_name)
+            for name, unit in list(unit_group.items()):
+                unit_name = unit.name
+                if unit_name is not None and name != unit_name:
                     # Check if new name already exists as a label
-                    if unit.name in unit_group:
+                    if unit_name in unit_group:
                         msg = (
-                            f'Error: Cannot update label "{name}" to "{unit.name}" because '
-                            f'"{unit.name}" already exists in the Network {unit_group_name} group'
+                            f'Error: Cannot update label "{name}" to "{unit_name}" because '
+                            f'"{unit_name}" already exists in the Network {unit_group_name} group'
                         )
                         raise Exception(msg)
-                    unit_group[unit.name] = unit
+                    unit_group[unit_name] = unit
                     del unit_group[name]
 
     def _write_raw_data(self) -> None:
