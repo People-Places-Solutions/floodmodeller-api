@@ -13,6 +13,7 @@ You should have received a copy of the GNU General Public License along with thi
 If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
+
 import matplotlib.pyplot as plt
 import pytest
 from docs.source.getting_started.generate_api_overview import build_figure, load_fonts, main
