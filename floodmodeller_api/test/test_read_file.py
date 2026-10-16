@@ -10,6 +10,11 @@ def test_read_file(file):
     if file.name.startswith("duplicate_unit_test"):
         pytest.skip("Skipping as invalid DAT (duplicate units)")
 
+    if file.name == "EX1_type_units_names.DAT":
+        with pytest.raises(FloodModellerAPIError, match="unit type 'QTBDY' has the name 'RIVER'"):
+            read_file(file)
+        return
+
     if (
         file.suffix.lower()
         in [
