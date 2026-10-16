@@ -21,7 +21,11 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 from .util import id_from_path, parameterise_glob
 
-DAT_FILE_PATHS = parameterise_glob("**/*.dat") + parameterise_glob("**/*.DAT")
+DAT_FILE_PATHS = [
+    path
+    for path in parameterise_glob("**/*.dat") + parameterise_glob("**/*.DAT")
+    if path.name != "EX1_type_units_names.DAT"
+]
 
 
 @pytest.fixture()
@@ -91,6 +95,17 @@ def test_changing_section_and_dist_works(dat_fp, data_before):
     dat.sections["check"].name = prev_name
     dat.sections["check"].dist_to_next = prev_dist
     assert dat._write() == data_before
+
+
+def test_dat_rejects_unit_type_names(test_workspace):
+    """DAT: Reject a unit type used as a unit name."""
+    dat_path = Path(test_workspace, "EX1_type_units_names.DAT")
+
+    with pytest.raises(
+        FloodModellerAPIError,
+        match=r"Msg: A unit type 'QTBDY' has the name 'RIVER'.  This is a type unit's name",
+    ):
+        DAT(dat_path)
 
 
 def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
