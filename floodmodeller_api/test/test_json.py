@@ -132,7 +132,7 @@ def _remove_keys(data: Any, keys_to_remove: list[str]) -> Any:
     [
         file_path
         for file_path in chain(
-            *(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"])
+            *(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]),
         )
         if file_path.name != "EX1_type_units_names.DAT"
     ],
