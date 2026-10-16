@@ -21,6 +21,7 @@ from matplotlib import font_manager
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import FancyBboxPatch
 
+
 def load_fonts(font_dir=Path(r"C:\Windows\Fonts")):
     regular_path = font_dir / "JACOBSCHRONOS_RG.ttf"
     bold_path = font_dir / "JACOBSCHRONOS_BD.ttf"
@@ -276,7 +277,7 @@ def build_figure(theme: str = "dark") -> plt.Figure:
             COLORS["future"],
             title_size=9.0,
         )
-    
+
     card(
         ax,
         83.2,
