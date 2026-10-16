@@ -44,6 +44,11 @@ def dat_ex3(test_workspace):
 
 
 @pytest.fixture()
+def dat_ex1_type_names(test_workspace: Path) -> Path:
+    return test_workspace / "EX1_type_units_names.DAT"
+
+
+@pytest.fixture()
 def units(dat_ex3):
     unit_1 = dat_ex3.sections["20"]
     unit_2 = dat_ex3.sections["40"]
@@ -97,15 +102,13 @@ def test_changing_section_and_dist_works(dat_fp, data_before):
     assert dat._write() == data_before
 
 
-def test_dat_rejects_unit_type_names(test_workspace):
+def test_dat_rejects_unit_type_names(dat_ex1_type_names: Path):
     """DAT: Reject a unit type used as a unit name."""
-    dat_path = Path(test_workspace, "EX1_type_units_names.DAT")
-
     with pytest.raises(
         FloodModellerAPIError,
         match=r"Msg: A unit type 'QTBDY' has the name 'RIVER'.  This is a type unit's name",
     ):
-        DAT(dat_path)
+        DAT(dat_ex1_type_names)
 
 
 def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
