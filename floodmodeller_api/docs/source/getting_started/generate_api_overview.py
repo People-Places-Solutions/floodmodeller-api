@@ -17,21 +17,27 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib import font_manager
 from matplotlib.font_manager import FontProperties
 from matplotlib.patches import FancyBboxPatch
-from matplotlib import font_manager
 
-FONT_DIR = Path(r"C:\Windows\Fonts")
-CHRONOS_REGULAR_PATH = FONT_DIR / "JACOBSCHRONOS_RG.ttf"
-CHRONOS_BOLD_PATH = FONT_DIR / "JACOBSCHRONOS_BD.ttf"
+def load_fonts(font_dir=Path(r"C:\Windows\Fonts")):
+    regular_path = font_dir / "JACOBSCHRONOS_RG.ttf"
+    bold_path = font_dir / "JACOBSCHRONOS_BD.ttf"
 
-for path in (CHRONOS_REGULAR_PATH, CHRONOS_BOLD_PATH):
-    if not path.exists():
-        raise FileNotFoundError(f"Font file not found: {path}")
-    font_manager.fontManager.addfont(path)
+    if regular_path.exists() and bold_path.exists():
+        font_manager.fontManager.addfont(regular_path)
+        font_manager.fontManager.addfont(bold_path)
+        return (
+            FontProperties(fname=regular_path),
+            FontProperties(fname=bold_path),
+        )
 
-CHRONOS_REGULAR = FontProperties(fname=CHRONOS_REGULAR_PATH)
-CHRONOS_BOLD = FontProperties(fname=CHRONOS_BOLD_PATH)
+    # CI or another machine without the Jacobs fonts
+    return FontProperties(), FontProperties(weight="bold")
+
+
+CHRONOS_REGULAR, CHRONOS_BOLD = load_fonts()
 
 DARK_COLORS = {
     "background": "#242424",
@@ -270,10 +276,7 @@ def build_figure(theme: str = "dark") -> plt.Figure:
             COLORS["future"],
             title_size=9.0,
         )
-    # rounded_box(ax, 83.2, 5.0, 14.6, 8.4, "none", radius=0.8,
-    #             edgecolor=COLORS["text"], linewidth=1.4)
-    # ax.text(90.5, 10.3, "Have your say", ha="center", va="center", color=COLORS["text"], fontsize=9.5, fontproperties=CHRONOS_BOLD)
-    # ax.text(90.5, 7.8, "Suggest features, report issues\nand help shape the API", ha="center", va="center", color=COLORS["card_text"], fontsize=7.2, fontproperties=CHRONOS_REGULAR)
+    
     card(
         ax,
         83.2,
@@ -302,7 +305,6 @@ def main(
         bbox_inches="tight",
     )
     plt.close(figure)
-    print(f"Wrote {output}")
 
 
 if __name__ == "__main__":
