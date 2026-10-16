@@ -135,7 +135,7 @@ FUTURE = [
 ]
 
 
-def rounded_box(  # noqa: PLR0913, PLR0917
+def rounded_box(  # noqa: PLR0913
     ax,
     x,
     y,
@@ -160,7 +160,7 @@ def rounded_box(  # noqa: PLR0913, PLR0917
     return patch
 
 
-def card(  # noqa: PLR0913, PLR0917
+def card(  # noqa: PLR0913
     ax,
     x,
     y,
