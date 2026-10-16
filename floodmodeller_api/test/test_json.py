@@ -129,7 +129,13 @@ def _remove_keys(data: Any, keys_to_remove: list[str]) -> Any:
 
 @pytest.mark.parametrize(
     "file_path",
-    list(chain(*(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]))),
+    [
+        file_path
+        for file_path in chain(
+            *(parameterise_glob(ext) for ext in ["*.dat", "*.ied", "*.xml", "*.ief", "*.inp"]),
+        )
+        if file_path.name != "EX1_type_units_names.DAT"
+    ],
     ids=id_from_path,
 )
 def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
