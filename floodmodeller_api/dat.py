@@ -336,6 +336,25 @@ class DAT(FMFile):
         # Generate DAT structure
         self._update_dat_struct()
 
+        # # To flag up cases where a type unit's name is being used as a unit's name
+        # errors = []
+        # for i, item in enumerate(self._dat_struct):
+        #     if item["end"] == item["start"]:
+        #         next_type = self._dat_struct[i + 1]["Type"] if i + 1 < len(self._dat_struct) else "Unknown"
+        #         errors.append(f"A unit type '{item['Type']}' has the name '{next_type}'. This is a type unit's name and it is not allowed. It must be changed.")
+
+        # if errors:
+        #     msg = "Multiple validation errors found:\n" + "\n".join(errors)
+        #     raise ValueError(msg)
+
+
+        for i, item in enumerate(self._dat_struct):
+            if item["end"] == item["start"]:
+                next_type = self._dat_struct[i + 1]["Type"] if i + 1 < len(self._dat_struct) else "Unknown"
+                msg = f"A unit type '{item['Type']}' has the name '{next_type}'.  This is a type unit's name and it is not allowed.  It must be changed."
+
+                raise ValueError(msg)
+
         # Get network .gxy if present
         gxy_path = self._filepath.with_suffix(".gxy")
         if gxy_path.exists():
@@ -650,13 +669,15 @@ class DAT(FMFile):
         # Check if the unit type has associated subtypes
         if units.SUPPORTED_UNIT_TYPES[unit_type]["has_subtype"]:
             return unit_data[2][: self._label_len].strip()
-        # assuming len(unit_data)<2 is always correct.
-        # I assume any unit needs data, there should always be at least two rows
-        if 0 < len(unit_data) < 2 and unit_data[0].split()[0] in units.SUPPORTED_UNIT_TYPES:
-            # first_word = unit_data[0].split()[0]
-            msg = f"A unit {unit_type} is using a TYPE UNIT name.  This is not allowed and it must be changed."
-            raise IndexError(msg)
+        # # assuming len(unit_data)<2 is always correct.
+        # # I assume any unit needs data, there should always be at least two rows
+        # if 0 < len(unit_data) < 2 and unit_data[0].split()[0] in units.SUPPORTED_UNIT_TYPES:
+        #     # first_word = unit_data[0].split()[0]
+        #     msg=f"A unit {unit_type} is using a TYPE UNIT name.  This is not allowed and it must be changed."
+        #     raise IndexError(msg)
+
         return unit_data[1][: self._label_len].strip()
+    
 
     def _add_unit_to_group(
         self,
