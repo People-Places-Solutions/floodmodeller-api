@@ -339,7 +339,9 @@ class DAT(FMFile):
         # To flag up cases where a type unit's name is being used as a unit's name
         for i, item in enumerate(self._dat_struct):
             if item["end"] == item["start"]:
-                next_type = self._dat_struct[i + 1]["Type"] if i + 1 < len(self._dat_struct) else "Unknown"
+                next_type = (
+                    self._dat_struct[i + 1]["Type"] if i + 1 < len(self._dat_struct) else "Unknown"
+                )
                 msg = f"A unit type '{item['Type']}' has the name '{next_type}'.  This is a type unit's name and it is not allowed.  It must be changed."
 
                 raise ValueError(msg)
@@ -660,7 +662,6 @@ class DAT(FMFile):
             return unit_data[2][: self._label_len].strip()
 
         return unit_data[1][: self._label_len].strip()
-    
 
     def _add_unit_to_group(
         self,
