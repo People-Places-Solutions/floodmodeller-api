@@ -136,7 +136,15 @@ FUTURE = [
 
 
 def rounded_box(  # noqa: PLR0913, PLR0917
-    ax, x, y, width, height, color, radius=0.8, edgecolor=None, linewidth=0.8,
+    ax,
+    x,
+    y,
+    width,
+    height,
+    color,
+    radius=0.8,
+    edgecolor=None,
+    linewidth=0.8,
 ):
     """Add a rounded rectangle in design-space coordinates."""
     patch = FancyBboxPatch(
@@ -153,7 +161,15 @@ def rounded_box(  # noqa: PLR0913, PLR0917
 
 
 def card(  # noqa: PLR0913, PLR0917
-    ax, x, y, width, height, title, description, color, title_size=10.5,
+    ax,
+    x,
+    y,
+    width,
+    height,
+    title,
+    description,
+    color,
+    title_size=10.5,
 ):
     rounded_box(ax, x, y, width, height, color)
     ax.text(
