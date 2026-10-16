@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pytest
-from docs.source.getting_started.generate_api_overview import build_figure, main
+from docs.source.getting_started.generate_api_overview import build_figure, load_fonts, main
 
 
 def test_build_figure_dark_theme():
@@ -31,3 +31,10 @@ def test_main_saves_png(tmp_path):
 
     assert output.is_file()
     assert output.stat().st_size > 0
+
+
+def test_load_fonts_falls_back_when_chronos_missing(tmp_path):
+    regular, bold = load_fonts(tmp_path)
+
+    assert regular.get_file() is None
+    assert bold.get_file() is None
