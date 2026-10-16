@@ -1,4 +1,20 @@
-"""Generate an overview diagram for the Flood Modeller Python API.
+"""
+Flood Modeller Python API
+Copyright (C) 2025 Jacobs U.K. Limited
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
+If you have any query about this program or this License, please contact us at support@floodmodeller.com or write to the following
+address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
+
+
+Generate an overview diagram for the Flood Modeller Python API.
 
 The diagram is deliberately data-driven: edit the card definitions below to
 change the wording or grouping without changing the drawing code.
@@ -11,7 +27,7 @@ Usage::
 
 Requires matplotlib (already used by the repository's documentation/examples).
 """
-
+# ruff: noqa: INP001
 from __future__ import annotations
 
 from pathlib import Path
@@ -118,7 +134,9 @@ FUTURE = [
 ]
 
 
-def rounded_box(ax, x, y, width, height, color, radius=0.8, edgecolor=None, linewidth=0.8):
+def rounded_box(# noqa: PLR0913
+        ax, x, y, width, height, color, radius=0.8, edgecolor=None, linewidth=0.8
+        ):
     """Add a rounded rectangle in design-space coordinates."""
     patch = FancyBboxPatch(
         (x, y),
@@ -133,7 +151,9 @@ def rounded_box(ax, x, y, width, height, color, radius=0.8, edgecolor=None, line
     return patch
 
 
-def card(ax, x, y, width, height, title, description, color, title_size=10.5):
+def card(# noqa: PLR0913
+        ax, x, y, width, height, title, description, color, title_size=10.5
+        ):
     rounded_box(ax, x, y, width, height, color)
     ax.text(
         x + width / 2,
