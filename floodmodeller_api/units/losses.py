@@ -29,6 +29,7 @@ from ._helpers import (
     to_data_list,
     to_float,
     to_str,
+    validate_timeunit_data,
 )
 
 
@@ -225,7 +226,7 @@ class BLOCKAGE(Unit):
             to_data_list(block[4:], num_cols=2, date_col=0)
             if self.timeunit == "DATES"
             else to_data_list(block[4:], num_cols=2)
-        )  # Enforced two columns as Flood Modeller saves old parameters when using DATES (also to avoid extra 'HOURS' bug)
+        )  # Read two logical values; DATES adds a third physical field for the date/time pair.
 
         self.data = pd.DataFrame(data_list, columns=["Time", "Blockage"])
         self.data = self.data.set_index("Time")
@@ -234,6 +235,7 @@ class BLOCKAGE(Unit):
     def _write(self):
         """Function to write a valid BLOCKAGE block"""
 
+        validate_timeunit_data(self.timeunit, self.data, self._unit)
         _validate_unit(self)
 
         # Custom validation for blockage percentage
