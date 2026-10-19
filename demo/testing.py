@@ -93,7 +93,7 @@ ZZT_TYPES = {
 }
 
 def _read_ztt(filepath: Path) -> list[str]:
-    with open(zzt_filepath, encoding="cp1252") as zzt_file:
+    with open(filepath, encoding="cp1252") as zzt_file:
         raw_data: list[str] = [line.rstrip("\n") for line in zzt_file]
     return raw_data
 
@@ -199,13 +199,13 @@ def _set_ghost_nodes(network: pd.DataFrame, node_cols: list[str]) -> pd.DataFram
             for nx in node_cols:
                 print(network[ni][idx])
 
-                # TODO: Fix these lines (currently setting a series to a signe value)
+                # TODO: Fix these lines (currently setting a series to a sign value)
                 network[ni][idx] = nw_with_row_omitted[
                     nw_with_row_omitted[nx] == network[ni][idx]
                     ]["n1"]
 
                 network[f"type_{ni}"][idx] = nw_with_row_omitted[
-                    nw_with_row_omitted[nx] == network[f"type_{ni}"i][idx]
+                    nw_with_row_omitted[nx] == network[f"type_{ni}"][idx]
                     ]["type"]
 
                 if network[ni][idx] != 0 and network[f"type_{ni}"][idx] != 0:
@@ -215,6 +215,8 @@ def _set_ghost_nodes(network: pd.DataFrame, node_cols: list[str]) -> pd.DataFram
 
     return network
 
+# TODO: Set up condition for adding RIVER units upstream of junctions
+# TODO: Update ZZT_TYPES to use the same naming as supported / unsupported unit types
 # TODO: Set up function to spread the rows i.e. (a, b, c) to (a, b), (a, c)
 # TODO: Convert result to written text
 
@@ -233,11 +235,13 @@ def get_network_zzt(zzt_filepath: Path):
             network = network.drop(columns=col)
     node_cols = [col for col in network.columns if col in node_cols]
 
-    network = _set_general_nodes(network, node_cols)
-    network = _set_boundary_nodes(network)
-    network = _set_ghost_nodes(network, node_cols)
+    network = pd.melt(network, id_vars=["type", "n1"], value_vars=node_cols)
 
-    print(network.head(20)) 
+    # network = _set_general_nodes(network, node_cols)
+    # network = _set_boundary_nodes(network)
+    # network = _set_ghost_nodes(network, node_cols)
+
+    # print(network.head(20)) 
 
     return network
 
@@ -245,8 +249,8 @@ if __name__ == "__main__":
 
     zzt_filepath = Path(r"floodmodeller_api/test/test_data/network.zzt")
     network = get_network_zzt(zzt_filepath=zzt_filepath)
-    # print(network_df.head())
-    # network_df.to_csv(r"demo\network_map2.csv")
+    print(network.head(25))
+    network.to_csv(r"demo\network_map2.csv")
 
     # dat = DAT(r"floodmodeller_api/test/test_data/network.dat")
     # nodes, edges = dat.get_network()
