@@ -487,6 +487,29 @@ def test_network_2_matches_manual_network(test_workspace, expected_edges):
     assert all(any(unit is node for node in nodes) for edge in edges for unit in edge)
 
 
+@pytest.mark.parametrize(
+        "dat_file_with_zzt",
+        [
+            "EX3.DAT",
+            "EX6.DAT",
+            "network.dat",
+            "Event Data Example.DAT",
+            "River_Network.dat",
+        ],
+        )
+def test_all_zzt_match_network(test_workspace, dat_file_with_zzt):
+
+    dat = DAT(test_workspace / dat_file_with_zzt)
+    original_nodes, original_edges = dat.get_network()
+    nodes, edges = dat.get_network_2()
+
+    edges = {tuple(x.unique_name for x in y) for y in edges}
+    original_edges = {tuple(x.unique_name for x in y) for y in original_edges}
+
+    assert all(actual is original for actual, original in zip(nodes, original_nodes))
+    assert edges == original_edges
+
+
 def test_network_2_uses_zzt_reaches(test_workspace):
     """Reach connections come from ZZT n2, even without a DAT distance hint."""
     dat = DAT(test_workspace / "network.dat")
