@@ -157,6 +157,10 @@ def test_xml2d_change_schema_versions(tmp_path: Path):
     assert x2d._schema_version == "8.0" # Ensure it is set to latest schema version
     x2d.update()  # includes validate
 
+    x2d._update_schema_version("7.4")
+    assert x2d._schema_version == "7.4"
+    x2d.update()  # includes validate
+
     x2d._update_schema_version("7.2")
     assert x2d._schema_version == "7.2"
     x2d.update()  # includes validate
@@ -194,6 +198,10 @@ def test_xml2d_v7_4_attributes(tmp_path: Path):
         }
 
     x2d.update() # includes validate
+
+    x2d._update_schema_version("7.4")
+    assert x2d._schema_version == "7.4"
+    x2d.update()  # includes validate
 
     x2d._update_schema_version("7.3")
     with pytest.raises(FloodModellerAPIError, match="XML Validation Error"):
