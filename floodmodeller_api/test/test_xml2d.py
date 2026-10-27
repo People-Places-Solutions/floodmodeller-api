@@ -154,7 +154,7 @@ def test_xml2d_change_schema_versions(tmp_path: Path):
     x2d.domains[domain]["topography_2"] = [  # valid in v7.3+ but not v6.1
         {"type": "standard", "filelist": {"fmfile": [{"type": "tif", "value": "hi.tif"}]}},
     ]
-    assert x2d._schema_version == "7.4" # Ensure it is set to latest schema version
+    assert x2d._schema_version == "8.0" # Ensure it is set to latest schema version
     x2d.update()  # includes validate
 
     x2d._update_schema_version("7.2")
@@ -171,7 +171,7 @@ def test_xml2d_v7_4_attributes(tmp_path: Path):
     """Test setting attributes new to version 7.4+."""
     x2d = XML2D()
     x2d.save(tmp_path / "test.xml")
-    assert x2d._schema_version == "7.4" # Ensure it is set to latest schema version
+    assert x2d._schema_version == "8.0" # Ensure it is set to latest schema version
 
     x2d.metadata = {
     "modelinfo": {
@@ -216,7 +216,7 @@ def test_xml2d_deals_with_non_fm_schemas(tmp_path: Path):
     fake_schema_xml = (
         xml_path.read_text()
         .replace("https://www.floodmodeller.com", fake_namespace)
-        .replace("http://schema.floodmodeller.com/7.4/2d.xsd", fake_schema)
+        .replace("http://schema.floodmodeller.com/8.0/2d.xsd", fake_schema)
     ) # Ensure it is set to latest schema version
     xml_path.write_text(fake_schema_xml)
     assert fake_namespace in xml_path.read_text()
@@ -224,7 +224,7 @@ def test_xml2d_deals_with_non_fm_schemas(tmp_path: Path):
 
     x2d = XML2D(xml_path)
     assert x2d._xmltree.getroot().nsmap[None] == "https://www.floodmodeller.com"
-    assert x2d._schema_version == "7.4" # Ensure it is set to latest schema version
+    assert x2d._schema_version == "8.0" # Ensure it is set to latest schema version
     assert xml_path.read_text() == fake_schema_xml
 
     x2d.update()

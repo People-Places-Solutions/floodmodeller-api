@@ -32,6 +32,8 @@ from floodmodeller_api._base import FMFile
 from floodmodeller_api.enums import Fm2dXmlSchemaVersions
 
 from .constants import (
+    BACKUP_SCHEMA_FILENAME,
+    BACKUP_SCHEMA_VERSION,
     DEFAULT_NAMESPACE,
     LATEST_SCHEMA_VERSION,
     SCHEMA_LOCATION_TPL,
@@ -128,11 +130,7 @@ Fm2dXmlSchemaVersions for all available versions.
 """
             logging.warning(msg)
 
-        # Temporary condition to be deleted
-        if version == "8.0":
-            self._update_schema_version()
-        else:
-            self._update_schema_version(version)
+        self._update_schema_version(version)
 
         self._create_dict()
         for key, data in self._data.items():
@@ -189,20 +187,16 @@ Fm2dXmlSchemaVersions for all available versions.
 
         xsi_loc = schema_location.split()[1]
 
-        # Temporary code to be deleted
-        if version is None:
-            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
-            self._xsdschema = etree.XMLSchema(self._xsd)
-            self._get_multi_value_keys()
-            return
-
         try:
             xsd_bin = requests.get(xsi_loc).content
             self._xsd = etree.parse(io.BytesIO(xsd_bin))
             self._xsdschema = etree.XMLSchema(self._xsd)
         except Exception:
-            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsd = etree.parse(Path(__file__).parent / BACKUP_SCHEMA_FILENAME)
             self._xsdschema = etree.XMLSchema(self._xsd)
+            self._schema_version = BACKUP_SCHEMA_VERSION
+            msg = f"The backup schema has been used with schema version {BACKUP_SCHEMA_VERSION}."
+            logging.warning(msg)
         self._get_multi_value_keys()
 
     def _create_dict(self):
