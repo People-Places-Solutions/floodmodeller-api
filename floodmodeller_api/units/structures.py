@@ -297,7 +297,7 @@ class BRIDGE(Unit):
                 self.opening_nsubrows_list.append(nrows)
                 self.opening_data_list.append(data)
 
-            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
+            self.culvert_nrows, _, self.culvert_data = read_dataframe_from_lines(
                 br_block,
                 end_idx,
                 read_bridge_culvert_data,

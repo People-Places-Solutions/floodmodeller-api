@@ -17,9 +17,9 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import copy
+from contextlib import suppress
 from itertools import chain
 from typing import Any, Callable
-from contextlib import suppress
 
 import pandas as pd
 
@@ -149,7 +149,7 @@ def set_pier_params(obj: Any, line: str) -> None:
             obj.pier_use_calibration_coeff = True
             obj.calibration_number = to_float(pier_info[3])
             obj.unknown_value = to_float(
-                pier_info[4]
+                pier_info[4],
             )  # we must identify where this 0.000 comes from
             obj.universal = pier_info[5]  # adding universal when specify piers True
         else:
@@ -161,7 +161,7 @@ def set_pier_params(obj: Any, line: str) -> None:
             with suppress(IndexError):
                 obj.calibration_number = to_float(pier_info[3])
                 obj.unknown_value = to_float(
-                    pier_info[4]
+                    pier_info[4],
                 )  # we must identify where this 0.000 comes from
                 obj.universal = pier_info[5]  # adding universal when specify piers True
 
@@ -169,7 +169,7 @@ def set_pier_params(obj: Any, line: str) -> None:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
         obj.calibration_number = to_float(
-            pier_info[3]
+            pier_info[3],
         )  # in the dat file copied, there is a zero missing, is this?
         obj.unknown_value = to_float(pier_info[4])  # we must identify where this 0.000 comes from
         obj.universal = pier_info[5]  # adding universal when specify piers True
@@ -221,7 +221,7 @@ def read_bridge_cross_sections(
                 [
                     to_float(line_split[5]),  # Easting
                     to_float(line_split[6]),  # Northing
-                ]
+                ],
             )
 
         data_list.append(df_row)
