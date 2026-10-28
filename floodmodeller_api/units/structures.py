@@ -169,8 +169,7 @@ class BRIDGE(Unit):
     pier_faces: str
     calibration_number: float
     universal: str
-    unknown_value: float                          # this must be reviewed
-
+    unknown_value: float  # this must be reviewed
 
     def _read(self, br_block: list[str]) -> None:  # noqa: PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
@@ -278,6 +277,7 @@ class BRIDGE(Unit):
                     end_idx,
                     read_bridge_cross_sections,
                     include_panel_marker=True,
+                    include_coordinates=True,
                 )
                 self.section_nrows_list.append(nrows)
                 self.section_data_list.append(data)
@@ -312,17 +312,19 @@ class BRIDGE(Unit):
                 read_spill_section_data,
             )
 
-            self.block_comment = br_block[end_idx]   # block of USDEPTHNOOVRRIDE
+            self.block_comment = br_block[end_idx]  # block of USDEPTHNOOVRRIDE
             end_idx += 1
             block_params = split_10_char(f"{br_block[end_idx]:<50}")
             self.inlet_loss = to_float(block_params[1])
             self.outlet_loss = to_float(block_params[2])
             self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
             self.override = block_params[4] == "OVERRIDE"
-            self.block_nrows, end_idx, self.block_data = read_dataframe_from_lines(   # check block_data as it could have two more items than expected
-                br_block,
-                end_idx,
-                read_superbridge_block_data,
+            self.block_nrows, end_idx, self.block_data = (
+                read_dataframe_from_lines(  # check block_data as it could have two more items than expected
+                    br_block,
+                    end_idx,
+                    read_superbridge_block_data,
+                )
             )
 
         else:
@@ -388,7 +390,9 @@ class BRIDGE(Unit):
             )
             if self.specify_piers:
                 if self.pier_use_calibration_coeff:
-                    pier_params = f"{self.npiers:>10}{'COEFF':<10}{'':>10}{self.calibration_number:>10.3f}"
+                    pier_params = (
+                        f"{self.npiers:>10}{'COEFF':<10}{'':>10}{self.calibration_number:>10.3f}"
+                    )
                 else:
                     pier_params = f"{self.npiers:>10}{self.pier_shape:<10}{self.pier_faces:<10}"
             else:
@@ -469,7 +473,7 @@ class BRIDGE(Unit):
                         "COEFF",
                         "",
                         self.calibration_number,
-                        self.universal,                                 # unclear what value/parameter must this cover
+                        self.universal,  # unclear what value/parameter must this cover
                         self.abutment_type,
                     )
                 else:
@@ -479,17 +483,17 @@ class BRIDGE(Unit):
                         self.pier_faces,
                         self.calibration_number,
                         self.unknown_value,
-                        self.universal,                                 # unclear what value/parameter must this cover
+                        self.universal,  # unclear what value/parameter must this cover
                         self.abutment_type,
                     )
             else:
-                line_8 = join_10_char(      # line lacking three items 
+                line_8 = join_10_char(  # line lacking three items
                     0,
                     self.soffit_shape,
                     "",
                     self.calibration_number,
-                    self.unknown_value,                              # value to be checked, where this 0.000 comes from
-                    self.universal,                                 # unclear what value/parameter must this cover
+                    self.unknown_value,  # value to be checked, where this 0.000 comes from
+                    self.universal,  # unclear what value/parameter must this cover
                     self.abutment_type,
                 )
             line_9 = "ALIGNED" if self.aligned else ""
@@ -518,7 +522,7 @@ class BRIDGE(Unit):
                     self.block_method,
                     "OVERRIDE" if self.override else "NOOVERRIDE",
                 ),
-                self.block_data,     # problems in this line.  Two values that dopn't exist in original
+                self.block_data,  # problems in this line.  Two values that dopn't exist in original
             )
 
             return [
