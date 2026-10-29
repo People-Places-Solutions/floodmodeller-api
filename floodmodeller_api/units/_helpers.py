@@ -24,6 +24,11 @@ from typing import Any, Callable
 import pandas as pd
 
 NOTATION_THRESHOLD = 10
+PIER_YARNELL_COEFFICIENT_INDEX = 4
+PIER_UNIVERSAL_INDEX = 5
+PIER_ABUTMENT_TYPE_INDEX = 6
+BRIDGE_EASTING_INDEX = 5
+BRIDGE_NORTHING_INDEX = 6
 
 
 def split_10_char(line: str) -> list[str]:
@@ -168,10 +173,16 @@ def set_pier_params(obj: Any, line: str) -> None:
     else:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
-        obj.yarnell_coeff = to_float(pier_info[4]) if len(pier_info) > 4 else 0.0
-        obj.universal = pier_info[5] if len(pier_info) > 5 else ""
-        if len(pier_info) > 6 and not hasattr(obj, "abutment_type"):
-            obj.abutment_type = pier_info[6]  # abutment type value in USBPR pier data
+        obj.yarnell_coeff = (
+            to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
+            if len(pier_info) > PIER_YARNELL_COEFFICIENT_INDEX
+            else 0.0
+        )
+        obj.universal = (
+            pier_info[PIER_UNIVERSAL_INDEX] if len(pier_info) > PIER_UNIVERSAL_INDEX else ""
+        )
+        if len(pier_info) > PIER_ABUTMENT_TYPE_INDEX and not hasattr(obj, "abutment_type"):
+            obj.abutment_type = pier_info[PIER_ABUTMENT_TYPE_INDEX]
 
 
 def read_dataframe_from_lines(
@@ -196,7 +207,9 @@ def read_bridge_cross_sections(
     include_coordinates: bool = False,
 ) -> pd.DataFrame:
     data_list = []
-    has_coordinates = include_coordinates and any(len(split_10_char(line)) > 6 for line in lines)
+    has_coordinates = include_coordinates and any(
+        len(split_10_char(line)) > BRIDGE_NORTHING_INDEX for line in lines
+    )
     for line in lines:
         line_split = split_10_char(f"{line:<50}")
 
@@ -218,8 +231,12 @@ def read_bridge_cross_sections(
         if has_coordinates:
             df_row.extend(
                 [
-                    to_float(line_split[5]) if len(line_split) > 5 else 0.0,  # Easting
-                    to_float(line_split[6]) if len(line_split) > 6 else 0.0,  # Northing
+                    to_float(line_split[BRIDGE_EASTING_INDEX])
+                    if len(line_split) > BRIDGE_EASTING_INDEX
+                    else 0.0,  # Easting
+                    to_float(line_split[BRIDGE_NORTHING_INDEX])
+                    if len(line_split) > BRIDGE_NORTHING_INDEX
+                    else 0.0,  # Northing
                 ],
             )
 
