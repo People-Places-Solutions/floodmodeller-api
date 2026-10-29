@@ -163,13 +163,12 @@ class BRIDGE(Unit):
     specify_piers: bool
     npiers: int
     pier_use_calibration_coeff: bool
-    # pier_calibration_coeff: float
     pier_shape: str
     soffit_shape: str
     pier_faces: str
     calibration_number: float
     universal: str
-    unknown_value: float  # this must be reviewed
+    yarnell_coeff: float
 
     def _read(self, br_block: list[str]) -> None:  # noqa: PLR0915
         """Function to read a given BRIDGE block and store data as class attributes"""
@@ -297,7 +296,7 @@ class BRIDGE(Unit):
                 self.opening_nsubrows_list.append(nrows)
                 self.opening_data_list.append(data)
 
-            self.culvert_nrows, _, self.culvert_data = read_dataframe_from_lines(
+            self.culvert_nrows, end_idx, self.culvert_data = read_dataframe_from_lines(
                 br_block,
                 end_idx,
                 read_bridge_culvert_data,
@@ -320,7 +319,7 @@ class BRIDGE(Unit):
             self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
             self.override = block_params[4] == "OVERRIDE"
             self.block_nrows, end_idx, self.block_data = (
-                read_dataframe_from_lines(  # check block_data as it could have two more items than expected
+                read_dataframe_from_lines(
                     br_block,
                     end_idx,
                     read_superbridge_block_data,
@@ -473,7 +472,7 @@ class BRIDGE(Unit):
                         "COEFF",
                         "",
                         self.calibration_number,
-                        self.universal,  # unclear what value/parameter must this cover
+                        self.universal,
                         self.abutment_type,
                     )
                 else:
@@ -482,18 +481,18 @@ class BRIDGE(Unit):
                         self.pier_shape,
                         self.pier_faces,
                         self.calibration_number,
-                        self.unknown_value,
-                        self.universal,  # unclear what value/parameter must this cover
+                        self.yarnell_coeff,
+                        self.universal,
                         self.abutment_type,
                     )
             else:
-                line_8 = join_10_char(  # line lacking three items
+                line_8 = join_10_char(
                     0,
                     self.soffit_shape,
                     "",
-                    self.calibration_number,
-                    self.unknown_value,  # value to be checked, where this 0.000 comes from
-                    self.universal,  # unclear what value/parameter must this cover
+                    "", # self.calibration_number,
+                    self.yarnell_coeff,
+                    self.universal,
                     self.abutment_type,
                 )
             line_9 = "ALIGNED" if self.aligned else ""
@@ -522,7 +521,7 @@ class BRIDGE(Unit):
                     self.block_method,
                     "OVERRIDE" if self.override else "NOOVERRIDE",
                 ),
-                self.block_data,  # problems in this line.  Two values that dopn't exist in original
+                self.block_data,
             )
 
             return [

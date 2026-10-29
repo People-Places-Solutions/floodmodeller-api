@@ -148,7 +148,7 @@ def set_pier_params(obj: Any, line: str) -> None:
         if pier_info[1] == "COEFF":
             obj.pier_use_calibration_coeff = True
             obj.calibration_number = to_float(pier_info[3])
-            obj.unknown_value = to_float(
+            obj.yarnell_coeff = to_float(
                 pier_info[4],
             )  # we must identify where this 0.000 comes from
             obj.universal = pier_info[5]  # adding universal when specify piers True
@@ -160,7 +160,7 @@ def set_pier_params(obj: Any, line: str) -> None:
             # the parameter below are intended to work with INTEGRATED only
             with suppress(IndexError):
                 obj.calibration_number = to_float(pier_info[3])
-                obj.unknown_value = to_float(
+                obj.yarnell_coeff = to_float(
                     pier_info[4],
                 )  # we must identify where this 0.000 comes from
                 obj.universal = pier_info[5]  # adding universal when specify piers True
@@ -168,10 +168,10 @@ def set_pier_params(obj: Any, line: str) -> None:
     else:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
-        obj.calibration_number = to_float(
-            pier_info[3],
-        )  # in the dat file copied, there is a zero missing, is this?
-        obj.unknown_value = to_float(pier_info[4])  # we must identify where this 0.000 comes from
+        # obj.calibration_number = to_float(
+        #     pier_info[3],
+        # )  # in INTEGRATED when Specify soffit shape, this is not needed
+        obj.yarnell_coeff = to_float(pier_info[4])  # we must identify where this 0.000 comes from
         obj.universal = pier_info[5]  # adding universal when specify piers True
         obj.abutment_type = pier_info[6]  # abutment type value in USBPR pier data
 
