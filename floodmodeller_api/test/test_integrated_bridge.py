@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import pandas as pd
 import pytest
 
+from floodmodeller_api import DAT
 from floodmodeller_api.test.util import id_from_path, parameterise_glob
 from floodmodeller_api.units import BRIDGE
 
@@ -25,7 +26,7 @@ def folder(test_workspace: Path) -> Path:
     return test_workspace / "integrated_bridge"
 
 
-def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
+def test_read_ied_bridge(folder: Path):  # noqa: PLR0915 (all needed)
     unit = create_bridge(folder / "US_vSP_NoBl_2O_Para.ied")
 
     assert unit.comment == "prototype for rev 3 / No Spill data, no blockage"
@@ -120,6 +121,24 @@ def test_read_bridge(folder: Path):  # noqa: PLR0915 (all needed)
 
     expected = pd.DataFrame({"percentage": [], "time": [], "datetime": []})
     pd.testing.assert_frame_equal(unit.block_data, expected, check_dtype=False)
+
+
+def test_read_bridge(test_workspace: Path):
+    dat = DAT(test_workspace / "integrated_bridge.dat")
+    unit = dat.structures["XS6"]
+
+    assert unit.subtype == "INTEGRATED"
+    assert unit.ds_label == "XS6D"
+    assert unit.bridge_name.strip() == "New Tummel Bridge"
+    assert unit.section_nrows_list == [57, 0, 58, 0]
+    for section in (unit.section_data_list[0], unit.section_data_list[2]):
+        assert {"Easting", "Northing"}.issubset(section.columns)
+        assert section[["Easting", "Northing"]].eq(0).all().all()
+
+    assert unit.spill_nrows == 14
+    assert len(unit.spill_data) == 14
+    assert unit.weir_coefficient == 1.7
+    assert unit.modular_limit == 0.9
 
 
 @pytest.mark.parametrize("file", parameterise_glob("integrated_bridge/*.ied"), ids=id_from_path)

@@ -262,6 +262,7 @@ class BRIDGE(Unit):
             self.revision = to_int(br_block[3])
             self.bridge_name = br_block[4]
             self.integrated_subtype = br_block[5].strip()
+            self.transition_smoothing_factor = 0.0
             set_bridge_params(self, br_block[6])
             self.abutment_type = to_int(br_block[7])
             set_pier_params(self, br_block[8])
@@ -470,6 +471,7 @@ class BRIDGE(Unit):
                         "COEFF",
                         "",
                         self.calibration_number,
+                        self.yarnell_coeff,
                         self.universal,
                         self.abutment_type,
                     )

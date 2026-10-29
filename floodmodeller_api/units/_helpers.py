@@ -168,9 +168,10 @@ def set_pier_params(obj: Any, line: str) -> None:
     else:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
-        obj.yarnell_coeff = to_float(pier_info[4])  # we must identify where this 0.000 comes from
-        obj.universal = pier_info[5]  # adding universal when specify piers True
-        obj.abutment_type = pier_info[6]  # abutment type value in USBPR pier data
+        obj.yarnell_coeff = to_float(pier_info[4]) if len(pier_info) > 4 else 0.0
+        obj.universal = pier_info[5] if len(pier_info) > 5 else ""
+        if len(pier_info) > 6 and not hasattr(obj, "abutment_type"):
+            obj.abutment_type = pier_info[6]  # abutment type value in USBPR pier data
 
 
 def read_dataframe_from_lines(
@@ -195,6 +196,7 @@ def read_bridge_cross_sections(
     include_coordinates: bool = False,
 ) -> pd.DataFrame:
     data_list = []
+    has_coordinates = include_coordinates and any(len(split_10_char(line)) > 6 for line in lines)
     for line in lines:
         line_split = split_10_char(f"{line:<50}")
 
@@ -213,11 +215,11 @@ def read_bridge_cross_sections(
         if include_top_level:
             df_row.append(to_float(line_split[5]))  # Top Level
 
-        if include_coordinates:
+        if has_coordinates:
             df_row.extend(
                 [
-                    to_float(line_split[5]),  # Easting
-                    to_float(line_split[6]),  # Northing
+                    to_float(line_split[5]) if len(line_split) > 5 else 0.0,  # Easting
+                    to_float(line_split[6]) if len(line_split) > 6 else 0.0,  # Northing
                 ],
             )
 
@@ -234,7 +236,7 @@ def read_bridge_cross_sections(
     if include_top_level:
         columns.append("Top Level")
 
-    if include_coordinates:
+    if has_coordinates:
         columns.extend(["Easting", "Northing"])
 
     return pd.DataFrame(data_list, columns=columns)
