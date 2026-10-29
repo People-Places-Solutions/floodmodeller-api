@@ -318,12 +318,10 @@ class BRIDGE(Unit):
             self.outlet_loss = to_float(block_params[2])
             self.block_method = "USDEPTH" if (block_params[3] == "") else block_params[3]
             self.override = block_params[4] == "OVERRIDE"
-            self.block_nrows, end_idx, self.block_data = (
-                read_dataframe_from_lines(
-                    br_block,
-                    end_idx,
-                    read_superbridge_block_data,
-                )
+            self.block_nrows, end_idx, self.block_data = read_dataframe_from_lines(
+                br_block,
+                end_idx,
+                read_superbridge_block_data,
             )
 
         else:
@@ -490,7 +488,7 @@ class BRIDGE(Unit):
                     0,
                     self.soffit_shape,
                     "",
-                    "", # self.calibration_number,
+                    "",  # self.calibration_number,
                     self.yarnell_coeff,
                     self.universal,
                     self.abutment_type,
