@@ -27,6 +27,7 @@ from ._helpers import (
     to_data_list,
     to_float,
     to_str,
+    validate_timeunit_data,
 )
 
 
@@ -101,10 +102,11 @@ class QTBDY(Unit):
         self.flowmultiplier = to_float(qtbdy_params[6])
         self.minflow = to_float(qtbdy_params[7])
         self.allow_override = to_str(qtbdy_params[8], "OVERRIDE")  # ''/OVERRIDE or NOOVERRIDE
+        # DATES stores the date and time in separate fields, so its rows have 3 physical fields.
         data_list = (
-            to_data_list(qtbdy_block[3:], date_col=1)
+            to_data_list(qtbdy_block[3:], num_cols=2, date_col=1)
             if self.timeunit == "DATES"
-            else to_data_list(qtbdy_block[3:])
+            else to_data_list(qtbdy_block[3:], num_cols=2)
         )
         if data_list == [[0]]:
             data_list = [[0, 0]]
@@ -114,6 +116,7 @@ class QTBDY(Unit):
 
     def _write(self):
         """Function to write a valid QTBDY block"""
+        validate_timeunit_data(self.timeunit, self.data, self._unit)
         _validate_unit(self)  # Function to check the params are valid for QTBDY
         header = self._create_header()
         name = self.name[: self._label_len]
@@ -196,10 +199,11 @@ class HTBDY(Unit):
         self.extendmethod = to_str(htbdy_params[3], "EXTEND")
         self.interpmethod = to_str(htbdy_params[4], "LINEAR")
 
+        # DATES stores the date and time in separate fields, so its rows have 3 physical fields.
         data_list = (
-            to_data_list(htbdy_block[3:], date_col=1)
+            to_data_list(htbdy_block[3:], num_cols=2, date_col=1)
             if self.timeunit == "DATES"
-            else to_data_list(htbdy_block[3:])
+            else to_data_list(htbdy_block[3:], num_cols=2)
         )
         if data_list == [[0]]:
             data_list = [[0, 0]]
@@ -215,6 +219,7 @@ class HTBDY(Unit):
 
     def _write(self):
         """Function to write a valid HTBDY block"""
+        validate_timeunit_data(self.timeunit, self.data, self._unit)
         _validate_unit(self)  # Function to check the params are valid for HTBDY
         header = self._create_header()
         name = self.name
