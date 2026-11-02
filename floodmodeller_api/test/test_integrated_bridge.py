@@ -125,18 +125,17 @@ def test_read_ied_bridge(folder: Path):  # noqa: PLR0915 (all needed)
 
 def test_read_bridge(test_workspace: Path):
     dat = DAT(test_workspace / "integrated_bridge.dat")
-    unit = dat.structures["XS6"]
+    unit = dat.structures["Label11"]
 
     assert unit.subtype == "INTEGRATED"
-    assert unit.ds_label == "XS6D"
-    assert unit.bridge_name.strip() == "New Tummel Bridge"
-    assert unit.section_nrows_list == [57, 0, 58, 0]
-    for section in (unit.section_data_list[0], unit.section_data_list[2]):
-        assert {"Easting", "Northing"}.issubset(section.columns)
-        assert section[["Easting", "Northing"]].eq(0).all().all()
+    assert unit.ds_label == "Label12"
+    assert unit.bridge_name.strip() == "Clifton Suspension Bridge"
+    assert unit.section_nrows_list == [4, 0, 0, 0]
+    assert len(unit.section_data_list[0]) == 4
+    assert not {"Easting", "Northing"}.intersection(unit.section_data_list[0].columns)
 
-    assert unit.spill_nrows == 14
-    assert len(unit.spill_data) == 14
+    assert unit.spill_nrows == 2
+    assert len(unit.spill_data) == 2
     assert unit.weir_coefficient == 1.7
     assert unit.modular_limit == 0.9
 
