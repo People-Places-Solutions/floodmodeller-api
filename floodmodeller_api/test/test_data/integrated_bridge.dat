@@ -38,3 +38,6 @@ No blockage
 INITIAL CONDITIONS
  label   ?      flow     stage froude no  velocity     umode    ustate         z
 Label11      y     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+GISINFO
+BRIDGE INTEGRATED Label11 0 0 0 0 0
+Label11 0 0 0 0 0
