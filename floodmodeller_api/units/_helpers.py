@@ -121,6 +121,35 @@ def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | 
     return data_list
 
 
+def validate_timeunit_data(timeunit: str | float, data: pd.Series, unit_name: str) -> None:
+    """Ensure time-series index values match the selected time unit format."""
+
+    # Added to handle the test made bfore this function
+    # There is an empty BLOCKAGE that makes some test fail as it is empty data
+    if data.empty:
+        return
+
+    expects_dates = timeunit == "DATES"
+
+    try:
+        pd.to_numeric(data.index.tolist(), errors="raise")
+        has_numeric_index = True
+    except (ValueError, TypeError):
+        has_numeric_index = False
+
+    if has_numeric_index == expects_dates:
+        expected = "date/time strings" if expects_dates else "numeric elapsed times"
+        actual = "numeric values" if has_numeric_index else "non-numeric values"
+
+        msg = (
+            f"Invalid time data for {unit_name} {data.name!r}: "
+            f"timeunit is {timeunit!r}, but the data index contains {actual}. "
+            f"Expected {expected}. "
+            "Changing timeunit does not convert the data index."
+        )
+        raise ValueError(msg)
+
+
 def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None:
     params = split_10_char(f"{line:<90}")
     obj.calibration_coefficient = to_float(params[0], 1.0)
