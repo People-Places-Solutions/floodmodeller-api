@@ -13,3 +13,4 @@ class Fm2dXmlSchemaVersions(Enum):
     V7_2 = "7.2"
     V7_3 = "7.3"
     V7_4 = "7.4"
+    V8_0 = "8.0"
