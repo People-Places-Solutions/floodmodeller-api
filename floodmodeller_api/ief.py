@@ -482,6 +482,7 @@ class IEF(FMFile):
             method (str, optional): {'WAIT'} | 'RETURN_PROCESS'
                 'WAIT' - The function waits for the simulation to complete before continuing (This is default)
                 'RETURN_PROCESS' - The function sets the simulation running in background and immediately continues, whilst returning the process object.
+                'TEST' - The function sets the simulation in test mode.
                 Defaults to 'WAIT'.
             raise_on_failure (bool, optional): If True, an exception will be raised if the simulation fails to complete without errors.
                 If set to False, then the script will continue to run even if the simulation fails. If 'method' is set to 'RETURN_PROCESS'
@@ -557,6 +558,14 @@ class IEF(FMFile):
 
         elif method.upper() == "RETURN_PROCESS":
             logging.info("Executing simulation...")
+            # execute simulation
+            return Popen(run_command, cwd=Path(self._filepath).parent)
+
+        elif method.upper() == "TEST":
+            logging.info("Test simulation...")
+
+            run_command = f'"{isis32_fp}" -test "{self._filepath.resolve()}"'
+
             # execute simulation
             return Popen(run_command, cwd=Path(self._filepath).parent)
 
