@@ -57,9 +57,8 @@ def _get_median_coordinate(data):
 
 
 class BRIDGE(Unit):
-    """Class to hold and process BRIDGE unit type. The Bridge class supports the three main bridge sub-types in
-    Flood Modeller: Arch, USBPR1978 and Pierloss. Each of these sub-types forms a unique instance of the class
-    which is differentiated by the `BRIDGE.subtype` attribute. All bridge types have the same common attributes:
+    """Class to hold and process BRIDGE units. The ``BRIDGE.subtype`` attribute identifies the bridge type:
+    ``ARCH``, ``USBPR1978``, ``PIERLOSS`` or ``INTEGRATED``. All supported types share the common attributes below.
 
     **Common Attributes**
 
@@ -108,7 +107,7 @@ class BRIDGE(Unit):
         npiers (int): Total number of piers in direction of flow, only used if ``specify_piers == True``
         pier_use_calibration_coeff (bool): Whether to use a calibration coefficient to model piers. If set to False it would use
             the pier shape.
-        pier_calibration_coeff (float): Calibration coefficient for modelling piers, only used if
+        calibration_number (float): Calibration coefficient for modelling piers, only used if
             ``specify_piers == True AND pier_use_calibration_coeff == True``
         pier_shape (str): Cross-sectional pier shape with options: ``'RECTANGLE'``, ``'CYLINDER'``, ``'SQUARE'``, ``'I-BEAM'``.
             Only used if ``specify_piers == True AND pier_use_calibration_coeff == False``
@@ -138,6 +137,46 @@ class BRIDGE(Unit):
         pier_locs_data (pandas.Dataframe): Dataframe object representing the pier locations. Columns are ``'Left X'``, ``'Left Top Level'``,
             ``'Right X'``, ``'Right Top Level'``
 
+
+    **INTEGRATED Type (``BRIDGE.subtype == 'INTEGRATED'``)**
+
+    Uses the calibration coefficient, skew, dual bridge dimensions, total pier width, orifice flow
+    settings and conditional pier or soffit attributes described under ``USBPR1978``.
+
+    Args:
+        revision (int): Revision of the Integrated Bridge unit format.
+        bridge_name (str): Descriptive name of the bridge.
+        integrated_subtype (str): Hydraulic method specified in the unit, such as ``'USBPR'``.
+        abutment_type (int): Abutment type code, using the codes described under ``USBPR1978``.
+        aligned (bool): Whether the abutments are aligned with the normal direction of flow.
+        transition_smoothing_factor (float): Orifice transition smoothing factor. Defaults to zero when absent.
+        calibration_number (float): Calibration value in the pier record when piers are modelled explicitly.
+        yarnell_coeff (float): Yarnell coefficient stored in the pier or soffit record.
+        universal (str): Universal setting stored in the pier or soffit record.
+        section_data_list (list[pandas.DataFrame]): Four cross section tables in file order. Unused sections
+            have empty tables. Columns are ``'X'``, ``'Y'``, ``'Mannings n'``, ``'Panel'`` and ``'Embankments'``.
+            The table also includes ``'Easting'`` and ``'Northing'`` when its input records contain coordinates.
+        section_nrows_list (list[int]): Row count for each cross section table.
+        opening_type (str): Method used to describe the opening geometry, such as ``'PARABOLA1'``.
+        opening_data_list (list[pandas.DataFrame]): One geometry table per opening, with columns ``'X'`` and ``'Z'``.
+        opening_nrows (int): Number of openings.
+        opening_nsubrows_list (list[int]): Row count for each opening geometry table.
+        culvert_data (pandas.DataFrame): Flood relief culvert table. Columns are ``'Invert'``, ``'Soffit'``,
+            ``'Section Area'``, ``'Cd Part Full'``, ``'Cd Full'``, ``'Drowning Coefficient'`` and ``'X'``.
+        culvert_nrows (int): Number of rows in the culvert table.
+        weir_coefficient (float): Weir discharge coefficient for flow over the bridge.
+        modular_limit (float): Modular limit for the spill calculation.
+        spill_data (pandas.DataFrame): Spill crest profile. Columns are ``'X'``, ``'Y'``, ``'Easting'`` and ``'Northing'``.
+        spill_nrows (int): Number of rows in the spill profile.
+        block_comment (str): Comment stored with the blockage settings.
+        inlet_loss (float): Inlet loss coefficient for the blockage calculation.
+        outlet_loss (float): Outlet loss coefficient for the blockage calculation.
+        block_method (str): Blockage calculation method. A blank value in the input is read as ``'USDEPTH'``.
+        override (bool): Whether the blockage settings specify ``'OVERRIDE'``.
+        block_data (pandas.DataFrame): Blockage schedule. Columns are ``'percentage'``, ``'time'`` and ``'datetime'``.
+        block_nrows (int): Number of rows in the blockage schedule.
+
+    When adding or removing openings or data rows, update the corresponding counts before saving.
 
     Raises:
         NotImplementedError: Raised if class is initialised without existing Bridge block (i.e. if attempting to create new Bridge unit).
