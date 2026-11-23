@@ -32,6 +32,8 @@ from floodmodeller_api._base import FMFile
 from floodmodeller_api.enums import Fm2dXmlSchemaVersions
 
 from .constants import (
+    BACKUP_SCHEMA_FILENAME,
+    BACKUP_SCHEMA_VERSION,
     DEFAULT_NAMESPACE,
     LATEST_SCHEMA_VERSION,
     SCHEMA_LOCATION_TPL,
@@ -137,12 +139,15 @@ Fm2dXmlSchemaVersions for all available versions.
             else:
                 setattr(self, key, data)
         for attr in [
+            "metadata",
             "name",
             "link1d",
             "logfile",
+            "resultsfolder",
             "domains",
             "restart_options",
             "advanced_options",
+            "roughness_codes",
             "processor",
             "unit_system",
             "description",
@@ -181,13 +186,17 @@ Fm2dXmlSchemaVersions for all available versions.
         self._ns_key = "{" + self._xmltree.getroot().nsmap[None] + "}"
 
         xsi_loc = schema_location.split()[1]
+
         try:
             xsd_bin = requests.get(xsi_loc).content
             self._xsd = etree.parse(io.BytesIO(xsd_bin))
             self._xsdschema = etree.XMLSchema(self._xsd)
         except Exception:
-            self._xsd = etree.parse(Path(__file__).parent / "xsd_backup.xml")
+            self._xsd = etree.parse(Path(__file__).parent / BACKUP_SCHEMA_FILENAME)
             self._xsdschema = etree.XMLSchema(self._xsd)
+            self._schema_version = BACKUP_SCHEMA_VERSION
+            msg = f"The backup schema has been used with schema version {BACKUP_SCHEMA_VERSION}."
+            logging.warning(msg)
         self._get_multi_value_keys()
 
     def _create_dict(self):
@@ -497,12 +506,15 @@ Fm2dXmlSchemaVersions for all available versions.
     def _update_dict(self):
         self._data = {}
         for attr in [
+            "metadata",
             "name",
             "link1d",
             "logfile",
+            "resultsfolder",
             "domains",
             "restart_options",
             "advanced_options",
+            "roughness_codes",
             "processor",
             "unit_system",
             "description",

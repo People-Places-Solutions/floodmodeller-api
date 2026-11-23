@@ -4,11 +4,14 @@
 	<xs:element name="ISIS2Dproject">
 		<xs:complexType>
 			<xs:sequence>
+                <xs:element name="metadata" type="metadataType" minOccurs="0" maxOccurs="1"/>              
 				<xs:element name="link1d" type="link1dType" minOccurs="0" maxOccurs="2"/>
 				<xs:element name="logfile" type="xs:string" minOccurs="0"/>
+				<xs:element name="resultsfolder" type="resultsfolderType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="domain" type="domainType" maxOccurs="unbounded"/>
 				<xs:element name="restart_options" type="restart_optionsType" minOccurs="0"/>
 				<xs:element name="advanced_options" type="advanced_optionsType" minOccurs="0"/>
+				<xs:element name="roughness_codes" type="roughnessCodeListType" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="processor" type="processorType" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -16,6 +19,12 @@
 			<xs:attribute name="description" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="onoffType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="on"/>
+			<xs:enumeration value="off"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="list_string_type">
 		<xs:list itemType="xs:string"/>
 	</xs:simpleType>
@@ -35,6 +44,14 @@
 			<xs:enumeration value="zsurface"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="roughnessTypeAttrEnum">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="grid"/>
+			<xs:enumeration value="floatGrid"/>
+			<xs:enumeration value="masterMap"/>
+			<xs:enumeration value="polygon"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name = "fileType">
 		<xs:simpleContent>
 			<xs:extension base="xs:string">
@@ -50,9 +67,31 @@
 	<xs:complexType name = "topoType">
 		<xs:sequence>
 			<xs:element name = "filelist" type ="fileTypeListType"/>
+			<xs:element name = "resampling" type ="resamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name = "adaptive_mesh_refinement" type="adaptiveMeshRefinementType" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 		<xs:attribute name="type" type="topoTypeAttrEnum" use="optional"/>
 		<xs:attribute name="description" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name = "roughnessCoefficientType">
+		<xs:sequence>
+			<xs:element name = "filelist" type ="fileTypeListType"/>
+			<xs:element name = "resampling" type ="resamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name = "adaptive_mesh_refinement" type="adaptiveMeshRefinementType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="law" type="roughness_law" use="required"/>
+		<xs:attribute name="type" type="roughness_distribution_type" use="required"/>
+		<xs:attribute name="default_roughness" type="xs:double" use="optional"/>
+		<xs:attribute name="assign_value" type="xs:double" use="optional"/>
+		<xs:attribute name="field_name" type="xs:string" use="optional"/>
+		<xs:attribute name="lookuptable" type="xs:string" use="optional"/>
+		<xs:attribute name="description" type="xs:string" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="meshRefinementType">
+		<xs:sequence>
+			<xs:element name = "filelist" type ="fileTypeListType"/>
+		</xs:sequence>
+		<xs:attribute name="source" type="meshRefinementSourceType" use="required"/>
 	</xs:complexType>
 	<xs:simpleType name="ValueCheckType">
 		<xs:restriction base="xs:string">
@@ -70,6 +109,10 @@
 						<xs:restriction base="xs:string">
 							<xs:enumeration value="GEOTIFF"/>
 							<xs:enumeration value="ASCII"/>
+							<xs:enumeration value="SHAPEFILE"/>
+							<xs:enumeration value="GEOPACKAGE"/>
+							<xs:enumeration value="GEOPARQUET"/>
+							<xs:enumeration value="FLATGEOBUF"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:attribute>
@@ -82,6 +125,7 @@
 			<xs:enumeration value="TVD"/>
 			<xs:enumeration value="FAST"/>
 			<xs:enumeration value="FAST Dynamic"/>
+			<xs:enumeration value="Godunov"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="wet_boundaryType">
@@ -133,6 +177,20 @@
 			<xs:enumeration value="mastermap"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:complexType name="roughnessCodeItemType">
+		<xs:simpleContent>
+			<xs:extension base="xs:double">
+				<xs:attribute name="ID" type="xs:string" use="required"/>
+				<xs:attribute name="description" type="xs:string" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="roughnessCodeListType">
+		<xs:sequence>
+			<xs:element name="item" type="roughnessCodeItemType" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="law" type="roughness_law" use="optional"/>
+	</xs:complexType>
 	<xs:simpleType name="adjustz_type">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="upwards"/>
@@ -194,6 +252,7 @@
 			<xs:enumeration value="depth"/>
 			<xs:enumeration value="weir"/>
 			<xs:enumeration value="outflow"/>
+			<xs:enumeration value="velocitydepth"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="output_format">
@@ -224,6 +283,8 @@
 			<xs:enumeration value="InfiltrationLoss"/>
 			<xs:enumeration value="InfiltrationRate"/>
 			<xs:enumeration value="RelativeMassError"/>
+			<xs:enumeration value="RoughnessCoefficient"/>
+			<xs:enumeration value="Courant"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="output_variables">
@@ -248,6 +309,164 @@
 			<xs:enumeration value="refh2csv"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="riemannSolverType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="CenU"/> <!-- 1 Central-upwind solver of Kurganov and Petrova (2001) -->
+			<xs:enumeration value="HLL"/> <!-- 2 Standard HLL solver of Harten, Lax and van Leer (1983) -->
+			<xs:enumeration value="Roe"/> <!-- 3 Standard Roe solver -->
+			<xs:enumeration value="HLLE"/> <!-- 4 The HLLE (Harten-Lax-van Leer-Einfeldt) solver of Harten, Lax and van Leer (1983), and Einfeldt (1988) -->
+			<xs:enumeration value="Roe_C"/> <!-- 5 (default) Cartesian version of the Roe solver -->
+			<xs:enumeration value="HLL_C"/> <!-- 6 Toro's adaptation of the HLLC (Harten-Lax-van Leer-Contact) solver of Toro Spruce and Speares (1994) -->
+			<xs:enumeration value="CenUT"/> <!-- 7 Toro's adaptation of the central-upwind solver of Kurganov and Petrova (2001) -->
+			<xs:enumeration value="CenUT_C"/> <!-- 8 Cartsesian version of RiemannCENUT -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="reconstructionMethodType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="VFR1"/> <!-- 0 VFR method for standard SWE (default) -->
+			<xs:enumeration value="VFR2"/> <!-- 1 VFR method for porous SWE -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="meshRefinementSourceType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="point"/>
+			<xs:enumeration value="line"/>
+			<xs:enumeration value="polygon"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="resamplingMethodType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Direct"/>
+			<xs:enumeration value="FillIn"/>
+			<xs:enumeration value="InverseDistanceToAPower"/>
+			<xs:enumeration value="MovingAverage"/>
+			<xs:enumeration value="MetricMinimum"/>
+			<xs:enumeration value="MetricMaximum"/>
+			<xs:enumeration value="Linear"/>
+			<xs:enumeration value="InverseDistanceToAPowerNearestNeighbor"/>
+			<xs:enumeration value="NearestNeighbor"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="GeneralResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="exponent" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="smoothing" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="anisotropyRatio" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="anisotropyAngle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="xRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="yRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="radius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="maxPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InverseDistanceResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="exponent" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="smoothing" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="anisotropyRatio" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="anisotropyAngle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="xRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="yRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="maxPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MovingAverageResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="xRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="yRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="maxPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="NearestNeighborResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="xRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="yRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="MetricResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="xRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="yRadius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="LinearResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="angle" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="InvDistNearNeighResamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="exponent" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="smoothing" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="radius" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="maxPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="minPoints" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="nodata" type="xs:double" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="resamplingOptionsType">
+		<xs:sequence>
+			<xs:element name="GeneralResamplingOptions" type="GeneralResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="InverseDistanceResamplingOptions" type="InverseDistanceResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="MovingAverageResamplingOptions" type="MovingAverageResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="NearestNeighborResamplingOptions" type="NearestNeighborResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="MetricResamplingOptions" type="MetricResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="LinearResamplingOptions" type="LinearResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="InvDistNearNeighResamplingOptions" type="InvDistNearNeighResamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+		<xs:attribute name="method" type="resamplingMethodType" use="required"/>
+	</xs:complexType>
+    <xs:simpleType name="spatial_diagnostics_format_type">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CSV"/>
+            <xs:enumeration value="GEOJSON"/>
+            <xs:enumeration value="FLATGEOBUF"/>
+        </xs:restriction>
+    </xs:simpleType>
+	<xs:complexType name="projectionType">
+    <xs:simpleContent>
+        <xs:extension base="xs:string">
+            <xs:attribute name="type" use="required">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="EPSG"/>
+                        <xs:enumeration value="FILE"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:attribute>
+        </xs:extension>
+    </xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="gravitytermType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GroundSlopeFlux"/>
+			<xs:enumeration value="WellBalancedGroundSlopeFlux"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="rewind_settingsType">
+		<xs:simpleContent>
+			<xs:extension base="xs:integer">
+				<xs:attribute name="backup_period" type="xs:double" use="optional"/>
+				<xs:attribute name="max_mass_error" type="xs:double" use="optional"/>
+				<xs:attribute name="max_cfl" type="xs:double" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
 	<xs:complexType name="computational_areaType">
 		<xs:sequence>
 			<xs:element name="xll" type="xs:double"/>
@@ -258,6 +477,7 @@
 			<xs:element name="active_area" type="xs:string" minOccurs="0"/>
 			<xs:element name="deactive_area" type="xs:string" minOccurs="0"/>
 			<xs:element name="rotation" type="xs:double" minOccurs="0"/>
+			<xs:element name="projection" type="projectionType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="timeType">
@@ -321,15 +541,21 @@
 	<xs:complexType name="run_dataType">
 		<xs:sequence>
 			<xs:element name="time_step" type="xs:double"/>
+			<xs:element name="cfl_adaptive" type="adaptiveTimeSteppingType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="scheme" type="run_scheme"/>
+			<xs:element name="reconstruction" type="reconstructionMethodType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="riemann_solver" type="riemannSolverType" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="double_precision" type="double_precisionType" minOccurs="0"/>
 			<xs:element name="beta" type="xs:double" minOccurs="0"/>
 			<xs:element name="eddyviscosity" type="xs:double" minOccurs="0"/>
+			<xs:element name="smagorinsky_const" type="xs:double" minOccurs="0"/>
+			<xs:element name="rel_submergence_threshold" type="xs:double" minOccurs="0"/>
 			<xs:element name="wall" type="xs:string" minOccurs="0"/>
 			<xs:element name="upwind" type="xs:string" minOccurs="0"/>
 			<xs:element name="flddry" type="xs:string" minOccurs="0"/>
 			<xs:element name="nadvit" type="xs:integer" minOccurs="0"/>
 			<xs:element name="drydepth" type="xs:double" minOccurs="0"/>
+			<xs:element name="dryedgedepth" type="xs:double" minOccurs="0"/>
 			<xs:element name="fricdepth" type="xs:double" minOccurs="0"/>
 			<xs:element name="calcdepth" type="xs:double" minOccurs="0"/>
 			<xs:element name="merge" type="xs:double" minOccurs="0"/>
@@ -350,6 +576,9 @@
 			<xs:element name="velocityheadthreshold" type="xs:double" minOccurs="0"/>
 			<xs:element name="frictionincreasedepth" type="xs:double" minOccurs="0"/>
 			<xs:element name="qhbdysmoothing" type="xs:positiveInteger" minOccurs="0"/>
+			<xs:element name="calibratevfr" type="xs:double" minOccurs="0"/>
+			<xs:element name="gravityterm" type="gravitytermType" minOccurs="0"/>
+			<xs:element name="rewind_settings" type="rewind_settingsType" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="boundary_conditionsType">
@@ -400,6 +629,8 @@
 							</xs:complexType>
 						</xs:element>
 						<xs:element name="lossfile" type="lossfileType" minOccurs="0"/>
+						<xs:element name="resampling" type="resamplingOptionsType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="adaptive_mesh_refinement" type="adaptiveMeshRefinementType" minOccurs="0" maxOccurs="1"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -439,10 +670,12 @@
 						<xs:element name="variables" type="output_variables"/>
 						<xs:element name="frequency" type="xs:double"/>
 						<xs:element name="xy" type="xs:string" minOccurs="0"/>
+						<xs:element name="resampling" type="resamplingOptionsType" minOccurs="0" maxOccurs="1"/>
 					</xs:sequence>
 					<xs:attribute name="expand" type="xs:integer"/>
 					<xs:attribute name="output_id" type="xs:string" use="optional"/>
 					<xs:attribute name="format" type="output_format" use="required"/>
+					<xs:attribute name="dx" type="xs:double" use="optional"/>
 					<xs:attribute name="output_after" type="xs:double" use="optional"/>
 				</xs:complexType>
 			</xs:element>
@@ -549,6 +782,8 @@
 			<xs:element name="run_data" type="run_dataType"/>
 			<xs:element name="initial_conditions" type="initial_conditionsType" minOccurs="0"/>
 			<xs:element name="roughness" type="roughnessType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="roughness_2" type="roughnessCoefficientType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="mesh_refinement" type="meshRefinementType" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:element name="boundary_conditions" type="boundary_conditionsType" minOccurs="0"/>
 			<xs:element name="hydrology" type="hydrologyType" minOccurs="0"/>
 			<xs:element name="output_results" type="output_resultsType"/>
@@ -580,10 +815,19 @@
 	</xs:complexType>
 	<xs:complexType name="advanced_optionsType">
 		<xs:sequence>
-			<xs:element name="spatial_diagnostics" type="xs:string" minOccurs="0"/>
+			<xs:element name="spatial_diagnostics" minOccurs="0">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="onoffType">
+                            <xs:attribute name="format" type="spatial_diagnostics_format_type" use="optional"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
 			<xs:element name ="max_courant_diagnostic" type="xs:integer" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="diagnose_courant_adi" type="xs:double" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="diagnose_courant_tvd" type="xs:double" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="diagnose_courant" type="xs:double" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="max_negativedepth_diagnostic" type= "xs:integer" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="diagnose_negative_depth" type="xs:double" minOccurs="0" maxOccurs="1"/>
 			<xs:element name="max_froude_diagnostic" type="xs:integer" minOccurs="0" maxOccurs="1"/>
@@ -603,6 +847,7 @@
 			</xs:element>
 			<xs:element name="correct_negative_depths" type="xs:string" minOccurs="0"/>
 			<xs:element name="stop_on_convergence" type="stop_on_convergence_Type" minOccurs="0"/>
+			<xs:element name="validate_projection" type="onoffType" minOccurs="0" maxOccurs="1"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="stop_on_convergence_Type">
@@ -664,9 +909,50 @@
 				<xs:attribute name="law" type="roughness_law" use="required"/>
 				<xs:attribute name="type" type="roughness_distribution_type" use="required"/>
 				<xs:attribute name="default_roughness" type="xs:double" use="optional"/>
+				<xs:attribute name="assign_value" type="xs:double" use="optional"/>
+				<xs:attribute name="field_name" type="xs:string" use="optional"/>
 				<xs:attribute name="lookuptable" type="xs:string" use="optional"/>
 			</xs:extension>
 		</xs:simpleContent>
+	</xs:complexType>
+	<xs:complexType name="adaptiveTimeSteppingType">
+		<xs:simpleContent>
+			<xs:extension base="xs:double">
+				<xs:attribute name="mindt" type="xs:double" use="optional"/>
+				<xs:attribute name="maxdt" type="xs:double" use="optional"/>
+				<xs:attribute name="stabilise" type="xs:double" use="optional"/>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	<xs:simpleType name="refinementStrengthType">
+		<xs:restriction base="xs:double">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="refinementLevelType">
+		<xs:restriction base="xs:int">
+			<xs:minInclusive value="0"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="refinementLevelMapping">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="log_mh"/>
+			<xs:enumeration value="log_naive"/>
+			<xs:enumeration value="log_scaled"/>
+			<xs:enumeration value="dist_exp"/>
+			<xs:enumeration value="dist_quant"/>
+			<xs:enumeration value="dist_stats"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="adaptiveMeshRefinementType">
+		<xs:sequence>
+			<xs:element name="strength" type="refinementStrengthType"/>
+			<xs:element name="level" type="refinementLevelType"/>
+			<xs:element name="cutoff_factor" type="xs:double" minOccurs="0"/>
+			<xs:element name="mapping_method" type="refinementLevelMapping" minOccurs="0"/>
+			<xs:element name="power_factor" type="xs:double" minOccurs="0"/>
+			<xs:element name="nodata_fillin" type="xs:int" minOccurs="0"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:simpleType name="desingularization_eps_gpuType">
 		<xs:restriction base="xs:double">
@@ -743,4 +1029,25 @@
 			</xs:simpleType>
 		</xs:attribute>
 	</xs:complexType>
+	<xs:simpleType name="resultsfolderType">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+    <xs:complexType name = "metadataType">
+      <xs:sequence>
+        <xs:element name="modelinfo">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="CreatedBy" type="xs:string" />
+              <xs:element name="CreatedOn" type="xs:dateTime" nillable="true"/>
+              <xs:element name="LastUpdatedBy" type="xs:string" />
+              <xs:element name="LastUpdated" type="xs:dateTime" />
+              <xs:element name="ProjectID" type="xs:string" />
+              <xs:element name="Comments" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>  
 </xs:schema>
