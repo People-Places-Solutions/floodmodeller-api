@@ -23,6 +23,11 @@ from typing import Any, Callable
 import pandas as pd
 
 NOTATION_THRESHOLD = 10
+PIER_YARNELL_COEFFICIENT_INDEX = 4
+PIER_UNIVERSAL_INDEX = 5
+PIER_ABUTMENT_TYPE_INDEX = 6
+BRIDGE_EASTING_INDEX = 5
+BRIDGE_NORTHING_INDEX = 6
 
 
 def split_10_char(line: str) -> list[str]:
@@ -150,8 +155,14 @@ def validate_timeunit_data(timeunit: str | float, data: pd.Series, unit_name: st
         raise ValueError(msg)
 
 
-def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None:
-    params = split_10_char(f"{line:<90}")
+def set_bridge_params(
+    obj: Any,
+    line: str,
+    *,
+    include_pier: bool = True,
+    include_transition_smoothing_factor: bool = False,
+) -> None:
+    params = split_10_char(f"{line:<100}")
     obj.calibration_coefficient = to_float(params[0], 1.0)
     obj.skew = to_float(params[1])
     obj.bridge_width_dual = to_float(params[2])
@@ -162,23 +173,32 @@ def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None
     obj.orifice_lower_transition_dist = to_float(params[6])
     obj.orifice_upper_transition_dist = to_float(params[7])
     obj.orifice_discharge_coefficient = to_float(params[8], 1.0)
+    if include_transition_smoothing_factor:
+        obj.transition_smoothing_factor = to_float(params[9])
 
 
-def set_pier_params(obj: Any, line: str) -> None:
-    pier_info = split_10_char(line)
+def set_pier_params(obj: Any, line: str, *, include_integrated_pier_fields: bool = False) -> None:
+    pier_info = split_10_char(f"{line:<60}")
     if int(pier_info[0]) > 0:
         obj.specify_piers = True
         obj.npiers = int(pier_info[0])
-        if pier_info[1] == "COEFF":
-            obj.pier_use_calibration_coeff = True
-            obj.pier_calibration_coeff = to_float(pier_info[3])
-        else:
-            obj.pier_use_calibration_coeff = False
+        obj.pier_use_calibration_coeff = pier_info[1] == "COEFF"
+        if obj.pier_use_calibration_coeff or include_integrated_pier_fields:
+            obj.calibration_number = to_float(pier_info[3])
+        if not obj.pier_use_calibration_coeff:
             obj.pier_shape = pier_info[1]
             obj.pier_faces = pier_info[2]
+        if include_integrated_pier_fields:
+            obj.yarnell_coeff = to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
+            obj.universal = pier_info[PIER_UNIVERSAL_INDEX]
+
     else:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
+        obj.yarnell_coeff = to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
+        obj.universal = pier_info[PIER_UNIVERSAL_INDEX]
+        if len(pier_info) > PIER_ABUTMENT_TYPE_INDEX and not hasattr(obj, "abutment_type"):
+            obj.abutment_type = pier_info[PIER_ABUTMENT_TYPE_INDEX]
 
 
 def read_dataframe_from_lines(
@@ -200,26 +220,45 @@ def read_bridge_cross_sections(
     *,
     include_panel_marker: bool = False,
     include_top_level: bool = False,
+    include_coordinates: bool = False,
 ) -> pd.DataFrame:
     data_list = []
+    has_coordinates = include_coordinates and any(
+        len(split_10_char(line)) > BRIDGE_NORTHING_INDEX for line in lines
+    )
     for line in lines:
         line_split = split_10_char(f"{line:<50}")
+
+        # Build df_row in the correct order
         df_row = [
-            to_float(line_split[0]),
-            to_float(line_split[1]),
-            to_float(line_split[2]),
+            to_float(line_split[0]),  # X
+            to_float(line_split[1]),  # Y
+            to_float(line_split[2]),  # Mannings n
         ]
 
         if include_panel_marker:
-            df_row.append(line_split[3])
+            df_row.append(line_split[3])  # Panel
 
-        df_row.append(line_split[4])
+        df_row.append(line_split[4])  # Embankments
 
         if include_top_level:
-            df_row.append(line_split[5])
+            df_row.append(to_float(line_split[5]))  # Top Level
+
+        if has_coordinates:
+            df_row.extend(
+                [
+                    to_float(line_split[BRIDGE_EASTING_INDEX])
+                    if len(line_split) > BRIDGE_EASTING_INDEX
+                    else 0.0,  # Easting
+                    to_float(line_split[BRIDGE_NORTHING_INDEX])
+                    if len(line_split) > BRIDGE_NORTHING_INDEX
+                    else 0.0,  # Northing
+                ],
+            )
 
         data_list.append(df_row)
 
+    # Build columns in the same order as df_row
     columns = ["X", "Y", "Mannings n"]
 
     if include_panel_marker:
@@ -229,6 +268,10 @@ def read_bridge_cross_sections(
 
     if include_top_level:
         columns.append("Top Level")
+
+    if has_coordinates:
+        columns.extend(["Easting", "Northing"])
+
     return pd.DataFrame(data_list, columns=columns)
 
 
