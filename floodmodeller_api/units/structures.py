@@ -307,7 +307,7 @@ class BRIDGE(Unit):
                 include_transition_smoothing_factor=True,
             )
             self.abutment_type = to_int(br_block[7])
-            set_pier_params(self, br_block[8])
+            set_pier_params(self, br_block[8], include_integrated_pier_fields=True)
             self.aligned = br_block[9].strip() == "ALIGNED"
 
             end_idx = 10

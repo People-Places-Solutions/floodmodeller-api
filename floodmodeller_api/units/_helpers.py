@@ -17,7 +17,6 @@ address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London
 from __future__ import annotations
 
 import copy
-from contextlib import suppress
 from itertools import chain
 from typing import Any, Callable
 
@@ -178,42 +177,26 @@ def set_bridge_params(
         obj.transition_smoothing_factor = to_float(params[9])
 
 
-def set_pier_params(obj: Any, line: str) -> None:
-    pier_info = split_10_char(line)
+def set_pier_params(obj: Any, line: str, *, include_integrated_pier_fields: bool = False) -> None:
+    pier_info = split_10_char(f"{line:<60}")
     if int(pier_info[0]) > 0:
         obj.specify_piers = True
         obj.npiers = int(pier_info[0])
-        if pier_info[1] == "COEFF":
-            obj.pier_use_calibration_coeff = True
+        obj.pier_use_calibration_coeff = pier_info[1] == "COEFF"
+        if obj.pier_use_calibration_coeff or include_integrated_pier_fields:
             obj.calibration_number = to_float(pier_info[3])
-            obj.yarnell_coeff = to_float(
-                pier_info[4],
-            )  # we must identify where this 0.000 comes from
-            obj.universal = pier_info[5]  # adding universal when specify piers True
-        else:
-            obj.pier_use_calibration_coeff = False
+        if not obj.pier_use_calibration_coeff:
             obj.pier_shape = pier_info[1]
             obj.pier_faces = pier_info[2]
-            # to avoid failing when another type of bridge is read
-            # the parameter below are intended to work with INTEGRATED only
-            with suppress(IndexError):
-                obj.calibration_number = to_float(pier_info[3])
-                obj.yarnell_coeff = to_float(
-                    pier_info[4],
-                )  # we must identify where this 0.000 comes from
-                obj.universal = pier_info[5]  # adding universal when specify piers True
+        if include_integrated_pier_fields:
+            obj.yarnell_coeff = to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
+            obj.universal = pier_info[PIER_UNIVERSAL_INDEX]
 
     else:
         obj.specify_piers = False
         obj.soffit_shape = pier_info[1]
-        obj.yarnell_coeff = (
-            to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
-            if len(pier_info) > PIER_YARNELL_COEFFICIENT_INDEX
-            else 0.0
-        )
-        obj.universal = (
-            pier_info[PIER_UNIVERSAL_INDEX] if len(pier_info) > PIER_UNIVERSAL_INDEX else ""
-        )
+        obj.yarnell_coeff = to_float(pier_info[PIER_YARNELL_COEFFICIENT_INDEX])
+        obj.universal = pier_info[PIER_UNIVERSAL_INDEX]
         if len(pier_info) > PIER_ABUTMENT_TYPE_INDEX and not hasattr(obj, "abutment_type"):
             obj.abutment_type = pier_info[PIER_ABUTMENT_TYPE_INDEX]
 
