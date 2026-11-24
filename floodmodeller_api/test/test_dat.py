@@ -21,7 +21,11 @@ from floodmodeller_api.util import FloodModellerAPIError
 
 from .util import id_from_path, parameterise_glob
 
-DAT_FILE_PATHS = parameterise_glob("**/*.dat") + parameterise_glob("**/*.DAT")
+DAT_FILE_PATHS = [
+    path
+    for path in parameterise_glob("**/*.dat") + parameterise_glob("**/*.DAT")
+    if path.name != "EX1_type_units_names.DAT"
+]
 
 
 @pytest.fixture()
@@ -37,6 +41,11 @@ def data_before(dat_fp):
 @pytest.fixture()
 def dat_ex3(test_workspace):
     return DAT(Path(test_workspace, "EX3.DAT"))
+
+
+@pytest.fixture()
+def dat_ex1_type_names(test_workspace: Path) -> Path:
+    return test_workspace / "EX1_type_units_names.DAT"
 
 
 @pytest.fixture()
@@ -91,6 +100,15 @@ def test_changing_section_and_dist_works(dat_fp, data_before):
     dat.sections["check"].name = prev_name
     dat.sections["check"].dist_to_next = prev_dist
     assert dat._write() == data_before
+
+
+def test_dat_rejects_unit_type_names(dat_ex1_type_names: Path):
+    """DAT: Reject a unit type used as a unit name."""
+    with pytest.raises(
+        FloodModellerAPIError,
+        match=r"Msg: A unit type 'QTBDY' has the name 'RIVER'.  This is a type unit's name",
+    ):
+        DAT(dat_ex1_type_names)
 
 
 def test_changing_and_reverting_qtbdy_hydrograph_works(dat_fp, data_before):
@@ -485,6 +503,20 @@ def test_create_and_insert_connectors():
     dat.insert_units([junction, lateral, reservoir], add_at=-1)
     assert dat.connectors == {"A": junction, "lat": lateral}
     assert dat.controls == {"res": reservoir}
+
+
+def test_update_connector_name_does_not_update_initial_conditions(test_workspace):
+    dat = DAT(test_workspace / "network.dat")
+    old_name, connector = next(iter(dat.connectors.items()))
+    new_name = f"{old_name}_renamed"
+    connector.name = new_name
+
+    with patch.object(dat.initial_conditions, "update_label") as update_label:
+        dat._update_unit_names()
+
+    assert dat.connectors[new_name] is connector
+    assert old_name not in dat.connectors
+    update_label.assert_not_called()
 
 
 @pytest.mark.parametrize(
