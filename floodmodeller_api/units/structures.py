@@ -301,8 +301,11 @@ class BRIDGE(Unit):
             self.revision = to_int(br_block[3])
             self.bridge_name = br_block[4]
             self.integrated_subtype = br_block[5].strip()
-            self.transition_smoothing_factor = 0.0
-            set_bridge_params(self, br_block[6])
+            set_bridge_params(
+                self,
+                br_block[6],
+                include_transition_smoothing_factor=True,
+            )
             self.abutment_type = to_int(br_block[7])
             set_pier_params(self, br_block[8])
             self.aligned = br_block[9].strip() == "ALIGNED"

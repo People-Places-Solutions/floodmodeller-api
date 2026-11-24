@@ -127,8 +127,14 @@ def to_data_list(block: list[str], num_cols: int | None = None, date_col: int | 
     return data_list
 
 
-def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None:
-    params = split_10_char(f"{line:<90}")
+def set_bridge_params(
+    obj: Any,
+    line: str,
+    *,
+    include_pier: bool = True,
+    include_transition_smoothing_factor: bool = False,
+) -> None:
+    params = split_10_char(f"{line:<100}")
     obj.calibration_coefficient = to_float(params[0], 1.0)
     obj.skew = to_float(params[1])
     obj.bridge_width_dual = to_float(params[2])
@@ -139,10 +145,8 @@ def set_bridge_params(obj: Any, line: str, *, include_pier: bool = True) -> None
     obj.orifice_lower_transition_dist = to_float(params[6])
     obj.orifice_upper_transition_dist = to_float(params[7])
     obj.orifice_discharge_coefficient = to_float(params[8], 1.0)
-    # to avoid failing when another type of bridge is read
-    # 'transition_smooting_factor' is intended to work with INTEGRATED only
-    with suppress(IndexError):
-        obj.transition_smoothing_factor = to_float(params[9])  #  transition smooting factor
+    if include_transition_smoothing_factor:
+        obj.transition_smoothing_factor = to_float(params[9])
 
 
 def set_pier_params(obj: Any, line: str) -> None:
