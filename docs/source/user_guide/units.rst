@@ -28,6 +28,11 @@ Boundary units
 .. autoclass:: floodmodeller_api.units.QHBDY
 
 
+``QRATING()``
+~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.QRATING
+
 ``REFHBDY()``
 ~~~~~~~~~~~~~~
 

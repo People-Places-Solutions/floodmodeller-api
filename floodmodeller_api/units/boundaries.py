@@ -299,6 +299,48 @@ class QHBDY(Unit):
         return qhbdy_block
 
 
+class QRATING(Unit):
+    """Rating curve used to provide water levels at Muskingum routing nodes.
+
+    Args:
+        name (str, optional): Node label. Defaults to 'new_qrating'.
+        comment (str, optional): Comment on the unit header.
+        data (pandas.Series, optional): Stage values (mAD) indexed by flow (m³/s).
+            Defaults to a two-point example curve.
+    """
+
+    _unit = "QRATING"
+
+    def _create_from_blank(self, name="new_qrating", comment="", data=None):
+        self.name = name
+        self.comment = comment
+        self.data = (
+            pd.Series([0.0, 0.1], index=pd.Index([0.0, 1.0], name="Flow"), name="Stage")
+            if data is None
+            else data
+        )
+
+    def _read(self, block):
+        self.name = block[1][: self._label_len].strip()
+        self.comment = self._remove_unit_name(block[0])
+        nrows = int(block[2])
+        rows = to_data_list(block[3:], num_cols=2)
+        if len(rows) != nrows:
+            msg = f"QRATING {self.name!r} declares {nrows} rows but contains {len(rows)}"
+            raise ValueError(msg)
+        curve = pd.DataFrame(rows, columns=["Flow", "Stage"], dtype=float)
+        self.data = curve.set_index("Flow")["Stage"]
+
+    def _write(self):
+        _validate_unit(self)
+        if not isinstance(self.data, pd.Series):
+            msg = "QRATING data must be a pandas Series with stage indexed by flow"
+            raise TypeError(msg)
+        block = [self._create_header(), self.name, join_10_char(len(self.data))]
+        block.extend(join_10_char(float(flow), float(stage)) for flow, stage in self.data.items())
+        return block
+
+
 class REFHBDY(Unit):
     """Class to hold and process REFHBDY boundary type
 
