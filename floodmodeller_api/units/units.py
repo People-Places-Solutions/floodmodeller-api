@@ -47,6 +47,11 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
         "has_subtype": False,
         "subtypes": None,
     },
+    "NCDBDY": {
+        "group": "boundaries",
+        "has_subtype": False,
+        "subtypes": None,
+    },
     "REFHBDY": {
         "group": "boundaries",
         "has_subtype": False,
@@ -182,7 +187,6 @@ UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "LOSS": {"group": None, "has_subtype": False},  # found in .dat
     "LOSSID": {"group": None, "has_subtype": False},  # found in .dat
     "MANHOLE": {"group": None, "has_subtype": False},  # Manhole [connector]
-    "NCDBDY": {"group": "boundaries", "has_subtype": False},  # Normal/Critical Depth Boundary
     "NOTWEIR": {"group": "structures", "has_subtype": False},  # Notional Weir
     "OCPUMP": {"group": None, "has_subtype": False},  # pump [junctions]
     "POND": {"group": None, "has_subtype": True},  # Pond units, online pond etc [connector]

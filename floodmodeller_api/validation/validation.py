@@ -18,7 +18,7 @@ from .parameters import parameter_options
 from .urban_parameters import urban_parameter_options
 
 
-def _validate_unit(unit, urban=False):
+def _validate_unit(unit, urban=False, *, allow_blank=()):
     """Validate parameters are the correct type for the unit"""
     param_validation_dict = {}
     all_valid = True
@@ -28,6 +28,8 @@ def _validate_unit(unit, urban=False):
 
         if param in options:
             value = getattr(unit, param)
+            if param in allow_blank and value == "":
+                continue
             param_validation_dict[param] = _validate_parameter(options[param], value)
             if not param_validation_dict[param][0]:
                 all_valid = False

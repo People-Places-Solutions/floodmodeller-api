@@ -14,6 +14,8 @@ If you have any query about this program or this License, please contact us at s
 address: Jacobs UK Limited, Flood Modeller, Cottons Centre, Cottons Lane, London, SE1 2QG, United Kingdom.
 """
 
+from __future__ import annotations
+
 import pandas as pd
 
 from floodmodeller_api.validation import _validate_unit
@@ -21,9 +23,11 @@ from floodmodeller_api.validation.parameters import parameter_options
 
 from ._base import Unit
 from ._helpers import (
+    NOTATION_THRESHOLD,
     join_10_char,
     join_n_char_ljust,
     split_10_char,
+    split_n_char,
     to_data_list,
     to_float,
     to_str,
@@ -240,6 +244,209 @@ class HTBDY(Unit):
         htbdy_block.extend(htbdy_data)
 
         return htbdy_block
+
+
+class NCDBDY(Unit):
+    """Normal or critical depth downstream boundary.
+
+    Blank override settings are stored as empty strings. If the file has no override header,
+    ``override_data`` is an empty Series.
+
+    Args:
+        name (str, optional): Boundary node label. Defaults to 'new_ncdbdy'.
+        comment (str, optional): Comment on the unit header.
+        depth_type (str, optional): 'NORMAL' or 'CRITICAL'. Defaults to 'NORMAL'.
+        ds_reference_label (str, optional): Node providing section data and the downstream
+            extent for automatic slope calculations.
+        us_reference_label (str, optional): Upstream extent for automatic slope calculations.
+        slope_method (str, optional): 'BED', 'SURFACE' or 'USER' for normal depth.
+            Defaults to 'BED'. Critical depth omits the slope calculation.
+        user_slope (float, optional): Positive slope for the 'USER' method.
+        data (pandas.DataFrame, optional): Section data with columns ``'X'``, ``'Y'``,
+            ``'Mannings n'`` and ``'Panel'``. An empty table uses an existing model section.
+            Use '*' for a panel separator and an empty string for a blank field.
+        override_data (pandas.Series, optional): Override stage indexed by time.
+        override_method (str, optional): Override flag.
+        timeunit (str or float, optional): Time unit for the override series.
+        extendmethod (str, optional): Override series extension method.
+        interpmethod (str, optional): Override series interpolation.
+    """
+
+    _unit = "NCDBDY"
+    _section_columns = ("X", "Y", "Mannings n", "Panel")
+
+    def _create_from_blank(  # noqa: PLR0913
+        self,
+        name: str = "new_ncdbdy",
+        comment: str = "",
+        *,
+        depth_type: str = "NORMAL",
+        ds_reference_label: str = "",
+        us_reference_label: str = "",
+        slope_method: str = "BED",
+        user_slope: float | None = None,
+        data: pd.DataFrame | None = None,
+        override_data: pd.Series | None = None,
+        override_method: str = "",
+        timeunit: str | float = "",
+        extendmethod: str = "",
+        interpmethod: str = "",
+    ) -> None:
+        self._revision = 1
+        self.name = name
+        self.comment = comment
+        self._reserved_label = ""  # Reserved second label.
+        self.ds_reference_label = ds_reference_label
+        self.us_reference_label = us_reference_label
+        self.depth_type = depth_type.upper()
+        self.slope_method = slope_method.upper() if self.depth_type == "NORMAL" else None
+        self.user_slope = user_slope if self.slope_method == "USER" else None
+        self.data = pd.DataFrame(columns=list(self._section_columns)) if data is None else data
+        self.override_data = (
+            pd.Series(dtype=float, index=pd.Index([], name="Time"), name="Stage")
+            if override_data is None
+            else override_data
+        )
+        self.timeunit = timeunit
+        self.extendmethod = extendmethod
+        self.override_method = override_method
+        self.interpmethod = interpmethod
+        self._override_extra = ""
+        self._has_override_header = False
+
+    def _read(self, block):
+        self._revision, self.comment = self._get_revision_and_comment(block[0])
+        labels = split_n_char(f"{block[1]:<{4 * self._label_len}}", self._label_len)
+        self.name, self._reserved_label, self.ds_reference_label, self.us_reference_label = labels[
+            :4
+        ]
+        self.depth_type = block[2].strip().upper()
+        self.slope_method = None
+        self.user_slope = None
+        section_start = 3
+        if self.depth_type == "NORMAL":
+            method, value = split_10_char(f"{block[3]:<20}")[:2]
+            method = method.upper()
+            if method == "AUTO" and not value:
+                msg = f"NCDBDY {self.name!r} requires a slope source for AUTO (BED or SURFACE)"
+                raise ValueError(msg)
+            self.slope_method = value.upper() if method == "AUTO" else method
+            if self.slope_method == "USER":
+                self.user_slope = float(value)
+            section_start += 1
+        elif self.depth_type != "CRITICAL":
+            msg = f"Unknown NCDBDY depth type: {self.depth_type!r}"
+            raise ValueError(msg)
+
+        section_end = section_start + 1 + int(block[section_start])
+        rows = []
+        for line in block[section_start + 1 : section_end]:
+            x, y, roughness = split_10_char(f"{line:<30}")[:3]
+            mannings_n = float(roughness) if roughness else ""
+            rows.append((float(x), float(y), mannings_n, line[30:].strip()))
+        self.data = pd.DataFrame(rows, columns=list(self._section_columns))
+        self._read_override(block[section_end:])
+
+    def _read_override(self, block):
+        self._has_override_header = bool(block and block[0].strip())
+        header = block[0] if self._has_override_header else "0"
+        count, unit, extend, method, extra, interp = split_10_char(f"{header:<60}")[:6]
+        self.timeunit = to_str(unit.upper(), "", check_float=True)
+        self.extendmethod = extend.upper()
+        self.override_method = method
+        self.interpmethod = interp.upper()
+        self._override_extra = extra
+        rows = to_data_list(
+            block[1 : 1 + int(count)],
+            num_cols=2,
+            date_col=1 if self.timeunit == "DATES" else None,
+        )
+        if len(rows) != int(count):
+            msg = f"NCDBDY {self.name!r} declares {count} override rows but contains {len(rows)}"
+            raise ValueError(msg)
+        self.override_data = (
+            pd.DataFrame(rows, columns=["Stage", "Time"]).set_index("Time")["Stage"].astype(float)
+        )
+
+    def _write(self):
+        _validate_unit(self, allow_blank=("timeunit", "extendmethod", "interpmethod"))
+        block = [
+            self._create_header(include_revision=self._revision is not None),
+            join_n_char_ljust(
+                self._label_len,
+                self.name,
+                self._reserved_label,
+                self.ds_reference_label,
+                self.us_reference_label,
+            ).rstrip(),
+            self.depth_type.upper(),
+        ]
+        if self.depth_type.upper() == "NORMAL":
+            block.append(self._write_slope())
+        elif self.depth_type.upper() != "CRITICAL":
+            msg = f"Unknown NCDBDY depth type: {self.depth_type!r}"
+            raise ValueError(msg)
+
+        block.append(join_10_char(len(self.data)))
+        section = self.data[list(self._section_columns)]
+        for x, y, roughness, panel in section.itertuples(index=False):
+            mannings_n = None if pd.isna(roughness) or roughness == "" else float(roughness)
+            block.append((join_10_char(float(x), float(y), mannings_n) + str(panel)).rstrip())
+        block.extend(self._write_override())
+        return block
+
+    def _write_slope(self):
+        if not self.slope_method:
+            msg = "NCDBDY requires a slope method (BED, SURFACE or USER) for NORMAL depth"
+            raise ValueError(msg)
+        method = self.slope_method.upper()
+        if method in ("BED", "SURFACE"):
+            return f"{'AUTO':<10}" + join_10_char(method)
+        if method != "USER":
+            msg = f"Unknown NCDBDY slope method: {self.slope_method!r}"
+            raise ValueError(msg)
+        if self.user_slope is None or not 0 < self.user_slope < float("inf"):
+            msg = "NCDBDY requires a finite positive slope for the USER slope method"
+            raise ValueError(msg)
+        integer_width = len(str(int(self.user_slope)))
+        decimal_places = max(0, NOTATION_THRESHOLD - integer_width - 1)
+        slope = f"{self.user_slope:.{decimal_places}f}"
+        if decimal_places:
+            slope = slope.rstrip("0").rstrip(".")
+        if len(slope) > NOTATION_THRESHOLD or float(slope) == 0:
+            msg = (
+                f"NCDBDY USER slope {self.user_slope} cannot fit in the field as a positive decimal"
+            )
+            raise ValueError(msg)
+        return f"{'USER':<10}" + join_10_char(slope)
+
+    def _write_override(self):
+        has_settings = self.timeunit != "" or bool(
+            self.extendmethod or self.override_method or self.interpmethod or self._override_extra,
+        )
+        if not self._has_override_header and self.override_data.empty and not has_settings:
+            return []
+
+        validate_timeunit_data(self.timeunit, self.override_data, self._unit)
+        header = join_10_char(
+            len(self.override_data),
+            self.timeunit,
+            self.extendmethod.upper(),
+            self.override_method,
+            self._override_extra,
+        )
+        interp = self.interpmethod.upper()
+        block = [(header + interp).rstrip()]
+        if self.timeunit == "DATES":
+            block.extend(
+                join_10_char(float(stage)) + time for time, stage in self.override_data.items()
+            )
+        else:
+            block.extend(
+                join_10_char(float(stage), float(time))
+                for time, stage in self.override_data.items()
+            )
+        return block
 
 
 class QHBDY(Unit):
