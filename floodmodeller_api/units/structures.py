@@ -39,6 +39,7 @@ from ._helpers import (
     set_pier_params,
     split_10_char,
     split_n_char,
+    to_data_list,
     to_float,
     to_int,
     to_str,
@@ -1203,6 +1204,77 @@ class WEIR(Unit):
             "weir_elevation": weir_elevation,
         }.items():
             setattr(self, param, val)
+
+
+class QH_CONTROL(Unit):  # noqa: N801
+    """Flow-head control structure defined by a stage-discharge curve.
+
+    Args:
+        name (str, optional): Upstream node label. Defaults to 'new_qh_ctrl'.
+        ds_label (str, optional): Downstream node label. Defaults to 'ds_node'.
+        comment (str, optional): Comment on the unit header.
+        crest_elevation (float): Crest elevation in mAD.
+        modular_limit (float): Head ratio above which flow is drowned.
+        interpmethod (str, optional): 'LINEAR' or 'SPLINE'. Defaults to 'LINEAR'.
+        data (pandas.Series, optional): Flow values (m³/s) indexed by stage (mAD).
+    """
+
+    _unit = "QH CONTROL"
+
+    def _create_from_blank(  # noqa: PLR0913
+        self,
+        name="new_qh_ctrl",
+        ds_label="ds_node",
+        comment="",
+        *,
+        crest_elevation,
+        modular_limit,
+        interpmethod="LINEAR",
+        data=None,
+    ):
+        self.name = name
+        self.ds_label = ds_label
+        self.comment = comment
+        self.crest_elevation = crest_elevation
+        self.modular_limit = modular_limit
+        self.interpmethod = interpmethod
+        self.data = (
+            pd.Series([0.0, 1.0], index=pd.Index([0.0, 0.1], name="Stage"), name="Flow")
+            if data is None
+            else data
+        )
+
+    def _read(self, block):
+        labels = split_n_char(f"{block[1]:<{2 * self._label_len}}", self._label_len)
+        self.name, self.ds_label = labels[:2]
+        self.comment = self._remove_unit_name(block[0])
+        crest, limit, method = split_10_char(f"{block[2]:<30}")[:3]
+        self.crest_elevation = float(crest)
+        self.modular_limit = float(limit)
+        self.interpmethod = to_str(method, "LINEAR").upper()
+
+        nrows = int(block[3])
+        rows = to_data_list(block[4:], num_cols=2)
+        if len(rows) != nrows:
+            msg = f"QH CONTROL {self.name!r} declares {nrows} rows but contains {len(rows)}"
+            raise ValueError(msg)
+        curve = pd.DataFrame(rows, columns=["Flow", "Stage"], dtype=float)
+        self.data = curve.set_index("Stage")["Flow"]
+
+    def _write(self):
+        _validate_unit(self)
+        if not isinstance(self.data, pd.Series):
+            msg = "QH CONTROL data must be a pandas Series with flow indexed by stage"
+            raise TypeError(msg)
+        block = [
+            self._create_header(),
+            join_n_char_ljust(self._label_len, self.name, self.ds_label),
+            join_10_char(float(self.crest_elevation), float(self.modular_limit))
+            + self.interpmethod.upper(),
+            join_10_char(len(self.data)),
+        ]
+        block.extend(join_10_char(float(flow), float(stage)) for stage, flow in self.data.items())
+        return block
 
 
 class CRUMP(Unit):

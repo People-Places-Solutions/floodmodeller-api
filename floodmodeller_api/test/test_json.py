@@ -13,6 +13,7 @@ from floodmodeller_api.to_from_json import is_jsonable
 from floodmodeller_api.units import (
     FLOODPLAIN,
     INTERPOLATE,
+    QH_CONTROL,
     QTBDY,
     RIVER,
     SPILL,
@@ -162,6 +163,7 @@ def test_obj_reproduces_from_json_for_all_test_api_files(file_path):
     [
         RIVER(),
         QTBDY(),
+        QH_CONTROL(crest_elevation=1.0, modular_limit=0.9),
         INTERPOLATE(),
         INTERPOLATE(easting=123.4, northing=987.6),
         SPILL(),

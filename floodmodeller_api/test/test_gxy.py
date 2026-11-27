@@ -71,8 +71,12 @@ def test_setting_location(unit_class):
     # first check that we get the not implemented error, then check that the location is still unaffected.
     # this test should be updated when location is read/write capable.
     try:
-        # Junction units cannot be created from blank without at least one label.
-        unit = unit_class(labels=["label1"]) if unit_class == JUNCTION else unit_class()
+        if unit_class == JUNCTION:
+            unit = unit_class(labels=["label1"])
+        elif unit_class == floodmodeller_api.units.QH_CONTROL:
+            unit = unit_class(crest_elevation=1.0, modular_limit=0.9)
+        else:
+            unit = unit_class()
     except NotImplementedError as error:
         pytest.skip(f"Creating unit {unit_class=} from blank not supported, skipping...\n{error=}")
 

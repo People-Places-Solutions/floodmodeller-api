@@ -11,6 +11,7 @@ from floodmodeller_api import DAT
 from floodmodeller_api.units import (
     JUNCTION,
     LATERAL,
+    QH_CONTROL,
     QTBDY,
     RESERVOIR,
     RIVER,
@@ -534,6 +535,38 @@ def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path
 
     assert label in dat_read.sections
     assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
+
+
+def test_qh_control_read_edit_write(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "All Units 4_6.DAT")
+    control = dat.structures["UNIT027"]
+    assert isinstance(control, QH_CONTROL)
+    assert control.ds_label == "UNIT028"
+    assert control.crest_elevation == 1.0
+    assert control.modular_limit == 0.9
+    assert control.interpmethod == "SPLINE"
+    expected = pd.Series(
+        [1.0, 2.0, 3.0],
+        index=pd.Index([0.0, 1.0, 2.0], name="Stage"),
+        name="Flow",
+    )
+    pd.testing.assert_series_equal(control.data, expected)
+
+    control.crest_elevation = 1.25
+    control.comment = "Updated crest"
+    control.data.loc[3.0] = 4.5
+    expected = expected.reindex([0.0, 1.0, 2.0, 3.0], fill_value=4.5)
+    path = tmp_path / "qh_control.dat"
+    dat.save(path)
+
+    reloaded = DAT(path).structures["UNIT027"]
+    assert isinstance(reloaded, QH_CONTROL)
+    assert reloaded.ds_label == "UNIT028"
+    assert reloaded.crest_elevation == 1.25
+    assert reloaded.comment == "Updated crest"
+    assert reloaded.modular_limit == 0.9
+    assert reloaded.interpmethod == "SPLINE"
+    pd.testing.assert_series_equal(reloaded.data, expected)
 
 
 def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
