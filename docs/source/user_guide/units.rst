@@ -28,6 +28,12 @@ Boundary units
 .. autoclass:: floodmodeller_api.units.QHBDY
 
 
+``NCDBDY()``
+~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.NCDBDY
+
+
 ``REFHBDY()``
 ~~~~~~~~~~~~~~
 

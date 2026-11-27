@@ -11,6 +11,7 @@ from floodmodeller_api import DAT
 from floodmodeller_api.units import (
     JUNCTION,
     LATERAL,
+    NCDBDY,
     QTBDY,
     RESERVOIR,
     RIVER,
@@ -534,6 +535,27 @@ def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path
 
     assert label in dat_read.sections
     assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
+
+
+def test_ncdbdy_dat_read_edit_write(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "All Units 4_6.DAT")
+    boundary = dat.boundaries["UNIT089"]
+    assert isinstance(boundary, NCDBDY)
+    assert boundary.depth_type == "NORMAL"
+    assert boundary.slope_method == "BED"
+    assert boundary.override_method == "NOOVERRIDE"
+    assert boundary.data["Panel"].tolist() == ["*", "", "", "*"]
+    assert boundary.data["Mannings n"].tolist() == [0.02] * 4
+
+    boundary.data.loc[1, "Mannings n"] = 0.025
+    boundary.slope_method = "SURFACE"
+    path = tmp_path / "ncdbdy.dat"
+    dat.save(path)
+
+    reloaded = DAT(path).boundaries["UNIT089"]
+    assert reloaded == boundary
+    assert reloaded.slope_method == "SURFACE"
+    pd.testing.assert_frame_equal(reloaded.data, boundary.data)
 
 
 def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):
