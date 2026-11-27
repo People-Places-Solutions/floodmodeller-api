@@ -123,7 +123,7 @@ def test_numeric_timeunit_rejects_date_index(unit_type, series_name):
 
 
 def test_create_unit_from_blank():
-    """Test to create units with no parameters or subtype specified."""
+    """Test that new units can be created and written using the required parameters."""
 
     errors = {}
     for unit_type in units.SUPPORTED_UNIT_TYPES:
@@ -137,8 +137,11 @@ def test_create_unit_from_blank():
         unit = getattr(units, unit_type_safe)
 
         try:
-            # Create unit from blank and check the raw block can be written
-            unit()._write()
+            # QH CONTROL requires explicit crest elevation and modular limit.
+            kwargs = (
+                {"crest_elevation": 1.0, "modular_limit": 0.9} if unit_type == "QH CONTROL" else {}
+            )
+            unit(**kwargs)._write()
         except NotImplementedError:
             # Some unit classes intentionally do not implement blank _write() behavior.
             # This test skips those and only records unexpected exceptions.

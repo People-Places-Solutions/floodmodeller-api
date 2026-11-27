@@ -79,6 +79,11 @@ Structure units
 
 .. autoclass:: floodmodeller_api.units.RNWEIR
 
+``QH_CONTROL()``
+~~~~~~~~~~~~~~~~
+
+.. autoclass:: floodmodeller_api.units.QH_CONTROL
+
 ``SLUICE()``
 ~~~~~~~~~~~~~
 

@@ -107,6 +107,11 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
         "has_subtype": False,
         "subtypes": None,
     },
+    "QH CONTROL": {
+        "group": "structures",
+        "has_subtype": False,
+        "subtypes": None,
+    },
     "WEIR": {
         "group": "structures",
         "has_subtype": False,
@@ -186,7 +191,6 @@ UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "NOTWEIR": {"group": "structures", "has_subtype": False},  # Notional Weir
     "OCPUMP": {"group": None, "has_subtype": False},  # pump [junctions]
     "POND": {"group": None, "has_subtype": True},  # Pond units, online pond etc [connector]
-    "QH CONTROL": {"group": "structures", "has_subtype": False},  # Flow-head control weir
     "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
     "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
