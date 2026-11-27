@@ -11,6 +11,7 @@ from floodmodeller_api import DAT
 from floodmodeller_api.units import (
     JUNCTION,
     LATERAL,
+    QRATING,
     QTBDY,
     RESERVOIR,
     RIVER,
@@ -534,6 +535,27 @@ def test_encoding(test_workspace: Path, dat_str: str, label: str, tmp_path: Path
 
     assert label in dat_read.sections
     assert label in dat_write.sections  # remains as \xc3\xa5 even for utf8
+
+
+def test_qrating_read_edit_write(test_workspace: Path, tmp_path: Path):
+    dat = DAT(test_workspace / "All Units 4_6.DAT")
+    rating = dat.boundaries["UNIT056"]
+    assert isinstance(rating, QRATING)
+    expected = pd.Series(
+        [0.0, 0.1, 0.2, 0.3],
+        index=pd.Index([0.0, 1.0, 2.0, 3.0], name="Flow"),
+        name="Stage",
+    )
+    pd.testing.assert_series_equal(rating.data, expected)
+
+    rating.data.loc[4.5] = 0.4
+    expected = expected.reindex([0.0, 1.0, 2.0, 3.0, 4.5], fill_value=0.4)
+    path = tmp_path / "qrating.dat"
+    dat.save(path)
+
+    reloaded = DAT(path).boundaries["UNIT056"]
+    assert isinstance(reloaded, QRATING)
+    pd.testing.assert_series_equal(reloaded.data, expected)
 
 
 def test_insert_unsupported_unit(tmp_path: Path, unsupported_dummy_unit):

@@ -47,6 +47,11 @@ SUPPORTED_UNIT_TYPES: dict[str, SupportedUnitTypes] = {
         "has_subtype": False,
         "subtypes": None,
     },
+    "QRATING": {
+        "group": "boundaries",
+        "has_subtype": False,
+        "subtypes": None,
+    },
     "REFHBDY": {
         "group": "boundaries",
         "has_subtype": False,
@@ -187,7 +192,6 @@ UNSUPPORTED_UNIT_TYPES: dict[str, UnsupportedUnitTypes] = {
     "OCPUMP": {"group": None, "has_subtype": False},  # pump [junctions]
     "POND": {"group": None, "has_subtype": True},  # Pond units, online pond etc [connector]
     "QH CONTROL": {"group": "structures", "has_subtype": False},  # Flow-head control weir
-    "QRATING": {"group": "boundaries", "has_subtype": False},  # Rating Curves
     "REBDY": {"group": "boundaries", "has_subtype": False},  # Rainfall/Evaporation Boundary
     "REFH2BDY": {"group": "boundaries", "has_subtype": False},  # ReFH2 Method
     "SCSBDY": {"group": "boundaries", "has_subtype": False},  # US SCS now SS for rainfall/runoff
